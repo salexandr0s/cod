@@ -39,10 +39,10 @@ import {
   type VcsStatusInput,
   type VcsStatusResult,
   type WorktreeSubmodules,
-} from "@t3tools/contracts";
-import { isMissingExecutable } from "@t3tools/source-control-core/server/discovery";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { quoteGitPatchPath } from "@t3tools/shared/gitPatchPath";
+} from "@cod3/contracts";
+import { isMissingExecutable } from "@cod3/source-control-core/server/discovery";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { quoteGitPatchPath } from "@cod3/shared/gitPatchPath";
 import {
   makeGitVcsDriverCore,
   PATCH_RENDER_PREFIX_ARGS,
@@ -154,7 +154,7 @@ export interface CreateWorktreeProgress {
   }) => Effect.Effect<void, never>;
   readonly onSubmodulesStarted?: () => Effect.Effect<void, never>;
   readonly onSubmodulesDisabled?: (input: {
-    source: "settings" | "t3.json";
+    source: "settings" | "cod3.json";
   }) => Effect.Effect<void, never>;
   readonly onSubmoduleLine?: (line: string) => Effect.Effect<void, never>;
   readonly onSubmodulesFinished?: (input: {
@@ -165,7 +165,7 @@ export interface CreateWorktreeProgress {
 
 export interface CreateWorktreeOptions {
   readonly progress?: CreateWorktreeProgress;
-  /** Null or omitted defers to the checkout's t3.json. */
+  /** Null or omitted defers to the checkout's cod3.json. */
   readonly submodules?: WorktreeSubmodules | null;
   readonly worktreesDirectory?: string;
   /** Clone the checkout from the macOS worktree checkout cache. */
@@ -347,12 +347,12 @@ export interface GitRemoteStatusOptions {
  * slow status fetch land. Its status read waits for a running fetch instead of using the last
  * fetched references after five seconds. The fetch keeps its own safety limit.
  */
-export const AwaitStatusFetch = Context.Reference<boolean>("t3/vcs/AwaitStatusFetch", {
+export const AwaitStatusFetch = Context.Reference<boolean>("cod3/vcs/AwaitStatusFetch", {
   defaultValue: () => false,
 });
 
 /** Set by background discovery so its Git commands run in their own small lane, not the user's. */
-export const BackgroundGitWork = Context.Reference<boolean>("t3/vcs/BackgroundGitWork", {
+export const BackgroundGitWork = Context.Reference<boolean>("cod3/vcs/BackgroundGitWork", {
   defaultValue: () => false,
 });
 
@@ -413,7 +413,7 @@ export class GitVcsDriver extends Context.Service<
       key: string,
     ) => Effect.Effect<string | null, GitCommandError>;
     /**
-     * The branch, named as on the host, that T3 recorded `branch` was cut from. Null when none
+     * The branch, named as on the host, that cod3 recorded `branch` was cut from. Null when none
      * was recorded.
      */
     readonly readBranchBase: (
@@ -509,7 +509,7 @@ export class GitVcsDriver extends Context.Service<
     readonly invalidateRefs: (cwd: string) => Effect.Effect<void>;
     readonly listLocalBranchNames: (cwd: string) => Effect.Effect<string[], GitCommandError>;
   }
->()("t3/vcs/GitVcsDriver") {}
+>()("cod3/vcs/GitVcsDriver") {}
 
 const WORKSPACE_FILES_MAX_OUTPUT_BYTES = 16 * 1024 * 1024;
 const FLAGGED_INDEX_ENTRIES_MAX_BYTES = 1024 * 1024;
@@ -655,7 +655,7 @@ const gitCommand = Effect.fn("GitVcsDriver.gitCommand")(
 );
 
 const HEAD_MOVES_SCAN_LIMIT = 512;
-const HEAD_MARK_TRAILER = "T3-Head-Moved-At";
+const HEAD_MARK_TRAILER = "cod3-Head-Moved-At";
 const HEAD_MARK_TRAILER_PATTERN = new RegExp(`^${HEAD_MARK_TRAILER}: (\\d+) (\\d+)$`, "m");
 
 // Parses "git version 2.34.1" or "git version 2.45.1.windows.1".
@@ -1145,10 +1145,10 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
     (excludePaths ?? []).map((relativePath) => `:(exclude,literal)${relativePath}`);
 
   const checkpointIdentity: NodeJS.ProcessEnv = {
-    GIT_AUTHOR_NAME: "T3 Code",
-    GIT_AUTHOR_EMAIL: "t3code@users.noreply.github.com",
-    GIT_COMMITTER_NAME: "T3 Code",
-    GIT_COMMITTER_EMAIL: "t3code@users.noreply.github.com",
+    GIT_AUTHOR_NAME: "cod3",
+    GIT_AUTHOR_EMAIL: "cod3@users.noreply.github.com",
+    GIT_COMMITTER_NAME: "cod3",
+    GIT_COMMITTER_EMAIL: "cod3@users.noreply.github.com",
   };
 
   // Index files known to hold no assume-unchanged or skip-worktree entry, by their stat. Setting
@@ -1230,7 +1230,7 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
           : undefined;
       const startedAt = yield* Clock.currentTimeMillis;
       const indexId = yield* random.uuidV4();
-      const tempIndexPath = path.join(gitCommonDir, `t3-checkpoint-index-${indexId}`);
+      const tempIndexPath = path.join(gitCommonDir, `cod3-checkpoint-index-${indexId}`);
       const hostEnv = yield* HostProcess.Environment;
       // VcsProcess clears inherited object selectors, so every other command uses this store.
       const sharedObjects = path.join(gitCommonDir, "objects");
@@ -1238,7 +1238,7 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
       // Isolate bulk-checkin packs so cleanup cannot remove another Git writer's objects.
       const privateObjects = yield* Effect.acquireRelease(
         fileSystem
-          .makeTempDirectory({ directory: sharedObjects, prefix: "tmp_objdir-t3-checkpoint-" })
+          .makeTempDirectory({ directory: sharedObjects, prefix: "tmp_objdir-cod3-checkpoint-" })
           .pipe(
             Effect.mapError(
               (cause) =>
@@ -1268,10 +1268,10 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
         GIT_ALTERNATE_OBJECT_DIRECTORIES: quotedObjects.startsWith('"')
           ? quotedObjects
           : `"${quotedObjects}"`,
-        GIT_AUTHOR_NAME: "T3 Code",
-        GIT_AUTHOR_EMAIL: "t3code@users.noreply.github.com",
-        GIT_COMMITTER_NAME: "T3 Code",
-        GIT_COMMITTER_EMAIL: "t3code@users.noreply.github.com",
+        GIT_AUTHOR_NAME: "cod3",
+        GIT_AUTHOR_EMAIL: "cod3@users.noreply.github.com",
+        GIT_COMMITTER_NAME: "cod3",
+        GIT_COMMITTER_EMAIL: "cod3@users.noreply.github.com",
       };
 
       const cleanupTempIndex = Effect.forEach(
@@ -1746,7 +1746,7 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
                     "-p",
                     commit,
                     "-m",
-                    `t3 checkpoint turn start ref=${input.checkpointRef}`,
+                    `cod3 checkpoint turn start ref=${input.checkpointRef}`,
                   ],
                   // listAuthoredPaths reads commits newer than the start as the turn's own.
                   env: { ...commitEnv, GIT_COMMITTER_DATE: `${capturedAt} +0000` },
@@ -1762,7 +1762,7 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
                 ),
               );
 
-        const message = `t3 checkpoint ref=${input.checkpointRef}${
+        const message = `cod3 checkpoint ref=${input.checkpointRef}${
           headMark === undefined ? "" : `\n\n${HEAD_MARK_TRAILER}: ${headMark}`
         }`;
         // HEAD is the first parent so listAuthoredPaths can see how HEAD moved between checkpoints.
@@ -1981,7 +1981,7 @@ export const makeVcsDriverShape = Effect.fn("makeGitVcsDriverShape")(function* (
             "-p",
             input.head,
             "-m",
-            `t3 checkpoint ref=${input.checkpointRef}${
+            `cod3 checkpoint ref=${input.checkpointRef}${
               headMark === undefined ? "" : `\n\n${HEAD_MARK_TRAILER}: ${headMark}`
             }`,
           ],

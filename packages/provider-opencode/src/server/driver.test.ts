@@ -11,9 +11,9 @@ import {
   ProviderInstanceId,
   ProviderSessionId,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type { OpenCodeSettings } from "../settings.ts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Duration from "effect/Duration";
@@ -31,11 +31,11 @@ import * as FetchHttpClient from "effect/http/FetchHttpClient";
 import * as UrlParams from "effect/http/UrlParams";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 
-import * as ProviderLatestVersions from "@t3tools/provider-core/server/ProviderLatestVersions";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as ProviderEventLoggers from "@t3tools/provider-core/server/ProviderEventLoggers";
-import * as ProviderMaintenance from "@t3tools/provider-core/server/maintenanceResolver";
+import * as ProviderLatestVersions from "@cod3/provider-core/server/ProviderLatestVersions";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as ProviderEventLoggers from "@cod3/provider-core/server/ProviderEventLoggers";
+import * as ProviderMaintenance from "@cod3/provider-core/server/maintenanceResolver";
 import * as OpenCodeRuntime from "./OpenCodeRuntime.ts";
 import { OpenCodeDriver, isLocalOpenCodeServerUrl, openCodeUpdateFor } from "./driver.ts";
 import * as OpenCodeServerLedger from "./OpenCodeServerLedger.ts";
@@ -44,7 +44,7 @@ import {
   OPENCODE_2_WORKSPACE_RESPONSES,
   replayOpenCodeServer,
 } from "./probeResponses.fixture.ts";
-import * as TestProviderHost from "@t3tools/provider-testing/TestProviderHost";
+import * as TestProviderHost from "@cod3/provider-testing/TestProviderHost";
 
 it("only probes a locally configured OpenCode server's installed CLI", () => {
   assert.isTrue(isLocalOpenCodeServerUrl("http://127.0.0.1:35768"));
@@ -183,7 +183,7 @@ const makeOpenCode2ProjectInstance = (
 it.live("discovers models through a home-relative OpenCode wrapper", () =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const home = yield* fs.makeTempDirectoryScoped({ prefix: "t3-opencode-home with spaces-" });
+    const home = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-opencode-home with spaces-" });
     const binaryPath = NodePath.join(home, "opencode");
     const scriptPath = NodePath.join(home, "opencode.cjs");
     yield* fs.writeFileString(
@@ -1257,7 +1257,7 @@ it.effect.skipIf(HostProcess.Platform.defaultValue() === "win32")(
   () =>
     Effect.gen(function* () {
       const root = NodeFS.realpathSync(
-        NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-opencode-update-")),
+        NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-opencode-update-")),
       );
       const v2Prefix = NodePath.join(root, "v2");
       const v1Prefix = NodePath.join(root, "v1");
@@ -1412,7 +1412,7 @@ it.layer(layerUpdate)("OpenCodeDriver updates", (it) => {
     () =>
       Effect.gen(function* () {
         const root = NodeFS.realpathSync(
-          NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-opencode-driver-update-")),
+          NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-opencode-driver-update-")),
         );
         const binaryPath = npmGlobalInstall(NodePath.join(root, "v1"), ["opencode-ai"], "opencode");
         const instance = yield* OpenCodeDriver.create({

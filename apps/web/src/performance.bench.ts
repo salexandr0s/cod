@@ -1,11 +1,11 @@
-import { ProjectId } from "@t3tools/contracts";
+import { ProjectId } from "@cod3/contracts";
 import {
   getLatestThreadForProject,
   sortActiveThreadsByOrderKey,
   sortPinnedThreadsByOrderKey,
   sortThreads,
-} from "@t3tools/client-runtime/state/thread-sort";
-import { formatHourShort, formatRelativeHourShort } from "@t3tools/shared/usageFormat";
+} from "@cod3/client-runtime/state/thread-sort";
+import { formatHourShort, formatRelativeHourShort } from "@cod3/shared/usageFormat";
 import { describe, test } from "vite-plus/test";
 
 const projectId = ProjectId.make("benchmark-project");

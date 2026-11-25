@@ -1,4 +1,4 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { LegendList, type LegendListRef } from "@legendapp/list/react-native";
 import { AppBar, type AppBarSearch } from "../../components/ui/AppBar";
 import { AsyncResult } from "effect/reactivity";
@@ -6,22 +6,22 @@ import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
 import { usePullRequestConnected } from "./usePullRequestConnected";
 import { useAtomValue } from "@effect/atom-react";
 import { useNavigation, type StaticScreenProps } from "@react-navigation/native";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { changeRequestTermKind } from "../../lib/changeRequestTerm";
 import {
   hostReviewerQuery,
   reviewerCandidateView,
   type ReviewerTruncation,
-} from "@t3tools/client-runtime/pull-request-reviewers";
+} from "@cod3/client-runtime/pull-request-reviewers";
 import {
   emptySelection,
   isSelected,
   changeBatches,
   selectionChanges,
   toggleSelection,
-} from "@t3tools/client-runtime/pull-request-selection";
-import type { PullRequestReviewerCandidate } from "@t3tools/contracts";
+} from "@cod3/client-runtime/pull-request-selection";
+import type { PullRequestReviewerCandidate } from "@cod3/contracts";
 import { msg, T, useGT, useMessages } from "gt-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
@@ -161,7 +161,7 @@ export function PullRequestReviewersScreen({ route }: StaticScreenProps<PullRequ
   const listCandidates = pr?.capabilities.reviewers.listCandidates === true;
   // Loaded rows first: they carry the request state mutations update.
   const latest = [...(result.data?.candidates ?? []), ...(searchResult.data?.candidates ?? [])];
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- picks are sent when the sheet leaves the navigation stack, however it is dismissed
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- picks are sent when the sheet leaves the navigation stack, however it is dismissed
   useEffect(
     () =>
       navigation.addListener("beforeRemove", () => {
@@ -286,7 +286,7 @@ export function PullRequestReviewersScreen({ route }: StaticScreenProps<PullRequ
               >
                 <PullRequestAvatar actor={item} size={32} />
                 <View className="min-w-0 flex-1 gap-0.5">
-                  <Text className="text-sm font-t3-medium" numberOfLines={1}>
+                  <Text className="text-sm font-cod3-medium" numberOfLines={1}>
                     {item.name || item.login}
                   </Text>
                   <Text className="text-xs text-foreground-muted" numberOfLines={1}>

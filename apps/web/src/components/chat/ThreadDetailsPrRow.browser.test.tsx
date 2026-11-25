@@ -1,5 +1,5 @@
 import { ThreadDetailsIssueRows } from "./ThreadDetailsIssueRows";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
 import {
   EnvironmentId,
   IssueTrackerKind,
@@ -9,7 +9,7 @@ import {
   type PullRequestCheck,
   type ScopedThreadRef,
   type ThreadIssueLink,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { DraftId } from "~/composerDraftStore";
 import { AsyncResult } from "effect/reactivity";
 import { expect, it, vi } from "vite-plus/test";
@@ -140,7 +140,7 @@ const scratchProject = {
   id: ProjectId.make("scratch"),
   environmentId: EnvironmentId.make("environment"),
   title: "No project",
-  workspaceRoot: "/home/user/.t3/scratch",
+  workspaceRoot: "/home/user/.cod3/scratch",
   scripts: [],
 };
 const repositoryProject = {

@@ -1,27 +1,20 @@
 {
   "fill": {
-    "solid": "display-p3:0.00000,0.00000,0.00000,1.00000"
+    "solid": "srgb:0.06275,0.15294,0.16863,1.00000"
   },
   "groups": [
     {
       "layers": [
         {
+          "glass": false,
           "image-name": "text.svg",
-          "name": "Text",
+          "name": "cod3",
           "position": {
-            "scale": 8.5,
+            "scale": 8,
             "translation-in-points": [0, 0]
           }
         }
-      ],
-      "shadow": {
-        "kind": "neutral",
-        "opacity": 0.5
-      },
-      "translucency": {
-        "enabled": true,
-        "value": 0.5
-      }
+      ]
     }
   ],
   "supported-platforms": {

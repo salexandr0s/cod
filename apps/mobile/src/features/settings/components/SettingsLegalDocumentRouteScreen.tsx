@@ -61,7 +61,7 @@ export function SettingsLegalDocumentRouteScreen({
             weight="regular"
           />
           <View className="items-center gap-2">
-            <Text className="text-center font-t3-bold text-lg text-foreground">
+            <Text className="text-center font-cod3-bold text-lg text-foreground">
               {gt("Couldn't load the {document}", { document: documentName.toLowerCase() })}
             </Text>
             <Text selectable className="text-center text-sm leading-normal text-foreground-muted">
@@ -83,7 +83,7 @@ export function SettingsLegalDocumentRouteScreen({
               onPress={() => openExternalUrl(documentUrl)}
               className="items-center rounded-xl px-4 py-3 active:bg-foreground/5"
             >
-              <Text className="font-t3-medium text-base text-foreground-muted">
+              <Text className="font-cod3-medium text-base text-foreground-muted">
                 <T>Open in Browser</T>
               </Text>
             </Pressable>

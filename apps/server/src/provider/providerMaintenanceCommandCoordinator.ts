@@ -3,7 +3,7 @@ import * as NodeCrypto from "node:crypto";
 import * as NodeFSP from "node:fs/promises";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
 import { lock } from "proper-lockfile";
 import * as Effect from "effect/Effect";
 import * as Ref from "effect/Ref";
@@ -24,7 +24,7 @@ class MachineLockError extends Schema.TaggedError<MachineLockError>()("MachineLo
   cause: Schema.Defect(),
 }) {}
 
-const lockDirectory = () => NodePath.join(NodeOS.tmpdir(), "t3code-provider-updates");
+const lockDirectory = () => NodePath.join(NodeOS.tmpdir(), "cod3-provider-updates");
 
 /** @internal */
 export const machineLockFile = (lockKey: string) =>
@@ -33,7 +33,7 @@ export const machineLockFile = (lockKey: string) =>
     NodeCrypto.createHash("sha256").update(lockKey).digest("hex").slice(0, 32),
   );
 
-// Other T3 servers on this machine can run the same installation's updater; one replacing its own
+// Other cod3 servers on this machine can run the same installation's updater; one replacing its own
 // files makes the other's spawn or capability check fail. Without a usable lock directory, run anyway.
 const withMachineLock = <A, E, R>(
   lockKey: string,

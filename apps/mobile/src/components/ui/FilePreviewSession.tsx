@@ -1,4 +1,4 @@
-import { AssetWorkspaceAssetNotFoundError } from "@t3tools/contracts";
+import { AssetWorkspaceAssetNotFoundError } from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { msg, useGT } from "gt-react-native";
 import * as Dialog from "./Dialog";
@@ -125,7 +125,7 @@ function ResolvedFilePreview(
     props.onRequestClose();
   });
   // Resolves once per presentation and holds local file leases until it closes.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- resolves preview files and holds their local file leases until the preview closes
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- resolves preview files and holds their local file leases until the preview closes
   useEffect(() => {
     const controller = new AbortController();
     const leases: (() => void)[] = [];

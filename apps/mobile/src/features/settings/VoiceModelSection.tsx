@@ -1,4 +1,4 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { T, useGT, useLocale, Var } from "gt-react-native";
 import { useAtomRefresh, useAtomValue } from "@effect/atom-react";
 import { useNavigation } from "@react-navigation/native";
@@ -6,12 +6,12 @@ import {
   cancelEnvironmentSpeechModelDownload,
   installEnvironmentSpeechModel,
   selectEnvironmentSpeechModel,
-} from "@t3tools/client-runtime/voice-input";
+} from "@cod3/client-runtime/voice-input";
 import {
   AuthSettingsWriteScope,
   type EnvironmentId,
   type EnvironmentSpeechModel,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { type ReactNode, useEffect, useState } from "react";
 import { Platform, Text as NativeText, View } from "react-native";
@@ -52,7 +52,7 @@ export function useVoiceModels(environmentId: EnvironmentId, label: string) {
   const models = AsyncResult.getOrElse(modelsResult, () => null)?.models ?? [];
   const downloading = requested !== null || models.some(isDownloading);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- polls the environment's download progress while one runs
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- polls the environment's download progress while one runs
   useEffect(() => {
     if (!downloading) return;
     const timer = setInterval(refreshModels, 1_000);
@@ -146,7 +146,7 @@ function ModelStats(props: { readonly model: EnvironmentSpeechModel; readonly la
             "score",
             <T key="score">
               <Var>{languageLabel(code, locale)}</Var>{" "}
-              <Text className="font-t3-medium text-foreground">
+              <Text className="font-cod3-medium text-foreground">
                 <Var>{score.grade}</Var>
               </Text>{" "}
               (<Var>{score.errorPercent}</Var>% error)
@@ -159,7 +159,7 @@ function ModelStats(props: { readonly model: EnvironmentSpeechModel; readonly la
           [
             "speed",
             <>
-              <Text className="font-t3-medium text-foreground">
+              <Text className="font-cod3-medium text-foreground">
                 {Number(data.secondsPer30s.accelerated.toFixed(2))} s
               </Text>{" "}
               / 30 s
@@ -336,7 +336,7 @@ export function LocalModelChoice(props: {
             : voice.canManage
               ? gt("No model installed · Choose one to download")
               : gt("No model installed · Add one using {product} on {environment}", {
-                  product: "T3 Code",
+                  product: "cod3",
                   environment: props.label,
                 })
       }

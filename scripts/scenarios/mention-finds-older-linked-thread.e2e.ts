@@ -1,13 +1,13 @@
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
-import { CommandId, ThreadId } from "@t3tools/contracts";
+import { CommandId, ThreadId } from "@cod3/contracts";
 import { expect } from "e2e";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import { SECOND_HOME, startSecondServer } from "./second-server.ts";
-import { makeState, rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { makeState, rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 // A shell keeps an environment's 25 newest settled threads; older ones come from search.
 const NEWER_SETTLED = 25;
@@ -37,7 +37,7 @@ const linkEnvironments = Effect.fn("scenario.linkEnvironments")(function* (
   primaryOrigin: string,
   secondOrigin: string,
 ) {
-  const primary = yield* rpcClient(T3_HOME, primaryOrigin);
+  const primary = yield* rpcClient(COD3_HOME, primaryOrigin);
   const second = yield* rpcClient(SECOND_HOME, secondOrigin);
   for (const client of [primary, second]) {
     yield* client["server.updateSettings"]({ patch: { linkedEnvironmentsEnabled: true } });
@@ -54,9 +54,9 @@ const linkEnvironments = Effect.fn("scenario.linkEnvironments")(function* (
 test(
   "The @ picker finds an older settled thread on a linked machine",
   WEB,
-  async ({ t3, app, screen }) => {
-    const project = await t3.project("primary");
-    const current = await t3.thread({ project, title: "Current work", messages: ["first"] });
+  async ({ cod3, app, screen }) => {
+    const project = await cod3.project("primary");
+    const current = await cod3.thread({ project, title: "Current work", messages: ["first"] });
     const server = startSecondServer(app.baseUrl ?? "");
     try {
       const { host, token } = await server.ready;
@@ -76,7 +76,7 @@ test(
       }
       await runPromise(settle(SECOND_HOME, host, threadIds));
 
-      await t3.open("/settings/connections");
+      await cod3.open("/settings/connections");
       await screen.getByRole("button", "Add environment").tap();
       const dialog = screen.getByRole("dialog");
       await dialog.getByPlaceholder("backend.example.com").fill(host);
@@ -86,7 +86,7 @@ test(
         timeout: 60_000,
       });
 
-      await t3.open(current);
+      await cod3.open(current);
       await screen.getByRole("textbox").fill("@Ancient");
       try {
         await expect(

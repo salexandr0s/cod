@@ -1,5 +1,5 @@
-import type { ComposerContextRecord, EnvironmentId } from "@t3tools/contracts";
-import { imageMimeType } from "@t3tools/shared/image";
+import type { ComposerContextRecord, EnvironmentId } from "@cod3/contracts";
+import { imageMimeType } from "@cod3/shared/image";
 import type { FilePreviewItem } from "../components/ui/FilePreviewModal.types";
 import { composerImageGallery } from "./composerImageGallery";
 import type { DraftComposerAttachment } from "./composerImages";

@@ -13,18 +13,18 @@ import {
   type SecretRequestItem,
   type SecretRequestReply,
   type SecretRequestSource,
-} from "@t3tools/client-runtime/secret-request";
+} from "@cod3/client-runtime/secret-request";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import type {
   EnvironmentId,
   OrchestrationV2ProjectedTurnItem,
   SecretProviderId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
-import { hasFeatureFlag } from "@t3tools/client-runtime/state/server";
+import { hasFeatureFlag } from "@cod3/client-runtime/state/server";
 import { T, useGT, useMessages, Var } from "gt-react";
 import {
   CheckIcon,

@@ -3,9 +3,9 @@ import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import { SECOND_HOME, startSecondServer } from "./second-server.ts";
-import { environmentId, makeState, rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { environmentId, makeState, rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 const decodePairing = Schema.decodeEffect(
   Schema.fromJsonString(Schema.Struct({ credential: Schema.String })),
@@ -14,15 +14,15 @@ const decodePairing = Schema.decodeEffect(
 test(
   "Try again immediately reads a linked thread once it is reachable",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    await t3.project("primary");
+  async ({ cod3, app, browser, screen }) => {
+    await cod3.project("primary");
     const origin = app.baseUrl ?? "";
     const server = startSecondServer(origin);
     try {
       const { host } = await server.ready;
       await runPromise(
         Effect.gen(function* () {
-          const primary = yield* rpcClient(T3_HOME, origin);
+          const primary = yield* rpcClient(COD3_HOME, origin);
           const remote = yield* rpcClient(SECOND_HOME, host);
           for (const client of [primary, remote]) {
             yield* client["server.updateSettings"]({ patch: { linkedEnvironmentsEnabled: true } });
@@ -93,7 +93,7 @@ test(
         };
       });
 
-      await t3.open(`/linked/${via}/${linked}/${thread.threadId}`);
+      await cod3.open(`/linked/${via}/${linked}/${thread.threadId}`);
       await screen.getByRole("button", "Try again", { exact: true }).tap();
       await app.screenshot("after-trying-again");
       // The automatic retry waits 15 seconds. This checks the user's explicit retry.

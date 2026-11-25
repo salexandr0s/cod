@@ -9,10 +9,10 @@ import {
   type ProcessExit,
   type SpawnedMspConnection,
 } from "@muse-code/sdk";
-import type { RuntimeMode } from "@t3tools/contracts";
-import { envTrampoline, supportsEnvChdir } from "@t3tools/shared/envTrampoline";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { SpawnExecutableResolution } from "@t3tools/shared/shell";
+import type { RuntimeMode } from "@cod3/contracts";
+import { envTrampoline, supportsEnvChdir } from "@cod3/shared/envTrampoline";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { SpawnExecutableResolution } from "@cod3/shared/shell";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
@@ -159,7 +159,7 @@ export function museServeArgs(
 
 export function museInitializeParams(readOnly = false) {
   return {
-    clientInfo: { name: "t3_code", title: "T3 Code", version: "1" },
+    clientInfo: { name: "cod3_code", title: "cod3", version: "1" },
     capabilities: { requestedCapabilities: readOnly ? [] : ["sessionMcp"] },
   };
 }

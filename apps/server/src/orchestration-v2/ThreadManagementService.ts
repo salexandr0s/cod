@@ -1,7 +1,7 @@
 import type {
   OrchestrationV2SearchThreadInput,
   OrchestrationV2SearchThreadResult,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type {
   ActiveThreadListEntry,
   ProjectionRecordField,
@@ -42,10 +42,10 @@ import {
   type ScheduledTaskId,
   ThreadId,
   type TurnItemId,
-} from "@t3tools/contracts";
-import { delegatedTaskProgress } from "@t3tools/provider-core/server/subagentProjection";
-import { threadTranscriptHeader } from "@t3tools/shared/threadTranscript";
-import { AgentScope } from "@t3tools/shared/AgentScope";
+} from "@cod3/contracts";
+import { delegatedTaskProgress } from "@cod3/provider-core/server/subagentProjection";
+import { threadTranscriptHeader } from "@cod3/shared/threadTranscript";
+import { AgentScope } from "@cod3/shared/AgentScope";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -566,7 +566,7 @@ export interface ThreadManagementServiceShape {
 export class ThreadManagementService extends Context.Service<
   ThreadManagementService,
   ThreadManagementServiceShape
->()("t3/orchestration-v2/ThreadManagementService") {}
+>()("cod3/orchestration-v2/ThreadManagementService") {}
 
 export const ACTIVE_RUN_STATUSES = [
   "preparing",

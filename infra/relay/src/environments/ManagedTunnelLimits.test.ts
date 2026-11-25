@@ -10,17 +10,17 @@ import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
 import { ne } from "drizzle-orm";
 import { PgDialect } from "drizzle-orm/pg-core";
-import { DEFAULT_MANAGED_TUNNEL_LIMIT, type RelayT3ChatPlan } from "@t3tools/contracts/relay";
+import { DEFAULT_MANAGED_TUNNEL_LIMIT, type RelayCod3ChatPlan } from "@cod3/contracts/relay";
 
 import * as RelayDb from "../db.ts";
 import { relayManagedEndpointAllocations } from "../persistence/schema.ts";
-import * as T3ChatAccounts from "../t3chat/T3ChatAccounts.ts";
+import * as Cod3ChatAccounts from "../cod3chat/Cod3ChatAccounts.ts";
 import * as ManagedTunnelLimits from "./ManagedTunnelLimits.ts";
 
 const BACKFILL_MIGRATION = "20261028062605_backfill_withdrawn_tunnel_allocations";
 
 class FakeTransaction extends Context.Service<FakeTransaction, { holdsLock: boolean }>()(
-  "t3code-relay/environments/ManagedTunnelLimits.test/FakeTransaction",
+  "cod3-relay/environments/ManagedTunnelLimits.test/FakeTransaction",
 ) {}
 
 interface FakeDbInput {
@@ -82,14 +82,14 @@ function makeFakeDb(input: FakeDbInput) {
   } as unknown as RelayDb.RelayDb["Service"];
 }
 
-const t3ChatLayer = (plan: RelayT3ChatPlan | "lookup-fails", lookups?: Array<string>) =>
-  Layer.mock(T3ChatAccounts.T3ChatAccounts, {
+const cod3ChatLayer = (plan: RelayCod3ChatPlan | "lookup-fails", lookups?: Array<string>) =>
+  Layer.mock(Cod3ChatAccounts.Cod3ChatAccounts, {
     available: true,
     getLink: ({ userId }) => {
       lookups?.push(userId);
       return plan === "lookup-fails"
         ? Effect.fail(
-            new T3ChatAccounts.T3ChatRequestFailed({
+            new Cod3ChatAccounts.Cod3ChatRequestFailed({
               operation: "get-link",
               cause: new Error("down"),
             }),
@@ -101,7 +101,7 @@ const t3ChatLayer = (plan: RelayT3ChatPlan | "lookup-fails", lookups?: Array<str
 const reserve = (
   input: Omit<FakeDbInput, "otherSlots"> & {
     readonly activeTunnels: number;
-    readonly plan: RelayT3ChatPlan | "lookup-fails";
+    readonly plan: RelayCod3ChatPlan | "lookup-fails";
     readonly lookups?: Array<string>;
   },
 ) =>
@@ -117,7 +117,7 @@ const reserve = (
             makeFakeDb({ ...input, otherSlots: () => input.activeTunnels }),
           ),
         ),
-        Layer.provide(t3ChatLayer(input.plan, input.lookups)),
+        Layer.provide(cod3ChatLayer(input.plan, input.lookups)),
       ),
     ),
   );
@@ -138,7 +138,7 @@ const getOverride = (override?: number) =>
             }),
           ),
         ),
-        Layer.provide(t3ChatLayer("free")),
+        Layer.provide(cod3ChatLayer("free")),
       ),
     ),
   );
@@ -175,7 +175,7 @@ describe("ManagedTunnelLimits", () => {
           Layer.provide(
             Layer.succeed(RelayDb.RelayDb, makeFakeDb({ otherSlots: () => reserved.length })),
           ),
-          Layer.provide(t3ChatLayer("free")),
+          Layer.provide(cod3ChatLayer("free")),
         ),
       ),
     );

@@ -1,6 +1,6 @@
-import { resolveFilesystemReadAccess } from "@t3tools/client-runtime/state/filesystem";
+import { resolveFilesystemReadAccess } from "@cod3/client-runtime/state/filesystem";
 import { environmentSession } from "../../state/session";
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import { AppBar } from "../../components/ui/AppBar";
 import { ScreenContent } from "../../components/ui/ScreenContent";
 import { useGT, useMessages } from "gt-react-native";

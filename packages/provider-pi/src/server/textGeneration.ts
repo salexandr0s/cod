@@ -4,19 +4,19 @@ import * as Queue from "effect/Queue";
 import * as Schema from "effect/Schema";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 
-import { ProviderDriverKind, TextGenerationError } from "@t3tools/contracts";
-import { getModelSelectionStringOptionValue } from "@t3tools/shared/model";
+import { ProviderDriverKind, TextGenerationError } from "@cod3/contracts";
+import { getModelSelectionStringOptionValue } from "@cod3/shared/model";
 import {
   brokenVersionDetail,
   noCompatibilityPolicy,
   type ProviderCompatibilityLookup,
-} from "@t3tools/provider-core/server/compatibility";
-import { parseGenericCliVersion } from "@t3tools/provider-core/server/snapshotProbe";
+} from "@cod3/provider-core/server/compatibility";
+import { parseGenericCliVersion } from "@cod3/provider-core/server/snapshotProbe";
 import type { PiSettings } from "../settings.ts";
 
 import { makePiRpcConnection, piRecordField, piRecordString, resolvePiModelSlug } from "./rpc.ts";
 import { buildPiRpcLaunch, resolvePiLaunchArgs } from "./mcpInjection.ts";
-import * as TextGenerationOperations from "@t3tools/provider-core/server/textGenerationOperations";
+import * as TextGenerationOperations from "@cod3/provider-core/server/textGenerationOperations";
 import { isPiThinkingLevel } from "./modelCapabilities.ts";
 import { runPiVersionCommand } from "./status.ts";
 
@@ -55,7 +55,7 @@ export const makePiTextGeneration = Effect.fn("makePiTextGeneration")(function* 
             : null;
         const broken =
           version === null
-            ? "T3 Code could not determine the Pi version. Update Pi and try again."
+            ? "cod3 could not determine the Pi version. Update Pi and try again."
             : brokenVersionDetail({
                 name: "Pi",
                 version,

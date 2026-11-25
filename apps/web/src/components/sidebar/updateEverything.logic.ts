@@ -1,16 +1,16 @@
 import {
   managedNightlyDeniedMessage,
   managedUpdatesDenial,
-} from "@t3tools/client-runtime/contract-labels";
-import type { ServerUpdateState } from "@t3tools/client-runtime/state/server";
+} from "@cod3/client-runtime/contract-labels";
+import type { ServerUpdateState } from "@cod3/client-runtime/state/server";
 import {
   type DesktopUpdateChannel,
   type EnvironmentId,
   type ServerConfig,
   type ServerSelfUpdateCapability,
-} from "@t3tools/contracts";
-import { cliReleaseChannelOf, desktopUpdateChannelOf } from "@t3tools/shared/cliRelease";
-import { compareSemverVersions } from "@t3tools/shared/semver";
+} from "@cod3/contracts";
+import { cliReleaseChannelOf, desktopUpdateChannelOf } from "@cod3/shared/cliRelease";
+import { compareSemverVersions } from "@cod3/shared/semver";
 import { msg } from "gt-react";
 
 import { m, type MessageResolver } from "~/i18n/messages";
@@ -383,7 +383,7 @@ export function collectChannelSwitchTargets(
       skip(
         resolve(
           msg("run `{command}` there", {
-            command: `t3 update --channel ${release.channel === "nightly" ? "nightly" : "stable"} --allow-downgrade`,
+            command: `cod3 update --channel ${release.channel === "nightly" ? "nightly" : "stable"} --allow-downgrade`,
           }),
         ),
       );

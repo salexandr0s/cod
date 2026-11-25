@@ -1,5 +1,5 @@
-import * as OtelEnvironment from "@t3tools/shared/otelEnvironment";
-import { DEFAULT_SIGNAL_EXPORT } from "@t3tools/shared/observability";
+import * as OtelEnvironment from "@cod3/shared/otelEnvironment";
+import { DEFAULT_SIGNAL_EXPORT } from "@cod3/shared/observability";
 // @effect-diagnostics nodeBuiltinImport:off - CLI integration uses temporary Node paths.
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
@@ -15,9 +15,9 @@ import {
   ThreadId,
   type OrchestrationV2AppThread,
   type ProjectId,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as NetService from "@t3tools/shared/Net";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as NetService from "@cod3/shared/Net";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -41,7 +41,7 @@ import * as ProjectEnrichmentService from "../project/ProjectEnrichmentService.t
 import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
 import * as ProjectService from "../project/ProjectService.ts";
 import * as RepositoryIdentityResolver from "../project/RepositoryIdentityResolver.ts";
-import * as T3ProjectFileLoader from "../project/T3ProjectFileLoader.ts";
+import * as Cod3ProjectFileLoader from "../project/Cod3ProjectFileLoader.ts";
 import {
   makePersistedServerRuntimeState,
   persistServerRuntimeState,
@@ -100,7 +100,7 @@ const withProjectService = <A, E>(
       Layer.provideMerge(ProjectEnrichmentService.layer),
       Layer.provideMerge(RepositoryIdentityResolver.layer),
       Layer.provideMerge(ProjectFaviconResolver.layer),
-      Layer.provideMerge(T3ProjectFileLoader.layer),
+      Layer.provideMerge(Cod3ProjectFileLoader.layer),
       Layer.provideMerge(WorkspacePaths.layer),
       Layer.provideMerge(
         ServerSettings.layer.pipe(
@@ -122,9 +122,9 @@ it.effect(
   "adds, renames, and removes projects, and tracks folders on add, through the V2 project CLI domain",
   () =>
     Effect.gen(function* () {
-      const baseDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-v2-project-cli-"));
+      const baseDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-v2-project-cli-"));
       const workspaceRoot = NodeFS.mkdtempSync(
-        NodePath.join(NodeOS.tmpdir(), "t3-v2-project-workspace-"),
+        NodePath.join(NodeOS.tmpdir(), "cod3-v2-project-workspace-"),
       );
 
       yield* runCli(["project", "add", workspaceRoot, "--title", "Alpha", "--base-dir", baseDir]);
@@ -139,8 +139,10 @@ it.effect(
       assert.deepEqual((yield* readProjects(baseDir)).projects, []);
 
       // Repositories inside the folder are found; `--track` adds one from outside it.
-      const shared = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-v2-project-shared-"));
-      const homeShared = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-v2-project-home-"));
+      const shared = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-v2-project-shared-"));
+      const homeShared = NodeFS.mkdtempSync(
+        NodePath.join(NodeOS.tmpdir(), "cod3-v2-project-home-"),
+      );
       NodeFS.mkdirSync(NodePath.join(workspaceRoot, "api", ".git"), { recursive: true });
       NodeFS.mkdirSync(NodePath.join(workspaceRoot, "notes"));
       yield* runCli([
@@ -167,7 +169,7 @@ it.effect.each(["snapshot", "mutation"] as const)(
   (slowRequest) =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
-      const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-live-project-cli-" });
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-live-project-cli-" });
       const baseDir = NodePath.join(root, "state");
       const workspaceRoot = NodePath.join(root, "workspace");
       yield* fs.makeDirectory(workspaceRoot);
@@ -225,7 +227,7 @@ it.effect.each(["snapshot", "mutation"] as const)(
 it.effect("does not send a token to whatever took over a dead server's port", () =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-dead-project-cli-" });
+    const root = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-dead-project-cli-" });
     const baseDir = NodePath.join(root, "state");
     const workspaceRoot = NodePath.join(root, "workspace");
     yield* fs.makeDirectory(workspaceRoot);
@@ -255,7 +257,7 @@ it.effect("does not send a token to whatever took over a dead server's port", ()
 
 const makeProjectLookupFixture = Effect.fn("ProjectCliTest.makeProjectLookupFixture")(function* () {
   const fs = yield* FileSystem.FileSystem;
-  const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-v2-project-lookup-" });
+  const root = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-v2-project-lookup-" });
   const baseDir = NodePath.join(root, "state");
   const workspaceRoot = NodePath.join(root, "workspace");
   yield* fs.makeDirectory(workspaceRoot);
@@ -534,7 +536,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))(
         const { baseDir, workspaceRoot, project } = yield* makeProjectLookupFixture();
         yield* fs.rename(workspaceRoot, `${workspaceRoot}-removed`);
         const replacementDir = yield* fs.makeTempDirectoryScoped({
-          prefix: "t3-v2-project-empty-",
+          prefix: "cod3-v2-project-empty-",
         });
         const error = yield* runCli([
           "project",

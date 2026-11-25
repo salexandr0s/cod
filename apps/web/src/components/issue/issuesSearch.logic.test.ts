@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/models";
-import { EnvironmentId, ProjectId } from "@t3tools/contracts";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/models";
+import { EnvironmentId, ProjectId } from "@cod3/contracts";
 
 import { issueFilterProjects, issueListTargets, issuesSearchFromUrl } from "./issuesSearch.logic";
 
@@ -66,9 +66,9 @@ describe("issueFilterProjects", () => {
       ({
         id: ProjectId.make(id),
         environmentId,
-        title: "t3code",
+        title: "cod3",
         workspaceRoot: `/work/${id}`,
-        repositoryIdentity: { canonicalKey: "github.com/pingdotgg/t3code" },
+        repositoryIdentity: { canonicalKey: "github.com/pingdotgg/cod3" },
         isScratch,
       }) as unknown as EnvironmentProject;
     const choices = issueFilterProjects(
@@ -76,9 +76,9 @@ describe("issueFilterProjects", () => {
       new Map([[environmentId, "laptop"]]),
     );
     expect(choices.map((choice) => [choice.id, choice.title])).toEqual([
-      ["main", "t3code · laptop · /work/main"],
-      ["scratch", "t3code · laptop · /work/scratch"],
-      ["worktree", "t3code · laptop · /work/worktree"],
+      ["main", "cod3 · laptop · /work/main"],
+      ["scratch", "cod3 · laptop · /work/scratch"],
+      ["worktree", "cod3 · laptop · /work/worktree"],
     ]);
   });
 });

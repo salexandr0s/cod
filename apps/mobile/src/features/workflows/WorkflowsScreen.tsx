@@ -9,8 +9,8 @@ import {
   type WorkflowListTab,
   type WorkflowRunNode,
   type WorkflowRunTone,
-} from "@t3tools/client-runtime/workflows";
-import type { EnvironmentId, WorkflowRunsSnapshot } from "@t3tools/contracts";
+} from "@cod3/client-runtime/workflows";
+import type { EnvironmentId, WorkflowRunsSnapshot } from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import * as Option from "effect/Option";
 import { AsyncResult } from "effect/reactivity";
@@ -67,7 +67,7 @@ export function WorkflowChip(props: { readonly name: string }) {
   const [surface, text] = (CHIP_CLASS[chip.tone % CHIP_CLASS.length] ?? CHIP_CLASS[0]).split(" ");
   return (
     <View className={cn("h-5 w-6 items-center justify-center rounded-md", surface)}>
-      <Text className={cn("font-t3-bold text-3xs", text)}>{chip.letters}</Text>
+      <Text className={cn("font-cod3-bold text-3xs", text)}>{chip.letters}</Text>
     </View>
   );
 }
@@ -88,11 +88,11 @@ function RunRow(props: { readonly node: WorkflowRunNode; readonly onOpen: () => 
         <Text className="min-w-0 flex-1 text-xs text-foreground-muted" numberOfLines={1}>
           {run.workflow}
         </Text>
-        <Text className={cn("font-t3-medium text-xs", WORKFLOW_TONE_CLASS[state.tone])}>
+        <Text className={cn("font-cod3-medium text-xs", WORKFLOW_TONE_CLASS[state.tone])}>
           {state.word}
         </Text>
       </View>
-      <Text className="font-t3-medium text-base text-foreground" numberOfLines={1}>
+      <Text className="font-cod3-medium text-base text-foreground" numberOfLines={1}>
         {run.title}
       </Text>
       <View className="flex-row items-center gap-2">
@@ -126,7 +126,7 @@ function EnvironmentRuns(props: {
   return (
     <View>
       {props.label === null ? null : (
-        <Text className="px-5 pb-1 pt-3 font-t3-medium text-xs text-foreground-muted">
+        <Text className="px-5 pb-1 pt-3 font-cod3-medium text-xs text-foreground-muted">
           {props.label}
         </Text>
       )}

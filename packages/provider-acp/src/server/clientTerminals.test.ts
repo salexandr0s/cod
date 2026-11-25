@@ -8,7 +8,7 @@ import * as TestClock from "effect/testing/TestClock";
 import * as Result from "effect/Result";
 import * as Stream from "effect/Stream";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import {
   makeAcpClientTerminals,
@@ -106,32 +106,32 @@ describe("AcpClientTerminals", () => {
           sessionId === "unknown"
             ? undefined
             : {
-                T3_ACP_MCP_AUTHORIZATION: sessionId === "session-a" ? "token-a" : "token-b",
-                T3CODE_THREAD_ID: sessionId,
+                COD3_ACP_MCP_AUTHORIZATION: sessionId === "session-a" ? "token-a" : "token-b",
+                COD3_THREAD_ID: sessionId,
               },
       });
       yield* Effect.addFinalizer(() => terminals.disposeAll);
-      inheritedEnvironment.T3_TEST_INHERITED = "refreshed";
+      inheritedEnvironment.COD3_TEST_INHERITED = "refreshed";
 
       for (const [sessionId, expected] of [
-        ["session-a", "token-a||session-a|refreshed|T3_TEST_OVERRIDE=request"],
-        ["session-b", "token-b||session-b|refreshed|T3_TEST_OVERRIDE=request"],
-        ["unknown", "|||refreshed|T3_TEST_OVERRIDE=inherited"],
+        ["session-a", "token-a||session-a|refreshed|COD3_TEST_OVERRIDE=request"],
+        ["session-b", "token-b||session-b|refreshed|COD3_TEST_OVERRIDE=request"],
+        ["unknown", "|||refreshed|COD3_TEST_OVERRIDE=inherited"],
       ] as const) {
         const created = yield* terminals.create({
           sessionId,
           command: process.execPath,
           args: [
             "-e",
-            "const env = process.env; process.stdout.write([env.T3_ACP_MCP_AUTHORIZATION ?? '', env.t3_Acp_Mcp_Endpoint ?? '', env.T3CODE_THREAD_ID ?? '', env.T3_TEST_INHERITED, ...Object.keys(env).filter((name) => name.toUpperCase() === 'T3_TEST_OVERRIDE').map((name) => name + '=' + env[name])].join('|'))",
+            "const env = process.env; process.stdout.write([env.COD3_ACP_MCP_AUTHORIZATION ?? '', env.cod3_Acp_Mcp_Endpoint ?? '', env.COD3_THREAD_ID ?? '', env.COD3_TEST_INHERITED, ...Object.keys(env).filter((name) => name.toUpperCase() === 'COD3_TEST_OVERRIDE').map((name) => name + '=' + env[name])].join('|'))",
           ],
           ...(sessionId === "unknown"
             ? {}
             : {
                 env: [
-                  { name: "T3_TEST_OVERRIDE", value: "first" },
-                  { name: "t3_Test_Override", value: "second" },
-                  { name: "T3_TEST_OVERRIDE", value: "request" },
+                  { name: "COD3_TEST_OVERRIDE", value: "first" },
+                  { name: "cod3_Test_Override", value: "second" },
+                  { name: "COD3_TEST_OVERRIDE", value: "request" },
                 ],
               }),
         });
@@ -142,11 +142,11 @@ describe("AcpClientTerminals", () => {
     }).pipe(
       Effect.provideService(HostProcess.Environment, {
         ...process.env,
-        T3_ACP_MCP_AUTHORIZATION: "launching-thread-token",
-        t3_Acp_Mcp_Endpoint: "launching-thread-endpoint",
-        T3CODE_THREAD_ID: "launching-thread",
-        T3_TEST_INHERITED: "kept",
-        T3_TEST_OVERRIDE: "inherited",
+        COD3_ACP_MCP_AUTHORIZATION: "launching-thread-token",
+        cod3_Acp_Mcp_Endpoint: "launching-thread-endpoint",
+        COD3_THREAD_ID: "launching-thread",
+        COD3_TEST_INHERITED: "kept",
+        COD3_TEST_OVERRIDE: "inherited",
       }),
       // Exercise Windows' case-insensitive variable names on every OS.
       Effect.provideService(HostProcess.Platform, "win32"),
@@ -159,12 +159,12 @@ describe("AcpClientTerminals", () => {
       const terminals = yield* makeAcpClientTerminals({
         defaultCwd: process.cwd(),
         shellCommands: true,
-        environmentForSession: () => ({ T3_ACP_MCP_NODE: "mailbox-probe" }),
+        environmentForSession: () => ({ COD3_ACP_MCP_NODE: "mailbox-probe" }),
       });
       yield* Effect.addFinalizer(() => terminals.disposeAll);
       const terminal = yield* terminals.create({
         sessionId: "devin",
-        command: 'printf "%s\\n" "$T3_ACP_MCP_NODE" | tr a-z A-Z',
+        command: 'printf "%s\\n" "$COD3_ACP_MCP_NODE" | tr a-z A-Z',
       });
       const exit = yield* terminals.waitForExit({ sessionId: "devin", ...terminal });
       const output = yield* terminals.output({ sessionId: "devin", ...terminal });
@@ -510,14 +510,14 @@ describe("resolveEmbeddedTerminalContent", () => {
         toolCallId: "call-1",
         content: [
           { type: "content" as const, content: { type: "text" as const, text: "before" } },
-          { type: "terminal" as const, terminalId: "t3-term-1" },
-          { type: "terminal" as const, terminalId: "t3-term-unknown" },
+          { type: "terminal" as const, terminalId: "cod3-term-1" },
+          { type: "terminal" as const, terminalId: "cod3-term-unknown" },
         ],
       },
     };
 
     const resolved = resolveEmbeddedTerminalContent(notification, (sessionId, terminalId) =>
-      sessionId === "session" && terminalId === "t3-term-1"
+      sessionId === "session" && terminalId === "cod3-term-1"
         ? { output: "compiled 3 files", truncated: false, exitStatus: undefined }
         : undefined,
     );
@@ -526,7 +526,7 @@ describe("resolveEmbeddedTerminalContent", () => {
       content: [
         { type: "content", content: { type: "text", text: "before" } },
         { type: "content", content: { type: "text", text: "compiled 3 files" } },
-        { type: "content", content: { type: "text", text: "[terminal t3-term-unknown]" } },
+        { type: "content", content: { type: "text", text: "[terminal cod3-term-unknown]" } },
       ],
     });
   });

@@ -1,9 +1,6 @@
 import type { FileDiffContentsLoader, FileDiffMetadata } from "@pierre/diffs";
-import {
-  excerptExpansionOldContents,
-  type DiffRow,
-} from "@t3tools/client-runtime/review-guide-tour";
-import type { PullRequestReviewGuideExcerpt } from "@t3tools/contracts";
+import { excerptExpansionOldContents, type DiffRow } from "@cod3/client-runtime/review-guide-tour";
+import type { PullRequestReviewGuideExcerpt } from "@cod3/contracts";
 
 // Other hunks shift old-side context; expand against an excerpt-matching old side.
 // Loads with the source file's diff, which the loaded contents must reproduce.

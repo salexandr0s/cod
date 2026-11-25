@@ -1,5 +1,5 @@
-import type { ProviderDriverKind, ProviderOptionDescriptor } from "@t3tools/contracts";
-import { getProviderOptionCurrentValue } from "@t3tools/shared/model";
+import type { ProviderDriverKind, ProviderOptionDescriptor } from "@cod3/contracts";
+import { getProviderOptionCurrentValue } from "@cod3/shared/model";
 import { msg, T } from "gt-react";
 import { ZapIcon } from "lucide-react";
 import { m, type MessageResolver } from "~/i18n/messages";

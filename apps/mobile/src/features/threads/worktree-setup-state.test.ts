@@ -1,5 +1,5 @@
-import { ThreadId, type WorktreeSetupSnapshot } from "@t3tools/contracts";
-import { resolveVisibleWorktreeSetup } from "@t3tools/client-runtime/worktree-setup";
+import { ThreadId, type WorktreeSetupSnapshot } from "@cod3/contracts";
+import { resolveVisibleWorktreeSetup } from "@cod3/client-runtime/worktree-setup";
 import { describe, expect, it } from "vite-plus/test";
 import * as DateTime from "effect/DateTime";
 import { resolveWorktreeSetupSnapshot } from "./worktree-setup-state";

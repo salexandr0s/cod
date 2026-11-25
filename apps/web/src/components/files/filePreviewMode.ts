@@ -1,6 +1,6 @@
-import type { AssetResource, ProjectReadFileError, ScopedThreadRef } from "@t3tools/contracts";
-import { mediaFileReference } from "@t3tools/client-runtime/media-reference";
-import { isHostPath, workspaceRelativeFilePath } from "@t3tools/shared/path";
+import type { AssetResource, ProjectReadFileError, ScopedThreadRef } from "@cod3/contracts";
+import { mediaFileReference } from "@cod3/client-runtime/media-reference";
+import { isHostPath, workspaceRelativeFilePath } from "@cod3/shared/path";
 import { msg } from "gt-react";
 
 import { m, type MessageResolver } from "~/i18n/messages";

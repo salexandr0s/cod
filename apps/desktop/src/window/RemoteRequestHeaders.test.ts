@@ -6,14 +6,14 @@ import {
 } from "./RemoteRequestHeaders.ts";
 
 const packagedPolicy: MainWindowRequestHeaderPolicy = {
-  desktopOrigin: "t3code://app",
+  desktopOrigin: "cod3://app",
   mainWebContentsId: 42,
   clerkFrontendApiHostname: "clerk.t3.codes",
   isDevelopment: false,
 };
 
 const devPolicy: MainWindowRequestHeaderPolicy = {
-  desktopOrigin: "t3code-dev://app",
+  desktopOrigin: "cod3-dev://app",
   mainWebContentsId: 42,
   clerkFrontendApiHostname: "clerk.t3.codes",
   devServerOrigin: "http://devbox.internal:5733",
@@ -22,7 +22,7 @@ const devPolicy: MainWindowRequestHeaderPolicy = {
 
 describe("RemoteRequestHeaders", () => {
   it.each([
-    "https://remote.example.com/.well-known/t3/environment",
+    "https://remote.example.com/.well-known/cod3/environment",
     "http://127.0.0.1:8080/api/auth/bootstrap",
     "ws://127.0.0.1:8080/ws?ticket=abc",
     "wss://remote.example.com/ws?ticket=abc",
@@ -32,7 +32,7 @@ describe("RemoteRequestHeaders", () => {
       webContentsId: 42,
       frame: { parent: null },
       requestHeaders: {
-        Origin: "t3code://app",
+        Origin: "cod3://app",
         "Sec-Fetch-Site": "cross-site",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Dest": "empty",
@@ -54,7 +54,7 @@ describe("RemoteRequestHeaders", () => {
       webContentsId: 42,
       frame: null,
       requestHeaders: {
-        origin: "t3code://app",
+        origin: "cod3://app",
         "Sec-Fetch-Site": "cross-site",
         Upgrade: "websocket",
       },
@@ -72,7 +72,7 @@ describe("RemoteRequestHeaders", () => {
         webContentsId: 42,
         frame: { parent: null },
         requestHeaders: {
-          Origin: "t3code://app",
+          Origin: "cod3://app",
           "Sec-Fetch-Site": "cross-site",
         },
       });
@@ -96,7 +96,7 @@ describe("RemoteRequestHeaders", () => {
           webContentsId: 42,
           frame: { parent: null },
           requestHeaders: {
-            Origin: "t3code-dev://app",
+            Origin: "cod3-dev://app",
             "Sec-Fetch-Site": "cross-site",
           },
         }),
@@ -113,7 +113,7 @@ describe("RemoteRequestHeaders", () => {
           webContentsId: 42,
           frame: { parent: null },
           requestHeaders: {
-            Origin: "t3code-dev://app",
+            Origin: "cod3-dev://app",
             "Sec-Fetch-Site": "cross-site",
             "Content-Type": "application/json",
           },
@@ -142,7 +142,7 @@ describe("RemoteRequestHeaders", () => {
         webContentsId: 42,
         frame: { parent: {} },
         requestHeaders: {
-          Origin: "t3code://app",
+          Origin: "cod3://app",
           "Sec-Fetch-Site": "cross-site",
         },
       }),
@@ -154,7 +154,7 @@ describe("RemoteRequestHeaders", () => {
         webContentsId: 99,
         frame: { parent: null },
         requestHeaders: {
-          Origin: "t3code://app",
+          Origin: "cod3://app",
           "Sec-Fetch-Site": "cross-site",
         },
       }),
@@ -166,7 +166,7 @@ describe("RemoteRequestHeaders", () => {
         webContentsId: undefined,
         frame: null,
         requestHeaders: {
-          Origin: "t3code://app",
+          Origin: "cod3://app",
           "Sec-Fetch-Site": "cross-site",
         },
       }),

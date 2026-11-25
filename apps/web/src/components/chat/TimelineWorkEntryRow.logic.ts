@@ -3,8 +3,8 @@ import type { MarkdownExtensions } from "~/markdown/wordsHast";
 import {
   resolveWorkEntryToolPresentation,
   toolGroupAction,
-} from "@t3tools/client-runtime/work-log/presentation";
-import { isJavaScriptReplTool } from "@t3tools/shared/toolActivity";
+} from "@cod3/client-runtime/work-log/presentation";
+import { isJavaScriptReplTool } from "@cod3/shared/toolActivity";
 import { formatWorkspaceRelativePath } from "../../filePathDisplay";
 import { m, type MessageResolver } from "../../i18n/messages";
 import { type TimelineWorkEntry, type TimelineRow } from "./timelineRowContext";
@@ -28,7 +28,7 @@ export function toolGroupSummaryIconName(
     case "command":
       return "terminal";
     case "thread-create":
-      return "t3-code";
+      return "cod3";
     case "browser":
       return "browser";
     case "device":
@@ -165,7 +165,7 @@ export function workEntryIconName(workEntry: TimelineWorkEntry): WorkEntryIconNa
       case "background_task":
         return "zap";
       case "system":
-        return "t3-code";
+        return "cod3";
       default:
         source satisfies never;
         return "zap";

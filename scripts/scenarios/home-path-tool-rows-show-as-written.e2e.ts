@@ -4,8 +4,8 @@ import * as NodePath from "node:path";
 
 import { expect } from "e2e";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 const HOME_PATH = "~/.claude/CLAUDE.md";
 const REPLY = "Updated your global instructions.";
@@ -56,10 +56,10 @@ for await (const line of createInterface({ input: process.stdin })) {
 test(
   "Files an agent read and edited in the home folder show their ~/ paths, not paths under the project",
   WEB,
-  async ({ t3, app, screen }) => {
-    const project = await t3.project("demo");
+  async ({ cod3, app, screen }) => {
+    const project = await cod3.project("demo");
     const script = NodePath.join(project, "home-path-acp.mjs");
-    const settingsPath = NodePath.join(T3_HOME, "userdata/settings.json");
+    const settingsPath = NodePath.join(COD3_HOME, "userdata/settings.json");
     const originalSettings = await NodeFSP.readFile(settingsPath, "utf8");
     const settings = JSON.parse(originalSettings);
     await NodeFSP.writeFile(script, ACP);
@@ -71,7 +71,7 @@ test(
     };
     try {
       await NodeFSP.writeFile(settingsPath, JSON.stringify(settings));
-      const { cli } = makeState(T3_HOME);
+      const { cli } = makeState(COD3_HOME);
       // The watcher reloads settings asynchronously. Retry only before a thread was created.
       let threadId: string | undefined;
       for (let attempt = 0; attempt < 8 && threadId === undefined; attempt++) {
@@ -99,7 +99,7 @@ test(
       }
       if (threadId === undefined) throw new Error("Could not start the home path turn.");
 
-      await t3.open({ threadId });
+      await cod3.open({ threadId });
       await screen.getByText(REPLY, { exact: true }).waitFor({ timeout: 60_000 });
       await screen.getByRole("button", "Worked for", { exact: false }).tap();
       await screen.getByRole("button", "Read 1 file and changed 1 file").tap();

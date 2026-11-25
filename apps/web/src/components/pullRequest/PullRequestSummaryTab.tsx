@@ -1,8 +1,8 @@
 import { pullRequestCommentPreview } from "./pullRequestMarkdown.logic";
-import { parsePullRequestAnchor } from "@t3tools/shared/pullRequestAnchor";
+import { parsePullRequestAnchor } from "@cod3/shared/pullRequestAnchor";
 import { holdLinkedNodeInView } from "./holdLinkedNodeInView";
 import { useAtomValue } from "@effect/atom-react";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { useAtomCommand } from "~/state/use-atom-command";
 import {
   type EnvironmentId,
@@ -12,7 +12,7 @@ import {
   type PullRequestConversationThread,
   type ScopedThreadRef,
   pullRequestConversationThreads,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   ArrowDownUpIcon,
   ChevronDownIcon,
@@ -86,8 +86,8 @@ import {
   settleDescriptionSave,
   startDescriptionSave,
   type DescriptionDraft,
-} from "@t3tools/client-runtime/pull-request-editing";
-import { setMarkdownTaskChecked } from "@t3tools/shared/markdownTaskEdits";
+} from "@cod3/client-runtime/pull-request-editing";
+import { setMarkdownTaskChecked } from "@cod3/shared/markdownTaskEdits";
 import { PullRequestMarkdown } from "./PullRequestMarkdown";
 import { PullRequestCommentBody } from "./PullRequestCommentBody";
 import { PullRequestMoreReplies } from "./PullRequestMoreReplies";
@@ -97,7 +97,7 @@ import {
   pullRequestCompletionScope,
 } from "./PullRequestMarkdownTextarea";
 import { PullRequestReactionBar } from "./PullRequestReactions";
-import { canReactPullRequestComment } from "@t3tools/client-runtime/pull-request-reactions";
+import { canReactPullRequestComment } from "@cod3/client-runtime/pull-request-reactions";
 import { PullRequestResolveThreadButton } from "./PullRequestResolveThreadButton";
 import { PullRequestConversationGhost } from "./PullRequestGhosts";
 import { sectionCollapseAnchorScrollTop } from "./pullRequestSummaryScroll.logic";
@@ -461,7 +461,7 @@ export function PullRequestSection({
 
 const COMMENT_PAGE = 10;
 
-const COMMENT_FILTER_STORAGE_KEY = "t3code:pull-request-comment-filter:v1";
+const COMMENT_FILTER_STORAGE_KEY = "cod3:pull-request-comment-filter:v1";
 const CommentFilterSchema = Schema.Struct({ bots: Schema.Boolean, resolved: Schema.Boolean });
 const DEFAULT_COMMENT_FILTER: typeof CommentFilterSchema.Type = { bots: false, resolved: false };
 
@@ -669,12 +669,12 @@ export function PullRequestSummaryTab({
     onRevealSettled?.(revealUrl);
   });
   const editingDescription = bodyScope?.url === detail.url;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- scrolls to a linked section, description or heading once it renders
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- scrolls to a linked section, description or heading once it renders
   useEffect(() => {
     revealSummary();
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- retries once the description markdown renders, including after its editor closes
   }, [revealUrl, description, checksReveals, descriptionReveals, editingDescription]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- the hold observes DOM outside React and must end with the tab
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- the hold observes DOM outside React and must end with the tab
   useEffect(() => () => stopHolding.current?.(), []);
   // Checkbox ticks and the editor share one draft, so each starts from the other's latest body.
   const saveDescription = async (body: string) => {

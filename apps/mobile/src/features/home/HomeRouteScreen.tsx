@@ -7,8 +7,8 @@ import { useMemo, useState } from "react";
 import { Platform } from "react-native";
 import { useGT, useMessages } from "gt-react-native";
 
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import { pickableProjectGroups } from "@t3tools/client-runtime/state/project-grouping";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { pickableProjectGroups } from "@cod3/client-runtime/state/project-grouping";
 
 import { useProjects } from "../../state/entities";
 import { steadyNavigationThreadShellsAtom } from "../../state/threads";
@@ -164,7 +164,7 @@ export function HomeRouteScreen() {
     <AndroidHomeFabLayout onStartNewTask={startNewTask}>
       <>
         <WorkspaceListHeader
-          accessibilityLabel={gt("T3 Code, Threads")}
+          accessibilityLabel={gt("cod3, Threads")}
           onOpenEnvironments={() => openSettings(navigation, "SettingsEnvironments")}
           search={{
             value: searchQuery,

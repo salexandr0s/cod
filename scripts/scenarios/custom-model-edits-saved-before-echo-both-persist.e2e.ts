@@ -6,8 +6,8 @@ import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 const SettingsJson = Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown));
 const decodeSettings = Schema.decodeEffect(SettingsJson);
@@ -30,7 +30,7 @@ declare global {
 
 const settingsFile = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
-  const settingsPath = (yield* Path.Path).join(T3_HOME, "userdata/settings.json");
+  const settingsPath = (yield* Path.Path).join(COD3_HOME, "userdata/settings.json");
   const original = yield* fs.readFileString(settingsPath);
   const settings = yield* decodeSettings(original);
   const instances = settings.providerInstances as Record<string, CodexInstance>;
@@ -65,7 +65,7 @@ const settingsFile = Effect.gen(function* () {
 test(
   "Two custom model edits saved before the first one's settings echo both persist",
   WEB,
-  async ({ t3, app, browser, screen }) => {
+  async ({ cod3, app, browser, screen }) => {
     // Holds the server config stream while active, so a save's reply arrives before its settings
     // echo, and records settings save replies by request id.
     await browser.addInitScript(() => {
@@ -138,7 +138,7 @@ test(
     const settings = await runPromise(settingsFile);
     try {
       await runPromise(settings.seed);
-      await t3.open("/settings/providers?instanceId=codex");
+      await cod3.open("/settings/providers?instanceId=codex");
       await expect(screen.getByRole("button", "Edit model-a", { exact: true })).toBeVisible();
 
       const before = await saveReplies();

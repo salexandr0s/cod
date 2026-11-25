@@ -1,18 +1,18 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import {
   parsePullRequestAnchor,
   pullRequestAnchorMatchesUrl,
   resolvePullRequestReviewAnchor,
-} from "@t3tools/shared/pullRequestAnchor";
+} from "@cod3/shared/pullRequestAnchor";
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
 import { useAtomRefresh } from "@effect/atom-react";
 import { useFocusEffect, useNavigation, type StaticScreenProps } from "@react-navigation/native";
 import {
   type AtomCommandResult,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { AsyncResult } from "effect/reactivity";
-import { pullRequestConversationThreads, type PullRequestThreadComment } from "@t3tools/contracts";
+import { pullRequestConversationThreads, type PullRequestThreadComment } from "@cod3/contracts";
 import { T, useGT, useMessages } from "gt-react-native";
 import { useRef, useState } from "react";
 import { ScrollView, View, type ScrollViewInstance } from "react-native";
@@ -264,7 +264,7 @@ function Discussion({ params }: { params: PullRequestParams & { readonly discuss
               >
                 <View className="flex-row items-center gap-2">
                   <PullRequestAvatar actor={comment.author} size={28} />
-                  <Text className="min-w-0 flex-1 text-sm font-t3-medium">
+                  <Text className="min-w-0 flex-1 text-sm font-cod3-medium">
                     {comment.author?.login ?? gt("Unknown author")}
                   </Text>
                   <Text className="text-2xs text-foreground-muted">

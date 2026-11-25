@@ -1,6 +1,6 @@
-import type { EnvironmentConnectionPhase } from "@t3tools/client-runtime/connection";
-import { EnvironmentId, type KeybindingRule, type ServerConfig } from "@t3tools/contracts";
-import { compileResolvedKeybindingsConfig } from "@t3tools/shared/keybindings";
+import type { EnvironmentConnectionPhase } from "@cod3/client-runtime/connection";
+import { EnvironmentId, type KeybindingRule, type ServerConfig } from "@cod3/contracts";
+import { compileResolvedKeybindingsConfig } from "@cod3/shared/keybindings";
 import { Atom, AtomRegistry } from "effect/reactivity";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 

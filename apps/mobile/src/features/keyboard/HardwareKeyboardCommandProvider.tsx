@@ -1,7 +1,7 @@
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { msg, useMessages } from "gt-react-native";
 import { Platform } from "react-native";
-import { resolveThreadReferenceCopyTarget } from "@t3tools/client-runtime/thread-reference";
+import { resolveThreadReferenceCopyTarget } from "@cod3/client-runtime/thread-reference";
 import {
   createContext,
   use,
@@ -21,7 +21,7 @@ import {
   firstWorkspaceDetailOpen,
   workspaceHasColumns,
 } from "../layout/workspace/workspace-selection-store";
-import { T3KeyboardCommands } from "../../native/T3KeyboardCommands";
+import { Cod3KeyboardCommands } from "../../native/Cod3KeyboardCommands";
 import { useThreadShell } from "../../state/entities";
 import type { GitActionProgress } from "../../state/use-vcs-action-state";
 import { GitActionProgressOverlay } from "../threads/GitActionProgressOverlay";
@@ -96,7 +96,7 @@ export function HardwareKeyboardCommandProvider({
       setCopyFeedback(EMPTY_COPY_FEEDBACK);
     }, COPY_FEEDBACK_DISMISS_MS);
   }, []);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears the copy feedback timer on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears the copy feedback timer on unmount
   useEffect(
     () => () => {
       if (copyFeedbackTimerRef.current !== null) {
@@ -201,9 +201,9 @@ export function HardwareKeyboardCommandProvider({
 
   return (
     <CommandPaletteContext value={palette}>
-      <T3KeyboardCommands enabledCommands={enabledCommands} onCommand={onCommand}>
+      <Cod3KeyboardCommands enabledCommands={enabledCommands} onCommand={onCommand}>
         {children}
-      </T3KeyboardCommands>
+      </Cod3KeyboardCommands>
       <GitActionProgressOverlay progress={copyFeedback} onDismiss={dismissCopyFeedback} />
     </CommandPaletteContext>
   );

@@ -5,7 +5,7 @@ import {
   AuthEnvironmentBootstrapTokenType,
   AuthAccessTokenType,
   EnvironmentHttpApi,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { expect, it } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -43,7 +43,7 @@ const layerConfig = Layer.effect(
       devAuthToken: Redacted.make(DEV_TOKEN),
     } satisfies ServerConfig.ServerConfig["Service"];
   }),
-).pipe(Layer.provide(ServerConfig.layerTest(process.cwd(), { prefix: "t3-auth-http-test-" })));
+).pipe(Layer.provide(ServerConfig.layerTest(process.cwd(), { prefix: "cod3-auth-http-test-" })));
 
 const layerEnvironmentAuth = EnvironmentAuth.layer.pipe(
   Layer.provide(ManagedPolicy.layerTest()),
@@ -119,11 +119,11 @@ it.effect("sets the selected browser session cookies through the HTTP route", ()
           expect(await retiredScopeResponse.json()).toMatchObject({ reason: "invalid_scope" });
 
           const devCookies = devResponse.headers.getSetCookie();
-          const devCookie = devCookies.find((cookie) => cookie.startsWith("t3_dev_session_"));
+          const devCookie = devCookies.find((cookie) => cookie.startsWith("cod3_dev_session_"));
           expect(devCookie).toContain("HttpOnly");
           expect(devCookie).toContain(`=${DEV_TOKEN};`);
           expect(devCookies).toContainEqual(
-            expect.stringMatching(/^t3_session_[^=]*=;.*Max-Age=0/),
+            expect.stringMatching(/^cod3_session_[^=]*=;.*Max-Age=0/),
           );
           expect(devCookies.filter((cookie) => /;\s*Secure/i.test(cookie))).toEqual([]);
           const httpsResponse = await environmentA.handler(
@@ -164,8 +164,8 @@ it.effect("sets the selected browser session cookies through the HTTP route", ()
           expect(restrictedResponse.status).toBe(200);
           const restrictedCookies = restrictedResponse.headers.getSetCookie();
           expect(restrictedCookies).toHaveLength(1);
-          expect(restrictedCookies[0]).toMatch(/^t3_session_/);
-          expect(restrictedCookies[0]).not.toContain("t3_dev_session_");
+          expect(restrictedCookies[0]).toMatch(/^cod3_session_/);
+          expect(restrictedCookies[0]).not.toContain("cod3_dev_session_");
         }),
       ([environmentA, environmentB]) =>
         Effect.promise(() => Promise.all([environmentA.dispose(), environmentB.dispose()])),

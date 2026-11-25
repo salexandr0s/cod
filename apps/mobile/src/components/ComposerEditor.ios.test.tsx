@@ -24,7 +24,7 @@ interface NativeProps {
   readonly onComposerChange: (event: { readonly nativeEvent: NativeEvent }) => void;
 }
 
-// Mirrors the iOS editor's revision and reset bookkeeping (T3ComposerEditorView.setControlledDocumentJson).
+// Mirrors the iOS editor's revision and reset bookkeeping (Cod3ComposerEditorView.setControlledDocumentJson).
 const native = vi.hoisted(() => ({
   text: "",
   eventCount: 0,
@@ -101,7 +101,7 @@ function emit(value: string, resetGeneration = native.resetGeneration) {
 
 vi.mock("expo", () => ({ requireNativeView: () => NativeView }));
 // Vite resolves the platform-neutral module; the race lives in the iOS editor.
-vi.mock("../native/T3ComposerEditor", () => import("../native/T3ComposerEditor.ios"));
+vi.mock("../native/Cod3ComposerEditor", () => import("../native/Cod3ComposerEditor.ios"));
 vi.mock("react-native", () => ({ StyleSheet: { flatten: (style: unknown) => style } }));
 vi.mock("expo-file-system", () => ({
   Directory: class {
@@ -135,7 +135,7 @@ vi.mock("../lib/uuid", () => ({ uuidv4: () => "uuid", randomHex: () => "0000" })
 vi.mock("../state/assets", () => ({ assetEnvironment: {} }));
 vi.mock("../state/attachments", () => ({ attachmentEnvironment: {} }));
 vi.mock("../state/session", () => ({ environmentSession: {} }));
-vi.mock("@t3tools/client-runtime/state/runtime", () => ({
+vi.mock("@cod3/client-runtime/state/runtime", () => ({
   createEnvironmentRpcCommand: () => Symbol("rpc-command"),
   settlePromise: vi.fn(),
   squashAtomCommandFailure: vi.fn(),
@@ -149,7 +149,7 @@ import {
   useComposerDraft,
 } from "../state/use-composer-drafts";
 import { ComposerEditor } from "./ComposerEditor";
-import type { ComposerEditorHandle } from "../native/T3ComposerEditor.types";
+import type { ComposerEditorHandle } from "../native/Cod3ComposerEditor.types";
 
 const DRAFT_KEY = "environment:thread";
 

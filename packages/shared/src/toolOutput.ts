@@ -1,7 +1,7 @@
 import {
   isProviderSendTurnSupportedImageMimeType,
   PROVIDER_SEND_TURN_MAX_IMAGE_BYTES,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Predicate from "effect/Predicate";
 
 import {
@@ -15,7 +15,7 @@ import {
   readMcpAppReference,
   type McpAppReference,
 } from "./mcpApp.ts";
-import { resolveT3McpToolId } from "./t3McpToolPresentation.ts";
+import { resolveCod3McpToolId } from "./cod3McpToolPresentation.ts";
 
 export const SEND_TO_USER_TOOL_NAME = "send_to_user";
 // 4,000 UTF-16 units stay inside MAX_PARSED_BYTES even as 3-byte characters.
@@ -206,7 +206,7 @@ export function compactDynamicToolOutput(value: unknown): CompactToolOutput | un
   return Object.keys(output).length === 0 ? undefined : output;
 }
 
-// OpenCode 2 Code Mode reports a script's nested T3 tool calls as one item with the script's result.
+// OpenCode 2 Code Mode reports a script's nested cod3 tool calls as one item with the script's result.
 const OPENCODE_CODE_MODE_TOOL_NAME = "execute";
 
 export function htmlRenderFromToolItem(item: {
@@ -215,7 +215,7 @@ export function htmlRenderFromToolItem(item: {
 }): HtmlRenderReference | undefined {
   if (
     item.toolName !== OPENCODE_CODE_MODE_TOOL_NAME &&
-    resolveT3McpToolId(item.toolName) !== HTML_RENDER_TOOL_NAME
+    resolveCod3McpToolId(item.toolName) !== HTML_RENDER_TOOL_NAME
   ) {
     return undefined;
   }
@@ -230,7 +230,7 @@ export function sentMessageFromToolItem(item: {
 }): string | undefined {
   if (
     item.toolName !== OPENCODE_CODE_MODE_TOOL_NAME &&
-    resolveT3McpToolId(item.toolName) !== SEND_TO_USER_TOOL_NAME
+    resolveCod3McpToolId(item.toolName) !== SEND_TO_USER_TOOL_NAME
   ) {
     return undefined;
   }
@@ -243,7 +243,7 @@ export function previewRecordingIdFromToolItem(item: {
   readonly toolName: string | null | undefined;
   readonly output?: unknown;
 }): string | undefined {
-  if (resolveT3McpToolId(item.toolName) !== "preview_recording_stop") return undefined;
+  if (resolveCod3McpToolId(item.toolName) !== "preview_recording_stop") return undefined;
   const budget: ResultReadBudget = {
     remainingBytes: MAX_PARSED_BYTES,
     remainingNodes: MAX_ENVELOPE_NODES,
@@ -254,14 +254,14 @@ export function previewRecordingIdFromToolItem(item: {
 }
 
 /**
- * Compact structured result a T3 MCP tool carries on its turn item.
+ * Compact structured result a cod3 MCP tool carries on its turn item.
  * Preserves every metadata field clients, summaries, and attachment retention read.
  */
-export function compactT3McpToolOutput(
+export function compactCod3McpToolOutput(
   toolName: string | null | undefined,
   value: unknown,
 ): Record<string, unknown> | undefined {
-  const resolved = resolveT3McpToolId(toolName);
+  const resolved = resolveCod3McpToolId(toolName);
   if (resolved === null) return undefined;
   const compact = compactDynamicToolOutput(value);
   if (resolved === "preview_recording_stop" && !compact?.isError) {

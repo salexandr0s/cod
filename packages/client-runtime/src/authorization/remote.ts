@@ -7,9 +7,9 @@ import {
   type AuthEnvironmentScope,
   type AuthWebSocketTicketResult,
   type AuthWebSocketTicketUse,
-} from "@t3tools/contracts";
-import { encodeOAuthScope } from "@t3tools/shared/oauthScope";
-import { hashTelemetryId } from "@t3tools/shared/telemetryId";
+} from "@cod3/contracts";
+import { encodeOAuthScope } from "@cod3/shared/oauthScope";
+import { hashTelemetryId } from "@cod3/shared/telemetryId";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Redacted from "effect/Redacted";
@@ -49,7 +49,7 @@ export interface ClientOwnerParams {
 }
 
 /**
- * Tells the environment, for analytics, which T3 Connect account and device
+ * Tells the environment, for analytics, which cod3 Connect account and device
  * are connecting, so it can count the environment as theirs.
  */
 export const readClientOwnerParams = Effect.gen(function* () {

@@ -6,8 +6,8 @@ import {
   ProjectId,
   ProviderInstanceId,
   ThreadId,
-} from "@t3tools/contracts";
-import { attachmentUploadError } from "@t3tools/client-runtime/state/attachment-uploads";
+} from "@cod3/contracts";
+import { attachmentUploadError } from "@cod3/client-runtime/state/attachment-uploads";
 import * as Effect from "effect/Effect";
 import * as Cause from "effect/Cause";
 import { AsyncResult, type Atom } from "effect/reactivity";
@@ -276,7 +276,7 @@ describe("queued PR checkout", () => {
     });
   const preparedCheckout = {
     branch: "pr-123",
-    worktreePath: "/repo/.t3/worktrees/pr-123",
+    worktreePath: "/repo/.cod3/worktrees/pr-123",
     isOnPullRequestHead: true,
   };
 
@@ -612,7 +612,7 @@ describe("queued task whose launch reply is lost", () => {
     state.checkout.mockResolvedValueOnce(
       AsyncResult.success({
         branch: "pr-123",
-        worktreePath: "/repo/.t3/worktrees/pr-123",
+        worktreePath: "/repo/.cod3/worktrees/pr-123",
         isOnPullRequestHead: true,
       }),
     );
@@ -627,7 +627,7 @@ describe("queued task whose launch reply is lost", () => {
 
     expect(state.checkout).toHaveBeenCalledOnce();
     const [first, resent] = state.start.mock.calls.map(([call]) => call.input);
-    expect(resent.bootstrap.createThread.worktreePath).toBe("/repo/.t3/worktrees/pr-123");
+    expect(resent.bootstrap.createThread.worktreePath).toBe("/repo/.cod3/worktrees/pr-123");
     expect(resent.bootstrap).toEqual(first.bootstrap);
     expect(remaining()).toEqual([]);
   });

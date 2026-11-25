@@ -10,22 +10,22 @@ import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import { createModelSelection } from "@t3tools/shared/model";
+import { createModelSelection } from "@cod3/shared/model";
 import { expect } from "vite-plus/test";
-import { ProviderInstanceId } from "@t3tools/contracts";
-import { GrokSettings } from "@t3tools/provider-grok/settings";
+import { ProviderInstanceId } from "@cod3/contracts";
+import { GrokSettings } from "@cod3/provider-grok/settings";
 
 import * as ServerConfig from "../config.ts";
 import * as TextGeneration from "./TextGeneration.ts";
-import { makeGrokTextGeneration } from "@t3tools/provider-grok/testing";
-import { execScriptSource, writeFakeCli } from "@t3tools/provider-testing/fakeCli";
+import { makeGrokTextGeneration } from "@cod3/provider-grok/testing";
+import { execScriptSource, writeFakeCli } from "@cod3/provider-testing/fakeCli";
 const decodeGrokSettings = Schema.decodeSync(GrokSettings);
 
 const __dirname = NodePath.dirname(NodeURL.fileURLToPath(import.meta.url));
 const mockAgentPath = NodePath.join(__dirname, "../provider/testFixtures/grok-text-mock-agent.mjs");
 
 const layerGrokTextGenerationTest = ServerConfig.ServerConfig.layerTest(process.cwd(), {
-  prefix: "t3code-grok-text-generation-test-",
+  prefix: "cod3-grok-text-generation-test-",
 }).pipe(Layer.provideMerge(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer)));
 
 function makeAcpGrokWrapper(dir: string, env: Record<string, string>): string {
@@ -45,7 +45,7 @@ function withFakeAcpGrok<A, E, R>(
   effectFn: (textGeneration: TextGeneration.TextGeneration["Service"]) => Effect.Effect<A, E, R>,
 ) {
   return Effect.gen(function* () {
-    const tempDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3code-grok-text-acp-"));
+    const tempDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-grok-text-acp-"));
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
         NodeFS.rmSync(tempDir, { recursive: true, force: true });
@@ -75,16 +75,14 @@ function readJsonRpcRequests(filePath: string): ReadonlyArray<{
 
 it.layer(layerGrokTextGenerationTest)("GrokTextGeneration", (it) => {
   it.effect("uses ACP with disabled tool capabilities and forwards the requested model id", () => {
-    const requestLogDir = NodeFS.mkdtempSync(
-      NodePath.join(NodeOS.tmpdir(), "t3code-grok-text-log-"),
-    );
+    const requestLogDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-grok-text-log-"));
     const requestLogPath = NodePath.join(requestLogDir, "requests.ndjson");
 
     return withFakeAcpGrok(
       {
-        T3_ACP_REQUEST_LOG_PATH: requestLogPath,
-        T3_ACP_REQUEST_PERMISSION: "1",
-        T3_ACP_PROMPT_RESPONSE_TEXT: JSON.stringify({
+        COD3_ACP_REQUEST_LOG_PATH: requestLogPath,
+        COD3_ACP_REQUEST_PERMISSION: "1",
+        COD3_ACP_PROMPT_RESPONSE_TEXT: JSON.stringify({
           subject: "Add Grok provider",
           body: "Wire up the ACP runtime and headless text generation path.",
         }),
@@ -126,7 +124,7 @@ it.layer(layerGrokTextGenerationTest)("GrokTextGeneration", (it) => {
   it.effect("extracts the JSON object when Grok wraps it in conversational text", () =>
     withFakeAcpGrok(
       {
-        T3_ACP_PROMPT_RESPONSE_TEXT:
+        COD3_ACP_PROMPT_RESPONSE_TEXT:
           "Sure! Here's a thread title:\n\n" +
           JSON.stringify({ title: "Investigate failing CI" }) +
           "\n\nLet me know if you need anything else.",

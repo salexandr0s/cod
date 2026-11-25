@@ -12,17 +12,17 @@ const domTests = ["src/preview/PickPreload.test.ts"];
 // Install only bundle externals; the server bundle already carries its dependency tree.
 const isMainProcessExternal = (id: string) =>
   id === "electron" || id.startsWith("electron/") || isDesktopRuntimeExternalDependency(id);
-const shouldLaunchElectronAfterPack = process.env.T3CODE_DESKTOP_DEV === "1";
+const shouldLaunchElectronAfterPack = process.env.COD3_DESKTOP_DEV === "1";
 // tsdown runs onSuccess through a shell. dash forks instead of exec'ing the last command, which
 // would leave an `sh` between `vp pack` and the supervisor and hide `vp pack` dying from it.
 const devElectronCommand =
-  // oxlint-disable-next-line t3code/no-global-process-runtime -- Build config has no Effect runtime.
+  // oxlint-disable-next-line cod3/no-global-process-runtime -- Build config has no Effect runtime.
   NodeOS.platform() === "win32"
     ? "node scripts/dev-electron.mjs"
     : "exec node scripts/dev-electron.mjs";
 const publicConfigDefine = {
-  __T3CODE_BUILD_CLERK_PUBLISHABLE_KEY__: JSON.stringify(
-    repoEnv.T3CODE_CLERK_PUBLISHABLE_KEY?.trim() ?? "",
+  __COD3_BUILD_CLERK_PUBLISHABLE_KEY__: JSON.stringify(
+    repoEnv.COD3_CLERK_PUBLISHABLE_KEY?.trim() ?? "",
   ),
 };
 
@@ -32,19 +32,19 @@ export default defineConfig({
       build: {
         command:
           "node scripts/build-browser-secret.mjs && node scripts/build-apple-speech.mjs && node scripts/build-preview-annotation-css.mjs && vp pack",
-        dependsOn: ["t3#build"],
+        dependsOn: ["cod3#build"],
         cache: false,
       },
       // CI bundle jobs skip the Linux browser secret helper; packaging stages one per arch.
       "build:bundle": {
         command: "node scripts/build-preview-annotation-css.mjs && vp pack",
-        dependsOn: ["t3#build"],
+        dependsOn: ["cod3#build"],
         cache: false,
       },
       dev: {
         command:
-          "node scripts/build-browser-secret.mjs && node scripts/build-apple-speech.mjs && node scripts/build-preview-annotation-css.mjs && cross-env T3CODE_DESKTOP_DEV=1 vp pack --watch",
-        dependsOn: ["t3#build"],
+          "node scripts/build-browser-secret.mjs && node scripts/build-apple-speech.mjs && node scripts/build-preview-annotation-css.mjs && cross-env COD3_DESKTOP_DEV=1 vp pack --watch",
+        dependsOn: ["cod3#build"],
         cache: false,
       },
       "dev:bundle": {
@@ -54,7 +54,7 @@ export default defineConfig({
       },
       "dev:electron": {
         command: "node scripts/dev-electron.mjs",
-        dependsOn: ["t3#build"],
+        dependsOn: ["cod3#build"],
         cache: false,
       },
       // A local tsbuildinfo is leftover build state, not a typecheck input.
@@ -140,7 +140,7 @@ export default defineConfig({
         alwaysBundle: (id) =>
           id === "react-grab" ||
           id.startsWith("react-grab/") ||
-          id === "@t3tools/shared/keybindingMatching",
+          id === "@cod3/shared/keybindingMatching",
       },
     },
     {

@@ -3,16 +3,16 @@ import {
   pullRequestLinkCommit,
   resolvePullRequestReviewAnchor,
   type PullRequestAnchor,
-} from "@t3tools/shared/pullRequestAnchor";
-import { projectChangeRequestUrl } from "@t3tools/client-runtime/change-request-links";
-import { normalizeThreadPullRequestKey } from "@t3tools/client-runtime/thread-pull-requests";
+} from "@cod3/shared/pullRequestAnchor";
+import { projectChangeRequestUrl } from "@cod3/client-runtime/change-request-links";
+import { normalizeThreadPullRequestKey } from "@cod3/client-runtime/thread-pull-requests";
 import { useAtomValue } from "@effect/atom-react";
 import { usePullRequestStack } from "~/state/usePullRequestStack";
-import { scopeProjectRef, scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { scopeProjectRef, scopeThreadRef } from "@cod3/client-runtime/environment";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   AuthOrchestrationOperateScope,
   AuthSourceControlWriteScope,
@@ -27,7 +27,7 @@ import {
   type PullRequestSummary,
   resolveEnvironmentMachineKind,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   ArrowDownUpIcon,
   ArrowLeftIcon,
@@ -77,7 +77,7 @@ import { useAtomCommand } from "~/state/use-atom-command";
 import { PullRequestStackMenu } from "./PullRequestStackMenu";
 import { pullRequestCompletionScope } from "./PullRequestMarkdownTextarea";
 import { PullRequestChangeBreakdownStat } from "./PullRequestChangeBreakdownStat";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { PullRequestThreadLinks } from "./PullRequestThreadLinks";
 import { vcsEnvironment } from "~/state/vcs";
 import { RelativeTime } from "~/components/RelativeTime";
@@ -511,7 +511,7 @@ export function PullRequestDetailPanel({
     // These name a tab, not a place in it.
     if (revealAnchor?.kind === "code" || revealAnchor?.kind === "commits") settleReveal(revealUrl);
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- a clicked link lives in the panel store and selects its tab even when the panel is already mounted
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- a clicked link lives in the panel store and selects its tab even when the panel is already mounted
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- link navigation selects the PR tab and commit scope
     followLink();
@@ -564,7 +564,7 @@ export function PullRequestDetailPanel({
     scroller: HTMLElement;
     target: number;
   } | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- restores the scroller's scrollTop before paint after the header condenses
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- restores the scroller's scrollTop before paint after the header condenses
   useLayoutEffect(() => {
     const compensation = compensationRef.current;
     if (compensation === null) return;
@@ -635,7 +635,7 @@ export function PullRequestDetailPanel({
         ),
       );
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- window keydown capture listener for the copy-number shortcut
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- window keydown capture listener for the copy-number shortcut
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => copyFromShortcut(event);
     window.addEventListener("keydown", onKeyDown, true);
@@ -730,7 +730,7 @@ export function PullRequestDetailPanel({
     }
   }
   const revalidateActivity = useEffectEvent(() => activityQuery.refresh());
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- refreshes the activity query after commit when render counts a new detail revision
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- refreshes the activity query after commit when render counts a new detail revision
   useEffect(() => {
     if (activityRevalidations > 0) revalidateActivity();
   }, [activityRevalidations]);
@@ -797,12 +797,12 @@ export function PullRequestDetailPanel({
       settleReveal(revealUrl);
     }
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- a linked comment missing from cached activity asks the host once before the link settles
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- a linked comment missing from cached activity asks the host once before the link settles
   useEffect(() => {
     readHostForReveal();
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- each load that misses the linked item is checked against the host read
   }, [revealMissedAt, revealReadFailed, revealUrl]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- a host read outliving the panel must not settle a later link
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- a host read outliving the panel must not settle a later link
   useEffect(
     () => () => {
       revealHostRead.current = null;
@@ -811,7 +811,7 @@ export function PullRequestDetailPanel({
   );
   const refreshFromHostOnRequest = useEffectEvent(() => void refreshFromHost());
   const appliedForcedToken = useRef(forcedRefreshToken);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- a new forced refresh token invalidates the host cache and refetches
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- a new forced refresh token invalidates the host cache and refetches
   useEffect(() => {
     if (appliedForcedToken.current === forcedRefreshToken) return;
     appliedForcedToken.current = forcedRefreshToken;

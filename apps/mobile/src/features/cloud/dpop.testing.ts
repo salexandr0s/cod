@@ -10,7 +10,7 @@ function publicKeyFor(privateKey: Uint8Array) {
 }
 
 /**
- * Stands in for the T3NativeControls DPoP functions with Node's P-256.
+ * Stands in for the Cod3NativeControls DPoP functions with Node's P-256.
  * Return it from a mocked `expo` `requireNativeModule`.
  */
 export function createNodeDpopKeysModule() {

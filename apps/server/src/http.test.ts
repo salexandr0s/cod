@@ -22,9 +22,9 @@ import {
   injectMcpAppCookieBootstrap,
   injectMcpAppThemeBootstrap,
   MCP_APP_MAX_HTML_BYTES,
-} from "@t3tools/shared/mcpApp";
-import { ORCHESTRATION_PROTOCOL_HEADER } from "@t3tools/contracts";
-import { FILE_PREVIEW_SCROLL_SCRIPT } from "@t3tools/shared/htmlRender";
+} from "@cod3/shared/mcpApp";
+import { ORCHESTRATION_PROTOCOL_HEADER } from "@cod3/contracts";
+import { FILE_PREVIEW_SCROLL_SCRIPT } from "@cod3/shared/htmlRender";
 
 import * as ServerConfig from "./config.ts";
 
@@ -38,7 +38,7 @@ describe("MCP app asset responses", () => {
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-mcp-theme-" });
+        const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-mcp-theme-" });
         const file = path.join(directory, "app.html");
         const html = injectMcpAppCsp(
           "<html><head><script>vendor()</script></head><body>☃</body></html>",
@@ -86,7 +86,7 @@ describe("MCP app asset responses", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-mcp-theme-size-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-mcp-theme-size-" });
       const file = path.join(directory, "app.html");
       yield* fs.writeFileString(file, "x".repeat(MCP_APP_MAX_HTML_BYTES + 128 * 1024 + 1));
       const response = yield* assetFileResponse({ path: file, renderIntent: "mcp-app" });
@@ -100,7 +100,7 @@ describe("workspace page preview responses", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-file-preview-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-file-preview-" });
       const page = path.join(directory, "report.html");
       const style = path.join(directory, "report.css");
       const html = "<!doctype html><html><body>☃</body></html>";
@@ -297,7 +297,7 @@ const makeStaticRequest = Effect.fn("HttpTest.makeStaticRequest")(function* (sta
 });
 
 it.layer(
-  ServerConfig.layerTest(process.cwd(), { prefix: "t3-static-http-test-" }).pipe(
+  ServerConfig.layerTest(process.cwd(), { prefix: "cod3-static-http-test-" }).pipe(
     Layer.provideMerge(NodeServices.layer),
   ),
 )("static HTTP responses", (it) => {
@@ -305,7 +305,7 @@ it.layer(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-static-cache-" });
+      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-static-cache-" });
       const assetPath = path.join(staticDir, "app.js");
       yield* fs.writeFileString(assetPath, 'export const build = "first";');
       const request = yield* makeStaticRequest(staticDir);
@@ -348,7 +348,7 @@ it.layer(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-static-no-open-" });
+      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-static-no-open-" });
       const filePath = path.join(staticDir, "app.txt");
       const body = "packaged asset";
       yield* fs.writeFileString(filePath, body);
@@ -399,7 +399,7 @@ it.layer(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-static-replaced-" });
+      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-static-replaced-" });
       const filePath = path.join(staticDir, "app.txt");
       const before = DateTime.toDateUtc(DateTime.makeUnsafe("1985-10-26T08:15:00.000Z"));
       const after = DateTime.toDateUtc(DateTime.makeUnsafe("2015-10-21T16:29:00.000Z"));
@@ -449,7 +449,7 @@ it.layer(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-static-html-" });
+      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-static-html-" });
       const indexPath = path.join(staticDir, "index.html");
       const modifiedAt = DateTime.toDateUtc(DateTime.makeUnsafe("1985-10-26T08:15:00.000Z"));
       yield* fs.writeFileString(indexPath, "<html>old build</html>");
@@ -490,7 +490,7 @@ it.layer(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-static-close-" });
+      const staticDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-static-close-" });
       const filePath = path.join(staticDir, "app.txt");
       const body = "file content\n".repeat(1024);
       yield* fs.writeFileString(filePath, body);
@@ -576,7 +576,7 @@ describe("video asset byte ranges", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-guarded-current-stat-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-guarded-current-stat-" });
       const filePath = path.join(directory, "clip.mp4");
       for (const [contents, range, method, expected, status, contentRange] of [
         ["1234", undefined, "GET", "1234", 200, null],
@@ -619,7 +619,9 @@ describe("video asset byte ranges", () => {
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-guarded-offset-limit-" });
+        const directory = yield* fs.makeTempDirectoryScoped({
+          prefix: "cod3-guarded-offset-limit-",
+        });
         const filePath = path.join(directory, "clip.mp4");
         yield* fs.writeFileString(filePath, "0123456789");
         const canonicalPath = yield* fs.realPath(filePath);
@@ -661,7 +663,7 @@ describe("video asset byte ranges", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-attachment-media-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-attachment-media-" });
       const filePath = path.join(directory, "audio.wav");
       yield* fs.writeFileString(filePath, "RIFF");
       const canonicalPath = yield* fs.realPath(filePath);
@@ -677,7 +679,7 @@ describe("video asset byte ranges", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-guarded-cleanup-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-guarded-cleanup-" });
       const filePath = path.join(directory, "clip.mp4");
       const bytes = new Uint8Array(1024 * 1024).fill(42);
       yield* fs.writeFile(filePath, bytes);
@@ -724,7 +726,7 @@ describe("video asset byte ranges", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-video-range-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-video-range-" });
       const file = path.join(directory, "clip.mp4");
       yield* fs.writeFileString(file, "0123456789");
       const asset = { path: file, mimeType: "video/mp4" };
@@ -792,7 +794,7 @@ describe("video asset byte ranges", () => {
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-audio-range-" });
+        const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-audio-range-" });
         const file = path.join(directory, "recording.wav");
         yield* fs.writeFileString(file, "0123456789");
         const asset = { path: file, mimeType: "audio/wav" };
@@ -820,7 +822,7 @@ describe("video asset byte ranges", () => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-video-range-" });
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-video-range-" });
       const file = path.join(directory, "clip.mp4");
       yield* fs.writeFileString(file, "0123456789");
       for (const header of ["bytes=10-", "bytes=-0", "bytes=999999999999999999999999-"]) {

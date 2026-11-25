@@ -1,4 +1,4 @@
-import { AuthMcpClientAccess } from "@t3tools/contracts";
+import { AuthMcpClientAccess } from "@cod3/contracts";
 import { T, useMessages } from "gt-react";
 import { useId } from "react";
 

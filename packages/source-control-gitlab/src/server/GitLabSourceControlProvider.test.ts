@@ -1,7 +1,7 @@
-import { SourceControlProviderKind } from "@t3tools/contracts";
-import { normalizeGitRemoteUrl } from "@t3tools/shared/git";
-import { refineUnknownRemoteProvider } from "@t3tools/source-control-core/server/discovery";
-import { processOutput } from "@t3tools/source-control-testing/TestSourceControlHost";
+import { SourceControlProviderKind } from "@cod3/contracts";
+import { normalizeGitRemoteUrl } from "@cod3/shared/git";
+import { refineUnknownRemoteProvider } from "@cod3/source-control-core/server/discovery";
+import { processOutput } from "@cod3/source-control-testing/TestSourceControlHost";
 import { assert, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -9,7 +9,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import { ChildProcessSpawner } from "effect/process";
 
-import * as TestSourceControlHost from "@t3tools/source-control-testing/TestSourceControlHost";
+import * as TestSourceControlHost from "@cod3/source-control-testing/TestSourceControlHost";
 import * as GitLabCli from "./GitLabCli.ts";
 import { parseGitLabAuthStatusHosts } from "./gitLabAuthStatus.ts";
 import * as GitLabSourceControlProvider from "./GitLabSourceControlProvider.ts";
@@ -306,11 +306,11 @@ it.effect.each(["read", "decode"] as const)(
 );
 
 it.effect.each([
-  { headSelector: "octocat:feature/fix", source: undefined, sourceProject: "octocat/t3code" },
+  { headSelector: "octocat:feature/fix", source: undefined, sourceProject: "octocat/cod3" },
   {
     headSelector: "feature/fix",
     source: { owner: "team/subgroup", refName: "feature/fix" },
-    sourceProject: "team/subgroup/t3code",
+    sourceProject: "team/subgroup/cod3",
   },
   {
     headSelector: "feature/fix",
@@ -325,7 +325,7 @@ it.effect.each([
         run: (input) => {
           requests.push(input.args);
           if (input.args[1] === "projects/:fullpath") {
-            return Effect.succeed(processOutput(JSON.stringify({ id: 100, path: "t3code" })));
+            return Effect.succeed(processOutput(JSON.stringify({ id: 100, path: "cod3" })));
           }
           assert.deepStrictEqual(input.args, [
             "api",

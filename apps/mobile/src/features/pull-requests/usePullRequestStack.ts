@@ -1,6 +1,6 @@
-import { threadPullRequestLinkMode } from "@t3tools/client-runtime/thread-pull-request-compatibility";
-import type { PullRequestDetail } from "@t3tools/contracts";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { threadPullRequestLinkMode } from "@cod3/client-runtime/thread-pull-request-compatibility";
+import type { PullRequestDetail } from "@cod3/contracts";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { useAtomValue } from "@effect/atom-react";
 import { Atom } from "effect/reactivity";
 import { useMemo } from "react";

@@ -4,11 +4,12 @@ import {
   secretRequestPageUrl,
   type OrchestrationV2TurnItem,
   type SecretProviderId,
+  type SecretProviderKind,
   type SecretRequestAnswerInput,
   type ServerConfig,
   type ServerSettings,
-} from "@t3tools/contracts";
-import { builtInSecretProviderDefinitions } from "@t3tools/secret-provider-definitions/registry";
+} from "@cod3/contracts";
+import { builtInSecretProviderDefinitions } from "@cod3/secret-provider-definitions/registry";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import { mFallback, msg } from "gt-i18n";
@@ -162,6 +163,7 @@ export function secretRequestDisplay(
 
 /** A configured secret provider a pending card can read its answer from. */
 export interface SecretRequestSource {
+  readonly kind: SecretProviderKind;
   readonly id: SecretProviderId;
   readonly label: string;
   readonly isReference: (reference: string) => boolean;
@@ -176,6 +178,10 @@ const INVALID_REFERENCE_MESSAGES: ReadonlyMap<string, string> = new Map([
   [
     "Use a 1Password reference like op://vault/item/field.",
     msg("Use a 1Password reference like {example}.", { example: "op://vault/item/field" }),
+  ],
+  [
+    "Use a Proton Pass reference like pass://vault/item/field.",
+    msg("Use a Proton Pass reference like {example}.", { example: "pass://vault/item/field" }),
   ],
 ]);
 
@@ -194,20 +200,31 @@ const decodeConfigByKind = new Map(
   ]),
 );
 
+// The first servers supporting secret references only shipped the 1Password driver.
+const legacySecretProviderKinds = ["one_password"] as const;
+
+export function supportedSecretProviderKinds(
+  config: Pick<ServerConfig, "secretProviderKinds"> | null | undefined,
+): ReadonlyArray<string> {
+  return config?.secretProviderKinds ?? legacySecretProviderKinds;
+}
+
 /** Empty unless the server accepts reference answers; providers this build cannot read are left out. */
 export function secretRequestSources(
-  config: Pick<ServerConfig, "secretRequestReferences"> | null | undefined,
+  config: Pick<ServerConfig, "secretRequestReferences" | "secretProviderKinds"> | null | undefined,
   providers: ServerSettings["secretProviders"],
   resolve: MFunctionType = mFallback,
 ): ReadonlyArray<SecretRequestSource> {
   if (config?.secretRequestReferences !== true) return NO_SOURCES;
-  return configuredSecretSources(providers, resolve);
+  return configuredSecretSources(providers, resolve, config);
 }
 
 export function configuredSecretSources(
   providers: ServerSettings["secretProviders"],
   resolve: MFunctionType = mFallback,
+  config?: Pick<ServerConfig, "secretProviderKinds">,
 ): ReadonlyArray<SecretRequestSource> {
+  const kinds = supportedSecretProviderKinds(config);
   return (Object.keys(providers) as Array<SecretProviderId>).flatMap((id) => {
     const provider = providers[id];
     const definition =
@@ -215,6 +232,7 @@ export function configuredSecretSources(
     if (
       provider === undefined ||
       definition === undefined ||
+      !kinds.includes(definition.kind) ||
       decodeConfigByKind.get(definition.kind)?.(provider.config)._tag !== "Some"
     ) {
       return [];
@@ -222,6 +240,7 @@ export function configuredSecretSources(
     return [
       {
         id,
+        kind: definition.kind,
         label: provider.label,
         isReference: definition.isReference,
         referencePlaceholder: definition.referencePlaceholder,

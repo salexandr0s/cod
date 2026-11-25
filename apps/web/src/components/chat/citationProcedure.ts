@@ -1,6 +1,6 @@
 import { useAtomValue } from "@effect/atom-react";
-import { runAtomCommand } from "@t3tools/client-runtime/state/runtime";
-import { sentMessageFromToolItem } from "@t3tools/shared/toolOutput";
+import { runAtomCommand } from "@cod3/client-runtime/state/runtime";
+import { sentMessageFromToolItem } from "@cod3/shared/toolOutput";
 import type * as Effect from "effect/Effect";
 import { Atom, type AtomRegistry } from "effect/reactivity";
 import { msg } from "gt-react";

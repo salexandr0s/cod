@@ -60,7 +60,7 @@ jobs:
           cache: true
           run-install: |
             args:
-              - --filter=@t3tools/mobile...
+              - --filter=@cod3/mobile...
 
       - name: Expose pnpm
         if: steps.expo-token.outputs.present == 'true'
@@ -87,9 +87,9 @@ jobs:
           import { appendFileSync, readFileSync } from "node:fs";
           import { parseEnv } from "node:util";
           const env = parseEnv(readFileSync(".env.local", "utf8"));
-          const googleServicesFile = env.T3CODE_ANDROID_GOOGLE_SERVICES_FILE;
+          const googleServicesFile = env.COD3_ANDROID_GOOGLE_SERVICES_FILE;
           if (googleServicesFile) {
-            appendFileSync(process.env.GITHUB_ENV, `T3CODE_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
+            appendFileSync(process.env.GITHUB_ENV, `COD3_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
           }
           NODE
 
@@ -111,7 +111,7 @@ jobs:
             # A client EAS built before this job existed; expired ones are gone.
             link="$(eas build:list --platform ios --build-profile preview:dev --runtime-version "$hash" --status finished --limit 5 --json --non-interactive \
               | sed -n '/^\[/,$p' \
-              | jq -r --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '[.[] | select((.expirationDate // "9999") > $now)][0] | select(. != null) | "https://expo.dev/accounts/pingdotgg/projects/t3-code/builds/\(.id)"')"
+              | jq -r --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '[.[] | select((.expirationDate // "9999") > $now)][0] | select(. != null) | "https://expo.dev/accounts/pingdotgg/projects/cod3/builds/\(.id)"')"
           fi
           echo "link=$link" >> "$GITHUB_OUTPUT"
           if [ -z "$link" ]; then echo "build=true" >> "$GITHUB_OUTPUT"; fi
@@ -182,7 +182,7 @@ jobs:
           cache: true
           run-install: |
             args:
-              - --filter=@t3tools/mobile...
+              - --filter=@cod3/mobile...
 
       - name: Expose pnpm
         if: steps.expo-token.outputs.present == 'true'
@@ -209,9 +209,9 @@ jobs:
           import { appendFileSync, readFileSync } from "node:fs";
           import { parseEnv } from "node:util";
           const env = parseEnv(readFileSync(".env.local", "utf8"));
-          const googleServicesFile = env.T3CODE_ANDROID_GOOGLE_SERVICES_FILE;
+          const googleServicesFile = env.COD3_ANDROID_GOOGLE_SERVICES_FILE;
           if (googleServicesFile) {
-            appendFileSync(process.env.GITHUB_ENV, `T3CODE_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
+            appendFileSync(process.env.GITHUB_ENV, `COD3_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
           }
           NODE
 
@@ -232,7 +232,7 @@ jobs:
             # A client EAS built before this job existed; expired ones are gone.
             link="$(eas build:list --platform android --build-profile preview:dev --runtime-version "$hash" --status finished --limit 5 --json --non-interactive \
               | sed -n '/^\[/,$p' \
-              | jq -r --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '[.[] | select((.expirationDate // "9999") > $now)][0] | select(. != null) | "https://expo.dev/accounts/pingdotgg/projects/t3-code/builds/\(.id)"')"
+              | jq -r --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '[.[] | select((.expirationDate // "9999") > $now)][0] | select(. != null) | "https://expo.dev/accounts/pingdotgg/projects/cod3/builds/\(.id)"')"
           fi
           echo "link=$link" >> "$GITHUB_OUTPUT"
           if [ -z "$link" ]; then echo "build=true" >> "$GITHUB_OUTPUT"; fi
@@ -298,7 +298,7 @@ jobs:
           profile: preview:dev
           environment: preview
           expo-token: ${{ secrets.EXPO_PREVIEW_TOKEN }}
-          output: ${{ runner.temp }}/t3code-preview.apk
+          output: ${{ runner.temp }}/cod3-preview.apk
 
       # `eas upload` hosts the APK on EAS and returns the page testers install from.
       - id: build
@@ -307,7 +307,7 @@ jobs:
         working-directory: apps/mobile
         shell: bash
         run: |
-          eas upload --platform android --build-path "$RUNNER_TEMP/t3code-preview.apk" --fingerprint "$FINGERPRINT" --non-interactive --json | tee "$RUNNER_TEMP/upload.json"
+          eas upload --platform android --build-path "$RUNNER_TEMP/cod3-preview.apk" --fingerprint "$FINGERPRINT" --non-interactive --json | tee "$RUNNER_TEMP/upload.json"
           link="$(sed -n '/^{/,$p' "$RUNNER_TEMP/upload.json" | jq -r '.url // empty')"
           if [ -z "$link" ]; then
             echo "::error::eas upload returned no install link"
@@ -382,7 +382,7 @@ jobs:
           profile: preview:dev
           environment: preview
           expo-token: ${{ secrets.EXPO_PREVIEW_TOKEN }}
-          output: ${{ runner.temp }}/t3code-preview.ipa
+          output: ${{ runner.temp }}/cod3-preview.ipa
 
       # EAS hosts the signed client and returns its install page.
       - id: build
@@ -391,7 +391,7 @@ jobs:
         working-directory: apps/mobile
         shell: bash
         run: |
-          eas upload --platform ios --build-path "$RUNNER_TEMP/t3code-preview.ipa" --fingerprint "$FINGERPRINT" --non-interactive --json | tee "$RUNNER_TEMP/upload.json"
+          eas upload --platform ios --build-path "$RUNNER_TEMP/cod3-preview.ipa" --fingerprint "$FINGERPRINT" --non-interactive --json | tee "$RUNNER_TEMP/upload.json"
           link="$(sed -n '/^{/,$p' "$RUNNER_TEMP/upload.json" | jq -r '.url // empty')"
           if [ -z "$link" ]; then
             echo "::error::eas upload returned no install link"
@@ -407,8 +407,8 @@ jobs:
         env:
           LINK: ${{ steps.build.outputs.link }}
         run: |
-          profile_path="$(unzip -Z -1 "$RUNNER_TEMP/t3code-preview.ipa" | grep -E '^Payload/[^/]+\.app/embedded\.mobileprovision$')"
-          unzip -p "$RUNNER_TEMP/t3code-preview.ipa" "$profile_path" > "$RUNNER_TEMP/preview.mobileprovision"
+          profile_path="$(unzip -Z -1 "$RUNNER_TEMP/cod3-preview.ipa" | grep -E '^Payload/[^/]+\.app/embedded\.mobileprovision$')"
+          unzip -p "$RUNNER_TEMP/cod3-preview.ipa" "$profile_path" > "$RUNNER_TEMP/preview.mobileprovision"
           security cms -D -i "$RUNNER_TEMP/preview.mobileprovision" > "$RUNNER_TEMP/preview-profile.plist"
           record="$(node .github/scripts/mobile-ios-preview-record.cjs create "$LINK" "$RUNNER_TEMP/preview-profile.plist")"
           echo "record=$record" >> "$GITHUB_OUTPUT"

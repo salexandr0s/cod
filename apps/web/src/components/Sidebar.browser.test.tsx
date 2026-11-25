@@ -1,9 +1,9 @@
 import appCss from "../index.css?inline";
-import type { EnvironmentServerConfig } from "@t3tools/client-runtime/connection";
-import { scopeProjectRef, scopeThreadRef } from "@t3tools/client-runtime/environment";
+import type { EnvironmentServerConfig } from "@cod3/client-runtime/connection";
+import { scopeProjectRef, scopeThreadRef } from "@cod3/client-runtime/environment";
 import * as shelfHooks from "../state/olderSettledShelf";
 import { createWorkspaceFocusController, workspaceAreaProps } from "../lib/workspaceFocus";
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
 import {
   DEFAULT_CLIENT_SETTINGS,
   EnvironmentId,
@@ -11,8 +11,8 @@ import {
   ProjectId,
   ThreadId,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
-import { isMacPlatform } from "@t3tools/shared/keybindings";
+} from "@cod3/contracts";
+import { isMacPlatform } from "@cod3/shared/keybindings";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 
@@ -51,7 +51,7 @@ vi.mock("../state/use-orchestration-command", { spy: true });
 vi.mock("../localApi", { spy: true });
 vi.mock(import("../state/server"), async (original) => {
   const { Atom } = await import("effect/reactivity");
-  const { compileResolvedKeybindingsConfig } = await import("@t3tools/shared/keybindings");
+  const { compileResolvedKeybindingsConfig } = await import("@cod3/shared/keybindings");
   // The desktop defaults: holding Mod alone already matches a thread jump.
   const keybindings = compileResolvedKeybindingsConfig([
     { key: "mod+1", command: "thread.jump.1" },
@@ -85,6 +85,7 @@ function project(id: string): Project {
 
 describe("sidebar header new thread", () => {
   it.each([
+    { mode: "normal", count: 0, shift: false, picker: true },
     { mode: "normal", count: 2, shift: false, picker: true },
     { mode: "boring", count: 2, shift: false, picker: true },
     { mode: "boring", count: 2, shift: true, picker: false },
@@ -98,10 +99,10 @@ describe("sidebar header new thread", () => {
       boringSidebarEnabled: scenario.mode === "boring",
     });
     const projects = [project("active"), project("idle")].slice(0, scenario.count);
-    const currentProjectRef = {
-      environmentId: projects[0]!.environmentId,
-      projectId: projects[0]!.id,
-    };
+    const firstProject = projects[0];
+    const currentProjectRef = firstProject
+      ? { environmentId: firstProject.environmentId, projectId: firstProject.id }
+      : null;
     const startThread = vi.fn().mockResolvedValue(null);
     vi.mocked(useProjects).mockReturnValue(projects);
     vi.mocked(useHandleNewThread).mockReturnValue({
@@ -120,6 +121,11 @@ describe("sidebar header new thread", () => {
       </SidebarProvider>,
     );
 
+    if (scenario.mode === "boring" && scenario.count === 2) {
+      await expect
+        .element(screen.getByRole("button", { name: "New thread in idle" }))
+        .toBeVisible();
+    }
     await userEvent.click(screen.getByRole("button", { name: "New thread", exact: true }), {
       modifiers: scenario.shift ? ["Shift"] : [],
     });
@@ -131,6 +137,94 @@ describe("sidebar header new thread", () => {
       expect(openCommandPalette).not.toHaveBeenCalled();
       expect(startThread).toHaveBeenCalledExactlyOnceWith(currentProjectRef);
     }
+  });
+});
+
+describe("sidebar device and project sections", () => {
+  it("reveals a linked device thread once and keeps the other section closed", async () => {
+    using stack = new DisposableStack();
+    const previous = getClientSettings();
+    stack.defer(() => __setClientSettingsForTests(previous));
+    __setClientSettingsForTests({ ...DEFAULT_CLIENT_SETTINGS, boringSidebarEnabled: true });
+    const device = { ...project("studio"), workspaceRoot: "/Users/studio" };
+    const thread = threadShell(device.id, 0);
+    vi.mocked(useProjects).mockReturnValue([device, project("site")]);
+    vi.mocked(useQuietThreadShells).mockReturnValue([thread]);
+    vi.mocked(useThreadRouteTarget).mockReturnValue(null);
+    const reveal = { observedKey: null, pendingKey: null };
+    const sidebar = () => (
+      <SidebarProvider>
+        <Sidebar routeReveal={reveal} />
+      </SidebarProvider>
+    );
+    await using screen = await render(sidebar());
+    const devices = screen.getByRole("button", { name: "Devices", exact: true });
+    const projects = screen.getByRole("button", { name: "Projects", exact: true });
+    await userEvent.click(devices);
+    await userEvent.click(projects);
+    vi.mocked(useThreadRouteTarget).mockReturnValue({
+      kind: "server",
+      threadRef: scopeThreadRef(thread.environmentId, thread.id),
+    });
+    await screen.rerender(sidebar());
+    await expect.element(devices).toHaveAttribute("aria-expanded", "true");
+    await expect.element(screen.getByText(thread.title, { exact: true }).first()).toBeVisible();
+    await expect.element(projects).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(devices);
+    await expect.element(devices).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(devices);
+    await userEvent.click(projects);
+  });
+
+  it("collapses either section independently and reopens both lists", async () => {
+    using stack = new DisposableStack();
+    const previous = getClientSettings();
+    stack.defer(() => __setClientSettingsForTests(previous));
+    __setClientSettingsForTests({ ...DEFAULT_CLIENT_SETTINGS, boringSidebarEnabled: true });
+    vi.mocked(useQuietThreadShells).mockReturnValue([]);
+    vi.mocked(useProjects).mockReturnValue([
+      {
+        ...project("studio"),
+        workspaceRoot: "/Users/studio",
+        faviconPath: ".cod3/project-icons/mac-studio.webp",
+      },
+      { ...project("site"), workspaceRoot: "/Users/studio/GitHub/site" },
+    ]);
+    await using screen = await render(
+      <SidebarProvider>
+        <Sidebar routeReveal={{ observedKey: null, pendingKey: null }} />
+      </SidebarProvider>,
+    );
+    const button = (name: string) => screen.getByRole("button", { name, exact: true });
+    await expect.element(button("studio")).toBeVisible();
+    await userEvent.click(button("Devices"));
+    await expect.element(button("studio")).not.toBeInTheDocument();
+    await expect.element(button("site")).toBeVisible();
+    await userEvent.click(button("Projects"));
+    await expect.element(button("site")).not.toBeInTheDocument();
+    await userEvent.click(button("Devices"));
+    await expect.element(button("studio")).toBeVisible();
+    await userEvent.click(button("Add project"));
+    expect(openCommandPalette).toHaveBeenCalledWith({ open: "add-project" });
+    await expect.element(button("site")).toBeVisible();
+    vi.mocked(useProjects).mockReturnValue([
+      project("site"),
+      project("fresh-folder"),
+      {
+        ...project("studio"),
+        workspaceRoot: "/Users/studio",
+        faviconPath: ".cod3/project-icons/mac-studio.webp",
+      },
+    ]);
+    await screen.rerender(
+      <SidebarProvider>
+        <Sidebar routeReveal={{ observedKey: null, pendingKey: null }} />
+      </SidebarProvider>,
+    );
+    await expect.element(button("New thread in fresh-folder")).toBeVisible();
+    await userEvent.click(button("Projects"));
+    await expect.element(button("New thread in fresh-folder")).not.toBeInTheDocument();
+    await userEvent.click(button("Projects"));
   });
 });
 

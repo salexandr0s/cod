@@ -18,7 +18,7 @@ import {
   ProviderDriverKind,
   type RunId,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
@@ -31,7 +31,7 @@ import * as Schedule from "effect/Schedule";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as Tool from "effect/ai/Tool";
-import { withExecutedModelNote } from "@t3tools/provider-core/server/subagentProjection";
+import { withExecutedModelNote } from "@cod3/provider-core/server/subagentProjection";
 
 import type * as McpInvocationContext from "../mcp/McpInvocationContext.ts";
 import { ProjectToolkit } from "../mcp/toolkits/project/tools.ts";
@@ -58,7 +58,7 @@ const FOLLOW_MAX_BACKOFF = Duration.minutes(5);
 const FOLLOW_MAX_DEFECTS = 3;
 /** How a follower retries; tests step it by hand. */
 export const FollowRetrySchedule = Context.Reference<Schedule.Schedule<unknown>>(
-  "t3/peer/RemoteDelegation/FollowRetrySchedule",
+  "cod3/peer/RemoteDelegation/FollowRetrySchedule",
   {
     defaultValue: () =>
       Schedule.exponential(Duration.seconds(2)).pipe(
@@ -97,7 +97,7 @@ export class RemoteDelegation extends Context.Service<
       },
     ) => Effect.Effect<{ readonly taskId: NodeId }, OrchestratorMcpFailure>;
     /**
-     * A `t3_thread_send` there that started or queued a run on the thread of
+     * A `cod3_thread_send` there that started or queued a run on the thread of
      * one of this thread's tasks that has its result: like a follow-up to a
      * finished child here, that run is a new task, whose id the send returns.
      * Any other send is returned as it came.
@@ -135,7 +135,7 @@ export class RemoteDelegation extends Context.Service<
      */
     readonly start: () => Effect.Effect<void, never, Scope.Scope>;
   }
->()("t3/peer/RemoteDelegation") {}
+>()("cod3/peer/RemoteDelegation") {}
 
 /** The other side refused because the thread there runs above this caller's modes. */
 const isModeRefusal = (error: OrchestratorMcpFailure) =>
@@ -189,7 +189,7 @@ const make = Effect.gen(function* () {
       Effect.orElseSucceed(() => undefined),
     );
     // The project's own identity is a one-minute cache that reads blank when
-    // cold, so resolve it here, as the other side's t3_project_list does.
+    // cold, so resolve it here, as the other side's cod3_project_list does.
     const key =
       here === undefined
         ? undefined
@@ -203,8 +203,8 @@ const make = Effect.gen(function* () {
     const matches: Array<{ readonly id: ProjectId; readonly title: string }> = [];
     let cursor: number | null = 0;
     while (cursor !== null) {
-      const listed: Tool.Success<typeof ProjectToolkit.tools.t3_project_list> =
-        yield* forwarding.call(scope, ProjectToolkit.tools.t3_project_list, environmentId, {
+      const listed: Tool.Success<typeof ProjectToolkit.tools.cod3_project_list> =
+        yield* forwarding.call(scope, ProjectToolkit.tools.cod3_project_list, environmentId, {
           cursor,
           limit: 100,
         });
@@ -218,7 +218,7 @@ const make = Effect.gen(function* () {
       code: "invalid_request",
       message:
         matches.length === 0
-          ? `No project there has this repository (${key}). Pass target.projectId; t3_project_list with this environmentId lists them. To bring the repository there, use t3_project_clone and then t3_project_create with this environmentId.`
+          ? `No project there has this repository (${key}). Pass target.projectId; cod3_project_list with this environmentId lists them. To bring the repository there, use cod3_project_clone and then cod3_project_create with this environmentId.`
           : `Several projects there have this repository: ${matches.map((project) => `${project.title} (${project.id})`).join(", ")}. Pass target.projectId.`,
     });
   });
@@ -294,7 +294,7 @@ const make = Effect.gen(function* () {
         return yield* new OrchestratorMcpFailure({
           code: "invalid_request",
           message:
-            'A task in a linked environment runs in that project\'s checkout; isolation "worktree" is not supported there. Omit isolation, or use t3_thread_launch with environmentId and a worktree workspaceStrategy.',
+            'A task in a linked environment runs in that project\'s checkout; isolation "worktree" is not supported there. Omit isolation, or use cod3_thread_launch with environmentId and a worktree workspaceStrategy.',
         });
       }
       // The provider and model inherit as they do for a task here. Another
@@ -346,7 +346,7 @@ const make = Effect.gen(function* () {
       const title = input.title ?? parent.thread.title;
       const launched = yield* forwarding.call(
         scope,
-        ProjectToolkit.tools.t3_thread_launch,
+        ProjectToolkit.tools.cod3_thread_launch,
         target.environmentId,
         {
           projectId,

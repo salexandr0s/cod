@@ -1,5 +1,5 @@
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
-import type { DevicePlatform, ScopedThreadRef } from "@t3tools/contracts";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
+import type { DevicePlatform, ScopedThreadRef } from "@cod3/contracts";
 import { create } from "zustand";
 
 export interface PreviewMiniPlayerPosition {

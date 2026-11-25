@@ -35,7 +35,7 @@ import {
 import { LocalModelChoice } from "./VoiceModelSection";
 import { CloudVoiceChoice } from "./CloudVoiceSection";
 import type { VoiceGrant } from "../voice-input/voiceGrantStorage";
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import { ThreadSwipeable } from "../home/thread-swipe-actions";
 import { ListActionRow as SettingsActionRow } from "../../components/ui/ListActionRow";
 import { SettingsDragHandle } from "./components/SettingsDragHandle";
@@ -358,7 +358,7 @@ export function SettingsVoiceRouteScreen() {
               {permission === "ask"
                 ? gt("Allow microphone access to record and to see your microphones.")
                 : gt("Turn on microphone access for {product} in Settings to use voice input.", {
-                    product: "T3 Code",
+                    product: "cod3",
                   })}
             </Text>
           </>

@@ -1,5 +1,5 @@
-import { resolveEnvironmentMachineKind } from "@t3tools/contracts";
-import { fileDisplayName } from "@t3tools/shared/path";
+import { resolveEnvironmentMachineKind } from "@cod3/contracts";
+import { fileDisplayName } from "@cod3/shared/path";
 import { useLocation } from "@tanstack/react-router";
 import { CheckIcon, ChevronDownIcon, FolderIcon, LayersIcon } from "lucide-react";
 import { Fragment, useState, type ReactNode } from "react";
@@ -87,7 +87,7 @@ export function SettingsScopeSentence() {
   const checkout = <CheckoutScopeMenu {...props} />;
   const onEnvironment = scope.search.machine || scope.scope.kind === "checkout";
   return (
-    <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 px-3 text-sm text-muted-foreground sm:px-4">
+    <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1.5 rounded-xl border border-border/60 bg-muted/30 px-4 py-2.5 text-sm text-muted-foreground">
       {onEnvironment && hasCheckouts ? (
         <T context="settings scope sentence; each variable is a menu">
           <span className="flex min-w-0 items-center gap-1.5">

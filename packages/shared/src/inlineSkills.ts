@@ -1,4 +1,4 @@
-import type { ServerProviderSkill } from "@t3tools/contracts";
+import type { ServerProviderSkill } from "@cod3/contracts";
 
 export type InlineSkill = Pick<ServerProviderSkill, "name" | "displayName">;
 

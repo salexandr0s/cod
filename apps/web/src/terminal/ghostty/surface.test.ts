@@ -3,7 +3,7 @@ import {
   applyTerminalAttachStreamEvent,
   INITIAL_TERMINAL_OUTPUT_CURSOR,
   nextTerminalAttachSeedState,
-} from "@t3tools/client-runtime/state/terminal";
+} from "@cod3/client-runtime/state/terminal";
 import { synchronizeTerminalSession } from "../../components/ThreadTerminalDrawer";
 
 import { GhosttyTerminalCore, type GhosttyCell, type GhosttyRow } from "./core";
@@ -953,9 +953,9 @@ describe("terminalLinkAtPositionWithRange", () => {
       cells: [
         { ...cell("🙂"), wide: 1 },
         { ...cell(""), wide: 2 },
-        ...Array.from("https://t3.code", (character) => cell(character)),
+        ...Array.from("https://cod3.code", (character) => cell(character)),
       ],
-      text: "🙂 https://t3.code",
+      text: "🙂 https://cod3.code",
       isWrapContinuation: false,
       wrapsToNext: true,
     };

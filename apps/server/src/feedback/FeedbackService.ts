@@ -1,6 +1,6 @@
 import * as NodeOS from "node:os";
 
-import type { ThreadId } from "@t3tools/contracts";
+import type { ThreadId } from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
@@ -78,7 +78,7 @@ export class FeedbackService extends Context.Service<
       | FeedbackStorageError
     >;
   }
->()("t3/feedback/FeedbackService") {}
+>()("cod3/feedback/FeedbackService") {}
 
 const storageError = (cause: unknown) => new FeedbackStorageError({ cause });
 
@@ -195,7 +195,7 @@ const make = Effect.fn("FeedbackService.make")(function* (
           turns: input.turns,
           withText,
           sensitive,
-          t3Tools: mcpToolNames(),
+          cod3Tools: mcpToolNames(),
           driverOf: (candidate) =>
             providerList.find((provider) => provider.instanceId === candidate.providerInstanceId)
               ?.driver,

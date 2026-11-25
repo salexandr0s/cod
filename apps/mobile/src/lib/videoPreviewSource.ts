@@ -3,8 +3,8 @@ import {
   type AssetResource,
   type ChatFileAttachment,
   type EnvironmentId,
-} from "@t3tools/contracts";
-import { videoMimeType } from "@t3tools/shared/video";
+} from "@cod3/contracts";
+import { videoMimeType } from "@cod3/shared/video";
 
 import type { DraftComposerFileAttachment } from "./composerImages";
 import type { MediaActionsSource } from "./mediaActionsSource";

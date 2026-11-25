@@ -3,8 +3,8 @@ import {
   isCompactionCommandMessage,
   type OrchestrationV2ProjectedTurnItem,
   type OrchestrationV2ProviderCapabilities,
-} from "@t3tools/contracts";
-import { copySorted } from "@t3tools/shared/Array";
+} from "@cod3/contracts";
+import { copySorted } from "@cod3/shared/Array";
 import { mFallback, msg } from "gt-i18n";
 import type { MFunctionType } from "gt-i18n/types";
 

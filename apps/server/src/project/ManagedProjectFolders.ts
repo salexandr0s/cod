@@ -5,8 +5,8 @@ import {
   ProjectId,
   type ThreadId,
   VcsProcessSpawnError,
-} from "@t3tools/contracts";
-import { foldLatinDiacritics, newProjectFolderName } from "@t3tools/shared/path";
+} from "@cod3/contracts";
+import { foldLatinDiacritics, newProjectFolderName } from "@cod3/shared/path";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
@@ -38,7 +38,7 @@ export class ScratchUnavailableError extends Schema.TaggedError<ScratchUnavailab
     if (this.repositoryRoot === undefined) {
       return "Threads without a project are not available on this environment.";
     }
-    return `Threads without a project are off because the T3 home ${this.baseDir} is inside the Git repository ${this.repositoryRoot}. If that repository was created by mistake, move ${this.repositoryRoot}/.git out of the way; otherwise point T3CODE_HOME (or --base-dir) at a folder outside it. Then restart T3 Code.`;
+    return `Threads without a project are off because the cod3 home ${this.baseDir} is inside the Git repository ${this.repositoryRoot}. If that repository was created by mistake, move ${this.repositoryRoot}/.git out of the way; otherwise point COD3_HOME (or --base-dir) at a folder outside it. Then restart cod3.`;
   }
 }
 
@@ -66,7 +66,7 @@ export class ScratchProjectError extends Schema.TaggedError<ScratchProjectError>
   }
 }
 
-/** Where No project threads keep their folders, whether or not this T3 home allows them. */
+/** Where No project threads keep their folders, whether or not this cod3 home allows them. */
 export const scratchFolderRoot = (baseDir: string, path: Path.Path) =>
   path.resolve(baseDir, "scratch");
 
@@ -130,7 +130,7 @@ export class ManagedProjectFolders extends Context.Service<
       NamedProjectError
     >;
   }
->()("t3/project/ManagedProjectFolders") {}
+>()("cod3/project/ManagedProjectFolders") {}
 
 const folderWords = (text: string) =>
   foldLatinDiacritics(text)
@@ -199,7 +199,7 @@ function namedProjectReadme(name: string): string {
     "",
     `# ${name}`,
     "",
-    "Created in [T3 Code](https://t3.codes).",
+    "Created in [cod3](https://t3.codes).",
     "",
   ].join("\n");
 }

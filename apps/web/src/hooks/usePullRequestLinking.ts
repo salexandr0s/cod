@@ -1,17 +1,17 @@
-import type { EnvironmentId, ScopedThreadRef, ThreadPullRequestLink } from "@t3tools/contracts";
+import type { EnvironmentId, ScopedThreadRef, ThreadPullRequestLink } from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   planThreadPullRequestMutation,
   threadPullRequestLinkMode,
-} from "@t3tools/client-runtime/thread-pull-request-compatibility";
+} from "@cod3/client-runtime/thread-pull-request-compatibility";
 import {
   threadPullRequestKeysEqual,
   visibleThreadPullRequests,
-} from "@t3tools/client-runtime/thread-pull-requests";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+} from "@cod3/client-runtime/thread-pull-requests";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { useAtomValue } from "@effect/atom-react";
 import { Atom } from "effect/reactivity";
 import { msg } from "gt-react";

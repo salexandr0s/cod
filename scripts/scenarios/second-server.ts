@@ -1,8 +1,8 @@
-// A second T3 server for scenarios that need another machine: its own T3 home, the replay
+// A second cod3 server for scenarios that need another machine: its own cod3 home, the replay
 // agent, and a pairing token for Settings > Connections > Add environment.
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as NetService from "@t3tools/shared/Net";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as NetService from "@cod3/shared/Net";
 import * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -10,13 +10,13 @@ import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Path from "effect/Path";
 
-import { APP_DIR, T3_HOME } from "../e2e.config.ts";
+import { APP_DIR, COD3_HOME } from "../e2e.config.ts";
 import { ScenarioError } from "./shell.ts";
 import { prepareHome, SCENARIO_MACHINE_ENV, start } from "./start-app.ts";
 
-export const SECOND_HOME = `${T3_HOME}-second-environment`;
+export const SECOND_HOME = `${COD3_HOME}-second-environment`;
 
-/** A second server on its own T3 home, running until interrupted. `--dev-url` admits the web
+/** A second server on its own cod3 home, running until interrupted. `--dev-url` admits the web
  * origin through CORS and registers the replay agent; `paired` gets the Add environment input. */
 const runSecondServer = Effect.fn("scenario.secondServer")(function* (
   devUrl: string,
@@ -46,7 +46,7 @@ const runSecondServer = Effect.fn("scenario.secondServer")(function* (
     env: {
       PATH: `${path.join(SECOND_HOME, "bin")}:${hostEnvironment.PATH ?? ""}`,
       HOME: hostEnvironment.HOME,
-      T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD: "0",
+      COD3_AUTO_BOOTSTRAP_PROJECT_FROM_CWD: "0",
       ...SCENARIO_MACHINE_ENV,
     },
     onLine: (line) => {

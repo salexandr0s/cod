@@ -1,5 +1,5 @@
 import { SettingsGroup } from "./SettingsGroup";
-import { AuthSettingsWriteScope } from "@t3tools/contracts";
+import { AuthSettingsWriteScope } from "@cod3/contracts";
 import { usePrimaryEnvironmentId, usePrimaryEnvironment } from "../../state/environments";
 import { useEnvironmentScope, useEnvironmentsWithScope } from "../../state/session";
 import { useServerConfigs } from "../../state/entities";
@@ -8,7 +8,7 @@ import {
   DEFAULT_SERVER_SETTINGS,
   isManagedSettingPath,
   type ServerSettings,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Equal from "effect/Equal";
 import { useGT } from "gt-react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
@@ -82,7 +82,9 @@ function scrollAndFocusSettingsTarget(target: HTMLElement, highlight = true): vo
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const markedScrollTarget =
     typeof target.querySelector === "function"
-      ? target.querySelector<HTMLElement>(":scope > [data-settings-scroll-target]")
+      ? target.querySelector<HTMLElement>(
+          ":scope > [data-settings-scroll-target], :scope > [data-slot=settings-group] > [data-settings-scroll-target]",
+        )
       : null;
   const scrollTarget =
     markedScrollTarget ??
@@ -231,33 +233,37 @@ export function SettingsSection({
 }) {
   const targetRef = useSettingsSearchTarget<HTMLElement>(sectionProps.id);
 
+  const heading = hideTitle ? (
+    <h2 className="sr-only">{title}</h2>
+  ) : (
+    <div
+      data-settings-scroll-target
+      className={cn(
+        "flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1",
+        variant === "grouped" ? "rounded-t-xl bg-muted/35 px-4 py-2.5 sm:px-5" : "mb-2.5",
+      )}
+    >
+      <div className="flex min-w-0 items-center gap-1">
+        <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-foreground">
+          {icon}
+          {title}
+        </h2>
+        {titleAction}
+      </div>
+      {headerAction}
+    </div>
+  );
+
   return (
     <section
       {...sectionProps}
       ref={targetRef}
       tabIndex={sectionProps.id ? -1 : sectionProps.tabIndex}
-      className={cn(!hideTitle && "space-y-2.5", className)}
+      className={className}
     >
-      {hideTitle ? (
-        <h2 className="sr-only">{title}</h2>
-      ) : (
-        <div
-          data-settings-scroll-target
-          className="flex min-h-7 flex-wrap items-start justify-between gap-x-4 gap-y-1 px-3 sm:px-4"
-        >
-          <div className="flex min-w-0 items-center gap-1">
-            <h2 className="flex min-h-7 items-center gap-2 text-base font-semibold text-foreground">
-              {icon}
-              {title}
-            </h2>
-            {titleAction}
-          </div>
-          {headerAction ? (
-            <div className="flex min-h-7 min-w-7 items-center justify-end">{headerAction}</div>
-          ) : null}
-        </div>
-      )}
+      {variant === "plain" || hideTitle ? heading : null}
       <SettingsGroup data-settings-scroll-target={hideTitle ? "" : undefined} variant={variant}>
+        {variant === "grouped" && !hideTitle ? heading : null}
         {children}
       </SettingsGroup>
     </section>
@@ -491,8 +497,8 @@ export function SettingsRow({
     ? { state: "mixed", summary: gt("Mixed across selected environments") }
     : source === "project"
       ? { state: "overridden", summary: gt("Overridden for this project") }
-      : source === "t3.json"
-        ? { state: "inherited", summary: gt("Inherited from the repository's t3.json") }
+      : source === "cod3.json"
+        ? { state: "inherited", summary: gt("Inherited from the repository's cod3.json") }
         : source === "environment" && scopedKeys.length > 0
           ? {
               state: "inherited",
@@ -530,12 +536,12 @@ export function SettingsRow({
       tabIndex={rowProps.tabIndex ?? -1}
       data-slot="settings-row"
       className={cn(
-        "group/settings-row @container/settings-row rounded-xl px-3 sm:px-4 aria-disabled:opacity-64 aria-disabled:[&_*]:text-muted-foreground",
-        children ? "pt-3 pb-1" : "py-3",
+        "group/settings-row @container/settings-row rounded-xl px-4 sm:px-5 aria-disabled:opacity-64 aria-disabled:[&_*]:text-muted-foreground",
+        children ? "pt-3.5 pb-1" : "py-3.5",
         className,
       )}
     >
-      <div className="flex flex-col gap-3 @min-[32rem]/settings-row:grid @min-[32rem]/settings-row:grid-cols-[minmax(0,1fr)_auto] @min-[32rem]/settings-row:items-center @min-[32rem]/settings-row:gap-8">
+      <div className="grid grid-cols-1 items-center gap-x-4 gap-y-2.5 has-[>[data-settings-control]>[data-slot=switch]]:grid-cols-[minmax(0,1fr)_auto] @min-[32rem]/settings-row:grid-cols-[minmax(0,1fr)_auto] @min-[32rem]/settings-row:gap-x-6">
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex min-h-5 items-center gap-1.5">
             <h3 className="text-sm font-medium text-foreground">{title}</h3>
@@ -552,12 +558,10 @@ export function SettingsRow({
                 {renderedInheritance}
               </span>
             ) : null}
-            <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
-              {renderedReset}
-            </span>
+            {renderedReset}
           </div>
           {description ? (
-            <p className="max-w-2xl text-pretty text-xs leading-normal text-muted-foreground">
+            <p className="max-w-prose text-pretty text-sm leading-snug text-muted-foreground">
               {description}
             </p>
           ) : null}
@@ -566,7 +570,10 @@ export function SettingsRow({
           ) : null}
         </div>
         {renderedControl ? (
-          <div className="flex w-full min-w-0 shrink-0 items-center gap-2 @min-[32rem]/settings-row:w-auto @min-[32rem]/settings-row:justify-end @min-[32rem]/settings-row:[&_[data-slot=select-trigger]]:min-w-40">
+          <div
+            data-settings-control
+            className="flex w-full min-w-0 shrink-0 items-center gap-2 @min-[32rem]/settings-row:w-auto @min-[32rem]/settings-row:justify-end @min-[32rem]/settings-row:[&_[data-slot=select-trigger]]:min-w-40"
+          >
             {renderedControl}
           </div>
         ) : null}
@@ -659,7 +666,10 @@ export function SettingsPageContainer({
         className="topbar-scroll-fade scrollbar-gutter-both flex-1 overflow-y-auto"
         data-settings-page-scroll
       >
-        <WorkspacePageContainer width={width} className={cn("gap-8", className)}>
+        <WorkspacePageContainer
+          width={width}
+          className={cn("gap-5 px-3 pt-4 sm:gap-6 sm:px-6 sm:pt-6", className)}
+        >
           <SettingsScopeSentence />
           {children}
         </WorkspacePageContainer>

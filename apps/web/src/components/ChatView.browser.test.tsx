@@ -1,5 +1,5 @@
 import { createMemoryHistory } from "@tanstack/react-router";
-import { scopeProjectRef, scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { scopeProjectRef, scopeThreadRef } from "@cod3/client-runtime/environment";
 import {
   EnvironmentId,
   IssueTrackerKind,
@@ -10,12 +10,12 @@ import {
   type IssueDetail,
   type IssueRef,
   type ThreadIssueLink,
-} from "@t3tools/contracts";
-import { DEFAULT_CLIENT_SETTINGS } from "@t3tools/contracts/settings";
+} from "@cod3/contracts";
+import { DEFAULT_CLIENT_SETTINGS } from "@cod3/contracts/settings";
 import {
   compileResolvedKeybindingsConfig,
   mergeWithDefaultKeybindings,
-} from "@t3tools/shared/keybindings";
+} from "@cod3/shared/keybindings";
 import type * as Context from "effect/Context";
 import * as Schema from "effect/Schema";
 import * as Effect from "effect/Effect";

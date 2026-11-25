@@ -1,4 +1,4 @@
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import { Atom } from "effect/reactivity";
 
 import { environmentCatalog } from "../connection/catalog";
@@ -18,7 +18,7 @@ export const hostEnvironmentIdAtom = Atom.make<string | null>(null).pipe(
   Atom.withLabel("web-host-environment-id"),
 );
 
-// This computer's environment: the primary, else a connection to the service sharing the app's T3 home.
+// This computer's environment: the primary, else a connection to the service sharing the app's cod3 home.
 export function createLocalEnvironmentIdAtom(input: {
   readonly primaryEnvironmentIdAtom: Atom.Atom<EnvironmentId | null>;
   readonly hostEnvironmentIdAtom: Atom.Atom<string | null>;

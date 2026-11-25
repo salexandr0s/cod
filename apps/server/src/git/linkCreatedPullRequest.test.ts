@@ -7,7 +7,7 @@ import {
   type OrchestrationV2ServerCommand as OrchestrationCommand,
   type OrchestrationProjectShell,
   SourceControlProviderKind,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -164,7 +164,7 @@ describe("linkCreatedPullRequest", () => {
         result: prResult({
           status: "created",
           number: 42,
-          url: "https://github.com/t3tools/t3code/pull/42",
+          url: "https://github.io/github/salexandr0s/cod3/pull/42",
         }),
         cwd: "/work/project",
         commandId,
@@ -179,16 +179,16 @@ describe("linkCreatedPullRequest", () => {
 
       expect(
         (yield* Ref.get(commands)).map((command) => "repository" in command && command.repository),
-      ).toEqual(["t3tools/t3code", "platform/tracked"]);
+      ).toEqual(["cod3tools/cod3", "platform/tracked"]);
       expect((yield* Ref.get(commands)).slice(0, 1)).toEqual([
         {
           type: "thread.pull-request.link",
           commandId: "server:pr-created-link:test",
           threadId: THREAD_ID,
           host: "github.com",
-          repository: "t3tools/t3code",
+          repository: "cod3tools/cod3",
           number: 42,
-          url: "https://github.com/t3tools/t3code/pull/42",
+          url: "https://github.io/github/salexandr0s/cod3/pull/42",
           source: "created",
         },
       ]);

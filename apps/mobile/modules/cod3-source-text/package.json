@@ -1,0 +1,35 @@
+{
+  "name": "@cod3/mobile-source-text",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "ios",
+    "src",
+    "index.ts",
+    "LICENSE",
+    "UPSTREAM.md",
+    "Cod3SourceText.podspec",
+    "react-native.config.js"
+  ],
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "react-native": "./index.ts",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "Cod3SourceTextSpec",
+    "type": "components",
+    "jsSrcsDir": "src",
+    "ios": {
+      "componentProvider": {
+        "Cod3SourceText": "Cod3SourceText",
+        "Cod3SourceTextRun": "Cod3SourceTextRun"
+      }
+    },
+    "outputDir": {
+      "ios": "ios/generated"
+    }
+  }
+}

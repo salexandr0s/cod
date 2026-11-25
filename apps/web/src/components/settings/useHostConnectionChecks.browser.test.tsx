@@ -1,4 +1,4 @@
-import { DeviceHostUnavailableError, EnvironmentId } from "@t3tools/contracts";
+import { DeviceHostUnavailableError, EnvironmentId } from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import { AsyncResult } from "effect/reactivity";
 import { describe, expect, it, vi } from "vite-plus/test";

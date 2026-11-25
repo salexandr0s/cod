@@ -1,7 +1,7 @@
 import { useAtomValue } from "@effect/atom-react";
-import type { EnvironmentId } from "@t3tools/contracts";
-import { CHATGPT_USAGE_URL } from "@t3tools/shared/usageLimits";
-import { collectExternalUsageLinks } from "@t3tools/shared/usageLimitsCopy";
+import type { EnvironmentId } from "@cod3/contracts";
+import { CHATGPT_USAGE_URL } from "@cod3/shared/usageLimits";
+import { collectExternalUsageLinks } from "@cod3/shared/usageLimitsCopy";
 import { T, useMessages, Var } from "gt-react-native";
 import { Pressable, View } from "react-native";
 import { tryOpenExternalUrl } from "../../lib/openExternalUrl";
@@ -38,7 +38,7 @@ export function ChatGptUsageSummary({
           className="min-h-11 justify-center"
           onPress={() => void tryOpenExternalUrl(usage.url)}
         >
-          <Text className="text-sm font-t3-medium text-primary">
+          <Text className="text-sm font-cod3-medium text-primary">
             <T>Manage usage</T>
           </Text>
         </Pressable>

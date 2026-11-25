@@ -1,16 +1,16 @@
 import {
   legacyThreadPullRequestKey,
   threadPullRequestKeyOf,
-} from "@t3tools/client-runtime/thread-pull-requests";
+} from "@cod3/client-runtime/thread-pull-requests";
 import {
   composerPullRequestsFromLinks,
   filterComposerPullRequestMatches,
   withLinkedComposerPullRequestsFirst,
-} from "@t3tools/shared/composerPullRequestMatches";
-import { resolveFilesystemReadAccess } from "@t3tools/client-runtime/state/filesystem";
+} from "@cod3/shared/composerPullRequestMatches";
+import { resolveFilesystemReadAccess } from "@cod3/client-runtime/state/filesystem";
 import { environmentSession } from "./session";
 import { useEnvironmentPresentation } from "./presentation";
-import type { VcsRefTarget } from "@t3tools/client-runtime/state/vcs";
+import type { VcsRefTarget } from "@cod3/client-runtime/state/vcs";
 import type {
   EnvironmentId,
   OrchestrationV2ProjectedTurnItem,
@@ -18,7 +18,7 @@ import type {
   ThreadPullRequestLink,
   VcsListRefsResult,
   VcsRef,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   createThreadSearchResultsAtomFamily,
   makeThreadSearchKey,
@@ -27,12 +27,12 @@ import {
   type SettledThreadSearch,
   type ThreadSearchResultsState,
   type ThreadSearchScope,
-} from "@t3tools/client-runtime/state/thread-search";
-import { THREAD_SEARCH_QUERY_MAX_LENGTH } from "@t3tools/contracts";
-import { messageSearchTokens } from "@t3tools/shared/paletteSearch";
+} from "@cod3/client-runtime/state/thread-search";
+import { THREAD_SEARCH_QUERY_MAX_LENGTH } from "@cod3/contracts";
+import { messageSearchTokens } from "@cod3/shared/paletteSearch";
 import { useAtomValue } from "@effect/atom-react";
 import * as Cause from "effect/Cause";
-import { turnItemDetailRevision } from "@t3tools/client-runtime/work-log/item-detail";
+import { turnItemDetailRevision } from "@cod3/client-runtime/work-log/item-detail";
 import * as Option from "effect/Option";
 import { AsyncResult, Atom } from "effect/reactivity";
 import { useEffect, useMemo, useState } from "react";
@@ -96,7 +96,7 @@ export interface ComposerPathSearchTarget {
 export function useDebouncedValue<A>(value: A, delayMs: number): A {
   const [debounced, setDebounced] = useState(value);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- timer that publishes the value after the delay and clears on change
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- timer that publishes the value after the delay and clears on change
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebounced(value);
@@ -261,7 +261,7 @@ export function useThreadSearch(
     : { query: "", matches: EMPTY_THREAD_SEARCH_MATCHES };
   // The shown results' rows stay mounted until newer results replace them.
   const shownKey = visible.query === "" ? null : searchKeyOf(visible.query);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- mounts the shown search results' rows into the shared thread registry until newer results replace them
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- mounts the shown search results' rows into the shared thread registry until newer results replace them
   useEffect(() => {
     if (shownKey === null) return;
     const environments = (JSON.parse(shownKey) as [ReadonlyArray<EnvironmentId>])[0];

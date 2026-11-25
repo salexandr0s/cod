@@ -1,5 +1,5 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import { videoMimeType } from "@t3tools/shared/video";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import { videoMimeType } from "@cod3/shared/video";
 import { T, useGT, useMessages } from "gt-react-native";
 import { Modal, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -167,7 +167,7 @@ function OpenVideoPreviewModal(props: {
           onPress={mediaActions.share}
           className="mx-4 my-3 min-h-12 items-center justify-center rounded-xl bg-white/15 px-4"
         >
-          <AppText className="font-t3-medium text-base text-white">
+          <AppText className="font-cod3-medium text-base text-white">
             {mediaActions.sharing ? gt("Opening share sheet...") : gt("Save or share video")}
           </AppText>
         </Pressable>

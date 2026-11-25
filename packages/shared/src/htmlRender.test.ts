@@ -14,7 +14,7 @@ describe("injectHtmlRenderBootstrap", () => {
     const html =
       "<!doctype html><html><head><style>:root{--background:red}</style></head><body>x</body></html>";
     const injected = injectHtmlRenderBootstrap(html);
-    const themeAt = injected.indexOf('<style id="t3-theme">');
+    const themeAt = injected.indexOf('<style id="cod3-theme">');
     expect(themeAt).toBeGreaterThan(injected.indexOf("<head>"));
     expect(themeAt).toBeLessThan(injected.indexOf(":root{--background:red}"));
     expect(injected).toContain('<meta charset="utf-8">');
@@ -32,7 +32,7 @@ describe("injectHtmlRenderBootstrap", () => {
     const content = `${head ? "" : "<title>Report</title></head>"}<body><p>Report</p></body></html>`;
     const injected = injectHtmlRenderBootstrap(prefix + content);
     expect(injected.startsWith(`${prefix}${head}<meta charset="utf-8">`)).toBe(true);
-    expect(injected.indexOf('<style id="t3-theme">')).toBeGreaterThan(prefix.length);
+    expect(injected.indexOf('<style id="cod3-theme">')).toBeGreaterThan(prefix.length);
     expect(injected).toContain("<script>");
     expect(injected.endsWith(content)).toBe(true);
   });
@@ -51,7 +51,7 @@ describe("injectHtmlRenderBootstrap", () => {
     const fragment = `<${tag}><head><meta name="viewport"></head></${tag}>`;
     const injected = injectHtmlRenderBootstrap(fragment);
     expect(injected.startsWith("<!doctype html><head>")).toBe(true);
-    expect(injected.indexOf('<style id="t3-theme">')).toBeLessThan(injected.indexOf(`<${tag}>`));
+    expect(injected.indexOf('<style id="cod3-theme">')).toBeLessThan(injected.indexOf(`<${tag}>`));
     expect(injected).toContain('<meta name="viewport" content="width=device-width');
     expect(injected.endsWith(fragment)).toBe(true);
   });
@@ -62,7 +62,9 @@ describe("injectHtmlRenderBootstrap", () => {
   ])("keeps the bootstrap outside inert template content: %s", (fragment) => {
     const injected = injectHtmlRenderBootstrap(fragment);
     expect(injected.startsWith("<!doctype html><head>")).toBe(true);
-    expect(injected.indexOf('<style id="t3-theme">')).toBeLessThan(injected.indexOf("<template>"));
+    expect(injected.indexOf('<style id="cod3-theme">')).toBeLessThan(
+      injected.indexOf("<template>"),
+    );
     expect(injected).toContain('<meta name="viewport" content="width=device-width');
     expect(injected.endsWith(fragment)).toBe(true);
   });
@@ -72,7 +74,7 @@ describe("injectHtmlRenderBootstrap", () => {
       '<!-- copy <head> and <meta name="viewport"> here --><html><head>' +
       "<script>const tag = '<meta name=\"viewport\">';</script></head><body>x</body></html>";
     const injected = injectHtmlRenderBootstrap(html);
-    expect(injected.indexOf('<style id="t3-theme">')).toBeGreaterThan(
+    expect(injected.indexOf('<style id="cod3-theme">')).toBeGreaterThan(
       injected.indexOf("<html><head>"),
     );
     expect(injected).toContain('<meta name="viewport" content="width=device-width');
@@ -106,7 +108,7 @@ describe("readHtmlRenderLinkRequest", () => {
       }),
     ).toBeUndefined();
     expect(
-      readHtmlRenderLinkRequest({ type: "t3-html-render-link", url: "https://example.com" }),
+      readHtmlRenderLinkRequest({ type: "cod3-html-render-link", url: "https://example.com" }),
     ).toBeUndefined();
   });
 });
@@ -115,7 +117,7 @@ describe("readHtmlRenderImageRequest", () => {
   it("accepts http(s) and inline image URLs in an open-image notification", () => {
     const image = (params: unknown) => ({
       jsonrpc: "2.0",
-      method: "t3/notifications/open-image",
+      method: "cod3/notifications/open-image",
       params,
     });
     expect(
@@ -145,7 +147,7 @@ describe("readHtmlRenderImageRequest", () => {
     const request = (overrides: object) =>
       readHtmlRenderImageRequest({
         jsonrpc: "2.0",
-        method: "t3/notifications/open-image",
+        method: "cod3/notifications/open-image",
         params: { ...params, ...overrides },
       });
     expect(request({})).toEqual({
@@ -163,15 +165,15 @@ describe("htmlRenderFromToolItem", () => {
 
   it("reads the reference from each provider's result envelope", () => {
     for (const [toolName, output] of [
-      ["mcp__t3-code__html_render", [{ type: "text", text: JSON.stringify(result) }]],
-      ["t3-code.html_render", { structuredContent: result, content: [] }],
-      ["t3-code-thread_1_html_render", JSON.stringify(result)],
+      ["mcp__cod3__html_render", [{ type: "text", text: JSON.stringify(result) }]],
+      ["cod3.html_render", { structuredContent: result, content: [] }],
+      ["cod3-thread_1_html_render", JSON.stringify(result)],
       ["html_render", result],
       // OpenCode 2 Code Mode reports a script's nested html_render call as one `execute` item.
       ["execute", JSON.stringify(result)],
       // Antigravity runs the `acp-mcp-call` terminal fallback and wraps its stdout.
       [
-        "t3-code.html_render",
+        "cod3.html_render",
         {
           output: `Created At: 2026-11-19T02:54:02Z\nCompleted At: 2026-11-19T02:54:02Z\nCommand exited with code 0.\n\nCommand output:\n${JSON.stringify({ content: [], structuredContent: result, isError: false })}\r\n`,
           exit_code: 0,

@@ -42,7 +42,7 @@ export function SettingsProviderRow(props: {
             />
           </View>
         </View>
-        <Text className="shrink-0 text-base font-t3-bold leading-snug text-foreground">
+        <Text className="shrink-0 text-base font-cod3-bold leading-snug text-foreground">
           {props.label}
         </Text>
         {props.detail ? (

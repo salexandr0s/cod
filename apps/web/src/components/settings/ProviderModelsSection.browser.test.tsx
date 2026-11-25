@@ -1,8 +1,4 @@
-import {
-  ProviderDriverKind,
-  ProviderInstanceId,
-  type ServerProviderModel,
-} from "@t3tools/contracts";
+import { ProviderDriverKind, ProviderInstanceId, type ServerProviderModel } from "@cod3/contracts";
 import { type ComponentProps, useState } from "react";
 import { expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";

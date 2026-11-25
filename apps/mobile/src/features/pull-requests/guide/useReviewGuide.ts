@@ -1,7 +1,7 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { useAtomValue } from "@effect/atom-react";
 import { useFocusEffect } from "@react-navigation/native";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import { AsyncResult } from "effect/reactivity";
 import { msg } from "gt-react-native";
 import { useRef, useState } from "react";

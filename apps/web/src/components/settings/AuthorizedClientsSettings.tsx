@@ -1,7 +1,7 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m as resolveMessage } from "~/i18n/messages";
-import { managedCapabilityDenial } from "@t3tools/client-runtime/contract-labels";
-import { AUTH_SCOPE_OPTIONS as PAIRING_SCOPE_OPTIONS } from "@t3tools/shared/authScopeOptions";
+import { managedCapabilityDenial } from "@cod3/client-runtime/contract-labels";
+import { AUTH_SCOPE_OPTIONS as PAIRING_SCOPE_OPTIONS } from "@cod3/shared/authScopeOptions";
 import { PlugIcon, PlusIcon, QrCodeIcon } from "lucide-react";
 import { type ReactNode, memo, useId, useRef, useState } from "react";
 import { T, useGT, useMessages } from "gt-react";
@@ -19,11 +19,11 @@ import {
   type AuthPairingCredentialResult,
   type AdvertisedEndpoint,
   type EnvironmentId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { cn } from "../../lib/utils";

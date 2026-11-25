@@ -107,6 +107,7 @@ import {
   WorkspaceAddTaskFolderRepositoryInput,
   WorkspaceListFoldersInput,
   WorkspaceListFoldersResult,
+  WorkspaceDiscoverProjectsResult,
   WorkspaceScanFoldersInput,
   WorkspaceScanFoldersResult,
   WorkspaceTaskFolderInput,
@@ -499,6 +500,7 @@ export const WS_METHODS = {
 
   filesystemBrowse: "filesystem.browse",
   workspaceListFolders: "workspace.listFolders",
+  workspaceDiscoverProjects: "workspace.discoverProjects",
   workspaceScanFolders: "workspace.scanFolders",
   workspaceTaskFolder: "workspace.taskFolder",
   workspaceAddTaskFolderRepository: "workspace.addTaskFolderRepository",
@@ -1706,6 +1708,12 @@ const WsWorkspaceListFoldersRpc = Rpc.make(WS_METHODS.workspaceListFolders, {
   error: Schema.Union([WorkspaceFoldersError, EnvironmentAuthorizationError]),
 });
 
+const WsWorkspaceDiscoverProjectsRpc = Rpc.make(WS_METHODS.workspaceDiscoverProjects, {
+  payload: WorkspaceScanFoldersInput,
+  success: WorkspaceDiscoverProjectsResult,
+  error: Schema.Union([WorkspaceFoldersError, EnvironmentAuthorizationError]),
+});
+
 const WsWorkspaceScanFoldersRpc = Rpc.make(WS_METHODS.workspaceScanFolders, {
   payload: WorkspaceScanFoldersInput,
   success: WorkspaceScanFoldersResult,
@@ -2454,7 +2462,7 @@ const WsSubscribeResourceTelemetryRpc = Rpc.make(WS_METHODS.subscribeResourceTel
 });
 
 export class RpcScopeAuthorization extends RpcMiddleware.Service<RpcScopeAuthorization>()(
-  "t3/contracts/RpcScopeAuthorization",
+  "cod3/contracts/RpcScopeAuthorization",
   { error: EnvironmentAuthorizationError },
 ) {}
 
@@ -2623,6 +2631,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsShellOpenInEditorRpc,
   WsFilesystemBrowseRpc,
   WsWorkspaceListFoldersRpc,
+  WsWorkspaceDiscoverProjectsRpc,
   WsWorkspaceScanFoldersRpc,
   WsWorkspaceTaskFolderRpc,
   WsWorkspaceAddTaskFolderRepositoryRpc,

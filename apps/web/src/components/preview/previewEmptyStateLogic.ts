@@ -1,4 +1,4 @@
-import type { ProjectScript } from "@t3tools/contracts";
+import type { ProjectScript } from "@cod3/contracts";
 
 export function getConfiguredPreviewUrls(
   scripts: ReadonlyArray<ProjectScript> | undefined,

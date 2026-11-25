@@ -10,10 +10,10 @@ import type {
   ProjectReadFileResult,
   ProjectWriteFileInput,
   ProjectWriteFileResult,
-} from "@t3tools/contracts";
-import { expandHomePath } from "@t3tools/provider-core/server/pathExpansion";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { isNetworkPath } from "@t3tools/shared/path";
+} from "@cod3/contracts";
+import { expandHomePath } from "@cod3/provider-core/server/pathExpansion";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { isNetworkPath } from "@cod3/shared/path";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -133,7 +133,7 @@ export class WorkspaceFileSystem extends Context.Service<
       | KnownWorkspaces.UnknownWorkspaceError
     >;
   }
->()("t3/workspace/WorkspaceFileSystem") {}
+>()("cod3/workspace/WorkspaceFileSystem") {}
 
 const UTF8_BOM = "\uFEFF";
 

@@ -1,6 +1,6 @@
 /** Shared ranking keeps command palettes and MCP thread search consistent across surfaces. */
 
-import type { OrchestrationV2ThreadOpens } from "@t3tools/contracts";
+import type { OrchestrationV2ThreadOpens } from "@cod3/contracts";
 
 import { WORKTREE_BRANCH_PREFIX } from "./git.ts";
 
@@ -213,8 +213,8 @@ function matchToken(
       field.wordStarts[index] ||
       (ownBoundary ??= !ALPHANUMERIC.test(token[0]!) && !SYMBOL.test(token[0]!))
     ) {
-      // Whole when the match ends where a word ends: "t3c" is a prefix of
-      // "t3code", ".ts" whole in "index.ts" but a prefix in "parser.tsx".
+      // Whole when the match ends where a word ends: "cod3c" is a prefix of
+      // "cod3", ".ts" whole in "index.ts" but a prefix in "parser.tsx".
       const end = index + token.length;
       const whole =
         end >= field.text.length ||
@@ -238,7 +238,7 @@ function matchToken(
     if (joined) return joined;
   }
   if ((best !== null && best.score > MID_WORD) || !typos || token.length < 3) return best;
-  // Numbers skip typos to keep pull requests distinct. Words with digits ("t3code") do not.
+  // Numbers skip typos to keep pull requests distinct. Words with digits ("cod3") do not.
   if (LETTER.test(token)) {
     for (let index = 0; index < field.text.length; index++) {
       if (!field.wordStarts[index]) continue;
@@ -275,7 +275,7 @@ function matchToken(
 
 /**
  * Short words followed by a short prefix are noise inside a title ("inth" in "in thread").
- * Allow them at its start ("t3co"), before three letters ("gomod"), or a whole word ("vscode").
+ * Allow them at its start ("cod3co"), before three letters ("gomod"), or a whole word ("vscode").
  */
 function matchJoinedWords(field: SearchField, token: string): TokenMatch | null {
   for (
@@ -930,16 +930,16 @@ export interface SearchMatchHint {
   readonly ranges: ReadonlyArray<SearchRange>;
 }
 
-// Most threads' branches start with the app's own worktree prefix ("t3/", and
-// "t3code/" before it, "t3-<hex>" when a "t3" branch blocks nested refs), so
-// "t3 connect" would match nearly every thread.
-// Only before more text, so typing "t3/" does not empty the list for a keystroke.
+// Most threads' branches start with the app's own worktree prefix ("cod3/", and
+// "cod3/" before it, "cod3-<hex>" when a "cod3" branch blocks nested refs), so
+// "cod3 connect" would match nearly every thread.
+// Only before more text, so typing "cod3/" does not empty the list for a keystroke.
 const WORKTREE_BRANCH_PREFIX_PATTERN = new RegExp(
-  `^(?:(?:${WORKTREE_BRANCH_PREFIX}|t3code)/(?=\\S)|${WORKTREE_BRANCH_PREFIX}-(?=[0-9a-f]{8}$))`,
+  `^(?:(?:${WORKTREE_BRANCH_PREFIX}|cod3)/(?=\\S)|${WORKTREE_BRANCH_PREFIX}-(?=[0-9a-f]{8}$))`,
 );
 
 // The flat prefix anywhere in a query, while its hex is still being typed, so
-// "t3-abcd" and "connect t3-abcd1234" still reach the stripped branch field.
+// "cod3-abcd" and "connect cod3-abcd1234" still reach the stripped branch field.
 const FLAT_BRANCH_QUERY_PREFIX_PATTERN = new RegExp(
   `(^| )${WORKTREE_BRANCH_PREFIX}-(?=[0-9a-f]{1,8}(?: |$))`,
   "g",

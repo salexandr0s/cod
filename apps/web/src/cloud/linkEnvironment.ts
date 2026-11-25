@@ -16,15 +16,15 @@ import {
   EnvironmentHttpUnauthorizedError,
   EnvironmentId,
   WS_METHODS,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   type RelayEnvironmentLinkResponse,
   type RelayManagedEndpointProviderKind,
-} from "@t3tools/contracts/relay";
-import { EnvironmentRegistry, EnvironmentSupervisor } from "@t3tools/client-runtime/connection";
-import { request, runStream } from "@t3tools/client-runtime/rpc";
-import { ManagedRelay, relayRequestFailureDetail } from "@t3tools/client-runtime/relay";
-import { executeConnectedEnvironmentHttpRequest } from "@t3tools/client-runtime/state/environmentHttpAuth";
+} from "@cod3/contracts/relay";
+import { EnvironmentRegistry, EnvironmentSupervisor } from "@cod3/client-runtime/connection";
+import { request, runStream } from "@cod3/client-runtime/rpc";
+import { ManagedRelay, relayRequestFailureDetail } from "@cod3/client-runtime/relay";
+import { executeConnectedEnvironmentHttpRequest } from "@cod3/client-runtime/state/environmentHttpAuth";
 
 import { m } from "../i18n/messages";
 import { resolveCloudPublicConfig } from "./publicConfig";
@@ -69,7 +69,7 @@ const ensureRelayClientAvailable = Effect.fn("linkEnvironment.ensureRelayClientA
     if (status.status === "unsupported") {
       return yield* new CloudEnvironmentLinkError({
         message: m(
-          msg("T3 Code cannot install the relay client automatically on {platform}-{arch}.", {
+          msg("cod3 cannot install the relay client automatically on {platform}-{arch}.", {
             platform: status.platform,
             arch: status.arch,
           }),
@@ -110,7 +110,7 @@ const ensureRelayClientAvailable = Effect.fn("linkEnvironment.ensureRelayClientA
         message:
           installedStatus.status === "unsupported"
             ? m(
-                msg("T3 Code cannot install the relay client automatically on {platform}-{arch}.", {
+                msg("cod3 cannot install the relay client automatically on {platform}-{arch}.", {
                   platform: installedStatus.platform,
                   arch: installedStatus.arch,
                 }),
@@ -285,7 +285,7 @@ export const readCloudLinkState: (input: {
     );
   });
 
-/** Runs the environment's T3 Connect reachability check now; the link state then reports it. */
+/** Runs the environment's cod3 Connect reachability check now; the link state then reports it. */
 export const checkCloudReachability: (input: {
   readonly target: CloudLinkTarget;
 }) => Effect.Effect<EnvironmentConnectReachability, CloudEnvironmentLinkError, CloudLinkServices> =
@@ -300,8 +300,8 @@ export const checkCloudReachability: (input: {
         request: ({ client, headers }) => client.checkReachability({ headers }),
       },
       {
-        message: msg("Could not check T3 Connect."),
-        withDetail: msg("Could not check T3 Connect: {detail}"),
+        message: msg("Could not check cod3 Connect."),
+        withDetail: msg("Could not check cod3 Connect: {detail}"),
       },
     );
   });
@@ -369,7 +369,7 @@ export const unlinkEnvironmentFromCloud: (input: {
           decodedRelayClientError(
             m(
               msg(
-                "Disconnected locally, but T3 Connect did not confirm it removed this environment",
+                "Disconnected locally, but cod3 Connect did not confirm it removed this environment",
               ),
             ),
           ),
@@ -398,7 +398,7 @@ export const linkEnvironmentToCloud: (input: {
   const configuredRelayUrl = relayUrl();
   if (!configuredRelayUrl) {
     return yield* new CloudEnvironmentLinkError({
-      message: m(msg("{name} is not configured.", { name: "T3CODE_RELAY_URL" })),
+      message: m(msg("{name} is not configured.", { name: "COD3_RELAY_URL" })),
     });
   }
   const managedTunnelsEnabled = (input.mode ?? "managed") === "managed";

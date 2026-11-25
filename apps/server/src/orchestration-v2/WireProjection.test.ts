@@ -19,7 +19,7 @@ import {
   type OrchestrationV2ThreadStreamItem,
   OrchestrationV2TurnItem,
   OrchestrationV2TurnItemJson,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "@effect/vitest";
 import * as DateTime from "effect/DateTime";
 import * as Schema from "effect/Schema";
@@ -33,7 +33,7 @@ import {
   projectStoredEventForWire,
 } from "./WireProjection.ts";
 import { threadShellFromProjection } from "./ProjectionStore.ts";
-import { MAX_TOOL_OUTPUT_IMAGES, toolOutputImages } from "@t3tools/shared/toolOutput";
+import { MAX_TOOL_OUTPUT_IMAGES, toolOutputImages } from "@cod3/shared/toolOutput";
 
 const decodeTurnItem = Schema.decodeUnknownSync(OrchestrationV2TurnItem);
 const encodeTurnItemJson = Schema.encodeSync(OrchestrationV2TurnItemJson);
@@ -218,7 +218,7 @@ describe("orchestration V2 wire projection", () => {
     const item = {
       ...base,
       type: "dynamic_tool" as const,
-      toolName: "mcp__t3-code__device_screenshot",
+      toolName: "mcp__cod3__device_screenshot",
       input: { deviceId: "phone" },
       output: {
         content: [{ type: "image", source: { type: "base64", media_type: "image/png", data } }],
@@ -229,7 +229,7 @@ describe("orchestration V2 wire projection", () => {
     });
     expect(item.output.content[0]?.source.data).toBe(data);
 
-    const t3McpApp = {
+    const cod3McpApp = {
       attachmentId: "app-html",
       server: "repro",
       tool: "chart",
@@ -240,12 +240,12 @@ describe("orchestration V2 wire projection", () => {
       ...item,
       toolName: "repro.chart",
       output: {
-        t3McpApp,
+        cod3McpApp,
         result: { content: [text, { type: "image", mimeType: "image/png", data }] },
       },
     };
     expect(projectTurnItemForDetail(appItem)).toMatchObject({
-      output: { t3McpApp, result: { content: [text, { type: "image", mimeType: "image/png" }] } },
+      output: { cod3McpApp, result: { content: [text, { type: "image", mimeType: "image/png" }] } },
     });
     const largeOutput = projectTurnItemForDetail(appItem);
     expect(
@@ -253,7 +253,7 @@ describe("orchestration V2 wire projection", () => {
     ).not.toContain(data);
 
     const smallApp = {
-      t3McpApp,
+      cod3McpApp,
       result: { content: [text, { type: "image", mimeType: "image/png", data: "iVBORw0KGgo=" }] },
     };
     expect(projectTurnItemForDetail({ ...appItem, output: smallApp })).toMatchObject({
@@ -262,7 +262,7 @@ describe("orchestration V2 wire projection", () => {
 
     const forged = projectTurnItemForDetail({
       ...appItem,
-      output: { t3McpApp: { ...t3McpApp, resourceUri: data }, result: { content: [text] } },
+      output: { cod3McpApp: { ...cod3McpApp, resourceUri: data }, result: { content: [text] } },
     });
     expect(
       JSON.stringify(forged.type === "dynamic_tool" ? forged.output : null).length,
@@ -508,7 +508,7 @@ describe("live body deduper", () => {
         parentCheckpointId: null,
         ordinalWithinScope: 1,
         appRunOrdinal: null,
-        ref: CheckpointRef.make("refs/t3/checkpoints/large"),
+        ref: CheckpointRef.make("refs/cod3/checkpoints/large"),
         status: "ready",
         files,
         capturedAt: at,

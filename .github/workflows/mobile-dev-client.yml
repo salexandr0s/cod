@@ -60,7 +60,7 @@ permissions:
 jobs:
   android:
     name: Android ${{ matrix.abi }}
-    if: github.repository == 'pingdotgg/t3code' && (github.event_name != 'workflow_dispatch' || inputs.platform == 'android')
+    if: github.repository == vars.COD3_RELEASE_REPOSITORY && (github.event_name != 'workflow_dispatch' || inputs.platform == 'android')
     runs-on: blacksmith-32vcpu-ubuntu-2404
     timeout-minutes: 45
     strategy:
@@ -78,9 +78,9 @@ jobs:
       ABI: ${{ matrix.abi }}
       EXPECTED_FINGERPRINT: ${{ inputs.fingerprint }}
       # A pull request checks that the build works: it builds even on a cache hit and shares nothing.
-      T3_NATIVE_CLIENT_CACHE: ${{ github.event_name == 'pull_request' && 'off' || '' }}
+      COD3_NATIVE_CLIENT_CACHE: ${{ github.event_name == 'pull_request' && 'off' || '' }}
       # Gradle and Xcode output goes to the job log, not a file on the runner.
-      T3_NATIVE_CLIENT_VERBOSE: "1"
+      COD3_NATIVE_CLIENT_VERBOSE: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -126,7 +126,7 @@ jobs:
 
       - name: Prepare build directories
         run: |
-          cache="$HOME/.cache/t3-android-dev-client"
+          cache="$HOME/.cache/cod3-android-dev-client"
           {
             echo "GRADLE_USER_HOME=$cache/gradle"
             echo "CCACHE_DIR=$cache/ccache"
@@ -147,7 +147,7 @@ jobs:
         uses: useblacksmith/stickydisk@3f6be1451e3cad893b778bc93495c80452a5da26 # v1.7.2
         with:
           key: ${{ github.repository }}-android-dev-client-${{ matrix.abi }}
-          path: ~/.cache/t3-android-dev-client
+          path: ~/.cache/cod3-android-dev-client
 
       - name: Configure Gradle and ccache
         run: |
@@ -161,8 +161,8 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-ci-deps
         with:
-          task-cache-read-token: ${{ secrets.T3_TASK_CACHE_READ_TOKEN }}
-          install-args: --filter=@t3tools/mobile... --filter=@t3tools/scripts...
+          task-cache-read-token: ${{ secrets.COD3_TASK_CACHE_READ_TOKEN }}
+          install-args: --filter=@cod3/mobile... --filter=@cod3/scripts...
 
       - name: Setup Java
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
@@ -176,10 +176,10 @@ jobs:
         name: Log in to the native client cache
         if: github.event_name != 'pull_request'
         env:
-          WRITE_TOKEN: ${{ secrets.T3_NATIVE_CLIENT_WRITE_TOKEN }}
+          WRITE_TOKEN: ${{ secrets.COD3_NATIVE_CLIENT_WRITE_TOKEN }}
         run: |
           if [ -z "$WRITE_TOKEN" ]; then
-            echo "::warning::T3_NATIVE_CLIENT_WRITE_TOKEN is not set; nothing can be shared, so nothing is built."
+            echo "::warning::COD3_NATIVE_CLIENT_WRITE_TOKEN is not set; nothing can be shared, so nothing is built."
             exit 0
           fi
           node --input-type=module <<'NODE'
@@ -187,7 +187,7 @@ jobs:
           import { homedir } from "node:os";
           import { join } from "node:path";
           const { endpoint } = JSON.parse(readFileSync(".task-cache.json", "utf8"));
-          const directory = join(homedir(), ".config/t3-task-cache");
+          const directory = join(homedir(), ".config/cod3-task-cache");
           mkdirSync(directory, { recursive: true, mode: 0o700 });
           writeFileSync(
             join(directory, "credentials.json"),
@@ -195,7 +195,7 @@ jobs:
             { mode: 0o600 },
           );
           NODE
-          echo "T3_NATIVE_CLIENT_SHARE=required" >> "$GITHUB_ENV"
+          echo "COD3_NATIVE_CLIENT_SHARE=required" >> "$GITHUB_ENV"
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
       - name: Build and share
@@ -218,7 +218,7 @@ jobs:
 
   ios:
     name: iOS simulator
-    if: github.repository == 'pingdotgg/t3code' && (github.event_name != 'workflow_dispatch' || inputs.platform == 'ios')
+    if: github.repository == vars.COD3_RELEASE_REPOSITORY && (github.event_name != 'workflow_dispatch' || inputs.platform == 'ios')
     runs-on: blacksmith-12vcpu-macos-27
     timeout-minutes: 60
     concurrency:
@@ -227,9 +227,9 @@ jobs:
     env:
       NODE_OPTIONS: --max-old-space-size=8192
       EXPECTED_FINGERPRINT: ${{ inputs.fingerprint }}
-      T3_NATIVE_CLIENT_CACHE: ${{ github.event_name == 'pull_request' && 'off' || '' }}
+      COD3_NATIVE_CLIENT_CACHE: ${{ github.event_name == 'pull_request' && 'off' || '' }}
       # Gradle and Xcode output goes to the job log, not a file on the runner.
-      T3_NATIVE_CLIENT_VERBOSE: "1"
+      COD3_NATIVE_CLIENT_VERBOSE: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -276,18 +276,18 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-ci-deps
         with:
-          task-cache-read-token: ${{ secrets.T3_TASK_CACHE_READ_TOKEN }}
-          install-args: --filter=@t3tools/mobile... --filter=@t3tools/scripts...
+          task-cache-read-token: ${{ secrets.COD3_TASK_CACHE_READ_TOKEN }}
+          install-args: --filter=@cod3/mobile... --filter=@cod3/scripts...
 
       # Only this login can write to the cache; pull requests never get it.
       - id: login
         name: Log in to the native client cache
         if: github.event_name != 'pull_request'
         env:
-          WRITE_TOKEN: ${{ secrets.T3_NATIVE_CLIENT_WRITE_TOKEN }}
+          WRITE_TOKEN: ${{ secrets.COD3_NATIVE_CLIENT_WRITE_TOKEN }}
         run: |
           if [ -z "$WRITE_TOKEN" ]; then
-            echo "::warning::T3_NATIVE_CLIENT_WRITE_TOKEN is not set; nothing can be shared, so nothing is built."
+            echo "::warning::COD3_NATIVE_CLIENT_WRITE_TOKEN is not set; nothing can be shared, so nothing is built."
             exit 0
           fi
           node --input-type=module <<'NODE'
@@ -295,7 +295,7 @@ jobs:
           import { homedir } from "node:os";
           import { join } from "node:path";
           const { endpoint } = JSON.parse(readFileSync(".task-cache.json", "utf8"));
-          const directory = join(homedir(), ".config/t3-task-cache");
+          const directory = join(homedir(), ".config/cod3-task-cache");
           mkdirSync(directory, { recursive: true, mode: 0o700 });
           writeFileSync(
             join(directory, "credentials.json"),
@@ -303,7 +303,7 @@ jobs:
             { mode: 0o600 },
           );
           NODE
-          echo "T3_NATIVE_CLIENT_SHARE=required" >> "$GITHUB_ENV"
+          echo "COD3_NATIVE_CLIENT_SHARE=required" >> "$GITHUB_ENV"
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
       - name: Build and share

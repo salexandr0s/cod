@@ -1,5 +1,5 @@
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import type { ScopedThreadRef } from "@t3tools/contracts";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import type { ScopedThreadRef } from "@cod3/contracts";
 import { useNavigate } from "@tanstack/react-router";
 
 import { type LinkedThreadSurface, linkedThreadRouteParams } from "../linkedThreadSurface";

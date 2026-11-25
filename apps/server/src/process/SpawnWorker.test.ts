@@ -12,13 +12,13 @@ import * as Result from "effect/Result";
 import * as Stream from "effect/Stream";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import * as SpawnWorker from "./SpawnWorker.ts";
 
 const envChdir = vi.hoisted(() => ({ supported: true }));
-vi.mock("@t3tools/shared/envTrampoline", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@t3tools/shared/envTrampoline")>()),
+vi.mock("@cod3/shared/envTrampoline", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@cod3/shared/envTrampoline")>()),
   supportsEnvChdir: () => Promise.resolve(envChdir.supported),
 }));
 
@@ -126,7 +126,7 @@ describe("SpawnWorker", () => {
     Effect.gen(function* () {
       const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
       const missing = yield* spawner
-        .spawn(ChildProcess.make("t3-missing-command-25245"))
+        .spawn(ChildProcess.make("cod3-missing-command-25245"))
         .pipe(Effect.result);
       expect(Result.isFailure(missing)).toBe(true);
       if (Result.isFailure(missing)) expect(missing.failure.reason._tag).toBe("NotFound");

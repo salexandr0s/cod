@@ -1,4 +1,4 @@
-import type { EnvironmentId, EnvironmentMachineKind } from "@t3tools/contracts";
+import type { EnvironmentId, EnvironmentMachineKind } from "@cod3/contracts";
 import { T, useGT } from "gt-react";
 
 import { m, type MessageResolver } from "../i18n/messages";

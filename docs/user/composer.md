@@ -54,7 +54,7 @@ before an upload finishes requires you to attach that file again.
 You can drag or paste images into the web or desktop composer. HEIC and HEIF
 photos are converted to JPEG there and when selected from the mobile photo
 library; photos over the image limit are also resized to fit. On mobile, you can
-also send files to T3 Code through another app's system share sheet.
+also send files to cod3 through another app's system share sheet.
 On Android, you can also drag images from another app into the message input
 in split screen.
 
@@ -108,7 +108,7 @@ Steer when the running agent supports it.
 
 Mobile keeps local copies of draft attachments, so you can preview them and queue
 messages while disconnected. Uploads resume when you reconnect. Drafts and queued
-messages survive app restarts. Signing out of T3 Connect keeps that work on your
+messages survive app restarts. Signing out of cod3 Connect keeps that work on your
 device until you sign back into the same account.
 
 ## Custom models
@@ -134,7 +134,7 @@ instance:
 
 ## Model defaults
 
-T3 Code remembers your provider, model, and model options for new threads. A
+cod3 remembers your provider, model, and model options for new threads. A
 project's configured model takes precedence; resetting that project setting
 returns to the remembered selection.
 
@@ -182,7 +182,7 @@ Turn on **Suggest next prompt** in Settings > Labs. After a Claude or Codex turn
 empty composer shows a predicted next message. Press `Tab` to fill it in, then edit or send it, or
 press `Escape` to dismiss it. Each suggestion is one extra request that reuses the turn's prompt
 cache, so it uses a little of your plan's usage. Claude skips suggestions on the first turn of a
-thread and near usage limits. Codex needs version 0.165 or later; if T3 Code manages
+thread and near usage limits. Codex needs version 0.165 or later; if cod3 manages
 Codex, update it in Settings > Providers. Codex follows a change to the setting at once; open Claude
 threads follow it after they restart. Suggestions show on web and desktop.
 
@@ -238,7 +238,7 @@ speech recognition. If the chosen environment disconnects, dictation stops; it n
 switches hosts. Choose **This device** to revoke access and discard pending audio.
 For [cloud dictation](./voice-input.md#choose-where-audio-goes), open **Cloud providers**
 under the environment in **Settings → Voice** and confirm which provider may receive recordings.
-On Android, keep T3 Code open while recording and transcribing.
+On Android, keep cod3 open while recording and transcribing.
 
 On-device dictation may need a network connection to download a speech model the
 first time. After that it works offline for that language. iPhone dictates in the
@@ -261,7 +261,7 @@ microphone on iOS. Swipe a device left to forget it. Android may use another inp
 when the preferred microphone cannot be routed. Devices with the same name may share
 a saved preference, but simultaneous same-name inputs remain separately selectable.
 
-T3 Code deletes the temporary recording from your phone after transcription or
+cod3 deletes the temporary recording from your phone after transcription or
 cancellation. The transcript stays in your draft until you send the message to the agent.
 
 ## Queued messages
@@ -309,7 +309,7 @@ After you add or change skills, plugins, or MCP servers, use **Restart agent
 session** in the command palette on web and desktop. The conversation continues,
 and your next message starts the agent again with the new setup.
 
-Provider commands must start the message to run. T3 Code commands such as
+Provider commands must start the message to run. cod3 commands such as
 `/model` and skill mentions work on any line.
 
 Send `/compact` in an existing conversation to reduce context usage when the
@@ -393,7 +393,7 @@ exist only as chips: deleting a file's last chip removes the file from the messa
 Copy text that holds chips and paste it into another draft, in the same thread or another one,
 and the chips come along with what they point to. Images and files are fetched again from the
 environment they came from; while that happens the chip shows a dashed outline, and if it cannot
-complete T3 Code tells you and leaves the chip for you to remove or replace. A chip whose
+complete cod3 tells you and leaves the chip for you to remove or replace. A chip whose
 context is no longer available shows the same dashed outline; hover it for what to do.
 
 Copying a message with the copy button, or copying text out of it, gives other apps readable
@@ -403,6 +403,19 @@ them back.
 
 On mobile, tap a chip to inspect its content. File references open the current file; attached
 files show the copy that was attached to the message.
+
+## Project documents
+
+On desktop and web, open the right panel to find **Project documents**. The same shortcuts
+appear above the file tree in **Files**. Select a document to read it alongside the conversation.
+The list checks the current checkout and its `docs/` folder for common planning filenames,
+including `checklist.md`, `goal.md`, and `technical-requirements.md`. Checklists come first.
+For other names or folders, use the search box in **Files**.
+
+Planning documents open in a full-width Markdown reader by default. Select **Show file explorer**
+to keep the document list beside the page. The reader remembers your explorer and Markdown
+view preferences. Tick a box to update the file when you have write access. The progress
+bar counts checked tasks and skips examples inside code blocks.
 
 ## Attached files
 
@@ -442,7 +455,7 @@ styles, or images from neighboring files.
 
 On web and desktop, HTML and PDF files open as rendered pages. Switch an HTML
 file to source view to read its markup; a link to a specific line opens source
-automatically. HTML previews cannot access your T3 Code session.
+automatically. HTML previews cannot access your cod3 session.
 
 The file viewer recognizes images, HTML, and PDF files by their filename extension,
 including filenames or folders containing `#` or `?`.

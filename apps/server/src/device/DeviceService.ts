@@ -9,6 +9,7 @@ import {
   DeviceId,
   DeviceHostUnavailableError,
   DeviceNotFoundError,
+  DeviceActionUnavailableError,
   DeviceOperationError,
   type DeviceOpenInput,
   type DevicePlatform,
@@ -30,12 +31,13 @@ import {
   type DeviceHostSummary,
   LOCAL_DEVICE_HOST_ID,
   LOCAL_DEVICE_HOST_LABEL,
+  TART_DEVICE_HOST_ID,
   type ThreadId,
-} from "@t3tools/contracts";
-import { extractPng } from "@t3tools/shared/png";
-import { SshCommandError } from "@t3tools/ssh/errors";
+} from "@cod3/contracts";
+import { extractPng } from "@cod3/shared/png";
+import { SshCommandError } from "@cod3/ssh/errors";
 import * as FileSystem from "effect/FileSystem";
-import { resolveNodeExecutable, nodeRuntimeUnavailableMessage } from "@t3tools/shared/nodeRuntime";
+import { resolveNodeExecutable, nodeRuntimeUnavailableMessage } from "@cod3/shared/nodeRuntime";
 import * as Path from "effect/Path";
 import {
   DeviceToolchainInstallError,
@@ -73,16 +75,17 @@ import { isLocalSshDeviceHost, remoteSshDeviceHosts } from "./localSshDeviceHost
 
 import { readDeviceDetail, runDeviceAction } from "./DeviceActions.ts";
 import * as ProcessRunner from "../processRunner.ts";
-import * as SecretResolver from "@t3tools/secret-provider-core/server/SecretResolver";
+import * as SecretResolver from "@cod3/secret-provider-core/server/SecretResolver";
 import * as SecretResolverLayer from "../secrets/SecretResolver.ts";
 import { requireSettingsSecret } from "../secrets/settingsSecretValue.ts";
 import * as DeviceHost from "./DeviceHost.ts";
 import * as SshDeviceHost from "./SshDeviceHost.ts";
 import * as EasDeviceHost from "./EasDeviceHost.ts";
 import * as SimlockDeviceHost from "./SimlockDeviceHost.ts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import { makeExpoApi } from "./ExpoApi.ts";
 import * as Exit from "effect/Exit";
+import * as TartDeviceHost from "./TartDeviceHost.ts";
 import * as LocalDeviceHost from "./LocalDeviceHost.ts";
 
 export const DEVICE_HUB_ROUTE_PREFIX = "/api/device-hub";
@@ -219,6 +222,7 @@ export class DeviceService extends Context.Service<
     readonly screenshot: (input: {
       readonly hostId?: DeviceHostId | undefined;
       readonly deviceId: DeviceId;
+      readonly macBootId?: string | undefined;
     }) => Effect.Effect<DeviceScreenshot, DeviceError>;
     /**
      * The device an id names in the last listing. Ids are unique per host, not across hosts (an
@@ -251,7 +255,7 @@ export class DeviceService extends Context.Service<
     readonly currentReadiness: (hostId?: DeviceHostId) => Effect.Effect<DeviceReadiness | null>;
     readonly sessionsForThread: (threadId: ThreadId) => Effect.Effect<ReadonlyArray<DeviceSession>>;
   }
->()("t3/device/DeviceService") {}
+>()("cod3/device/DeviceService") {}
 
 interface ServiceState {
   readonly state: DeviceServiceState;
@@ -760,6 +764,12 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
     host: DeviceHost.DeviceHost["Service"],
     platform: DevicePlatform,
   ) {
+    if ((platform === "macos") !== (host.id === TART_DEVICE_HOST_ID))
+      return yield* new DevicePlatformUnavailableError({
+        hostId: host.id,
+        platform,
+        reason: "Platform is unavailable on this host.",
+      });
     const availability = yield* host.platformAvailability(platform);
     if (!availability.available) {
       return yield* new DevicePlatformUnavailableError({
@@ -777,7 +787,7 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
       const ready = yield* readiness(host.id);
       let state = yield* refresh(ready);
       let device = findDevice(state, host.id, input.deviceId);
-      if (!device) {
+      if (!device || device.platform !== input.platform) {
         return yield* new DeviceNotFoundError({ hostId: host.id, deviceId: input.deviceId });
       }
       // Hosts that route their own streams never encode emulator video with serve-emu's ffmpeg.
@@ -847,7 +857,14 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
           reason: "Host configuration changed. Retry the operation.",
         });
       const openedAt = DateTime.formatIso(yield* DateTime.now);
+      const macBootId = ready.devices.macBootId?.();
+      if (device.platform === "macos" && !macBootId)
+        return yield* new DeviceHostUnavailableError({
+          hostId: host.id,
+          reason: "Mac guest disconnected. Open Mac again.",
+        });
       const session: DeviceSession = {
+        ...(macBootId ? { macBootId } : {}),
         threadId: input.threadId,
         hostId: host.id,
         deviceId: device.id,
@@ -980,6 +997,8 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
   const shutdown: DeviceService["Service"]["shutdown"] = Effect.fn("DeviceService.shutdown")(
     function* (input) {
       const host = yield* resolveHost(input.hostId);
+      if ((input.platform === "macos") !== (host.id === TART_DEVICE_HOST_ID))
+        return yield* new DeviceNotFoundError({ hostId: host.id, deviceId: input.deviceId });
       yield* publish((current) => ({
         ...current,
         sessions: current.sessions.filter(
@@ -995,7 +1014,7 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
   const screenshot: DeviceService["Service"]["screenshot"] = Effect.fn("DeviceService.screenshot")(
     function* (input) {
       const { ready, device } = yield* resolveDevice(input.hostId, input.deviceId);
-      const bytes = yield* ready.devices.screenshot(device);
+      const bytes = yield* ready.devices.screenshot(device, input.macBootId);
       const png = extractPng(bytes);
       if (png === undefined) {
         return yield* new DeviceOperationError({
@@ -1024,6 +1043,12 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
   const detail: DeviceService["Service"]["detail"] = Effect.fn("DeviceService.detail")(
     function* (input) {
       const { ready, device } = yield* resolveDevice(input.hostId, input.deviceId);
+      if (device.platform === "macos")
+        return yield* new DeviceActionUnavailableError({
+          operation: "settings",
+          platform: device.platform,
+          reason: "unsupported",
+        });
       const read = yield* readDeviceDetail(ready, device.platform, device.id);
       return {
         hostId: ready.hostId,
@@ -1038,6 +1063,12 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
   const action: DeviceService["Service"]["action"] = Effect.fn("DeviceService.action")(
     function* (input) {
       const { ready, device } = yield* resolveDevice(input.hostId, input.deviceId);
+      if (device.platform === "macos")
+        return yield* new DeviceActionUnavailableError({
+          operation: input.type,
+          platform: device.platform,
+          reason: "unsupported",
+        });
       yield* runDeviceAction(ready, device.platform, input);
       return yield* detail({ hostId: ready.hostId, deviceId: device.id });
     },
@@ -1149,6 +1180,14 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
             reason:
               "Agent device access requires enabled device support, agent access, and an available simulator platform on this host.",
           });
+        if (ready.devices.bindMacSession) {
+          const session = yield* agentDeviceSession(
+            input.threadId,
+            input.hostId,
+            input.deviceId,
+          ).pipe(Effect.provideService(Digest.Digest, digest));
+          return { agentDeviceId: null, session, args: [] };
+        }
         const { configPath, agentDeviceId, boundSession, installDirectory } =
           yield* lifecycleLock.withPermit(
             Effect.gen(function* () {
@@ -1221,6 +1260,18 @@ export const makeWithHosts = Effect.fn("DeviceService.makeWithHosts")(function* 
               )
             )
               return Option.none();
+            if (target.hostId === TART_DEVICE_HOST_ID) {
+              const ready = yield* currentReadiness(target.hostId);
+              if (!state.agentAccessEnabled || !ready?.devices.bindMacSession)
+                return yield* new DeviceHostUnavailableError({
+                  hostId: target.hostId,
+                  reason: "Mac guest or agent access is unavailable.",
+                });
+              const command = yield* ready.devices.bindMacSession(session, target.deviceId);
+              hostSessionLaunchers.add(session);
+              boundLaunchers.set(session, command);
+              return Option.some(command);
+            }
             const launcher = yield* launchers.bind({ session, targetArgs });
             boundLaunchers.set(session, launcher);
             return Option.some(launcher);
@@ -1326,6 +1377,13 @@ export const make = Effect.gen(function* () {
           }),
     ),
   );
+  if ((yield* HostProcess.Platform) === "darwin" && (yield* HostProcess.Architecture) === "arm64") {
+    const run = Effect.runPromiseWith(yield* Effect.context<never>());
+    hosts.set(
+      TART_DEVICE_HOST_ID,
+      yield* TartDeviceHost.make(config.stateDir, () => run(agentCli)),
+    );
+  }
   const launchers: AgentDeviceLaunchers = {
     bind: Effect.fn("DeviceService.bindLauncher")(
       function* (input) {

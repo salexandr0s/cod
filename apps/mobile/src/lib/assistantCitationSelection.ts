@@ -1,9 +1,9 @@
-import { markdownMathRanges } from "@t3tools/shared/markdownMath";
-import { createAssistantTextSelector } from "@t3tools/shared/assistantCitations";
+import { markdownMathRanges } from "@cod3/shared/markdownMath";
+import { createAssistantTextSelector } from "@cod3/shared/assistantCitations";
 import {
   splitCodexArtifactTemplateMarkdown,
   renderCodexInlineDirectivesAsMarkdown,
-} from "@t3tools/shared/codexMarkdownDirectives";
+} from "@cod3/shared/codexMarkdownDirectives";
 import { splitMarkdownDetails } from "./markdownDetails";
 import {
   markdownReferenceDefinitions,

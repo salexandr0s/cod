@@ -14,8 +14,8 @@ import {
   RuntimeRequestId,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
-import { RelayAgentActivityState } from "@t3tools/contracts/relay";
+} from "@cod3/contracts";
+import { RelayAgentActivityState } from "@cod3/contracts/relay";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -327,6 +327,7 @@ const makeTestRelay = Effect.fnUntraced(function* (
       delete: unused,
       getByWorkspaceRoot: unused,
       workspaceScanDirectory: unused,
+      discoverProjects: unused,
       snapshot: Effect.succeed({ projects: [project], updatedAt: NOW }),
       listPage: unused,
       getShell: unused,

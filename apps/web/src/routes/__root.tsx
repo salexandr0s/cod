@@ -1,5 +1,5 @@
-import { type ServerLifecycleWelcomePayload } from "@t3tools/contracts";
-import { scopedProjectKey, scopeProjectRef } from "@t3tools/client-runtime/environment";
+import { type ServerLifecycleWelcomePayload } from "@cod3/contracts";
+import { scopedProjectKey, scopeProjectRef } from "@cod3/client-runtime/environment";
 import {
   Outlet,
   Link,
@@ -20,6 +20,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { CustomSnoozeDialogHost } from "../components/CustomSnoozeDialog";
 import { GuestShareDialogHost } from "../components/chat/GuestShareControls";
 import { UseInAnotherAppDialogHost } from "../components/mcp/UseInAnotherAppDialog";
+import { DiscoverProjectsDialogHost } from "../components/DiscoverProjectsDialog";
 import { AddProjectToMachineDialogHost } from "../components/AddProjectToMachineDialog";
 import { ConfirmDialogHost } from "../components/ConfirmDialogHost";
 import { DevReplayHost } from "../components/DevReplayHost";
@@ -46,7 +47,7 @@ import {
   deriveLogicalProjectKeyFromSettings,
   derivePhysicalProjectKeyFromPath,
   selectProjectGroupingSettings,
-} from "@t3tools/client-runtime/state/project-grouping";
+} from "@cod3/client-runtime/state/project-grouping";
 import { useUiStateStore } from "../uiStateStore";
 import { configureClientTracing } from "../observability/clientTracing";
 import { resolveInitialServerAuthGateState } from "../environments/primary";
@@ -64,7 +65,7 @@ import { shouldResumeSnapShotSetupOnStartup } from "../lib/snapShotSetupResume";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
-    // Guest links open on the owner's tunnel host in a browser with no T3 session, and must
+    // Guest links open on the owner's tunnel host in a browser with no cod3 session, and must
     // not trigger pairing or an environment connection.
     if (location.pathname === GUEST_PAGE_PATH) {
       return {
@@ -204,6 +205,7 @@ function RootRouteBranch() {
       <ProjectCloneToastCoordinator />
       <ConnectDeviceApprovalCoordinator />
       <AddProjectToMachineDialogHost />
+      <DiscoverProjectsDialogHost />
       <UseInAnotherAppDialogHost />
       {import.meta.env.DEV && primaryEnvironmentAuthenticated ? <DevReplayHost /> : null}
     </>
@@ -324,7 +326,7 @@ function errorDetails(error: unknown): string {
   try {
     return JSON.stringify(error, null, 2);
   } catch {
-    // oxlint-disable-next-line t3code/no-untranslated-copy -- error report pasted into bug reports
+    // oxlint-disable-next-line cod3/no-untranslated-copy -- error report pasted into bug reports
     return "No additional error details are available.";
   }
 }
@@ -407,7 +409,7 @@ function EventRouter({
     })().catch(() => undefined);
   });
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- expands the bootstrap project in the UI store and navigates the router on a server welcome
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- expands the bootstrap project in the UI store and navigates the router on a server welcome
   useEffect(() => {
     handleWelcome(serverWelcome);
   }, [serverWelcome]);

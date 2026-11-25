@@ -1,7 +1,7 @@
 import { msg } from "gt-react";
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
-import { isClearComposerCommand, parseSideChatCommand } from "@t3tools/shared/composerTrigger";
+import { isClearComposerCommand, parseSideChatCommand } from "@cod3/shared/composerTrigger";
 import { readWorktreeBaseBranch } from "../../worktreeRepositoryChoiceStore";
 import { armFreshSession, disarmFreshSession, readFreshSessionArm } from "./freshSessionArms";
 import {
@@ -19,7 +19,7 @@ import {
   withMessageContext,
   makeThreadErrorSetter,
 } from "../ChatView.logic";
-import { isUsageLimitsCommand } from "@t3tools/shared/usageLimits";
+import { isUsageLimitsCommand } from "@cod3/shared/usageLimits";
 import {
   AuthOrchestrationOperateScope,
   DEFAULT_MODEL,
@@ -32,24 +32,20 @@ import {
   type ThreadId,
   ProviderInteractionMode,
   RuntimeMode,
-} from "@t3tools/contracts";
-import { deriveThreadTitleSeed } from "@t3tools/client-runtime/operations";
-import { wasBootstrapThreadDeleted } from "@t3tools/client-runtime/errors";
+} from "@cod3/contracts";
+import { deriveThreadTitleSeed } from "@cod3/client-runtime/operations";
+import { wasBootstrapThreadDeleted } from "@cod3/client-runtime/errors";
 import {
   declinePendingApprovals,
   sendApprovalFeedback,
-} from "@t3tools/client-runtime/state/thread-requests";
+} from "@cod3/client-runtime/state/thread-requests";
 import {
   parseCodexFeedbackCommand,
   submitCodexFeedback,
   type CodexFeedbackSubmission,
-} from "@t3tools/client-runtime/state/threads";
-import {
-  scopedThreadKey,
-  scopeProjectRef,
-  scopeThreadRef,
-} from "@t3tools/client-runtime/environment";
-import { createModelSelection } from "@t3tools/shared/model";
+} from "@cod3/client-runtime/state/threads";
+import { scopedThreadKey, scopeProjectRef, scopeThreadRef } from "@cod3/client-runtime/environment";
+import { createModelSelection } from "@cod3/shared/model";
 import { type SetStateAction, useLayoutEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -57,7 +53,7 @@ import {
   settlePromise,
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   type ComposerSubmissionIntent,
   collapseExpandedComposerCursor,
@@ -110,7 +106,7 @@ import {
 } from "./composerSend.logic";
 import { useMultipleModelSend } from "./useMultipleModelSend";
 import type { SideChatMessage } from "./useSideChat";
-import { type ComposerDispatchMode } from "@t3tools/client-runtime/state/composer-dispatch";
+import { type ComposerDispatchMode } from "@cod3/client-runtime/state/composer-dispatch";
 import {
   getUploadedAttachments,
   refreshExpiredAttachmentUploads,
@@ -128,7 +124,7 @@ import { useOrchestrationCommand } from "../../state/use-orchestration-command";
 import {
   ATTACHMENT_ONLY_BOOTSTRAP_PROMPT,
   threadContextsOutsideEnvironment,
-} from "@t3tools/shared/composerContextReferences";
+} from "@cod3/shared/composerContextReferences";
 import {
   draftSendState,
   type MultipleModelTarget,
@@ -136,10 +132,7 @@ import {
   prepareTurnAttachments,
   restoreComposerDraft,
 } from "./chatViewSend";
-import type {
-  EnvironmentProject,
-  EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
+import type { EnvironmentProject, EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
 import type { Dispatch } from "react";
 import type { ComposerThreadTarget } from "../../composerDraftStore";
 import type { ProviderInstanceEntry } from "../../providerInstances";
@@ -408,7 +401,7 @@ export function useComposerSend(input: ComposerSendInput) {
   // A send awaits uploads before it declines, so it reads the approvals pending by then.
   const pendingApprovalsRef = useRef(pendingApprovals);
   const respondingRequestIdsRef = useRef(respondingRequestIds);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- mirrors approvals into refs that an async send reads after awaiting uploads
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- mirrors approvals into refs that an async send reads after awaiting uploads
   useLayoutEffect(() => {
     pendingApprovalsRef.current = pendingApprovals;
     respondingRequestIdsRef.current = respondingRequestIds;

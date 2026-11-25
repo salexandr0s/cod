@@ -1,13 +1,13 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import * as Schema from "effect/Schema";
-import type { DeviceHostSummary, DeviceSummary, EnvironmentId } from "@t3tools/contracts";
+import type { DeviceHostSummary, DeviceSummary, EnvironmentId } from "@cod3/contracts";
 import { useGT } from "gt-react";
 import { useRef, useState } from "react";
 import {
   captureDeviceScreenshot,
   DeviceScreenshotError,
-} from "@t3tools/client-runtime/device/screenshot";
+} from "@cod3/client-runtime/device/screenshot";
 import { refreshDeviceHubAccess, useDeviceHubAccess } from "~/state/device";
 import { DeviceControlsRail } from "./DeviceControlsRail";
 import { DeviceStreamView } from "./DeviceStreamView";
@@ -96,7 +96,7 @@ export function DeviceWorkspace(props: {
             visible={props.visible}
             serveSimOnly={props.hostKind === "simlock"}
             axOverlay={axOverlay}
-            allowPhoneView
+            allowPhoneView={props.device.platform !== "macos"}
             renderControls={(view) => (
               <DeviceControlsRail
                 platform={props.device.platform}

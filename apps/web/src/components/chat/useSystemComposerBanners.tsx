@@ -1,16 +1,16 @@
 import { T, msg, useGT, useMessages } from "gt-react";
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import { useStableCallback } from "../../hooks/useStableCallback";
-import { type EnvironmentId } from "@t3tools/contracts";
-import { type EnvironmentConnectionPresentation } from "@t3tools/client-runtime/connection";
+import { type EnvironmentId } from "@cod3/contracts";
+import { type EnvironmentConnectionPresentation } from "@cod3/client-runtime/connection";
 import { useAtomValue } from "@effect/atom-react";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { WifiOffIcon } from "lucide-react";
 import { stackedThreadToast, toastManager } from "../ui/toast";
 import { environmentCatalog } from "../../connection/catalog";
@@ -148,7 +148,7 @@ export function useSystemComposerBanners(input: SystemComposerBannersInput) {
   const versionMismatchServerLabel =
     versionMismatchServerName !== null
       ? gt("{environment} server", { environment: versionMismatchServerName })
-      : gt("server", { $context: "noun, the T3 Code server" });
+      : gt("server", { $context: "noun, the cod3 server" });
   const serverUpdateEnvironmentId = activeThreadEnvironmentId;
   const versionMismatchSelfUpdate = resolveServerSelfUpdateCapability(serverConfig);
   const versionMismatchInstallation = serverConfig?.environment.capabilities.serverInstallation;

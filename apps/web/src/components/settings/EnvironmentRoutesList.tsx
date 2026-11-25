@@ -24,7 +24,7 @@ import {
   connectionRoutes,
   isLearned,
   pendingRouteOrder,
-} from "@t3tools/client-runtime/connection";
+} from "@cod3/client-runtime/connection";
 import { GripVerticalIcon, PlusIcon, XIcon } from "lucide-react";
 import { T, useGT, useMessages } from "gt-react";
 import { useState } from "react";

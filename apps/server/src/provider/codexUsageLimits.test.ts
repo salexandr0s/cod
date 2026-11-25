@@ -1,6 +1,6 @@
 import * as DateTime from "effect/DateTime";
-import { ProviderDriverKind, ProviderInstanceId } from "@t3tools/contracts";
-import { exhaustedUsageWindow } from "@t3tools/shared/usageLimits";
+import { ProviderDriverKind, ProviderInstanceId } from "@cod3/contracts";
+import { exhaustedUsageWindow } from "@cod3/shared/usageLimits";
 import * as CodexErrors from "effect-codex-app-server/errors";
 import { describe, expect, it } from "vite-plus/test";
 

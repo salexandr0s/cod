@@ -8,8 +8,8 @@ import {
   EnvironmentId,
   ThreadId,
   sessionGrantsScope,
-} from "@t3tools/contracts";
-import { type KnownTerminalSession } from "@t3tools/client-runtime/state/terminal";
+} from "@cod3/contracts";
+import { type KnownTerminalSession } from "@cod3/client-runtime/state/terminal";
 import { SymbolView } from "../../components/ui/AppSymbol";
 import { AppBar } from "../../components/ui/AppBar";
 import { useNativeColumnLayoutMetrics } from "../../native/native-layout-metrics";

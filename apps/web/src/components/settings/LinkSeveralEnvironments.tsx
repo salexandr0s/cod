@@ -6,13 +6,13 @@ import {
   linkBatchSummary,
   linkListState,
   runLinkBatch,
-} from "@t3tools/client-runtime/link-batch";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/link-batch";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import {
   AuthAccessWriteScope,
   type AuthMcpClientAccess,
   type EnvironmentId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Result from "effect/Result";
 import { T, useGT, useMessages } from "gt-react";
 import { useId, useRef, useState } from "react";

@@ -1,14 +1,14 @@
 import { HOSTED_APP_CHANNEL } from "~/branding";
 import { isElectron } from "~/env";
 import { isMacPlatform, isWindowsPlatform, normalizeSearchText } from "~/lib/utils";
-import { STATIC_KEYBINDING_COMMANDS, type KeybindingCommand } from "@t3tools/contracts";
-import type { EnvironmentId } from "@t3tools/contracts";
-import type { EnvironmentConnectionPhase } from "@t3tools/client-runtime/connection";
+import { STATIC_KEYBINDING_COMMANDS, type KeybindingCommand } from "@cod3/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
+import type { EnvironmentConnectionPhase } from "@cod3/client-runtime/connection";
 import {
   sourceControlClients,
   type SourceControlDefinition,
-} from "@t3tools/client-runtime/source-control-clients";
-import { DEFAULT_KEYBINDINGS } from "@t3tools/shared/keybindings";
+} from "@cod3/client-runtime/source-control-clients";
+import { DEFAULT_KEYBINDINGS } from "@cod3/shared/keybindings";
 import * as Schema from "effect/Schema";
 import { decodeMsg, msg, useMessages } from "gt-react";
 import { TYPOGRAPHY_ADVANCED_STORAGE_KEY } from "../../appearanceFonts";
@@ -133,15 +133,13 @@ export const SETTINGS_NAV_LABELS: Readonly<Record<SettingsPath, string>> = {
 
 type SettingsNavGroup = {
   readonly heading: string;
-  readonly headingHidden?: true;
   readonly paths: ReadonlyArray<SettingsPath>;
 };
 
-/** Sidebar order. A group with a hidden heading is set apart on screen by space alone. */
+/** Sidebar order. */
 const ALL_SETTINGS_NAV_GROUPS: ReadonlyArray<SettingsNavGroup> = [
   {
     heading: msg("Preferences"),
-    headingHidden: true,
     paths: [
       "/settings/general",
       "/settings/appearance",
@@ -172,7 +170,6 @@ const ALL_SETTINGS_NAV_GROUPS: ReadonlyArray<SettingsNavGroup> = [
   },
   {
     heading: msg("More"),
-    headingHidden: true,
     paths: ["/settings/maintenance", "/settings/labs", "/settings/about", "/settings/archived"],
   },
 ];
@@ -550,7 +547,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     title: msg("Guest links"),
     to: "/settings/labs",
     scope: "environment",
-    searchTerms: [msg("beta share guest invite link teammate watch t3 connect tunnel")],
+    searchTerms: [msg("beta share guest invite link teammate watch cod3 connect tunnel")],
   },
   {
     id: "linked-environments-beta",
@@ -886,7 +883,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     title: msg("Submodules"),
     to: "/settings/worktrees",
     scope: "project-defaults",
-    searchTerms: [msg("git submodule init recursive top-level none worktree t3.json")],
+    searchTerms: [msg("git submodule init recursive top-level none worktree cod3.json")],
   },
   {
     id: "start-from-origin",
@@ -969,7 +966,7 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "cli-command",
-    title: msg("t3 command"),
+    title: msg("cod3 command"),
     to: "/settings/about",
     searchTerms: [msg("cli terminal shell path install command line")],
     desktopOnly: true,
@@ -1014,7 +1011,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     scope: "environment-defaults",
     agentFeedbackOnly: true,
     searchTerms: [
-      msg("report bug problem t3 team send feedback agents tools automatic when i ask"),
+      msg("report bug problem cod3 team send feedback agents tools automatic when i ask"),
     ],
   },
   {
@@ -1214,7 +1211,7 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "pull-request-links-open-in-app",
-    title: msg("Open pull requests in T3 Code"),
+    title: msg("Open pull requests in cod3"),
     to: "/settings/diffs",
     searchTerms: [
       `pr commit links ${SOURCE_CONTROL_HOST_LABELS} browser external click default pull request view panel`,
@@ -1345,7 +1342,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     id: "project-actions",
     title: msg("Actions"),
     to: "/settings/projects",
-    searchTerms: [msg("commands scripts setup run dev server checkout worktree t3.json import")],
+    searchTerms: [msg("commands scripts setup run dev server checkout worktree cod3.json import")],
   },
   {
     id: "project-repositories",
@@ -1399,12 +1396,12 @@ export const SETTINGS_SEARCH_ITEMS = [
     wslAvailableOnly: true,
   },
   {
-    id: "t3-connect",
+    id: "cod3-connect",
     localEnvironmentOnly: true,
-    title: msg("T3 Connect"),
+    title: msg("cod3 Connect"),
     to: "/settings/access",
     targetId: "connections-environment",
-    searchTerms: [msg("managed tunnel cloud other devices remote tunnels limit t3 chat")],
+    searchTerms: [msg("managed tunnel cloud other devices remote tunnels limit cod3 chat")],
     desktopOnly: true,
     cloudOnly: true,
   },
@@ -1414,7 +1411,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     to: "/settings/access",
     targetId: "connections-environment",
     searchTerms: [
-      msg("t3 connect devices approve deny trust revoke pairing code security account"),
+      msg("cod3 connect devices approve deny trust revoke pairing code security account"),
     ],
     cloudOnly: true,
     managedTunnelOnly: true,
@@ -1425,7 +1422,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     title: msg("Hold webhooks while offline"),
     to: "/settings/access",
     targetId: "connections-environment",
-    searchTerms: [msg("webhook automations offline queue mailbox t3 connect")],
+    searchTerms: [msg("webhook automations offline queue mailbox cod3 connect")],
     cloudOnly: true,
     managedTunnelOnly: true,
   },
@@ -1469,7 +1466,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     id: "remote-environments",
     title: msg("Environments"),
     to: "/settings/connections",
-    searchTerms: [msg("add pair backend host code ssh config agent tunnel saved t3 connect")],
+    searchTerms: [msg("add pair backend host code ssh config agent tunnel saved cod3 connect")],
   },
   {
     id: "load-balancing",
@@ -1493,7 +1490,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     id: "secret-providers",
     title: msg("Secret providers"),
     to: "/settings/secrets",
-    searchTerms: [msg("1password vault credentials api key")],
+    searchTerms: [msg("1password vault credentials api key"), "Proton Pass pass-cli"],
     secretProvidersOnly: true,
   },
   {
@@ -1501,7 +1498,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     title: msg("Add secret provider"),
     to: "/settings/secrets",
     targetId: "secret-providers",
-    searchTerms: [msg("new 1password vault op cli account")],
+    searchTerms: [msg("new 1password vault op cli account"), "Proton Pass pass-cli"],
     secretProvidersOnly: true,
   },
   {

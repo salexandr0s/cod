@@ -328,7 +328,7 @@ function SidebarControl({ showSidebar }: { readonly showSidebar: boolean }) {
     context: { usagePageOpen },
   });
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- window keydown listener that toggles the sidebar on its shortcut
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- window keydown listener that toggles the sidebar on its shortcut
   useEffect(() => {
     // A hidden sidebar would still save the toggle, so the shortcut does nothing without one.
     if (!showSidebar) return;
@@ -459,8 +459,13 @@ export function AppSidebarLayout({
       ? { "--workspace-controls-left": MACOS_TRAFFIC_LIGHTS_LEFT_INSET }
       : {}
   ) as CSSProperties;
+  const renderedSidebarWidth = clampThreadSidebarWidth(
+    sidebarWidth,
+    sidebarMinimumWidth,
+    sidebarMaximumWidth,
+  );
   const sidebarProviderStyle = {
-    "--sidebar-width": `${clampThreadSidebarWidth(sidebarWidth, sidebarMinimumWidth, sidebarMaximumWidth)}px`,
+    "--sidebar-width": `${renderedSidebarWidth}px`,
     "--panel-animation-duration": `${panelAnimationDurationMs}ms`,
     ...windowControlsInsetStyle,
   } as CSSProperties;
@@ -495,7 +500,7 @@ export function AppSidebarLayout({
               style={windowControlsInsetStyle}
             >
               <ThreadSidebar routeReveal={sidebarRouteReveal} />
-              <SidebarRail onDoubleClick={resetSidebarWidth} />
+              <SidebarRail width={renderedSidebarWidth} onDoubleClick={resetSidebarWidth} />
             </Sidebar>
           </>
         ) : null}

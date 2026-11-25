@@ -2,9 +2,9 @@ import { LegendList, type LegendListRef } from "@legendapp/list/react-native";
 import { SheetHeader } from "../../components/ui/SheetHeader";
 import { appAtomRegistry } from "../../state/atom-registry";
 import { useAtomValue } from "@effect/atom-react";
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import { effectiveSnoozed } from "@t3tools/client-runtime/state/thread-settled";
-import { sortInboxThreadsByReturn } from "@t3tools/client-runtime/state/thread-inbox";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { effectiveSnoozed } from "@cod3/client-runtime/state/thread-settled";
+import { sortInboxThreadsByReturn } from "@cod3/client-runtime/state/thread-inbox";
 import { msg, T, useGT, useMessages } from "gt-react-native";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Modal, Pressable, useWindowDimensions, View } from "react-native";
@@ -20,7 +20,7 @@ import { deriveThreadArrangementSizing } from "../../lib/layout";
 import { environmentServerConfigsAtom } from "../../state/server";
 import { threadListEnvironmentsAtom } from "../../state/presentation";
 import { steadyNavigationThreadShellsAtom, steadyShellsHoldingAtom } from "../../state/threads";
-import { sortSettledThreads } from "@t3tools/client-runtime/state/thread-sort";
+import { sortSettledThreads } from "@cod3/client-runtime/state/thread-sort";
 import { useOlderSettledShelf, useOlderSettledShelfGrowth } from "../../state/olderSettledShelf";
 import {
   pendingThreadOrderAtom,
@@ -286,12 +286,12 @@ function ThreadArrangementSheet(props: { onClose: () => void }) {
       (row) => `${row.key}:${row.height}:${row.thread?.pinOrderKey}:${row.thread?.activeOrderKey}`,
     )
     .join("|");
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- cancels the in-progress drag gesture when the thread order changes underneath it
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- cancels the in-progress drag gesture when the thread order changes underneath it
   useEffect(() => {
     // oxlint-disable-next-line react/exhaustive-effect-dependencies, react/set-state-in-effect -- A changed thread order cancels the in-progress drag and clears its preview; stop only touches refs and state setters.
     stop();
   }, [orderVersion]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- cancels the pending drag animation frame on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- cancels the pending drag animation frame on unmount
   useEffect(
     () => () => {
       if (frame.current !== null) cancelAnimationFrame(frame.current);
@@ -423,7 +423,7 @@ function ThreadArrangementSheet(props: { onClose: () => void }) {
                 className="flex-1"
                 style={{ overflow: "hidden" }}
               >
-                {/* oxlint-disable-next-line t3code/require-registered-list-scroll -- A full-screen Modal with an inline header; there is no navigation header to register with. */}
+                {/* oxlint-disable-next-line cod3/require-registered-list-scroll -- A full-screen Modal with an inline header; there is no navigation header to register with. */}
                 <LegendList
                   ref={list}
                   data={rows}
@@ -573,7 +573,7 @@ function ThreadArrangementSheet(props: { onClose: () => void }) {
                                 setExpanded((value) => ({ ...value, [section]: !value[section] }));
                             }}
                           >
-                            <Text className="text-sm font-t3-semibold text-foreground-muted">
+                            <Text className="text-sm font-cod3-semibold text-foreground-muted">
                               {gt("{section} ({count})", {
                                 section: m(SECTION_LABELS[item.section]),
                                 count:
@@ -596,7 +596,7 @@ function ThreadArrangementSheet(props: { onClose: () => void }) {
                   >
                     <Text
                       numberOfLines={visiblePreview.destination?.section ? 1 : 2}
-                      className="text-base font-t3-medium"
+                      className="text-base font-cod3-medium"
                     >
                       {visiblePreview.thread.title}
                     </Text>

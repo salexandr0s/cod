@@ -7,11 +7,11 @@ import type {
   DevicePlatform,
   DevicePlatformAvailability,
   DeviceSummary,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import type { NodeRuntimeUnavailableError } from "@t3tools/shared/nodeRuntime";
+import type { NodeRuntimeUnavailableError } from "@cod3/shared/nodeRuntime";
 
 export class DeviceHostError extends Schema.TaggedError<DeviceHostError>()("DeviceHostError", {
   hostId: Schema.String,
@@ -129,7 +129,20 @@ export interface DeviceOperations {
     readonly id: string;
     readonly platform: DevicePlatform;
   }) => Effect.Effect<void, DeviceOperationError>;
-  readonly screenshot: (device: HostDevice) => Effect.Effect<Uint8Array, DeviceOperationError>;
+  readonly screenshot: (
+    device: HostDevice,
+    macBootId?: string,
+  ) => Effect.Effect<Uint8Array, DeviceOperationError | DeviceHostUnavailableError>;
+  readonly macBootId?: () => string | undefined;
+  readonly macFrame?: (
+    deviceId: string,
+    previous?: string,
+    still?: boolean,
+  ) => Effect.Effect<{ tag: string; png: Uint8Array | null }, DeviceHostUnavailableError>;
+  readonly bindMacSession?: (
+    session: string,
+    deviceId: string,
+  ) => Effect.Effect<string, DeviceHostUnavailableError>;
   /**
    * For hosts that run one agent-device daemon per device instead of one per
    * host. `agentDeviceId` is the id agent-device selects the device by, when
@@ -210,4 +223,4 @@ export class DeviceHost extends Context.Service<
     /** Stops helpers. Devices themselves keep running; the user owns those. */
     readonly stop: Effect.Effect<void>;
   }
->()("t3/device/DeviceHost") {}
+>()("cod3/device/DeviceHost") {}

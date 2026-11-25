@@ -1,4 +1,4 @@
-import { createRuntimeCommand } from "@t3tools/client-runtime/state/runtime";
+import { createRuntimeCommand } from "@cod3/client-runtime/state/runtime";
 import * as Effect from "effect/Effect";
 import { AsyncResult, Atom, type AtomRegistry } from "effect/reactivity";
 

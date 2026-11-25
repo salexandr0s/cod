@@ -1,11 +1,11 @@
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
 import {
   generateSpreadPinOrderKeys,
   pinOrderKeyBetween,
   planPinnedReorder,
-} from "@t3tools/client-runtime/state/thread-sort";
-import { effectiveSnoozed } from "@t3tools/client-runtime/state/thread-settled";
-import type { EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/thread-sort";
+import { effectiveSnoozed } from "@cod3/client-runtime/state/thread-settled";
+import type { EnvironmentId } from "@cod3/contracts";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";

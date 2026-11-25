@@ -1,4 +1,4 @@
-import { resolveLocaleSelection } from "@t3tools/client-runtime/locales";
+import { resolveLocaleSelection } from "@cod3/client-runtime/locales";
 import { useAtomValue } from "@effect/atom-react";
 import { AsyncResult } from "effect/reactivity";
 import { GTProvider, initializeGT, useLocale } from "gt-react-native";
@@ -86,7 +86,7 @@ export function I18nProvider(props: { readonly children: ReactNode }) {
 
 function ActiveLocale() {
   const locale = useLocale();
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- call-time m() outside React reads the committed locale, whose catalog GT has loaded
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- call-time m() outside React reads the committed locale, whose catalog GT has loaded
   useEffect(() => setActiveLocale(locale), [locale]);
   return null;
 }

@@ -54,7 +54,7 @@ export function WorkspaceEmptyDetail(props: {
               tintColorClassName="accent-icon-subtle"
               type="hierarchical"
             />
-            <Text className="text-center text-xl font-t3-bold">
+            <Text className="text-center text-xl font-cod3-bold">
               {settings
                 ? gt("Select a setting")
                 : pullRequests
@@ -83,7 +83,7 @@ export function WorkspaceEmptyDetail(props: {
                   className="mt-2 flex-row items-center gap-2 rounded-full bg-primary px-5 py-3 active:opacity-70"
                   onPress={props.onStartNewTask}
                 >
-                  <Text className="text-base font-t3-bold text-primary-foreground">
+                  <Text className="text-base font-cod3-bold text-primary-foreground">
                     <T>New thread</T>
                   </Text>
                 </Pressable>

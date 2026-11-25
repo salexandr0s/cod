@@ -1,12 +1,12 @@
 import { T, useGT, useMessages } from "gt-react-native";
 import { useAtomRefresh, useAtomValue } from "@effect/atom-react";
-import { cloudSpeechDisclosure } from "@t3tools/shared/speechCopy";
-import { setCloudSpeechKey } from "@t3tools/client-runtime/voice-input";
-import { hasFeatureFlag } from "@t3tools/client-runtime/state/server";
+import { cloudSpeechDisclosure } from "@cod3/shared/speechCopy";
+import { setCloudSpeechKey } from "@cod3/client-runtime/voice-input";
+import { hasFeatureFlag } from "@cod3/client-runtime/state/server";
 import {
   configuredSecretSources,
   secretRequestReference,
-} from "@t3tools/client-runtime/secret-request";
+} from "@cod3/client-runtime/secret-request";
 import {
   AuthSettingsWriteScope,
   CLOUD_SPEECH_LABELS,
@@ -19,7 +19,7 @@ import {
   type SecretProviderId,
   type SettingsSecretValue,
   type VoiceTranscriptionDestination,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { AsyncResult } from "effect/reactivity";
 import { type ReactNode, useState } from "react";
@@ -201,7 +201,11 @@ function CloudChoices({ environment, active, onClose }: Props & { onClose: () =>
   const sources =
     hasFeatureFlag(environment.serverConfig, "secretProviders") &&
     environment.serverConfig?.secretReferences
-      ? configuredSecretSources(environment.serverConfig.settings.secretProviders, messages)
+      ? configuredSecretSources(
+          environment.serverConfig.settings.secretProviders,
+          messages,
+          environment.serverConfig,
+        )
       : [];
   const source = sources.find((candidate) => candidate.id === sourceId);
   const credential =

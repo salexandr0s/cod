@@ -1,7 +1,7 @@
 // Written the way an agent with only the skill would write it.
 // @effect-diagnostics globalDateInEffect:off
 // A replay in the same process finds the time it kept; a restarted server does not.
-const { workflow, wait, stop } = T3;
+const { workflow, wait, stop } = cod3;
 
 let time: number | undefined;
 

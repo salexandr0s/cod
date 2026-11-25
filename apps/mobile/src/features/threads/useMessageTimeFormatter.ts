@@ -5,12 +5,12 @@ import { createMessageTimeFormatter } from "./messageTimestamp";
 
 function systemUses24HourClock() {
   if (Platform.OS !== "android") return undefined;
-  return requireNativeModule<{ is24HourFormat(): boolean }>("T3NativeControls").is24HourFormat();
+  return requireNativeModule<{ is24HourFormat(): boolean }>("Cod3NativeControls").is24HourFormat();
 }
 
 export function useMessageTimeFormatter() {
   const [is24Hour, setIs24Hour] = useState(systemUses24HourClock);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Refresh the native clock preference when Android returns to the foreground.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Refresh the native clock preference when Android returns to the foreground.
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const subscription = AppState.addEventListener("change", (state) => {

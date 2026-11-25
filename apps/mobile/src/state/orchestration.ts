@@ -1,4 +1,4 @@
-import { createOrchestrationEnvironmentAtoms } from "@t3tools/client-runtime/state/orchestration";
+import { createOrchestrationEnvironmentAtoms } from "@cod3/client-runtime/state/orchestration";
 
 import { connectionAtomRuntime } from "../connection/runtime";
 import { environmentShell } from "./shell";

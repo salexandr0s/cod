@@ -1,21 +1,21 @@
 import { expect } from "e2e";
 
-import { test, WEB } from "./t3.ts";
+import { test, WEB } from "./cod3.ts";
 
 test(
   "An idle numbered terminal shows its name in the app's language after switching threads",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("demo");
-    const thread = await t3.thread({ project, title: "Terminal work", messages: ["Start"] });
-    await t3.thread({ project, title: "Other work", messages: ["Start"] });
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("demo");
+    const thread = await cod3.thread({ project, title: "Terminal work", messages: ["Start"] });
+    await cod3.thread({ project, title: "Other work", messages: ["Start"] });
 
-    await t3.open("/settings/general");
+    await cod3.open("/settings/general");
     await screen.getByLabel("Language", { exact: true }).tap();
     await screen.getByText("日本語", { exact: true }).tap();
     await screen.getByLabel("言語", { exact: true }).waitFor();
 
-    await t3.open(thread);
+    await cod3.open(thread);
     const drawerToggle = screen.getByRole("button", "ターミナルドロワーの切り替え");
     await drawerToggle.tap();
     const input = browser.locator('[aria-label="ターミナルの入力"][data-workspace-focus-default]');

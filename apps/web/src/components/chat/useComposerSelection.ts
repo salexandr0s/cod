@@ -1,5 +1,5 @@
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import type { UnifiedSettings } from "@t3tools/contracts";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import type { UnifiedSettings } from "@cod3/contracts";
 import { useMessages } from "gt-react";
 import type { Dispatch } from "react";
 import type { ComposerThreadTarget, DraftSessionState } from "../../composerDraftStore";
@@ -12,9 +12,9 @@ import {
   type ServerProvider,
   type ThreadId,
   RuntimeMode,
-} from "@t3tools/contracts";
-import type { deriveThreadStructureRuntime } from "@t3tools/client-runtime/state/thread-execution";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+} from "@cod3/contracts";
+import type { deriveThreadStructureRuntime } from "@cod3/client-runtime/state/thread-execution";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
 import { type SetStateAction } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toastManager } from "../ui/toast";

@@ -1,6 +1,6 @@
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/models";
-import { scopedThreadKey, scopeThreadRef } from "@t3tools/client-runtime/environment";
-import type { ContextMenuSource } from "@t3tools/contracts";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/models";
+import { scopedThreadKey, scopeThreadRef } from "@cod3/client-runtime/environment";
+import type { ContextMenuSource } from "@cod3/contracts";
 import { ChevronDownIcon, SquarePenIcon } from "lucide-react";
 import { msg, T, useGT, useMessages, Var } from "gt-react";
 import { memo } from "react";
@@ -33,14 +33,11 @@ export function sidebarFolderRowId(projectKey: string) {
   return `folder:${projectKey}`;
 }
 
-/**
- * A project folder in the boring sidebar. It reads like a shelf header: a trailing
- * count and chevron, with the count and a status dot only while it is closed, so a
- * closed folder still says when a hidden thread needs you.
- */
 export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHeader(props: {
   group: SidebarProjectSnapshot;
+  revealRef?: React.RefCallback<HTMLElement> | undefined;
   collapsed: boolean;
+  navigationParent?: string | undefined;
   hiddenThreads: readonly EnvironmentThreadShell[];
   onToggle: (group: SidebarProjectSnapshot) => void;
   onNewThread: (group: SidebarProjectSnapshot) => void;
@@ -52,7 +49,7 @@ export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHead
 }) {
   const gt = useGT();
   const m = useMessages();
-  const { group, collapsed, hiddenThreads } = props;
+  const { group, collapsed, hiddenThreads, revealRef } = props;
   const rowId = sidebarFolderRowId(group.projectKey);
   const localLastVisitedAtById = useUiStateStore((state) => state.threadLastVisitedAtById);
   const dot = collapsed
@@ -71,11 +68,13 @@ export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHead
   return (
     <li
       data-testid="sidebar-project-folder"
-      className="group/project-folder relative mt-2 list-none first:mt-0"
+      className="group/project-folder mt-1 flex list-none items-center rounded-(--control-radius) pe-1 hover:bg-sidebar-row-hover first:mt-0"
     >
       <button
         type="button"
+        ref={revealRef}
         data-sidebar-row={rowId}
+        data-sidebar-parent={props.navigationParent}
         aria-expanded={!collapsed}
         onClick={() => props.onToggle(group)}
         onContextMenu={(event) => {
@@ -86,8 +85,15 @@ export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHead
             contextMenuSourceOf(event),
           );
         }}
-        className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-(--control-radius) px-(--sidebar-row-content-inset) text-left outline-none hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        className="flex h-8 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-(--control-radius) ps-(--sidebar-row-content-inset) pe-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       >
+        <ChevronDownIcon
+          aria-hidden
+          className={cn(
+            "size-3 shrink-0 text-sidebar-muted-foreground motion-safe:transition-transform",
+            collapsed && "-rotate-90",
+          )}
+        />
         <ProjectFavicon project={group} className="size-4 shrink-0" />
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-sidebar-foreground/90">
           {group.displayName}
@@ -98,20 +104,12 @@ export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHead
           </span>
         ) : null}
         {collapsed && hiddenThreads.length > 0 ? (
-          <span className="shrink-0 text-xs tabular-nums text-sidebar-muted-foreground group-hover/project-folder:invisible group-has-[[data-sidebar-action-for]:focus]/project-folder:invisible pointer-coarse:invisible">
+          <span className="shrink-0 text-xs tabular-nums text-sidebar-muted-foreground">
             {hiddenThreads.length}
           </span>
         ) : null}
-        <ChevronDownIcon
-          aria-hidden
-          className={cn(
-            "size-3 shrink-0 text-sidebar-muted-foreground transition-transform",
-            collapsed && "-rotate-90",
-          )}
-        />
       </button>
-      {/* Sits over the count, which hides on hover or focus, and left of the chevron. */}
-      <span className="absolute inset-y-0 right-6 flex items-center opacity-0 focus-within:opacity-100 group-hover/project-folder:opacity-100 pointer-coarse:opacity-100">
+      <span className="flex shrink-0 items-center opacity-0 group-focus-within/project-folder:opacity-100 group-hover/project-folder:opacity-100 pointer-coarse:opacity-100">
         <Tooltip>
           <TooltipTrigger
             render={

@@ -1,17 +1,13 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
-import { isAttachmentOnlyBootstrapPrompt } from "@t3tools/shared/composerContextReferences";
-import {
-  type ModelSelection,
-  repositoryGroupingKeyOf,
-  type ServerProvider,
-} from "@t3tools/contracts";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
+import { isAttachmentOnlyBootstrapPrompt } from "@cod3/shared/composerContextReferences";
+import { type ModelSelection, repositoryGroupingKeyOf, type ServerProvider } from "@cod3/contracts";
 import {
   buildNewThreadLink,
   parsePromptLinkRepository,
   PROMPT_LINK_MAX_PROMPT_LENGTH,
   type PromptLinkRepository,
-} from "@t3tools/shared/promptLinks";
+} from "@cod3/shared/promptLinks";
 
 import { type ComposerThreadTarget, useComposerDraftStore } from "~/composerDraftStore";
 import { writeTextToClipboard } from "~/hooks/useCopyToClipboard";

@@ -1,4 +1,4 @@
-import { presentThreadShell } from "@t3tools/client-runtime/state/shell";
+import { presentThreadShell } from "@cod3/client-runtime/state/shell";
 import type {
   EnvironmentId,
   ThreadId,
@@ -6,7 +6,7 @@ import type {
   ModelSelection,
   RuntimeMode,
   ProviderInteractionMode,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import { msg } from "gt-react-native";
 

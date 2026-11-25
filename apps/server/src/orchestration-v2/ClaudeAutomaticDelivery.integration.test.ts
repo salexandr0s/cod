@@ -14,7 +14,7 @@ import {
   ScheduledTaskUpsertInput,
   ThreadId,
   type OrchestrationV2DomainEvent,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -38,9 +38,9 @@ import * as ClaudeAdapterV2 from "./Adapters/ClaudeAdapterV2.ts";
 import * as CommandReceiptStore from "./CommandReceiptStore.ts";
 import * as EffectWorker from "./EffectWorker.ts";
 import * as EventSink from "./EventSink.ts";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
 import * as LegacyV1ThreadImporter from "./legacy/LegacyV1ThreadImporter.ts";
 import * as Orchestrator from "./Orchestrator.ts";
 import * as ProviderAdapterRegistry from "./ProviderAdapterRegistry.ts";
@@ -49,7 +49,7 @@ import * as ThreadLaunchService from "./ThreadLaunchService.ts";
 import * as ThreadManagementService from "./ThreadManagementService.ts";
 import * as ServerSettings from "../serverSettings.ts";
 import * as ProviderReplayHarness from "./testkit/ProviderReplayHarness.ts";
-import { checkpointWorkspace } from "@t3tools/provider-testing/replayWorkspace";
+import { checkpointWorkspace } from "@cod3/provider-testing/replayWorkspace";
 
 const sessionId = "automatic-delivery-session";
 const settings = Schema.decodeSync(ClaudeSettings)({});
@@ -81,7 +81,7 @@ const batch = frame({
       ...statusIds.map((id) => ({
         type: "tool_use",
         id,
-        name: "mcp__t3-code__task_status",
+        name: "mcp__cod3__task_status",
         input: { taskId: id },
       })),
     ],
@@ -1565,7 +1565,7 @@ const exitWhileIdle = (options: {
               : [emptyRoster, notification, killed],
           );
         }
-        // The CLI exits while the thread is idle, after its last frames; the T3 server keeps running.
+        // The CLI exits while the thread is idle, after its last frames; the cod3 server keeps running.
         yield* Queue.end(firstProcess);
         yield* Fiber.join(recorded);
         yield* worker.drain();

@@ -1,7 +1,7 @@
 import * as Dialog from "../../components/ui/Dialog";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import { resolveAssetUrl } from "@t3tools/client-runtime/state/assets";
-import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import { resolveAssetUrl } from "@cod3/client-runtime/state/assets";
+import type { EnvironmentId, ThreadId } from "@cod3/contracts";
 import * as Option from "effect/Option";
 import { useGT } from "gt-react-native";
 import { m } from "../../i18n/messages";
@@ -26,7 +26,7 @@ export function useFileChipShare(
     reportFailure: false,
   });
   const requestRef = useRef<AbortController | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- aborts the in-flight file share download when the component unmounts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- aborts the in-flight file share download when the component unmounts
   useEffect(() => () => requestRef.current?.abort(), []);
 
   return (target: FileChipTarget) => {

@@ -4,7 +4,7 @@ import {
   VcsProcessExitError,
   VcsProcessSpawnError,
   VcsProcessTimeoutError,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { assert, it } from "@effect/vitest";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
@@ -16,15 +16,15 @@ import * as PlatformError from "effect/PlatformError";
 import {
   providerAuth,
   type SourceControlProviderDiscoverySpec,
-} from "@t3tools/source-control-core/server/discovery";
-import type * as SourceControlHost from "@t3tools/source-control-core/server/SourceControlHost";
+} from "@cod3/source-control-core/server/discovery";
+import type * as SourceControlHost from "@cod3/source-control-core/server/SourceControlHost";
 import {
   fakeDiscovery,
   fakeSourceControlProvider,
-} from "@t3tools/source-control-testing/fakeSourceControlDriver";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { SpawnExecutableResolution } from "@t3tools/shared/shell";
-import * as TestSourceControlHost from "@t3tools/source-control-testing/TestSourceControlHost";
+} from "@cod3/source-control-testing/fakeSourceControlDriver";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { SpawnExecutableResolution } from "@cod3/shared/shell";
+import * as TestSourceControlHost from "@cod3/source-control-testing/TestSourceControlHost";
 
 import * as ServerConfig from "../config.ts";
 import * as ServerSettings from "../serverSettings.ts";
@@ -123,7 +123,7 @@ const layerDiscovery = (
     Layer.provideMerge(Layer.mock(VcsDriverRegistry.VcsDriverRegistry)({})),
     Layer.provideMerge(Layer.mock(VcsProcess.VcsProcess)({ run: runProcess })),
     Layer.provideMerge(
-      ServerConfig.layerTest(process.cwd(), { prefix: "t3-source-control-discovery-" }),
+      ServerConfig.layerTest(process.cwd(), { prefix: "cod3-source-control-discovery-" }),
     ),
     Layer.provideMerge(NodeServices.layer),
   );
@@ -264,7 +264,7 @@ it.live.skipIf(HostProcess.Platform.defaultValue() === "win32")(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-discovery-login-shell-" });
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-discovery-login-shell-" });
       const home = path.join(root, "home");
       const fakebin = path.join(home, "fakebin");
       const loginShell = path.join(root, "loginsh");

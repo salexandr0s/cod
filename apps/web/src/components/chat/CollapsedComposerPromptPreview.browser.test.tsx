@@ -1,7 +1,7 @@
 import "~/index.css";
 
-import { EnvironmentId, MessageId, ThreadId } from "@t3tools/contracts";
-import { serializeAssistantCitation } from "@t3tools/shared/assistantCitations";
+import { EnvironmentId, MessageId, ThreadId } from "@cod3/contracts";
+import { serializeAssistantCitation } from "@cod3/shared/assistantCitations";
 import { expect, it } from "vite-plus/test";
 
 import { formatInlineContextReference } from "~/lib/composerContextReferences";

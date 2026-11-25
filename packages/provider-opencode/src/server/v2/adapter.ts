@@ -43,7 +43,7 @@ import {
   type ProviderInstanceId,
   type RunId,
   type RuntimeRequestId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type * as Cause from "effect/Cause";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -61,47 +61,44 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 
-import * as ProviderHost from "@t3tools/provider-core/server/ProviderHost";
+import * as ProviderHost from "@cod3/provider-core/server/ProviderHost";
 import * as OpenCode2Client from "./OpenCode2Client.ts";
 import * as OpenCode2Server from "./OpenCode2Server.ts";
 import * as OpenCodeRuntime from "../OpenCodeRuntime.ts";
 import { readableProviderErrorMessage } from "../providerErrorMessage.ts";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import { buildRuntimeInstructions } from "@t3tools/provider-core/server/runtimeInstructions";
-import { t3OrchestrationSystemPrompt } from "@t3tools/provider-core/server/orchestrationInstructions";
-import { SKILL_MENTION_PATTERN } from "@t3tools/shared/composerInlineTokens";
-import { HTML_RENDER_TOOL_NAME } from "@t3tools/shared/htmlRender";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import { buildRuntimeInstructions } from "@cod3/provider-core/server/runtimeInstructions";
+import { cod3OrchestrationSystemPrompt } from "@cod3/provider-core/server/orchestrationInstructions";
+import { SKILL_MENTION_PATTERN } from "@cod3/shared/composerInlineTokens";
+import { HTML_RENDER_TOOL_NAME } from "@cod3/shared/htmlRender";
 import {
   htmlRenderFromToolItem,
   SEND_TO_USER_TOOL_NAME,
   sentMessageFromToolItem,
-} from "@t3tools/shared/toolOutput";
-import { compareSemverVersions } from "@t3tools/shared/semver";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
-import { modelSelectionsEqual } from "@t3tools/shared/model";
-import { causeErrorTag } from "@t3tools/shared/observability";
+} from "@cod3/shared/toolOutput";
+import { compareSemverVersions } from "@cod3/shared/semver";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
+import { modelSelectionsEqual } from "@cod3/shared/model";
+import { causeErrorTag } from "@cod3/shared/observability";
 
 import {
   isProviderNativeImageAttachment,
   providerMessageTextWithAttachmentPaths,
-} from "@t3tools/provider-core/server/attachmentPrompt";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
+} from "@cod3/provider-core/server/attachmentPrompt";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
 import {
   backgroundWorkNotification,
   type BackgroundWorkReport,
-} from "@t3tools/provider-core/server/notification";
-import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
-import {
-  makeProviderFailure,
-  makeProviderRetryTurnItem,
-} from "@t3tools/provider-core/server/failure";
+} from "@cod3/provider-core/server/notification";
+import * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
+import { makeProviderFailure, makeProviderRetryTurnItem } from "@cod3/provider-core/server/failure";
 import {
   makeSubagentChildThread,
   makeSubagentConversationArtifacts,
   subagentThreadTitle,
-} from "@t3tools/provider-core/server/subagentProjection";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
-import { turnScopedSelectionTransition } from "@t3tools/provider-core/server/selectionTransition";
+} from "@cod3/provider-core/server/subagentProjection";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
+import { turnScopedSelectionTransition } from "@cod3/provider-core/server/selectionTransition";
 import { OPENCODE_PROVIDER, openCodePermissionRequestKind } from "../adapter.ts";
 import {
   openCodeCodeModeHtmlRenders,
@@ -392,7 +389,7 @@ interface ThreadState {
   >;
   readonly stoppedChildren: Set<string>;
   readonly strandedSteers: Set<string>;
-  /** Prompts other clients queued while no T3 turn ran, shown once delivered; `leads` the next wake if no report preceded it. */
+  /** Prompts other clients queued while no cod3 turn ran, shown once delivered; `leads` the next wake if no report preceded it. */
   readonly externalPrompts: Map<string, { readonly text: string; leads: boolean }>;
   mcp:
     | { readonly name: string; readonly directory: string; readonly credential: string }
@@ -433,22 +430,22 @@ interface PendingRequest {
 const rule = (action: string, effect: Rule["effect"]): Rule => ({ action, resource: "*", effect });
 
 /** OpenCode hides tools for names over 64 chars and rejects names over 100; hash long thread IDs. */
-export const t3McpServerName = Effect.fn("t3McpServerName")(function* (threadId: string) {
-  const name = `t3-code-${threadId.replaceAll(/[^a-zA-Z0-9_-]/g, "_")}`;
+export const cod3McpServerName = Effect.fn("cod3McpServerName")(function* (threadId: string) {
+  const name = `cod3-${threadId.replaceAll(/[^a-zA-Z0-9_-]/g, "_")}`;
   if (name.length <= 64) return name;
   const crypto = yield* Digest.Digest;
   const digest = yield* crypto
     .digest(Digest.sha256, new TextEncoder().encode(threadId))
     .pipe(Effect.orDie);
-  return `t3-code-${Hex.encode(digest).slice(0, 16)}`;
+  return `cod3-${Hex.encode(digest).slice(0, 16)}`;
 });
 
-// Last match wins: deny all threads' T3 servers, then allow only this thread's.
+// Last match wins: deny all threads' cod3 servers, then allow only this thread's.
 const mcpRules = (mcpServerName: string | null): ReadonlyArray<Rule> =>
   mcpServerName === null
     ? []
     : [
-        { action: "t3-code-*", resource: "*", effect: "deny" },
+        { action: "cod3-*", resource: "*", effect: "deny" },
         { action: `${mcpServerName}_*`, resource: "*", effect: "allow" },
       ];
 
@@ -636,7 +633,7 @@ const isUsageLimit = (error: {
   claudeUsageLimit(error.message) !== undefined;
 
 const INTERRUPT_TIMEOUT = 10_000;
-const INSTRUCTIONS_KEY = "t3-code";
+const INSTRUCTIONS_KEY = "cod3";
 const RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = "2 seconds";
 const RECONCILE_TIMEOUT = "15 seconds";
@@ -693,7 +690,7 @@ class OpenCode2ServerExitedError extends Schema.TaggedError<OpenCode2ServerExite
   {},
 ) {}
 const LOST_BACKGROUND =
-  "T3 Code lost its connection to OpenCode while this subagent ran, so its result is not shown.";
+  "cod3 lost its connection to OpenCode while this subagent ran, so its result is not shown.";
 const INVENTORY_TIMEOUT = "5 seconds";
 const MCP_TOOL_RELOAD_SETTLE = "250 millis";
 const ACTIVE_CHECK_TIMEOUT = "5 seconds";
@@ -720,13 +717,13 @@ const deliver = <E>(answer: Effect.Effect<void, E>) =>
 
 type ModelRef = ReturnType<typeof Model.Ref.make>;
 
-// msg_ IDs cannot cross sessions; include session identity because T3 IDs repeat across environments.
+// msg_ IDs cannot cross sessions; include session identity because cod3 IDs repeat across environments.
 // Pre-acknowledgement IDs also establish fork/rollback boundaries.
 const turnPromptId = (sessionId: string, attemptId: string) =>
-  SessionMessage.ID.make(`msg_t3_turn_${sessionId}:${attemptId}`);
+  SessionMessage.ID.make(`msg_cod3_turn_${sessionId}:${attemptId}`);
 const steerPromptId = (sessionId: string, messageId: string) =>
-  SessionMessage.ID.make(`msg_t3_steer_${sessionId}:${messageId}`);
-const isOwnPrompt = (inboxId: string) => inboxId.startsWith("msg_t3_");
+  SessionMessage.ID.make(`msg_cod3_steer_${sessionId}:${messageId}`);
+const isOwnPrompt = (inboxId: string) => inboxId.startsWith("msg_cod3_");
 
 const promptOf = (turn: OrchestrationV2ProviderTurn) => {
   const nativeId = turn.nativeTurnRef?.nativeId;
@@ -751,7 +748,7 @@ const boundaryAfter = (
       new ProviderAdapter.ProviderAdapterProtocolError({
         driver: OPENCODE_PROVIDER,
         detail:
-          "This OpenCode conversation has turns from an earlier T3 Code version, so it can't be cut there.",
+          "This OpenCode conversation has turns from an earlier cod3 version, so it can't be cut there.",
       }),
     );
   }
@@ -842,7 +839,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
   const driver = OPENCODE_PROVIDER;
   let nativeGoalSupport: boolean | undefined;
   const mcpServerNameFor = (threadId: string) =>
-    t3McpServerName(threadId).pipe(Effect.provideService(Digest.Digest, crypto));
+    cod3McpServerName(threadId).pipe(Effect.provideService(Digest.Digest, crypto));
 
   const borrow = Effect.gen(function* () {
     const lent = yield* Deferred.make<
@@ -1033,7 +1030,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       }
     >();
 
-    // A held wake routes its shell launches only when T3 starts its run, so marks wait on the wake.
+    // A held wake routes its shell launches only when cod3 starts its run, so marks wait on the wake.
     const heldLaunch = (state: ThreadState, taskId: string) =>
       sessionsOf(state)
         .flatMap((session) => session.wakes)
@@ -1309,7 +1306,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       });
     });
 
-    // T3's own prompts are sent while their turn is active, so only other clients reach here.
+    // cod3's own prompts are sent while their turn is active, so only other clients reach here.
     const emitExternalPrompt = Effect.fnUntraced(function* (
       state: ThreadState,
       turn: ActiveTurn,
@@ -1556,7 +1553,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       }> = nestedSentMessages.map(({ index, messageId, sentMessage }) => ({
         index,
         id: messageId,
-        toolName: `t3-code.${SEND_TO_USER_TOOL_NAME}`,
+        toolName: `cod3.${SEND_TO_USER_TOOL_NAME}`,
         input: { message: sentMessage },
         output: { sentMessage },
       }));
@@ -1569,7 +1566,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
         recoveredItems.push({
           index,
           id: pageId,
-          toolName: `t3-code.${HTML_RENDER_TOOL_NAME}`,
+          toolName: `cod3.${HTML_RENDER_TOOL_NAME}`,
           input: { title: page.title, height: page.height },
           output: { htmlRender: page },
         });
@@ -1837,7 +1834,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
     });
 
     const syncRoster = Effect.fnUntraced(function* (state: ThreadState) {
-      const roster: Array<import("@t3tools/contracts").OrchestrationV2PendingBackgroundTask> =
+      const roster: Array<import("@cod3/contracts").OrchestrationV2PendingBackgroundTask> =
         runningCalls(state)
           .filter((call) => call.background)
           .map((call) => ({
@@ -2550,7 +2547,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       yield* finishTurn(state, {
         status: "failed",
         failure: makeProviderFailure({
-          message: "OpenCode is waiting on a request T3 Code couldn't answer.",
+          message: "OpenCode is waiting on a request cod3 couldn't answer.",
           class: "provider_error",
         }),
       });
@@ -2567,7 +2564,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       return true;
     });
 
-    // The orchestrator already recorded T3-owned answers; only forget them here.
+    // The orchestrator already recorded cod3-owned answers; only forget them here.
     const settleRequest = Effect.fnUntraced(function* (
       entry: PendingRequest,
       status: "resolved" | "cancelled",
@@ -2617,7 +2614,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
               Effect.ignore({ log: true }),
             );
 
-    // T3 expired pre-load requests and no longer shows them; stop them so OpenCode cannot wait forever.
+    // cod3 expired pre-load requests and no longer shows them; stop them so OpenCode cannot wait forever.
     const stopLeftoverRequests = Effect.fnUntraced(function* (state: ThreadState) {
       const sessionID = Session.ID.make(state.sessionId);
       const listed = yield* Effect.all([
@@ -2795,7 +2792,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
         );
       }
       // Cancel reports user Stop; record failure here and skip that execution end.
-      yield* Effect.logWarning("Declined an OpenCode form T3 Code cannot show.", {
+      yield* Effect.logWarning("Declined an OpenCode form cod3 cannot show.", {
         reason: mapped.unsupported,
       });
       const cancelled = yield* deliver(
@@ -2808,7 +2805,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       yield* finishTurn(asker, {
         status: "failed",
         failure: makeProviderFailure({
-          message: `OpenCode asked for ${mapped.unsupported}, which T3 Code can't show. The question was declined.`,
+          message: `OpenCode asked for ${mapped.unsupported}, which cod3 can't show. The question was declined.`,
           class: "provider_error",
         }),
       });
@@ -3598,7 +3595,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
         }
         return;
       }
-      // No T3 turn existed while a wake held these, so its user items came from another client.
+      // No cod3 turn existed while a wake held these, so its user items came from another client.
       if (
         event.type === "session.inbox.enqueued" &&
         event.data.item.type === "user" &&
@@ -3606,7 +3603,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       ) {
         const text = event.data.item.payload.text;
         if (state.subagent !== undefined) state.subagent.prompt ??= text;
-        // T3's own prompts can be admitted after a failed submit ended their turn.
+        // cod3's own prompts can be admitted after a failed submit ended their turn.
         else if (!isOwnPrompt(event.data.inboxID)) {
           state.externalPrompts.set(event.data.inboxID, {
             text,
@@ -3849,7 +3846,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
                       status: "failed",
                       failure: makeProviderFailure({
                         message:
-                          "OpenCode ended the turn with an error while T3 Code was reconnecting.",
+                          "OpenCode ended the turn with an error while cod3 was reconnecting.",
                         class: "provider_error",
                       }),
                     }
@@ -3945,7 +3942,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       };
       currentScope = scope;
       yield* Scope.close(previous, Exit.void);
-      // A restarted server forgot T3's MCP servers; the next turn adds them again.
+      // A restarted server forgot cod3's MCP servers; the next turn adds them again.
       // The gap may have started a pending prompt unseen, so none may set a later wake's boundary.
       for (const state of threads.values()) {
         state.mcp = undefined;
@@ -4081,7 +4078,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       );
     }).pipe(Effect.repeat(Schedule.spaced("2 seconds")), Effect.forkScoped);
 
-    // External servers outlive T3; stop their turns before losing observation.
+    // External servers outlive cod3; stop their turns before losing observation.
     if (connection.external) {
       yield* Effect.addFinalizer(() =>
         Effect.forEach(
@@ -4281,7 +4278,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       }
     });
 
-    // OpenCode 2.0.18 executes even unstaged revert clears; wait so that end cannot settle a T3 turn.
+    // OpenCode 2.0.18 executes even unstaged revert clears; wait so that end cannot settle a cod3 turn.
     const clearRevert = Effect.fnUntraced(function* (sessionId: string) {
       const settled = yield* Deferred.make<void>();
       clearing.set(sessionId, settled);
@@ -4296,7 +4293,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
     });
 
     // Failed/interrupted rollbacks must clear staged reverts before the next prompt commits them.
-    // Leave files to T3 checkpoints; history-only rewinds must preserve them.
+    // Leave files to cod3 checkpoints; history-only rewinds must preserve them.
     const rollBackTo = Effect.fnUntraced(function* (
       sessionId: string,
       boundary: SessionMessage.ID,
@@ -4408,7 +4405,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
 
     const promptFiles = Effect.fnUntraced(function* (attachments: ReadonlyArray<ChatAttachment>) {
       const files: Array<{ uri: string; name: string }> = [];
-      // An external server may not share T3's attachment directory.
+      // An external server may not share cod3's attachment directory.
       if (connection.external) return files;
       for (const attachment of attachments) {
         if (!isProviderNativeImageAttachment(attachment)) continue;
@@ -4442,7 +4439,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
       const mcpSession = yield* mcpSessions.read(turnInput.threadId);
       const directory = turnInput.runtimePolicy.cwd ?? host.paths.cwd;
       const name = yield* mcpServerNameFor(turnInput.threadId);
-      // An external server may not reach T3's MCP endpoint, as with 1.x.
+      // An external server may not reach cod3's MCP endpoint, as with 1.x.
       const wanted =
         mcpSession === undefined || connection.external
           ? undefined
@@ -4456,7 +4453,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
         yield* removeMcp(state.mcp);
         state.mcp = undefined;
       }
-      // Idle Location eviction drops runtime MCP servers without clearing T3's cache.
+      // Idle Location eviction drops runtime MCP servers without clearing cod3's cache.
       // Re-adding an unchanged config keeps its existing connection.
       let mcpAvailable = false;
       if (wanted !== undefined) {
@@ -4476,7 +4473,7 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
             Effect.timeout(INVENTORY_TIMEOUT),
             Effect.as(true),
             Effect.catchCause((cause) =>
-              Effect.logWarning("Could not add T3 Code's MCP server to OpenCode.", cause).pipe(
+              Effect.logWarning("Could not add cod3's MCP server to OpenCode.", cause).pipe(
                 Effect.as(false),
               ),
             ),
@@ -4494,9 +4491,12 @@ export const make = Effect.fn("OpenCode2Adapter.make")(function* (instanceId: Pr
           model: turnInput.modelSelection.model,
           runtimePolicy: turnInput.runtimePolicy,
         }),
-        t3OrchestrationSystemPrompt(mcpAvailable, mcpSession?.capabilities?.has("device") === true),
+        cod3OrchestrationSystemPrompt(
+          mcpAvailable,
+          mcpSession?.capabilities?.has("device") === true,
+        ),
         mcpAvailable
-          ? "To wait for a background shell you started (tests, a build), call `t3_background_wait` with its shell ID before you end your turn. Do not mark work you leave running, or PRs."
+          ? "To wait for a background shell you started (tests, a build), call `cod3_background_wait` with its shell ID before you end your turn. Do not mark work you leave running, or PRs."
           : undefined,
       ]
         .filter((part) => part !== undefined && part.length > 0)

@@ -9,9 +9,9 @@ import * as NodeURL from "node:url";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, it } from "@effect/vitest";
-import { TRIAGE_PROMPT_FILE_NAME } from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as NetService from "@t3tools/shared/Net";
+import { TRIAGE_PROMPT_FILE_NAME } from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as NetService from "@cod3/shared/Net";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -25,7 +25,7 @@ import { buildTriageLaunchPrompt } from "../triage/triagePrompt.ts";
 const cliPath = NodeURL.fileURLToPath(new URL("../bin.ts", import.meta.url));
 
 async function fixture(commands: ReadonlyArray<string>) {
-  const root = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "t3-triage-"));
+  const root = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "cod3-triage-"));
   const bin = NodePath.join(root, "bin");
   const record = NodePath.join(root, "launch.json");
   await NodeFSP.mkdir(bin);
@@ -145,8 +145,8 @@ const FAILING_AGENT_WINDOWS = `@echo Error: There is not enough space on the dis
 it.live("a failed agent launch points at the prompt it could not run", () =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-triage-cli-" });
-    const binDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-triage-bin-" });
+    const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-triage-cli-" });
+    const binDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-triage-bin-" });
     const codexHome = NodePath.join(baseDir, "codex-home");
     NodeFS.writeFileSync(NodePath.join(binDir, "codex"), FAILING_AGENT_POSIX, { mode: 0o755 });
     NodeFS.writeFileSync(NodePath.join(binDir, "codex.cmd"), FAILING_AGENT_WINDOWS);
@@ -196,13 +196,13 @@ it.live.skipIf(HostProcess.Platform.defaultValue() === "win32")(
   () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
-      const binDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-triage-bin-" });
+      const binDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-triage-bin-" });
       // Relative to this process, as an entry like "." is to the server that checked it.
       const relativeBinDir = NodePath.relative(process.cwd(), binDir);
       // Nested deeper than the entry climbs, so from the session directory it leads nowhere.
       const climbs = relativeBinDir.split(NodePath.sep).filter((part) => part === "..").length;
       const baseDir = NodePath.join(
-        yield* fs.makeTempDirectoryScoped({ prefix: "t3-triage-cli-" }),
+        yield* fs.makeTempDirectoryScoped({ prefix: "cod3-triage-cli-" }),
         ...Array.from({ length: climbs }, () => "nested"),
       );
       NodeFS.mkdirSync(baseDir, { recursive: true });

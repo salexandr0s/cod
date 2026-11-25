@@ -1,13 +1,13 @@
-import { scopeProjectRef } from "@t3tools/client-runtime/environment";
+import { scopeProjectRef } from "@cod3/client-runtime/environment";
 import {
   getNewProjectRepository,
   type NewProjectPublishTarget,
-} from "@t3tools/client-runtime/operations/projects";
+} from "@cod3/client-runtime/operations/projects";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import type { EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/runtime";
+import type { EnvironmentId } from "@cod3/contracts";
 import { msg } from "gt-react";
 
 import { stackedThreadToast, toastManager } from "~/components/ui/toast";

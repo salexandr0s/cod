@@ -3,19 +3,19 @@ import {
   linkBackBlockLabel,
   linkBatchFailureLabel,
   linkWithMintedCode,
-} from "@t3tools/client-runtime/link-batch";
-import { ANOTHER_ADDRESS, linkRequestFailureMessage } from "@t3tools/client-runtime/link-request";
+} from "@cod3/client-runtime/link-batch";
+import { ANOTHER_ADDRESS, linkRequestFailureMessage } from "@cod3/client-runtime/link-request";
 import {
   AuthAccessWriteScope,
   type AuthMcpClientAccess,
   type EnvironmentId,
   type PeerLinkSummary,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { peerLinkHealth, type PeerLinkHealth } from "@t3tools/client-runtime/state/peerLinks";
+} from "@cod3/client-runtime/state/runtime";
+import { peerLinkHealth, type PeerLinkHealth } from "@cod3/client-runtime/state/peerLinks";
 import * as DateTime from "effect/DateTime";
 import * as Option from "effect/Option";
 import * as Result from "effect/Result";
@@ -125,7 +125,7 @@ export function LinkedEnvironmentsSettings({
         <SettingsRow
           title={gt("No linked environments")}
           description={gt(
-            "Link another machine running T3 Code, such as a VPS, so agents here can launch and drive threads there.",
+            "Link another machine running cod3, such as a VPS, so agents here can launch and drive threads there.",
           )}
         />
       ) : (
@@ -570,7 +570,7 @@ export function LinkEnvironmentDialog({
                   onChange={(event) => setPairingCode(event.target.value)}
                   placeholder={
                     machine === null
-                      ? gt("From Sharing & access there, or t3 pair")
+                      ? gt("From Sharing & access there, or cod3 pair")
                       : gt("Paste the code")
                   }
                   disabled={busy}
@@ -674,7 +674,7 @@ export function useForgetPeerLink(environmentId: EnvironmentId, link: PeerLinkSu
           type: "warning",
           title: gt("{label} did not answer", { label: link.label }),
           description: gt(
-            "Revoke \"T3 Code · …\" in {label}''s Sharing & access to end the session there too.",
+            "Revoke \"cod3 · …\" in {label}''s Sharing & access to end the session there too.",
             { label: link.label },
           ),
         });

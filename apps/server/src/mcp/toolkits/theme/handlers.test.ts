@@ -4,7 +4,7 @@ import {
   type EnvironmentThemeFile,
   ProviderInstanceId,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Stream from "effect/Stream";
@@ -64,8 +64,8 @@ it.effect("applies the theme through the service and reports a refusal as an inv
     );
     yield* Effect.gen(function* () {
       const toolkit = yield* ThemeToolkit;
-      const call = (params: Parameters<typeof toolkit.handle<"t3_theme_set">>[1]) =>
-        toolkit.handle("t3_theme_set", params).pipe(
+      const call = (params: Parameters<typeof toolkit.handle<"cod3_theme_set">>[1]) =>
+        toolkit.handle("cod3_theme_set", params).pipe(
           Stream.unwrap,
           Stream.runCollect,
           Effect.map((parts) => parts.at(-1)?.result),

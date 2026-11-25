@@ -42,7 +42,7 @@ const Soak = Schema.Struct({
 const MachineState = Schema.Struct({
   /** The highest 1-minute load average read through the run; none on Windows. */
   load1: Schema.NullOr(Schema.Number),
-  /** Cores other node, T3 and agent processes kept busy over the run; Linux only. */
+  /** Cores other node, cod3 and agent processes kept busy over the run; Linux only. */
   otherCpuCores: Schema.NullOr(Schema.Number),
   minutes: Schema.Number,
 });
@@ -371,7 +371,7 @@ const isMetric = (metric: string) =>
   );
 
 /**
- * A run is loaded when other node, T3 and agent processes kept this share of the cores busy, or,
+ * A run is loaded when other node, cod3 and agent processes kept this share of the cores busy, or,
  * where that is unknown, when the 1-minute load passed this much per CPU. The load counts the
  * run's own agents too, so it is only the fallback.
  */
@@ -394,7 +394,7 @@ export function loadWarnings(side: string, metrics: ServerMetrics) {
   const worstLoad = Math.max(...loaded.map(({ load1 }) => load1 ?? 0));
   const worstOther = Math.max(...loaded.map(({ otherCpuCores }) => otherCpuCores ?? 0));
   return [
-    `${side} ran under heavy load in ${loaded.length} of ${metrics.runs.length} runs (load up to ${worstLoad} on ${cpus} CPUs, other node/T3/agent processes up to ${worstOther} cores); rerun on a quieter machine before trusting a change`,
+    `${side} ran under heavy load in ${loaded.length} of ${metrics.runs.length} runs (load up to ${worstLoad} on ${cpus} CPUs, other node/cod3/agent processes up to ${worstOther} cores); rerun on a quieter machine before trusting a change`,
   ];
 }
 

@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 import { expect } from "e2e";
 
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 const NOTE = "userdata/themes/nightfall.json/notes.txt";
 const BODY = "Notes for the original Nightfall palette";
@@ -9,8 +9,8 @@ const BODY = "Notes for the original Nightfall palette";
 test(
   "Publishing a theme preserves files in an existing directory under the same name",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("theme-workspace", {
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("theme-workspace", {
       [NOTE]: BODY,
       "nightfall.json": JSON.stringify({
         name: "Nightfall",
@@ -19,7 +19,7 @@ test(
         accent: "#7aa2f7",
       }),
     });
-    const thread = await t3.thread({
+    const thread = await cod3.thread({
       project,
       title: "Theme notes",
       messages: [`See :codex-file-citation{path="${NOTE}" line_range_start="1"}`],
@@ -27,7 +27,7 @@ test(
     const { cli } = makeState(project);
     await runPromise(cli(["theme", "set", `${project}/nightfall.json`], [0, 1]));
 
-    await t3.open(thread);
+    await cod3.open(thread);
     await screen.getByRole("button", /^Agent See/).tap();
     await screen.getByRole("link", /^notes\.txt/).tap();
 

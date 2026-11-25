@@ -35,7 +35,7 @@ export function GuideNotice({ state }: { readonly state: ReturnType<typeof useRe
           size={19}
           tintColorClassName={failed ? "accent-danger-foreground" : "accent-icon-muted"}
         />
-        <Text className="text-base font-t3-semibold">
+        <Text className="text-base font-cod3-semibold">
           {compact ? notice.title : gt("Review guide")}
         </Text>
       </View>

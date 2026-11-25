@@ -1,9 +1,9 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { expect, it } from "@effect/vitest";
 import type { NotificationHandler } from "@muse-code/sdk";
-import { ProviderInstanceId, type ServerProviderModel } from "@t3tools/contracts";
+import { ProviderInstanceId, type ServerProviderModel } from "@cod3/contracts";
 import { MuseSettings } from "../settings.ts";
-import { createModelSelection } from "@t3tools/shared/model";
+import { createModelSelection } from "@cod3/shared/model";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
 import * as Schema from "effect/Schema";
@@ -241,7 +241,7 @@ it.layer(NodeServices.layer)("Muse text generation", (it) => {
         },
         {
           error: { kind: "authRequired" },
-          detail: "Muse Code is not signed in. Run `muse login` on this T3 server host.",
+          detail: "Muse Code is not signed in. Run `muse login` on this cod3 server host.",
         },
         {
           error: { kind: "modelError" },
@@ -250,7 +250,7 @@ it.layer(NodeServices.layer)("Muse text generation", (it) => {
         {
           error: { kind: "stepLimit" },
           detail:
-            "Muse Code text generation failed. Check Muse login and availability on this T3 server host.",
+            "Muse Code text generation failed. Check Muse login and availability on this cod3 server host.",
         },
         {
           reason: "upstream 429: quota exceeded for this key",
@@ -259,7 +259,7 @@ it.layer(NodeServices.layer)("Muse text generation", (it) => {
         {
           reason: "raw provider refusal",
           detail:
-            "Muse Code text generation failed. Check Muse login and availability on this T3 server host.",
+            "Muse Code text generation failed. Check Muse login and availability on this cod3 server host.",
         },
       ];
       for (const { error, reason, detail } of cases) {

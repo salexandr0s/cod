@@ -1,19 +1,19 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import { formatAttachmentSize } from "@t3tools/client-runtime/state/attachments";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import { formatAttachmentSize } from "@cod3/client-runtime/state/attachments";
 import {
   ARCHIVE_ENTRY_MAX_BYTES,
   ARCHIVE_MAX_BYTES,
   boundedZip,
-} from "@t3tools/client-runtime/zip/bounded-zip";
-import { isZipError } from "@t3tools/client-runtime/zip/error";
-import { zipErrorText } from "@t3tools/client-runtime/zip/error-messages";
-import type { EnvironmentId } from "@t3tools/contracts";
-import { filePreviewDelimiter, parseDelimitedPreview } from "@t3tools/shared/delimitedPreview";
+} from "@cod3/client-runtime/zip/bounded-zip";
+import { isZipError } from "@cod3/client-runtime/zip/error";
+import { zipErrorText } from "@cod3/client-runtime/zip/error-messages";
+import type { EnvironmentId } from "@cod3/contracts";
+import { filePreviewDelimiter, parseDelimitedPreview } from "@cod3/shared/delimitedPreview";
 import {
   decodeFilePreviewText,
   filePreviewKind,
   hostPreviewMimeTypeFromExtension,
-} from "@t3tools/shared/filePreview";
+} from "@cod3/shared/filePreview";
 import { LegendList } from "@legendapp/list/react-native";
 import * as Schema from "effect/Schema";
 import { fetch } from "expo/fetch";
@@ -195,7 +195,7 @@ function useZipArchive(input: {
   const { uri, isLocal, sizeBytes } = input;
   // The parent mints a new refresh callback on every render; it must not reload the archive.
   const refresh = useEffectEvent(input.refresh);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Load archive bytes and cancel the stream on cleanup.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Load archive bytes and cancel the stream on cleanup.
   useEffect(() => {
     if (!uri) return;
     const abort = new AbortController();
@@ -350,7 +350,7 @@ function ZipArchiveProgress(props: {
   const messages = useMessages();
   return (
     <View className="flex-1 justify-center gap-3 bg-sheet px-8">
-      <Text className="text-xl font-t3-semibold text-foreground">
+      <Text className="text-xl font-cod3-semibold text-foreground">
         {props.totalBytes > 0 ? (
           <T>
             <Var>{formatAttachmentSize(props.receivedBytes, messages)}</Var>
@@ -670,9 +670,9 @@ function ZipEntryView(props: {
   const [busy, setBusy] = useState<"save" | "attach" | null>(null);
   const action = useRef<AbortController | null>(null);
   const pendingViewerError = useRef<string | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Cancel a pending save or attach when the entry closes.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Cancel a pending save or attach when the entry closes.
   useEffect(() => () => action.current?.abort(), []);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Write the selected entry to a cached file and release it on cleanup.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Write the selected entry to a cached file and release it on cleanup.
   useEffect(() => {
     if (tooBig) return;
     const controller = new AbortController();

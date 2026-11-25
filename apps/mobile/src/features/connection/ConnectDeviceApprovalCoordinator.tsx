@@ -1,5 +1,5 @@
 import { msg } from "gt-react-native";
-import { AuthAccessWriteScope, type AuthPairingLink, type EnvironmentId } from "@t3tools/contracts";
+import { AuthAccessWriteScope, type AuthPairingLink, type EnvironmentId } from "@cod3/contracts";
 import { useEffect, useEffectEvent } from "react";
 
 import * as Dialog from "../../components/ui/Dialog";
@@ -15,7 +15,7 @@ import {
   createApprovalPromptQueue,
 } from "./connectDeviceApproval";
 
-/** Asks to approve T3 Connect devices waiting on hosts that require it and this phone manages. */
+/** Asks to approve cod3 Connect devices waiting on hosts that require it and this phone manages. */
 export function ConnectDeviceApprovalCoordinator() {
   const { environments } = useEnvironments();
   const requiring = environments.filter(
@@ -131,7 +131,7 @@ function EnvironmentApprovalWatcher(props: {
       })),
     );
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- registers this host with the module-level prompt queue and drops its prompts when it goes away
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- registers this host with the module-level prompt queue and drops its prompts when it goes away
   useEffect(() => {
     const environmentId = props.environmentId;
     watchedEnvironments.add(environmentId);
@@ -140,7 +140,7 @@ function EnvironmentApprovalWatcher(props: {
       approvalPrompts.drop((prompt) => prompt.environmentId === environmentId);
     };
   }, [props.environmentId]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- a new request on the access stream opens a native alert
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- a new request on the access stream opens a native alert
   useEffect(() => {
     if (pairingLinks !== undefined) offerPrompts(pairingLinks);
   }, [pairingLinks]);

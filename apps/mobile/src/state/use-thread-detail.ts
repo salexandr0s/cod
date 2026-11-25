@@ -1,13 +1,13 @@
 import { useAtomValue } from "@effect/atom-react";
-import type { PendingThreadRequests } from "@t3tools/client-runtime/state/thread-requests";
-import type { EnvironmentThreadStructure } from "@t3tools/client-runtime/state/models";
-import type { EnvironmentThread } from "@t3tools/client-runtime/state/shell";
+import type { PendingThreadRequests } from "@cod3/client-runtime/state/thread-requests";
+import type { EnvironmentThreadStructure } from "@cod3/client-runtime/state/models";
+import type { EnvironmentThread } from "@cod3/client-runtime/state/shell";
 import type {
   EnvironmentId,
   OrchestrationV2ThreadProjection,
   ScopedThreadRef,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { Atom } from "effect/reactivity";
 
 import { environmentThreadDetails, useEnvironmentThread } from "./threads";

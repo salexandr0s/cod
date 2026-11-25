@@ -1,6 +1,6 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { expect, it } from "@effect/vitest";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -16,7 +16,7 @@ import * as PreviewBrowserHost from "../preview/PreviewBrowserHost.ts";
 import { browserCommand } from "./browser.ts";
 
 const USERNS_RESTRICTION = "/proc/sys/kernel/apparmor_restrict_unprivileged_userns";
-const BROWSER_ROOT = "/home/me/.t3/tools/chrome-headless-shell";
+const BROWSER_ROOT = "/home/me/.cod3/tools/chrome-headless-shell";
 const BROWSER = `${BROWSER_ROOT}/linux64/154/chrome-headless-shell`;
 
 const notFound = (method: string, path: string) =>
@@ -85,7 +85,7 @@ const runSetupAsRoot = (input: { readonly profile: string | undefined }) => {
     yield* Command.runWith(browserCommand, { version: packageJson.version })([
       "setup",
       "--base-dir",
-      "/home/me/.t3",
+      "/home/me/.cod3",
     ]);
     return {
       output: (yield* TestConsole.logLines).join("\n"),
@@ -106,7 +106,7 @@ const LOAD = `apparmor_parser -r ${PreviewBrowserHost.APPARMOR_PROFILE_PATH}`;
 
 const CUSTOMIZED_PROFILE = PreviewBrowserHost.APPARMOR_PROFILE.replace(
   "  userns,\n",
-  "  userns,\n  deny /tmp/t3-admin-private/** rw,\n",
+  "  userns,\n  deny /tmp/cod3-admin-private/** rw,\n",
 );
 
 it.effect.each([
@@ -128,12 +128,12 @@ it.effect.each([
     written: CUSTOMIZED_PROFILE,
     said: "Reloaded the AppArmor profile",
   },
-])("t3 browser setup as root $label", (input) =>
+])("cod3 browser setup as root $label", (input) =>
   Effect.gen(function* () {
     const result = yield* runSetupAsRoot({ profile: input.profile });
     expect(result.loads).toEqual([LOAD]);
     expect(result.profile).toBe(input.written);
     expect(result.output).toContain(input.said);
-    expect(result.output).toContain("This host is ready for T3's browser.");
+    expect(result.output).toContain("This host is ready for cod3's browser.");
   }),
 );

@@ -1,8 +1,8 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import { assert, it } from "@effect/vitest";
-import * as NodeSqliteClient from "@t3tools/shared/nodeSqliteClient";
-import { ProjectId } from "@t3tools/contracts";
+import * as NodeSqliteClient from "@cod3/shared/nodeSqliteClient";
+import { ProjectId } from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -689,7 +689,7 @@ const fakeForge = () => {
 const harness = Effect.fnUntraced(function* (store?: typeof WorkflowStore.layer) {
   const fileSystem = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const directory = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-workflows-" });
+  const directory = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-workflows-" });
   const database = NodeSqliteClient.layer({ filename: path.join(directory, "state.sqlite") });
   yield* Effect.provide(WorkflowsMigration, database);
   const counts = yield* Ref.make<Record<string, number>>({});

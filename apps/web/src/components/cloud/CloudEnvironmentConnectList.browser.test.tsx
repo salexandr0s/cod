@@ -1,6 +1,6 @@
-import { BearerConnectionTarget } from "@t3tools/client-runtime/connection";
-import type { Discovery } from "@t3tools/client-runtime/relay";
-import { EnvironmentId } from "@t3tools/contracts";
+import { BearerConnectionTarget } from "@cod3/client-runtime/connection";
+import type { Discovery } from "@cod3/client-runtime/relay";
+import { EnvironmentId } from "@cod3/contracts";
 import * as Option from "effect/Option";
 import { describe, expect, it, vi } from "vite-plus/test";
 
@@ -42,7 +42,7 @@ function discovered(
       endpoint: {
         httpBaseUrl: `https://${environmentId}.relay.test`,
         wsBaseUrl: `wss://${environmentId}.relay.test`,
-        providerKind: "t3_relay",
+        providerKind: "cod3_relay",
       },
       linkedAt: "2026-10-01T00:00:00.000Z",
     },
@@ -71,7 +71,7 @@ function setup(discoveredEnvironments: Array<Discovery.RelayDiscoveredEnvironmen
 }
 
 describe("CloudEnvironmentConnectRows", () => {
-  it("does not offer a T3 Connect route for the desktop's own WSL backend", async () => {
+  it("does not offer a cod3 Connect route for the desktop's own WSL backend", async () => {
     setup([
       discovered(primaryEnvironmentId, "This PC"),
       discovered(wslEnvironmentId, "Ubuntu (WSL)"),

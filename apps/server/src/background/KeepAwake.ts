@@ -11,7 +11,7 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import * as OrchestrationEventStore from "../persistence/OrchestrationEventStore.ts";
 import { forkParked } from "../serverActivation.ts";
@@ -21,7 +21,7 @@ import * as Settings from "../serverSettings.ts";
 const RELEASE_GRACE = Duration.seconds(60);
 
 // ES_CONTINUOUS | ES_SYSTEM_REQUIRED, held by the calling thread until the script ends.
-const WINDOWS_HOLD_SCRIPT = `$t = Add-Type -Name Power -Namespace T3 -PassThru -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'; [void]$t::SetThreadExecutionState([uint32]2147483649); [Console]::Out.WriteLine()`;
+const WINDOWS_HOLD_SCRIPT = `$t = Add-Type -Name Power -Namespace cod3 -PassThru -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'; [void]$t::SetThreadExecutionState([uint32]2147483649); [Console]::Out.WriteLine()`;
 
 /**
  * Each command writes a line to stdout once it holds its inhibitor, holds it until it exits, and
@@ -64,7 +64,7 @@ function inhibitorCommand(
         command: "systemd-inhibit",
         args: [
           "--what=sleep",
-          "--who=T3 Code",
+          "--who=cod3",
           "--why=Agents are working",
           "--mode=block",
           // systemd-inhibit starts this only after logind grants the lock.

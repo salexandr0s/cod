@@ -4,9 +4,9 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import { HttpClient, HttpClientResponse } from "effect/http";
-import { IssueTrackerKind } from "@t3tools/contracts";
-import type { StandaloneIssueTrackerApi } from "@t3tools/source-control-core/server/IssueTracker";
-import * as IssueTrackerHost from "@t3tools/source-control-core/server/IssueTrackerHost";
+import { IssueTrackerKind } from "@cod3/contracts";
+import type { StandaloneIssueTrackerApi } from "@cod3/source-control-core/server/IssueTracker";
+import * as IssueTrackerHost from "@cod3/source-control-core/server/IssueTrackerHost";
 
 import * as LinearApi from "./LinearApi.ts";
 import * as LinearIssueTracker from "./LinearIssueTracker.ts";
@@ -139,7 +139,7 @@ describe("LinearIssueTracker", () => {
     Effect.gen(function* () {
       const numbers: Array<number | undefined> = [];
       const { tracker } = fakeLinear({
-        T3Issues: (variables) => {
+        Cod3Issues: (variables) => {
           const filter = variables.filter as {
             or: ReadonlyArray<{ number?: { eq: number } }>;
           };
@@ -174,14 +174,14 @@ describe("LinearIssueTracker", () => {
       const viewerCanceled = yield* Deferred.make<void>();
       const { tracker } = fakeLinear(
         {
-          T3Issue: () =>
+          Cod3Issue: () =>
             new Response(JSON.stringify({ errors: [{ message: "Issue not found" }] }), {
               headers: { "content-type": "application/json" },
             }),
         },
         "lin_api_stored",
         (operation) =>
-          operation === "T3Viewer"
+          operation === "Cod3Viewer"
             ? Deferred.succeed(viewerStarted, undefined).pipe(
                 Effect.andThen(Effect.never),
                 Effect.onInterrupt(() => Deferred.succeed(viewerCanceled, undefined)),
@@ -233,12 +233,12 @@ describe("LinearIssueTracker", () => {
   it.effect("lists a team's issues as summaries keyed by identifier", () =>
     Effect.gen(function* () {
       const { tracker, requests } = fakeLinear({
-        T3Viewer: () => ({
+        Cod3Viewer: () => ({
           viewer: JULIUS,
           organization: { urlKey: "acme" },
           teams: { nodes: [] },
         }),
-        T3Issues: (variables) => {
+        Cod3Issues: (variables) => {
           expect(variables.filter).toMatchObject({
             team: { key: { eq: "ENG" } },
             state: { type: { nin: ["completed", "canceled", "duplicate"] } },
@@ -299,7 +299,7 @@ describe("LinearIssueTracker", () => {
       // Linear's reset header is an absolute time in epoch milliseconds.
       const resetAt = 4_102_444_800_000;
       const limited = fakeLinear({
-        T3Issues: () =>
+        Cod3Issues: () =>
           new Response(JSON.stringify({ errors: [{ message: "Rate limited" }] }), {
             status: 429,
             headers: {
@@ -326,27 +326,27 @@ describe("LinearIssueTracker", () => {
       const created: Array<unknown> = [];
       const deleted: Array<unknown> = [];
       const { tracker } = fakeLinear({
-        T3Viewer: () => ({
+        Cod3Viewer: () => ({
           viewer: JULIUS,
           organization: { urlKey: "acme" },
           teams: { nodes: [] },
         }),
-        T3Issue: (variables) => {
+        Cod3Issue: (variables) => {
           // Linear refuses a page of zero comments, which fails the write that looked the issue up.
           expect(variables.comments).toBeGreaterThan(0);
           return { issue: bareDetail(String(variables.id)) };
         },
-        T3CommentReactions: (variables) => ({
+        Cod3CommentReactions: (variables) => ({
           comment: {
             issue: { id: variables.id === "cmt_own" ? "iss_ENG-1" : "iss_OPS-9" },
             reactions: [{ id: "r1", emoji: "+1", user: JULIUS }],
           },
         }),
-        T3ReactionCreate: (variables) => {
+        Cod3ReactionCreate: (variables) => {
           created.push(variables.input);
           return { reactionCreate: { success: true } };
         },
-        T3ReactionDelete: (variables) => {
+        Cod3ReactionDelete: (variables) => {
           deleted.push(variables.id);
           return { reactionDelete: { success: true } };
         },
@@ -371,7 +371,7 @@ describe("LinearIssueTracker", () => {
   it.effect("reads the viewer only for comment pages with reactions", () =>
     Effect.gen(function* () {
       const { tracker, requests } = fakeLinear({
-        T3Comments: ({ after }) => ({
+        Cod3Comments: ({ after }) => ({
           issue: {
             comments: {
               nodes: [
@@ -389,14 +389,14 @@ describe("LinearIssueTracker", () => {
             },
           },
         }),
-        T3Viewer: () => ({
+        Cod3Viewer: () => ({
           viewer: JULIUS,
           organization: { urlKey: "acme" },
           teams: { nodes: [] },
         }),
       });
       const api = yield* tracker;
-      const viewerReads = () => requests.filter((r) => r.operation === "T3Viewer").length;
+      const viewerReads = () => requests.filter((r) => r.operation === "Cod3Viewer").length;
       const ref = { ...target, key: "ENG-7" };
       const plain = yield* api.getComments({ ...ref, cursor: "plain" });
       expect(plain.comments[0]?.reactions).toEqual([]);
@@ -412,12 +412,12 @@ describe("LinearIssueTracker", () => {
   it.effect("reads an issue with its comments, reactions, history and linked pull requests", () =>
     Effect.gen(function* () {
       const { tracker } = fakeLinear({
-        T3Viewer: () => ({
+        Cod3Viewer: () => ({
           viewer: JULIUS,
           organization: { urlKey: "acme" },
           teams: { nodes: [] },
         }),
-        T3Issue: () => ({
+        Cod3Issue: () => ({
           issue: issue("ENG-7", {
             comments: {
               nodes: [
@@ -516,7 +516,7 @@ describe("LinearIssueTracker", () => {
       const updates: Array<Record<string, unknown>> = [];
       const { tracker } = fakeLinear(
         {
-          T3Team: () => ({
+          Cod3Team: () => ({
             teams: {
               nodes: [
                 {
@@ -539,7 +539,7 @@ describe("LinearIssueTracker", () => {
             },
             issueLabels: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } },
           }),
-          T3IssueUpdate: (variables) => {
+          Cod3IssueUpdate: (variables) => {
             updates.push(variables);
             return { issueUpdate: { success: true } };
           },
@@ -553,7 +553,7 @@ describe("LinearIssueTracker", () => {
       expect(unauthenticated.reason).toBe("unauthenticated");
 
       const connected = fakeLinear({
-        T3Team: () => ({
+        Cod3Team: () => ({
           teams: {
             nodes: [
               {
@@ -576,8 +576,8 @@ describe("LinearIssueTracker", () => {
           },
           issueLabels: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } },
         }),
-        T3Issue: (variables) => ({ issue: bareDetail(String(variables.id)) }),
-        T3IssueUpdate: (variables) => {
+        Cod3Issue: (variables) => ({ issue: bareDetail(String(variables.id)) }),
+        Cod3IssueUpdate: (variables) => {
           updates.push(variables);
           return { issueUpdate: { success: true } };
         },

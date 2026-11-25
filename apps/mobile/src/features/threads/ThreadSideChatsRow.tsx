@@ -1,4 +1,4 @@
-import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
+import type { EnvironmentId, ThreadId } from "@cod3/contracts";
 import { T, useGT } from "gt-react-native";
 import { Platform, Pressable, ScrollView, View } from "react-native";
 

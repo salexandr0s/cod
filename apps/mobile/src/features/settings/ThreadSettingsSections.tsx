@@ -5,7 +5,7 @@ import {
   AuthSettingsWriteScope,
   isManagedSettingPath,
   type ServerSettingsPatch,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useEnvironmentsWithScope } from "../../state/session";
 import { AutoSettleDaysField } from "./components/AutoSettleDaysField";
 import { ScreenScrollView as ScrollView } from "../../components/ui/ScreenScrollView";
@@ -15,8 +15,8 @@ import type { ComponentProps } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { DEFAULT_SERVER_SETTINGS } from "@t3tools/contracts";
-import { supportsSharedSettingsSync } from "@t3tools/client-runtime/state/shared-settings";
+import { DEFAULT_SERVER_SETTINGS } from "@cod3/contracts";
+import { supportsSharedSettingsSync } from "@cod3/client-runtime/state/shared-settings";
 import { AppText as Text } from "../../components/ui/AppText";
 import { useEnvironments } from "../../state/environments";
 import { mobilePreferencesAtom, saveMobilePreferences } from "../../state/preferences";
@@ -62,7 +62,7 @@ export function SettingsLabsRouteScreen() {
           capability="fastWorktreeCheckout"
           setting="fastWorktreeCheckout"
           description={gt(
-            "On a Mac, clone new worktrees from a checkout cached in the T3 home folder instead of writing every file. Uses Git’s normal checkout when it can’t. Turning it off deletes the cache.",
+            "On a Mac, clone new worktrees from a checkout cached in the cod3 home folder instead of writing every file. Uses Git’s normal checkout when it can’t. Turning it off deletes the cache.",
           )}
         />
         <AgentFeedbackSection />
@@ -271,7 +271,7 @@ const AGENT_FEEDBACK_CHOICES: ReadonlyArray<{
   readonly label: string;
   readonly description: string;
 }> = [
-  { mode: "off", label: msg("Off"), description: msg("Agents send no feedback to the T3 team.") },
+  { mode: "off", label: msg("Off"), description: msg("Agents send no feedback to the cod3 team.") },
   {
     mode: "on-request",
     label: msg("When I ask"),
@@ -280,7 +280,7 @@ const AGENT_FEEDBACK_CHOICES: ReadonlyArray<{
   {
     mode: "auto",
     label: msg("Automatic"),
-    description: msg("Agents also report T3 Code problems they hit on their own."),
+    description: msg("Agents also report cod3 problems they hit on their own."),
   },
 ];
 
@@ -339,7 +339,7 @@ function AgentFeedbackSection() {
       })}
       <Text className="px-2 text-sm text-foreground-muted">
         <T>
-          Reports go to the T3 team. A report you ask for is shown to you first in a card, with an
+          Reports go to the cod3 team. A report you ask for is shown to you first in a card, with an
           outline of recent turns. Turn on Include the conversation there to add the messages of the
           turns the report is about.
         </T>

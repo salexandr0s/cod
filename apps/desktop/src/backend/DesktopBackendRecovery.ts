@@ -16,7 +16,7 @@ import {
 } from "./MacProcessAuditToken.ts";
 
 const exec = NodeUtil.promisify(NodeChildProcess.execFile);
-const directoryName = "t3code-backend-recovery";
+const directoryName = "cod3-backend-recovery";
 const maxRecordBytes = 512;
 // Darwin sys/fcntl.h. Node accepts these open flags but does not export them.
 const O_SHLOCK = 0x10;
@@ -187,7 +187,7 @@ export function make(input: {
   readonly onRecovery: (pid: number) => void;
   readonly onError: (operation: string, error: unknown) => void;
 }) {
-  // Use Application Support even when the T3 home or the app lives on removable storage.
+  // Use Application Support even when the cod3 home or the app lives on removable storage.
   const directory = NodePath.join(input.appDataDirectory, directoryName);
   const scope = async () => {
     const [home, executable] = await Promise.all([

@@ -2,8 +2,8 @@ import {
   embeddedScripts,
   withEmbeddedScripts,
   type SyntaxToken,
-} from "@t3tools/client-runtime/work-log/embedded-scripts";
-import type { T3Highlights } from "@t3tools/mobile-highlights-native";
+} from "@cod3/client-runtime/work-log/embedded-scripts";
+import type { Cod3Highlights } from "@cod3/mobile-highlights-native";
 import { NitroModules } from "react-native-nitro-modules";
 
 import { highlightLanguageId } from "./highlightLanguage";
@@ -24,10 +24,10 @@ const LINE_END = 0xffffffff;
 // thousands of native text runs.
 const MAX_HIGHLIGHTED_LINE_LENGTH = 1_000;
 
-// @pierre/highlights compiled to native code (modules/t3-highlights). Missing
+// @pierre/highlights compiled to native code (modules/cod3-highlights). Missing
 // from binaries built before it shipped, where code renders as plain text.
-const nativeHighlights = NitroModules.hasHybridObject("T3Highlights")
-  ? NitroModules.createHybridObject<T3Highlights>("T3Highlights")
+const nativeHighlights = NitroModules.hasHybridObject("Cod3Highlights")
+  ? NitroModules.createHybridObject<Cod3Highlights>("Cod3Highlights")
   : undefined;
 
 export interface TokenizedCode {

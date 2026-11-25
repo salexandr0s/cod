@@ -1,7 +1,11 @@
 import { requestUrl } from "../requestUrl.ts";
 // Loopback-only hubs expose shell execution or unauthenticated actions.
 // Proxy with environment read scope for streams and operate scope for input and tuning.
-import { AuthOrchestrationReadScope, AuthOrchestrationOperateScope } from "@t3tools/contracts";
+import {
+  AuthOrchestrationReadScope,
+  AuthOrchestrationOperateScope,
+  TART_DEVICE_HOST_ID,
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -24,6 +28,7 @@ import * as DeviceService from "./DeviceService.ts";
 import { repeatStillFrame } from "./mjpegStillFrame.ts";
 
 const ALLOWED_PATHS: ReadonlyArray<RegExp> = [
+  /^\/mac\/frame$/,
   /^\/api\/devices$/,
   /^\/vendor\/serve-sim\/api$/,
   /^\/vendor\/serve-sim\/api\/screenshot$/,
@@ -66,7 +71,7 @@ const DROPPED_REQUEST_HEADERS = new Set([
   "dpop",
   "content-length",
   "accept-encoding",
-  // The client's HTTPS hop makes the hub reject our loopback Origin over T3 Connect.
+  // The client's HTTPS hop makes the hub reject our loopback Origin over cod3 Connect.
   "x-forwarded-proto",
 ]);
 
@@ -163,7 +168,7 @@ const proxyHttp = Effect.fn("DeviceHubProxy.proxyHttp")(function* (
   const response = yield* httpClient.execute(upstreamRequest);
   const headers: Record<string, string> = {};
   for (const [name, value] of Object.entries(response.headers)) {
-    // A cookie from an upstream such as an Expo Simulators session's preview host would land on T3's origin.
+    // A cookie from an upstream such as an Expo Simulators session's preview host would land on cod3's origin.
     if (
       name === "content-encoding" ||
       name === "transfer-encoding" ||
@@ -223,6 +228,30 @@ const handler = Effect.gen(function* () {
   if (!ready) {
     return HttpServerResponse.text("Device hub is not running", { status: 503 });
   }
+  if (hubPath === "/mac/frame") {
+    const device = url.value.searchParams.get("device");
+    if (!device || ready.hostId !== TART_DEVICE_HOST_ID || !ready.devices.macFrame)
+      return HttpServerResponse.empty({ status: 404 });
+    const captured = yield* ready.devices
+      .macFrame(
+        device,
+        url.value.searchParams.get("since") ?? undefined,
+        url.value.searchParams.get("still") === "1",
+      )
+      .pipe(Effect.option);
+    if (Option.isNone(captured))
+      return HttpServerResponse.text("Mac guest disconnected. Open Mac again.", { status: 409 });
+    const frame = captured.value;
+    const headers = {
+      etag: frame.tag,
+      "cache-control": "no-store, no-transform",
+      "access-control-expose-headers": "ETag",
+    };
+    return frame.png
+      ? HttpServerResponse.uint8Array(frame.png, { contentType: "image/png", headers })
+      : HttpServerResponse.empty({ status: 204, headers });
+  }
+  if (ready.hostId === TART_DEVICE_HOST_ID) return HttpServerResponse.empty({ status: 404 });
   // Consume the auth ticket here; never forward it to the hub.
   const upstreamSearch = new URLSearchParams(url.value.search);
   upstreamSearch.delete("wsTicket");

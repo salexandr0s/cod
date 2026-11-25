@@ -2,19 +2,19 @@ import {
   type EnvironmentId,
   isProviderSendTurnSupportedImageMimeType,
   PROVIDER_SEND_TURN_MAX_FILE_BYTES,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   clampFileAttachmentUploadBytes,
   fileAttachmentTooLargeMessage,
-} from "@t3tools/client-runtime/state/attachments";
+} from "@cod3/client-runtime/state/attachments";
 import { msg } from "gt-react";
 
 import type { ComposerFileAttachment, ComposerImageAttachment } from "../../composerDraftStore";
 import { m, type MessageResolver } from "../../i18n/messages";
 import { isHeicImageFile } from "../../lib/imageCompression";
 import { isVideoAttachment, videoMimeType } from "../../types";
-import { isSvgAttachment } from "@t3tools/shared/image";
-import { isWorkspaceImagePreviewPath } from "@t3tools/shared/mediaPreview";
+import { isSvgAttachment } from "@cod3/shared/image";
+import { isWorkspaceImagePreviewPath } from "@cod3/shared/mediaPreview";
 
 type ComposerAttachmentFileKind = "image" | "file" | "unsupported-image";
 

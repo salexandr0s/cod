@@ -3,8 +3,8 @@ import {
   ORCHESTRATION_PROTOCOL_VERSION,
   PROVIDER_SEND_TURN_MAX_FILE_BYTES,
   type ExecutionEnvironmentDescriptor,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
@@ -48,14 +48,14 @@ export class ServerEnvironment extends Context.Service<
     readonly getEnvironmentId: Effect.Effect<EnvironmentId>;
     readonly getDescriptor: Effect.Effect<ExecutionEnvironmentDescriptor>;
   }
->()("t3/environment/ServerEnvironment") {}
+>()("cod3/environment/ServerEnvironment") {}
 
 export class ServerEnvironmentIdentity extends Context.Service<
   ServerEnvironmentIdentity,
   {
     readonly getEnvironmentId: Effect.Effect<EnvironmentId>;
   }
->()("t3/environment/ServerEnvironment/ServerEnvironmentIdentity") {}
+>()("cod3/environment/ServerEnvironment/ServerEnvironmentIdentity") {}
 
 function platformOs(platform: NodeJS.Platform): ExecutionEnvironmentDescriptor["platform"]["os"] {
   switch (platform) {
@@ -278,6 +278,7 @@ export const make = Effect.gen(function* () {
       environmentIcon: true,
       projectCloneTracking: true,
       projectOrganization: true,
+      projectDiscovery: true,
       ignoredFileListing: true,
       ignoredFileSearch: true,
       triage: true,

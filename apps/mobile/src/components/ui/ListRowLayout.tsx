@@ -7,6 +7,7 @@ import { SymbolView, type AppSymbolName } from "./AppSymbol";
 
 export interface ListRowContentProps {
   readonly icon?: AppSymbolName;
+  readonly iconTile?: boolean;
   /** Drawn in the icon column for marks a single symbol can't express. */
   readonly leading?: ReactNode;
   readonly label: string;
@@ -19,6 +20,7 @@ export interface ListRowContentProps {
 
 export function ListRowLayout({
   icon,
+  iconTile,
   leading,
   label,
   description,
@@ -39,10 +41,15 @@ export function ListRowLayout({
       )}
     >
       {icon ? (
-        <View className="size-6 items-center justify-center">
+        <View
+          className={cn(
+            "size-6 items-center justify-center",
+            iconTile && "size-8 rounded-lg bg-subtle",
+          )}
+        >
           <SymbolView
             name={icon}
-            size={Platform.OS === "android" ? 24 : 22}
+            size={iconTile ? 19 : Platform.OS === "android" ? 24 : 22}
             tintColorClassName={tone === "danger" ? "accent-danger-foreground" : "accent-icon"}
             type="monochrome"
             weight="regular"

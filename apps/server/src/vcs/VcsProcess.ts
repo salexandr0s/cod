@@ -18,9 +18,9 @@ import {
   VcsProcessSpawnError,
   VcsProcessStdinWriteError,
   VcsProcessTimeoutError,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import type { SourceControlProcessInput } from "@t3tools/source-control-core/server/SourceControlHost";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import type { SourceControlProcessInput } from "@cod3/source-control-core/server/SourceControlHost";
 
 import { gitCommandDuration, gitCommandsTotal, withMetrics } from "../observability/Metrics.ts";
 import * as ProcessRunner from "../processRunner.ts";
@@ -60,7 +60,7 @@ export class VcsProcess extends Context.Service<
   {
     readonly run: (input: VcsProcessInput) => Effect.Effect<VcsProcessOutput, VcsError>;
   }
->()("t3/vcs/VcsProcess") {}
+>()("cod3/vcs/VcsProcess") {}
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_OUTPUT_BYTES = 1_000_000;
@@ -70,7 +70,7 @@ const VCS_PROCESS_CONCURRENCY = 8;
 const NON_GIT_PROCESS_CONCURRENCY = VCS_PROCESS_CONCURRENCY / 2;
 
 /** Background non-git calls, such as the pull request sync sweep's, leave one slot for the rest. */
-export const Background = Context.Reference<boolean>("t3/vcs/VcsProcess/Background", {
+export const Background = Context.Reference<boolean>("cod3/vcs/VcsProcess/Background", {
   defaultValue: () => false,
 });
 
@@ -141,7 +141,7 @@ export const explicitBareRepositoryEnv = (env: NodeJS.ProcessEnv, platform: Node
   gitConfigEnv(env, "safe.bareRepository", "explicit", platform);
 
 // A failing `gc --auto` (say, missing objects) reruns after every fetch and strands a full-size
-// `tmp_pack_*` each time, so T3's frequent background Git calls could fill the disk.
+// `tmp_pack_*` each time, so cod3's frequent background Git calls could fill the disk.
 const SERVER_GIT_CONFIG = [
   ["safe.bareRepository", "explicit"],
   ["maintenance.auto", "false"],

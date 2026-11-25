@@ -25,8 +25,8 @@ import {
   type StorageCleanupSettings,
   type TerminalMetadataStreamEvent,
   type TerminalSummary,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as ServerConfig from "./config.ts";
 import * as StorageCleanup from "./storageCleanup.ts";
 import * as GitVcsDriver from "./vcs/GitVcsDriver.ts";
@@ -58,7 +58,7 @@ import {
   type OrchestrationV2DomainEvent,
   type OrchestrationV2ServerCommand,
   type OrchestrationV2ThreadShell,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import {
   storageCleanupActivityAt,
@@ -355,7 +355,7 @@ const cleanupFixture = (
     yield* fs.makeDirectory(config.worktreesDir, { recursive: true });
     const worktree = `${config.worktreesDir}/feature`;
     yield* command(repo, ["worktree", "add", "-b", "feature", worktree]);
-    let settings: import("@t3tools/contracts").ServerSettings = {
+    let settings: import("@cod3/contracts").ServerSettings = {
       ...DEFAULT_SERVER_SETTINGS,
       storageCleanup,
     };
@@ -690,7 +690,7 @@ const runCleanupTest = <A, E>(
 ) => effect.pipe(Effect.provide(cleanupTestLayer));
 
 const legacyCheckpointRef = (threadId: string, turn: number) =>
-  `refs/t3/checkpoints/${Base64Url.encode(threadId)}/turn/${turn}`;
+  `refs/cod3/checkpoints/${Base64Url.encode(threadId)}/turn/${turn}`;
 
 const checkpointCleanupFixture = Effect.fn("test.checkpointCleanupFixture")(function* () {
   const sql = yield* SqlClient.SqlClient;
@@ -754,7 +754,7 @@ const checkpointCleanupFixture = Effect.fn("test.checkpointCleanupFixture")(func
       .execute({
         operation: "cleanup-test.list-checkpoints",
         cwd: repo,
-        args: ["for-each-ref", "--format=%(refname)", "refs/t3/"],
+        args: ["for-each-ref", "--format=%(refname)", "refs/cod3/"],
         maxOutputBytes: 16 * 1024 * 1024,
       })
       .pipe(Effect.map(({ stdout }) => stdout.trim().split("\n").filter(Boolean).sort()));
@@ -831,7 +831,7 @@ describe("checkpoint ref cleanup", () => {
         const refs = yield* addThread("deleted", { deleted: true });
         yield* command(repo, ["symbolic-ref", refs[0]!, "refs/heads/main"]);
         const retained = [
-          "refs/t3/unrelated/0",
+          "refs/cod3/unrelated/0",
           `${refs[1]}-other`,
           refs[1]!.replace(/1$/, "2/nested"),
         ];
@@ -1179,7 +1179,7 @@ it.live("removes clean submodules recursively, including deinitialized repositor
       ])).stdout.trim();
       yield* command(submodule, [
         "update-ref",
-        "refs/t3/orchestration-v2/checkpoints/test",
+        "refs/cod3/orchestration-v2/checkpoints/test",
         checkpoint,
       ]);
       const admin = (yield* command(worktree, ["rev-parse", "--absolute-git-dir"])).stdout.trim();
@@ -1546,7 +1546,7 @@ describe("subagent worktree ownership", () => {
           scenario === "null-branch"
             ? null
             : scenario === "stale-branch"
-              ? "t3/15a6e5ae"
+              ? "cod3/15a6e5ae"
               : "feature",
         worktreePath: fixture.worktree,
         lineage: {
@@ -1718,7 +1718,7 @@ describe("subagent worktree ownership", () => {
               change === "null-branch"
                 ? null
                 : change === "stale-branch"
-                  ? "t3/15a6e5ae"
+                  ? "cod3/15a6e5ae"
                   : child.branch,
             settledAt: change === "settled" ? at(-20 * DAY_MS) : child.settledAt,
             updatedAt: change === "settled" || change === "resettled" ? at(0) : child.updatedAt,
@@ -2391,7 +2391,7 @@ describe("orphan worktree reports", () => {
           const config = yield* ServerConfig.ServerConfig;
           const checkout = yield* fs.makeTempDirectoryScoped({ prefix: "cleanup-dev-checkout-" });
           yield* fs.writeFileString(`${checkout}/.git`, "gitdir: /repo/.git/worktrees/dev\n");
-          const baseDir = worktreeHome ? `${checkout}/.t3` : config.baseDir;
+          const baseDir = worktreeHome ? `${checkout}/.cod3` : config.baseDir;
           const fixture = yield* cleanupFixture().pipe(
             Effect.provideService(ServerConfig.ServerConfig, {
               ...config,

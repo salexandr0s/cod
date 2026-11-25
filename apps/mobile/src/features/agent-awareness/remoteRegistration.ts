@@ -11,19 +11,19 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import { AppState, Platform } from "react-native";
 import { msg } from "gt-react-native";
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import {
   type RelayDeviceRegistrationRequest,
   type RelayAgentActivitySnapshotResponse,
   type RelayLiveActivityRegistrationRequest,
-} from "@t3tools/contracts/relay";
-import { findErrorTraceId } from "@t3tools/client-runtime/errors";
-import { ManagedRelay } from "@t3tools/client-runtime/relay";
+} from "@cod3/contracts/relay";
+import { findErrorTraceId } from "@cod3/client-runtime/errors";
+import { ManagedRelay } from "@cod3/client-runtime/relay";
 import {
   isAtomCommandInterrupted,
   settleAsyncResult,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 
 import { m } from "../../i18n/messages";
 import { runtime } from "../../lib/runtime";
@@ -528,7 +528,7 @@ function armAgentAwarenessLiveActivityForLocalWorkNow(input: {
     const activity = startAgentLiveActivity(
       {
         text: agentActivityText(1, m),
-        title: "T3 Code",
+        title: "cod3",
         subtitle: m(msg("Agent work in progress")),
         activeCount: 1,
         updatedAt: nowIso,
@@ -745,7 +745,7 @@ const registerDevice = Effect.fn("remoteRegistration.registerDevice")(function* 
       deviceId,
       label:
         Constants.deviceName?.trim() ||
-        // oxlint-disable-next-line t3code/no-untranslated-copy -- device label stored on the relay and shown to every client
+        // oxlint-disable-next-line cod3/no-untranslated-copy -- device label stored on the relay and shown to every client
         (Platform.OS === "android" ? "Android device" : "iOS device"),
       ...(Platform.OS === "android"
         ? {

@@ -2,8 +2,8 @@ import {
   ConnectionCatalogDocument,
   type ConnectionCatalogDocument as ConnectionCatalogDocumentType,
   EMPTY_CONNECTION_CATALOG_DOCUMENT,
-} from "@t3tools/client-runtime/platform";
-import { ConnectionTransientError } from "@t3tools/client-runtime/connection";
+} from "@cod3/client-runtime/platform";
+import { ConnectionTransientError } from "@cod3/client-runtime/connection";
 import * as Effect from "effect/Effect";
 import { msg } from "gt-react-native";
 import * as Option from "effect/Option";
@@ -15,8 +15,8 @@ import { m } from "../i18n/messages";
 import * as MobileSecureStorage from "../persistence/mobile-secure-storage";
 import { migrateLegacyConnectionCatalog } from "./migration";
 
-export const CONNECTION_CATALOG_KEY = "t3code.connection-catalog.v1";
-export const LEGACY_CONNECTIONS_KEY = "t3code.connections";
+export const CONNECTION_CATALOG_KEY = "cod3.connection-catalog.v1";
+export const LEGACY_CONNECTIONS_KEY = "cod3.connections";
 
 const CATALOG_ERROR_MESSAGES = {
   decode: msg("Could not decode the local connection catalog: {cause}"),

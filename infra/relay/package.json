@@ -1,5 +1,5 @@
 {
-  "name": "t3code-relay",
+  "name": "cod3-relay",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,14 +17,14 @@
     "@alchemy.run/drizzle": "catalog:",
     "@alchemy.run/planetscale": "catalog:",
     "@clerk/backend": "catalog:",
+    "@cod3/client-runtime": "workspace:*",
+    "@cod3/contracts": "workspace:*",
+    "@cod3/shared": "workspace:*",
     "@distilled.cloud/cloudflare": "catalog:",
     "@effect/sql-pg": "catalog:",
     "@effect/sql-sqlite-do": "catalog:",
     "@noble/curves": "catalog:",
     "@noble/hashes": "catalog:",
-    "@t3tools/client-runtime": "workspace:*",
-    "@t3tools/contracts": "workspace:*",
-    "@t3tools/shared": "workspace:*",
     "alchemy": "catalog:",
     "drizzle-orm": "1.0.0-rc.5",
     "effect": "catalog:"

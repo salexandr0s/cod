@@ -4,7 +4,7 @@ import {
   authScopeResponse,
   AuthAdministrativeClientScopes,
   connectDeviceVerificationCode,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { expect, it } from "@effect/vitest";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -35,7 +35,9 @@ const layerServerConfig = (overrides?: Partial<ServerConfig.ServerConfig["Servic
         port: TEST_SERVER_PORT,
       } satisfies ServerConfig.ServerConfig["Service"];
     }),
-  ).pipe(Layer.provide(ServerConfig.layerTest(process.cwd(), { prefix: "t3-auth-server-test-" })));
+  ).pipe(
+    Layer.provide(ServerConfig.layerTest(process.cwd(), { prefix: "cod3-auth-server-test-" })),
+  );
 
 const layerEnvironmentAuth = (overrides?: Partial<ServerConfig.ServerConfig["Service"]>) =>
   EnvironmentAuth.layer.pipe(
@@ -105,7 +107,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         >[0];
 
         const authenticated = yield* serverAuth.authenticateHttpRequest(request);
-        expect(devExchange.cookieName).toMatch(/^t3_dev_session_/);
+        expect(devExchange.cookieName).toMatch(/^cod3_dev_session_/);
         expect(devExchange.expireNormalCookie).toBe(true);
         expect(devExchange.response).toMatchObject(
           authScopeResponse(AuthAdministrativeClientScopes),
@@ -288,7 +290,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         const sessions = yield* SessionStore.SessionStore;
         const bearer = yield* serverAuth.issueSession();
         const verified = yield* serverAuth.authenticateHttpRequest({
-          cookies: { [sessions.legacyCookieName ?? "t3_session"]: "stale" },
+          cookies: { [sessions.legacyCookieName ?? "cod3_session"]: "stale" },
           headers: { authorization: `Bearer ${bearer.token}` },
         } as never);
 
@@ -311,7 +313,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
     );
 
     it.effect(
-      "holds an untrusted T3 Connect device until it is approved, and revocation cuts it off",
+      "holds an untrusted cod3 Connect device until it is approved, and revocation cuts it off",
       () =>
         Effect.gen(function* () {
           const serverAuth = yield* EnvironmentAuth.EnvironmentAuth;
@@ -385,8 +387,8 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
           });
           const [oldestDeviceSession, newestDeviceSession] = yield* deviceSessions();
           expect(newestDeviceSession).toBeDefined();
-          // Authorized clients lists T3 Connect sessions under this name.
-          expect(newestDeviceSession?.client.label).toBe("T3 Connect");
+          // Authorized clients lists cod3 Connect sessions under this name.
+          expect(newestDeviceSession?.client.label).toBe("cod3 Connect");
           // Revoking any one of the device's sessions ends all of them and its trust.
           expect(
             yield* serverAuth.revokeClientSession(admin.sessionId, oldestDeviceSession!.sessionId),
@@ -495,7 +497,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         expect(yield* refused(renewed.access_token, other.thumbprint)).toBe(
           "ServerAuthInvalidCredentialError",
         );
-        // Bearer and T3 Connect sessions keep their fixed lifetimes, so unlinking still cuts off.
+        // Bearer and cod3 Connect sessions keep their fixed lifetimes, so unlinking still cuts off.
         const bearer = yield* pair();
         expect(yield* refused(bearer.access_token, key.thumbprint)).toBe(
           "ServerAuthInvalidCredentialError",
@@ -535,7 +537,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         const day = 24 * 60 * 60 * 1000;
         const issue = (peerLink: boolean) =>
           serverAuth.issueMcpClientSession({
-            label: peerLink ? "T3 Code · A" : "ChatGPT",
+            label: peerLink ? "cod3 · A" : "ChatGPT",
             access: "auto",
             peerLink,
             client: requestMetadata,
@@ -756,7 +758,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         const paired = yield* serverAuth.exchangeBootstrapCredentialForAccessToken(
           pairing.credential,
           undefined,
-          { ...requestMetadata, label: "T3 Code Desktop" },
+          { ...requestMetadata, label: "cod3 Desktop" },
         );
         const first = yield* serverAuth.exchangeBootstrapCredentialForAccessToken(
           "desktop-bootstrap-token",
@@ -940,7 +942,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
           origin: "https://box.tail1234.ts.net",
           "x-forwarded-host": "box.tail1234.ts.net",
         });
-        yield* upgrade({ origin: "t3code://app" });
+        yield* upgrade({ origin: "cod3://app" });
         yield* upgrade({ origin: "http://localhost:5733" });
         yield* upgrade({});
 

@@ -1,5 +1,5 @@
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
-import type { ScopedThreadRef } from "@t3tools/contracts";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
+import type { ScopedThreadRef } from "@cod3/contracts";
 
 import { selectThreadRightPanelState, useRightPanelStore } from "../rightPanelStore";
 import { selectThreadTerminalUiState, useTerminalUiStateStore } from "../terminalUiStateStore";

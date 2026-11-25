@@ -1,12 +1,8 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { msg, useGT, useMessages } from "gt-react-native";
 import * as Dialog from "../../components/ui/Dialog";
-import { managedCapabilityDenial } from "@t3tools/client-runtime/contract-labels";
-import {
-  AuthRelayConfigureScope,
-  AuthRelayWriteScope,
-  type EnvironmentId,
-} from "@t3tools/contracts";
+import { managedCapabilityDenial } from "@cod3/client-runtime/contract-labels";
+import { AuthRelayConfigureScope, AuthRelayWriteScope, type EnvironmentId } from "@cod3/contracts";
 import { readEnvironmentScope } from "../../state/session";
 import { appAtomRegistry } from "../../state/atom-registry";
 import { serverEnvironment } from "../../state/server";
@@ -33,7 +29,7 @@ import {
   settleAsyncResult,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { supportsAgentAwarenessPush } from "../agent-awareness/capabilities";
 import {
   openAndroidLiveUpdateSettings,
@@ -197,7 +193,7 @@ export function SettingsNotificationsRouteScreen() {
           contentContainerClassName="px-5 pt-4"
         >
           <Text className="text-base text-foreground-muted">
-            {gt("Notifications require {product} in this app build.", { product: "T3 Connect" })}
+            {gt("Notifications require {product} in this app build.", { product: "cod3 Connect" })}
           </Text>
         </ScrollView>
       </SettingsScreen>
@@ -281,7 +277,7 @@ function ConfiguredSettingsNotificationsRouteScreen() {
           gt("Couldn't finish enabling notifications"),
           gt(
             "Notification access was granted, but this device could not be registered with {product}. Notifications will start once registration succeeds.",
-            { product: "T3 Connect" },
+            { product: "cod3 Connect" },
           ),
         );
       }
@@ -312,9 +308,9 @@ function ConfiguredSettingsNotificationsRouteScreen() {
 
   const promptSignIn = () => {
     Dialog.alert(
-      gt("Sign in to {product}", { product: "T3 Connect" }),
+      gt("Sign in to {product}", { product: "cod3 Connect" }),
       gt("Live Activity updates require {product} so relay can deliver updates to this device.", {
-        product: "T3 Connect",
+        product: "cod3 Connect",
       }),
       [
         { text: gt("Cancel"), style: "cancel" },
@@ -440,7 +436,7 @@ function ConfiguredSettingsNotificationsRouteScreen() {
         gt("Couldn't finish enabling activity updates"),
         gt(
           "This device could not be registered with {product}, so activity updates won't appear yet. They'll start once registration succeeds.",
-          { product: "T3 Connect" },
+          { product: "cod3 Connect" },
         ),
       );
     }
@@ -458,7 +454,7 @@ function ConfiguredSettingsNotificationsRouteScreen() {
 
     Dialog.alert(
       gt("Disable notifications"),
-      gt("Open system Settings to disable notifications for {product}.", { product: "T3 Code" }),
+      gt("Open system Settings to disable notifications for {product}.", { product: "cod3" }),
       [
         { text: gt("Cancel"), style: "cancel" },
         { text: gt("Open Settings"), onPress: () => void Linking.openSettings() },
@@ -619,7 +615,7 @@ function ConfiguredSettingsNotificationsRouteScreen() {
                     gt("Couldn't open Settings"),
                     gt(
                       "Open Android Settings, select {product}, then enable Live Updates in Notifications.",
-                      { product: "T3 Code" },
+                      { product: "cod3" },
                     ),
                   );
                 });

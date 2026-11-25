@@ -56,17 +56,17 @@ export function SubscriptionUsage(props: SubscriptionUsageProps, environment: Wi
       };
   // English until the app publishes its first snapshot in the UI language.
   const text = props.text ?? {
-    refresh: "Open T3 to refresh",
+    refresh: "Open cod3 to refresh",
     left: "left",
     asOf: "As of {time}",
-    tapToConnect: "Tap to connect in T3",
+    tapToConnect: "Tap to connect in cod3",
     moreInApp: {} as Record<string, string>,
   };
   const providers = props.providers ?? [
-    // oxlint-disable-next-line t3code/no-untranslated-copy -- widget fallback until the app publishes translated text
-    { name: "Codex", detail: "Open T3 to connect", windows: [], expiresAt: 0, totalWindows: 0 },
-    // oxlint-disable-next-line t3code/no-untranslated-copy -- widget fallback until the app publishes translated text
-    { name: "Claude", detail: "Open T3 to connect", windows: [], expiresAt: 0, totalWindows: 0 },
+    // oxlint-disable-next-line cod3/no-untranslated-copy -- widget fallback until the app publishes translated text
+    { name: "Codex", detail: "Open cod3 to connect", windows: [], expiresAt: 0, totalWindows: 0 },
+    // oxlint-disable-next-line cod3/no-untranslated-copy -- widget fallback until the app publishes translated text
+    { name: "Claude", detail: "Open cod3 to connect", windows: [], expiresAt: 0, totalWindows: 0 },
   ];
 
   const pad = 14;
@@ -175,7 +175,7 @@ export function SubscriptionUsage(props: SubscriptionUsageProps, environment: Wi
           <Row modifiers={[size(segmentWidth, barHeight)]}>
             <Spacer modifiers={[width(segmentWidth - refill)]} />
             <Image
-              source={{ uri: "t3_widget_hatch" }}
+              source={{ uri: "cod3_widget_hatch" }}
               tint={color}
               alpha={0.22}
               contentScale="fillBounds"
@@ -337,8 +337,8 @@ export function SubscriptionUsage(props: SubscriptionUsageProps, environment: Wi
           {shown.map(row)}
           {hidden > 0 ? (
             <Text color={colors.muted} maxLines={1} style={{ fontSize: 10 }}>
-              {/* oxlint-disable-next-line t3code/no-untranslated-copy -- widget fallback until the app publishes translated text */}
-              {text.moreInApp[String(hidden)] ?? `${hidden} more in T3`}
+              {/* oxlint-disable-next-line cod3/no-untranslated-copy -- widget fallback until the app publishes translated text */}
+              {text.moreInApp[String(hidden)] ?? `${hidden} more in cod3`}
             </Text>
           ) : null}
         </Column>

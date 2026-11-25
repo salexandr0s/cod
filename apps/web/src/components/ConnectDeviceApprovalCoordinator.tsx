@@ -1,11 +1,11 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { useNavigate } from "@tanstack/react-router";
 import {
   type AtomCommandResult,
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { AuthAccessWriteScope, type EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/runtime";
+import { AuthAccessWriteScope, type EnvironmentId } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import { useEffect, useRef, useState } from "react";
 import { msg } from "gt-react";
@@ -20,7 +20,7 @@ import { describeConnectDeviceClient } from "./settings/ConnectionsSettings.logi
 import { toastManager } from "./ui/toast";
 import { stackedThreadToast } from "./ui/toastHelpers";
 
-/** Asks whoever can approve to look at T3 Connect devices waiting on an environment. */
+/** Asks whoever can approve to look at cod3 Connect devices waiting on an environment. */
 export function ConnectDeviceApprovalCoordinator() {
   const { environments } = useEnvironments();
   return environments.map((environment) =>
@@ -92,7 +92,7 @@ function ConnectDeviceRequestToasts({
         )
       : null;
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- opens, updates and closes imperative toastManager toasts to match the pending requests
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- opens, updates and closes imperative toastManager toasts to match the pending requests
   useEffect(() => {
     if (requests === null) return;
     // The server publishes no event when a request expires, so the toast ends itself then.
@@ -173,7 +173,7 @@ function ConnectDeviceRequestToasts({
     }
   });
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- closes this environment's imperative toasts when it stops needing approval
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- closes this environment's imperative toasts when it stops needing approval
   useEffect(() => {
     const tracked = toasts.current;
     return () => {

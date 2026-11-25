@@ -7,13 +7,13 @@ import { SymbolView } from "../../components/ui/AppSymbol";
 import {
   hasSavedBearerRoute,
   type EnvironmentConnectionPhase,
-} from "@t3tools/client-runtime/connection";
+} from "@cod3/client-runtime/connection";
 import {
   type EnvironmentId,
   type EnvironmentMachineKind,
   type ExecutionEnvironmentDescriptor,
   resolveEnvironmentMachineKind,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import { useState } from "react";
 import { Pressable, type TextLayoutEvent, View } from "react-native";
@@ -23,7 +23,7 @@ import { EnvironmentMachineSymbol } from "../../components/EnvironmentMachineSym
 import { ThemedSwitch } from "../../components/ui/ThemedSwitch";
 import { cn } from "../../lib/cn";
 import { copyTextWithHaptic } from "../../lib/copyTextWithHaptic";
-import type { MarkedText } from "@t3tools/client-runtime/errors";
+import type { MarkedText } from "@cod3/client-runtime/errors";
 import type { ConnectedEnvironmentSummary } from "../../state/remote-runtime-types";
 import { serverEnvironment } from "../../state/server";
 import { environmentPresentations } from "../../state/presentation";
@@ -101,7 +101,9 @@ function CloudEnvironmentRowsContent(
     <View collapsable={false} className={cn("gap-3", showHeader && "mt-5")}>
       {showHeader ? (
         <View className="px-1">
-          <Text className="text-sm font-t3-bold uppercase text-foreground-muted">T3 Connect</Text>
+          <Text className="text-sm font-cod3-bold uppercase text-foreground-muted">
+            cod3 Connect
+          </Text>
         </View>
       ) : null}
 
@@ -155,8 +157,8 @@ function CloudEnvironmentRowsContent(
       controller.relayDiscovery.error &&
       !controller.relayDiscovery.isRefreshing ? (
         <View collapsable={false} className="gap-3 rounded-[24px] bg-grouped-card p-5">
-          <Text className="text-base font-t3-bold text-foreground">
-            {gt("Could not load {product} environments", { product: "T3 Connect" })}
+          <Text className="text-base font-cod3-bold text-foreground">
+            {gt("Could not load {product} environments", { product: "cod3 Connect" })}
           </Text>
           <Text className="text-sm text-foreground-muted">{controller.relayDiscovery.error}</Text>
           {controller.relayDiscovery.errorTraceId ? (
@@ -366,7 +368,7 @@ function CloudEnvironmentRowShell(props: {
             tintColorClassName="accent-foreground-muted"
           />
           <Text
-            className="min-w-0 flex-shrink text-base font-t3-bold leading-snug text-foreground"
+            className="min-w-0 flex-shrink text-base font-cod3-bold leading-snug text-foreground"
             numberOfLines={1}
           >
             {props.label}

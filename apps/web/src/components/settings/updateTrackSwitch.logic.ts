@@ -1,6 +1,6 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import type { DesktopBridge, DesktopUpdateChannel, DesktopUpdateState } from "@t3tools/contracts";
-import { acceptsTrackSwitchRelease } from "@t3tools/shared/cliRelease";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import type { DesktopBridge, DesktopUpdateChannel, DesktopUpdateState } from "@cod3/contracts";
+import { acceptsTrackSwitchRelease } from "@cod3/shared/cliRelease";
 import { msg } from "gt-react";
 
 import { m, type MessageResolver } from "../../i18n/messages";

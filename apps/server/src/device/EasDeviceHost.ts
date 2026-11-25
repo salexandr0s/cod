@@ -12,7 +12,7 @@ import {
   type DevicePlatform,
   type EasDeviceHostConfig,
   type SettingsSecretValue,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Clock from "effect/Clock";
 import * as Duration from "effect/Duration";
@@ -29,11 +29,11 @@ import * as Schedule from "effect/Schedule";
 import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
-import { writeFileStringAtomically } from "@t3tools/shared/atomicWrite";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import { writeFileStringAtomically } from "@cod3/shared/atomicWrite";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import * as ServerConfig from "../config.ts";
-import * as SecretResolver from "@t3tools/secret-provider-core/server/SecretResolver";
+import * as SecretResolver from "@cod3/secret-provider-core/server/SecretResolver";
 import { requireSettingsSecret } from "../secrets/settingsSecretValue.ts";
 import { releaseAgentDeviceSession } from "./AgentDeviceTarget.ts";
 import * as DeviceHost from "./DeviceHost.ts";
@@ -97,7 +97,7 @@ const CATALOG: ReadonlyArray<DeviceHost.HostDevice> = [
 interface RunningSession {
   readonly sessionId: string;
   readonly name: string;
-  readonly platform: DevicePlatform;
+  readonly platform: keyof typeof PLATFORMS;
   readonly remoteDeviceId: string;
   readonly preview: { readonly origin: string; readonly token: Redacted.Redacted<string> };
   readonly agent: DeviceHost.AgentDaemonEndpoint;
@@ -410,7 +410,7 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
   const previewDevice = (
     origin: string,
     token: Redacted.Redacted<string>,
-    platform: DevicePlatform,
+    platform: keyof typeof PLATFORMS,
   ) =>
     http
       .execute(
@@ -489,7 +489,9 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
     context: DeviceHost.DeviceOpenContext | undefined,
     startedIn: number,
   ) {
-    const name = `T3 Code · ${config.label} · ${(yield* Random.nextIntBetween(0, 0xffffff)).toString(16).padStart(6, "0")}`;
+    const platform = device.platform;
+    if (platform === "macos") return yield* unavailable("Expo supports iOS and Android.");
+    const name = `cod3 · ${config.label} · ${(yield* Random.nextIntBetween(0, 0xffffff)).toString(16).padStart(6, "0")}`;
     // The credential comes first: without one, the answer is how to sign in,
     // not that the limit is reached.
     const expo = yield* api;
@@ -524,7 +526,7 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
               const sessionId = yield* expo
                 .create({
                   appId,
-                  platform: device.platform,
+                  platform,
                   name,
                   maxRunTimeMinutes: config.maxSessionMinutes,
                   maxIdleTimeMinutes: config.idleMinutes,
@@ -556,9 +558,7 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
                   ),
                   Effect.mapError((error) => unavailable(error.message, error)),
                 );
-              return yield* restore(
-                trackSession(expo, sessionId, name, device.platform, startedIn),
-              ).pipe(
+              return yield* restore(trackSession(expo, sessionId, name, platform, startedIn)).pipe(
                 Effect.onError(() =>
                   stopSession(expo, sessionId, name).pipe(
                     // Still running and billed: owned, counted, and retried by listing.
@@ -578,7 +578,7 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
     expo: ExpoApi,
     sessionId: string,
     name: string,
-    platform: DevicePlatform,
+    platform: keyof typeof PLATFORMS,
     startedIn: number,
   ) {
     const endpoints = yield* awaitRunning(expo, sessionId);
@@ -902,13 +902,15 @@ export const make = Effect.fn("EasDeviceHost.make")(function* (config: EasDevice
   // Each server signs in on its own, so one with no Expo credential answers for itself. Reading
   // the credential is local; whether Expo accepts it is only known once a session starts.
   const platformAvailability = (platform: DevicePlatform) =>
-    resolveSavedExpoCredential(secrets, config.accessToken).pipe(
-      Effect.provide(services),
-      Effect.as({ platform, available: true }),
-      Effect.catch((error) =>
-        Effect.succeed({ platform, available: false, reason: error.message }),
-      ),
-    );
+    platform === "macos"
+      ? Effect.succeed({ platform, available: false })
+      : resolveSavedExpoCredential(secrets, config.accessToken).pipe(
+          Effect.provide(services),
+          Effect.as({ platform, available: true }),
+          Effect.catch((error) =>
+            Effect.succeed({ platform, available: false, reason: error.message }),
+          ),
+        );
 
   const summary: Effect.Effect<DeviceHostSummary> = Effect.all([
     platformAvailability("ios"),

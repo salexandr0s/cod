@@ -1,5 +1,5 @@
-import { formatDiffCount } from "@t3tools/client-runtime/diff-count";
-import type { PullRequestChangeBreakdown } from "@t3tools/contracts";
+import { formatDiffCount } from "@cod3/client-runtime/diff-count";
+import type { PullRequestChangeBreakdown } from "@cod3/contracts";
 import { msg, useGT, useMessages } from "gt-react";
 
 const KIND_LABELS = {

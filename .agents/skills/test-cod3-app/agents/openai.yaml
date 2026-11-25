@@ -1,0 +1,4 @@
+interface:
+  display_name: "cod3 App Testing"
+  short_description: "Test web and desktop in cod3's Browser panel"
+  default_prompt: "Use $test-cod3-app to verify the affected web or desktop flow through cod3's Browser panel."

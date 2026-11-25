@@ -7,7 +7,7 @@ index 440b0ad..fd5d18d 100644
    }
    if (contentSize > 0 && queuedInitialLayout) {
 -    const isContentLess = contentSize < scrollLength;
-+    // T3 patch: a top inset (e.g. a translucent header) shrinks the room content has to fit in.
++    // cod3 patch: a top inset (e.g. a translucent header) shrinks the room content has to fit in.
 +    const isContentLess = contentSize + getContentInsetTop(ctx) < scrollLength;
      set$(ctx, "isAtEnd", isContentLess || distanceFromEnd <= EDGE_POSITION_EPSILON);
      set$(ctx, "isNearEnd", isContentLess || distanceFromEnd <= onEndReachedThreshold * scrollLength);
@@ -21,7 +21,7 @@ index b95e1f8..e2b013a 100644
    }
    if (contentSize > 0 && queuedInitialLayout) {
 -    const isContentLess = contentSize < scrollLength;
-+    // T3 patch: a top inset (e.g. a translucent header) shrinks the room content has to fit in.
++    // cod3 patch: a top inset (e.g. a translucent header) shrinks the room content has to fit in.
 +    const isContentLess = contentSize + getContentInsetTop(ctx) < scrollLength;
      set$(ctx, "isAtEnd", isContentLess || distanceFromEnd <= EDGE_POSITION_EPSILON);
      set$(ctx, "isNearEnd", isContentLess || distanceFromEnd <= onEndReachedThreshold * scrollLength);

@@ -1,4 +1,4 @@
-import type { ThreadTitleMessage } from "@t3tools/provider-core/server/threadTitleContext";
+import type { ThreadTitleMessage } from "@cod3/provider-core/server/threadTitleContext";
 
 export const threadTitleEvaluationCases = [
   {
@@ -9,7 +9,7 @@ export const threadTitleEvaluationCases = [
     messages: [
       {
         role: "user",
-        text: "[xlsx: chart data labels use the cells' number format](t3-context://v1/thread/thread_labels) why could this thread not start up? [Run chart format tests on external target](t3-context://v1/thread/thread_tests) why did i have to say it like this over here to get it working?",
+        text: "[xlsx: chart data labels use the cells' number format](cod3-context://v1/thread/thread_labels) why could this thread not start up? [Run chart format tests on external target](cod3-context://v1/thread/thread_tests) why did i have to say it like this over here to get it working?",
       },
     ],
     rubric:
@@ -23,7 +23,7 @@ export const threadTitleEvaluationCases = [
     messages: [
       {
         role: "user",
-        text: "Continue [xlsx: chart data labels use the cells' number format](t3-context://v1/thread/thread_labels). Make the chart labels inherit the cells' number formats.",
+        text: "Continue [xlsx: chart data labels use the cells' number format](cod3-context://v1/thread/thread_labels). Make the chart labels inherit the cells' number formats.",
       },
     ],
     rubric:
@@ -31,15 +31,15 @@ export const threadTitleEvaluationCases = [
   },
   {
     id: "linked-reset-credits",
-    source: "https://github.com/pingdotgg/t3code/pull/10462",
+    source: "https://github.com/salexandr0s/cod/pull/10462",
     request: "Review the reset credit routing change.",
     previousTitle: "Review PR 10462",
-    messages: [{ role: "user", text: "Review https://github.com/pingdotgg/t3code/pull/10462" }],
+    messages: [{ role: "user", text: "Review https://github.com/salexandr0s/cod/pull/10462" }],
     rubric: "Name reset credit routing. Distinguish it from displaying credit balances.",
   },
   {
     id: "onboarding-merge",
-    source: "https://github.com/pingdotgg/t3code/pull/10465",
+    source: "https://github.com/salexandr0s/cod/pull/10465",
     request: "Make onboarding one shared wizard across computers, then merge when green.",
     previousTitle: "Finish onboarding PR",
     messages: [
@@ -119,10 +119,10 @@ export const threadTitleEvaluationCases = [
   {
     id: "research",
     source: "Maintainer title generation request",
-    request: "How can we improve title generation in T3 Code?",
+    request: "How can we improve title generation in cod3?",
     previousTitle: "Research title gen improvements",
     messages: [
-      { role: "user", text: "How can we improve title gen further in T3 Code?" },
+      { role: "user", text: "How can we improve title gen further in cod3?" },
       {
         role: "assistant",
         text: "Prioritize user messages, refine vague titles once, and resolve PR subjects.",
@@ -136,7 +136,7 @@ export const threadTitleEvaluationCases = [
   },
   {
     id: "project-name",
-    source: "https://github.com/pingdotgg/t3code/pull/33418",
+    source: "https://github.com/salexandr0s/cod/pull/33418",
     request: "Make hyperdrive init create a default config instead of crashing.",
     projectTitle: "Hyperdrive",
     previousTitle: "Hyperdrive Init Missing Config Crash",
@@ -154,7 +154,7 @@ export const threadTitleEvaluationCases = [
   },
   {
     id: "custom-title-scheme",
-    source: "https://github.com/pingdotgg/t3code/pull/37565",
+    source: "https://github.com/salexandr0s/cod/pull/37565",
     request: "Relay chat to the lead agent, titled with the user's naming scheme.",
     previousTitle: "Relay chat to lead agent",
     instructions: 'Title every thread "Owner: what it does (model effort)".',

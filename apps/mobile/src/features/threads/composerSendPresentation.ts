@@ -1,7 +1,7 @@
 import {
   alternateComposerDispatchAction,
   type ActiveTurnComposerAction,
-} from "@t3tools/client-runtime/state/composer-dispatch";
+} from "@cod3/client-runtime/state/composer-dispatch";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";

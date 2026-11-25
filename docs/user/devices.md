@@ -1,15 +1,13 @@
 # Devices
 
-The Device panel shows a live iOS Simulator or Android Emulator next to a
-thread, so you can watch an agent verify mobile work and tap the device
-yourself. Agents get the same device through `device_*` tools and the
-`agent-device` command line, which T3 Code sets up for them.
+Use the Device panel to watch an agent test an app on an isolated Mac desktop,
+iOS Simulator or Android Emulator. Give the agent a local Mac app bundle to
+test in the VM, or open a mobile device to interact with it yourself.
 
 ## Open a device
 
 Open the right panel in a project thread and choose **Device**. On first use,
-the panel walks through three steps: starting the device hub, checking iOS and
-Android support, and choosing whether agents may control devices. Opening the
+the panel walks through three steps: starting the device hub, checking available devices, and choosing whether agents may control devices. Opening the
 panel alone does not download or start anything. If the hub is already
 installed, the setup screen says so and reuses it.
 
@@ -29,7 +27,7 @@ off.
 Simulators run on the machine that hosts the environment server. iOS needs
 macOS with Xcode. Android needs the SDK Platform-Tools, Android Emulator,
 and Command-line Tools (latest), plus a virtual device created in Android
-Studio's Device Manager. T3 Code detects standard SDK locations; set
+Studio's Device Manager. cod3 detects standard SDK locations; set
 `ANDROID_HOME` for a custom location. The panel explains missing dependencies.
 After installing SDK tools, restart the environment server and refresh devices.
 
@@ -55,6 +53,30 @@ to the other screen switches the live display and touch input to that screen.
 On supported Android foldables, use **Fold device** and **Unfold device** beside
 the screen to change its posture in either view.
 
+## Test a Mac app in an isolated desktop
+
+On an Apple Silicon server running macOS Tahoe 26 or later, choose **Mac** in
+the Device panel. For first-time setup, install Tart and create the reusable VM
+on the server Mac.
+
+```sh
+brew install openai/tools/tart
+tart clone ghcr.io/cirruslabs/macos-tahoe-base:latest t3-mac
+```
+
+Refresh devices and choose **Start Mac**. Enable agent device access and give
+the agent the path to a locally built Apple Silicon or universal `.app`.
+The first text entry or accessibility inspection builds the pinned agent-device
+helper inside the guest using the Swift tools in the base image. Allow time for
+that first build. The agent can transfer the bundle, launch it, inspect the
+guest, and operate native dialogs while you watch. For example, ask it to test the Save dialog in
+your app and verify the file inside the VM.
+
+The VM runs in the background on a host-only network. It has its own home
+directory, clipboard and Keychain. Closing the panel leaves it running.
+Powering it off preserves its disk for the next session. If it disconnects,
+open Mac again to establish a new session.
+
 ## Tools
 
 The toolbar's **Tools** button opens a drawer for the open device. It shows the
@@ -79,7 +101,7 @@ If the thread has several devices open, choose one in the viewer. Closing the
 viewer stops streaming and leaves the device available to the agent. Device
 activity also appears in the thread timeline.
 
-Agents drive the device through the `agent-device` command line. T3
+Agents drive the device through the `agent-device` command line. cod3
 Code installs and starts it only after **Agents can use devices** is on. iOS
 taps build a small test runner on first use, which takes a couple of minutes
 once per server. Restart an existing agent session after granting access so it
@@ -92,7 +114,7 @@ started from then on; your own Device panel is unaffected.
 ## Remote connections
 
 The device stream goes through the environment server, so it works over the
-local network, Tailscale, and T3 Connect. Live video needs a secure page
+local network, Tailscale, and cod3 Connect. Live video needs a secure page
 (HTTPS or localhost); on a plain-HTTP remote origin iOS falls back to a slower
 still-image stream and Android cannot show video, except on Expo Simulators.
 
@@ -109,9 +131,9 @@ anything, with a result for each selected environment. Targets that resolve to
 the environment’s own machine are skipped, since its devices are already local.
 The first device listing installs pinned device tools on the host.
 SSH device hosts currently need macOS or Linux. To use devices on a Windows
-machine, run T3 Code on that machine and connect to its environment.
+machine, run cod3 on that machine and connect to its environment.
 Node 22.12 or newer and npm must be available to non-interactive SSH commands.
-T3 checks common Homebrew and Android SDK locations; custom installations need
+cod3 checks common Homebrew and Android SDK locations; custom installations need
 the appropriate PATH and `ANDROID_HOME` or `ANDROID_SDK_ROOT` on the host.
 Android on an SSH host needs the same SDK tools as a local environment; adb on
 the PATH alone does not enable it. Android emulator video needs
@@ -120,9 +142,9 @@ not need ffmpeg.
 
 The picker identifies devices by host when several hosts are configured.
 Connections recover after interruptions. Removing a host closes its device
-sessions and stops its T3 helpers when reachable; simulators keep running.
+sessions and stops its cod3 helpers when reachable; simulators keep running.
 
-T3 provides discovery, streaming, and control. Arrange app builds,
+cod3 provides discovery, streaming, and control. Arrange app builds,
 installation, and connectivity to development servers such as Metro separately.
 A simulator on another machine cannot reach Metro through your environment's
 localhost without forwarding or another reachable address.
@@ -130,9 +152,9 @@ localhost without forwarding or another reachable address.
 ## Simlock hosts (alpha)
 
 [Simlock](https://incubator.callstack.com/simlock/) pools iOS simulators and
-Android emulators across machines. If you run a Simlock gateway, T3 can lease
+Android emulators across machines. If you run a Simlock gateway, cod3 can lease
 devices from it. Simlock is new and unreleased, so this integration is an
-alpha: it may change or stop working with a newer Simlock. T3 does not install
+alpha: it may change or stop working with a newer Simlock. cod3 does not install
 or manage Simlock; set up the gateway and its workers yourself. It needs a
 gateway and workers built from Simlock's `main` at
 [6316e10](https://github.com/callstackincubator/simlock/commit/6316e10) or
@@ -140,12 +162,12 @@ later, the first with a lease holder's screen and input.
 
 Turn on **Settings → Labs → Simlock device hosts (alpha)** and **Use devices**
 in Settings → Devices, then choose **Add source → Simlock pool** with an **agent token**
-(`simlock --gateway token create --role agent`). Give each T3 server its own
+(`simlock --gateway token create --role agent`). Give each cod3 server its own
 token: Simlock counts every lease made with one token against the same
 requester, and allows one at a time unless the gateway's
 `lease.maxPerRequester` is raised to the host's **Devices at once**. The token
 leases devices and reaches only its own leases, but commands on a leased device
-run on its worker, so treat it like shell access to your workers. T3 sends it
+run on its worker, so treat it like shell access to your workers. cod3 sends it
 with every request, so use an HTTPS gateway URL, or plain HTTP only over an
 encrypted network such as Tailscale. The gateway
 and workers need `capabilities.stream.enabled` and `capabilities.input.enabled`
@@ -159,13 +181,13 @@ Rotation, appearance, text size, device tools, and screenshots are not offered
 for Simlock devices; agents can still do them through `device_open`. On iOS 27
 simulators, typing on your keyboard does nothing; tap the on-screen keyboard
 instead. Workers must run the same agent-device
-version as T3 (see Device tool updates), and agent-device accepts app installs
+version as cod3 (see Device tool updates), and agent-device accepts app installs
 for a lease only from the folder it was opened from, which `device_open`
 names. A device cannot reach development servers on your machine through
 localhost; use an address its worker can reach.
 
 ## Device tool updates
 
-The connected T3 server manages the device hub and agent tools on its own machine and configured SSH hosts. Required versions install automatically the next time those tools are used. In Settings → Devices, select a version and choose **Check versions** to read installed versions without installing tools or starting devices.
+The connected cod3 server manages the device hub and agent tools on its own machine and configured SSH hosts. Required versions install automatically the next time those tools are used. In Settings → Devices, select a version and choose **Check versions** to read installed versions without installing tools or starting devices.
 
-To receive newer tool versions on a remote environment, update that environment's T3 server. Updating only the browser or mobile app does not update the remote server. An offline host keeps its installed files, but an update needs network access before device support can start; T3 does not fall back to an older version. Reconnect the host and use Retry if installation fails. Existing device and agent-access settings are preserved.
+To receive newer tool versions on a remote environment, update that environment's cod3 server. Updating only the browser or mobile app does not update the remote server. An offline host keeps its installed files, but an update needs network access before device support can start; cod3 does not fall back to an older version. Reconnect the host and use Retry if installation fails. Existing device and agent-access settings are preserved.

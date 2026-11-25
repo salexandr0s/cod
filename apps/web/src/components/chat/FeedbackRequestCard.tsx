@@ -9,16 +9,16 @@ import {
   type FeedbackRequestItem,
   feedbackTraceLines,
   feedbackTraceSummary,
-} from "@t3tools/client-runtime/feedback-request";
+} from "@cod3/client-runtime/feedback-request";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import type {
   AgentFeedbackPreview,
   EnvironmentId,
   OrchestrationV2ProjectedTurnItem,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { CheckIcon, ChevronDownIcon, LockIcon, MessageSquareIcon, MinusIcon } from "lucide-react";
 import { useAtomValue } from "@effect/atom-react";
 import { useRef, useState } from "react";
@@ -30,7 +30,7 @@ import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "../ui/collaps
 import { Switch } from "../ui/switch";
 import { WorkLogRow } from "./WorkLog";
 
-const TITLE = msg("Feedback for the T3 team");
+const TITLE = msg("Feedback for the cod3 team");
 
 export function FeedbackRequestCard(props: {
   readonly environmentId: EnvironmentId;
@@ -126,7 +126,7 @@ function PendingFeedbackRequest(props: {
       <div className="flex min-w-0 flex-col gap-1">
         <h3 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           <MessageSquareIcon className="size-3.5 shrink-0 text-icon-muted" aria-hidden />
-          <T>Send this report to the T3 team?</T>
+          <T>Send this report to the cod3 team?</T>
         </h3>
         <p className="text-xs text-muted-foreground">
           <T>This is everything that leaves your machine. Nothing is sent unless you press Send.</T>

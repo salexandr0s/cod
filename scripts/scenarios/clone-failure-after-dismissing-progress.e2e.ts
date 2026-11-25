@@ -1,22 +1,22 @@
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- The fixture holds Git's HTTP request open.
 import * as NodeHttp from "node:http";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
-import { ProjectId } from "@t3tools/contracts";
+import { ProjectId } from "@cod3/contracts";
 import { expect } from "e2e";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Stream from "effect/Stream";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 test(
   "Dismissing clone progress leaves the later failure notification visible",
   WEB,
-  async ({ t3, app, screen, browser }) => {
-    const project = await t3.project("demo");
-    const thread = await t3.thread({ project, title: "Other work", messages: ["Start"] });
+  async ({ cod3, app, screen, browser }) => {
+    const project = await cod3.project("demo");
+    const thread = await cod3.thread({ project, title: "Other work", messages: ["Start"] });
     const gitRequest = Promise.withResolvers<NodeHttp.ServerResponse>();
     const remote = NodeHttp.createServer((_request, response) => {
       gitRequest.resolve(response);
@@ -36,12 +36,12 @@ test(
       );
       const name = "pending-clone";
       const origin = app.baseUrl ?? "";
-      await t3.open(thread);
+      await cod3.open(thread);
       await screen.getByText("Start", { exact: true }).waitFor();
 
       await runPromise(
         Effect.gen(function* () {
-          const client = yield* rpcClient(T3_HOME, origin);
+          const client = yield* rpcClient(COD3_HOME, origin);
           const createdAt = DateTime.formatIso(yield* DateTime.now);
           yield* client["projectClone.start"]({
             projectId,
@@ -74,7 +74,7 @@ test(
       response.writeHead(404).end();
       await runPromise(
         Effect.gen(function* () {
-          const client = yield* rpcClient(T3_HOME, origin);
+          const client = yield* rpcClient(COD3_HOME, origin);
           yield* client.subscribeProjectClones({}).pipe(
             Stream.filter((clones) =>
               clones.some((clone) => clone.projectId === projectId && clone.phase === "failed"),
@@ -96,7 +96,7 @@ test(
       remote.once("request", (_request, response) => retryRequest.resolve(response));
       const retry = await runPromise(
         Effect.gen(function* () {
-          const client = yield* rpcClient(T3_HOME, origin);
+          const client = yield* rpcClient(COD3_HOME, origin);
           return yield* client["projectClone.retry"]({ projectId });
         }).pipe(Effect.scoped),
       );

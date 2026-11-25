@@ -1,18 +1,18 @@
 import { useComposerAttachmentActions } from "./use-composer-attachment-actions";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import * as Effect from "effect/Effect";
 import * as Dialog from "../components/ui/Dialog";
-import { AuthOrchestrationOperateScope } from "@t3tools/contracts";
+import { AuthOrchestrationOperateScope } from "@cod3/contracts";
 import { readEnvironmentScope } from "./session";
 import { useAtomValue } from "@effect/atom-react";
-import { compactBeforeSendTokens } from "@t3tools/client-runtime/state/context-window";
-import { threadRuntimeIsActive } from "@t3tools/client-runtime/state/shell";
-import { threadSteersDuringCompaction } from "@t3tools/client-runtime/state/thread-workflows";
-import { resolvePendingHandoff } from "@t3tools/client-runtime/handoff";
+import { compactBeforeSendTokens } from "@cod3/client-runtime/state/context-window";
+import { threadRuntimeIsActive } from "@cod3/client-runtime/state/shell";
+import { threadSteersDuringCompaction } from "@cod3/client-runtime/state/thread-workflows";
+import { resolvePendingHandoff } from "@cod3/client-runtime/handoff";
 import {
   announcedRun,
   isDetailBehindShell,
-} from "@t3tools/client-runtime/state/thread-activity-announcement";
+} from "@cod3/client-runtime/state/thread-activity-announcement";
 import {
   canResumeThread,
   deriveProviderSubagentStatus,
@@ -23,7 +23,7 @@ import {
   deriveThreadActivityRun,
   deriveThreadRuntime,
   threadRuntimeHasInterruptibleRun,
-} from "@t3tools/client-runtime/state/thread-execution";
+} from "@cod3/client-runtime/state/thread-execution";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -36,17 +36,17 @@ import {
   type RuntimeMode,
   type ScopedThreadRef,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
 import {
   parseCodexFeedbackCommand,
   submitCodexFeedback,
   type CodexFeedbackSubmission,
-} from "@t3tools/client-runtime/state/threads";
-import { resolveThreadWorkingStartedAt } from "@t3tools/client-runtime/state/models";
-import { deriveThreadTitleSeed } from "@t3tools/client-runtime/operations";
-import { upgradeLegacyContextMessage } from "@t3tools/shared/composerContextLegacy";
-import { restoreAttachmentOnlyBootstrapPrompt } from "@t3tools/shared/composerContextReferences";
+} from "@cod3/client-runtime/state/threads";
+import { resolveThreadWorkingStartedAt } from "@cod3/client-runtime/state/models";
+import { deriveThreadTitleSeed } from "@cod3/client-runtime/operations";
+import { upgradeLegacyContextMessage } from "@cod3/shared/composerContextLegacy";
+import { restoreAttachmentOnlyBootstrapPrompt } from "@cod3/shared/composerContextReferences";
 import {
   composerContextSendBlockReason,
   reidentifyComposerContext,
@@ -102,16 +102,16 @@ import {
   useComposerDraft,
   useComposerDraftSettings,
 } from "./use-composer-drafts";
-import { isClearComposerCommand, parseSideChatCommand } from "@t3tools/shared/composerTrigger";
-import { orchestrationV2WorktreePending } from "@t3tools/shared/orchestrationV2ThreadError";
+import { isClearComposerCommand, parseSideChatCommand } from "@cod3/shared/composerTrigger";
+import { orchestrationV2WorktreePending } from "@cod3/shared/orchestrationV2ThreadError";
 import {
   compactionBlocksSteering,
   resolveComposerDispatchMode,
   type ActiveTurnComposerAction,
-} from "@t3tools/client-runtime/state/composer-dispatch";
+} from "@cod3/client-runtime/state/composer-dispatch";
 import { Atom } from "effect/reactivity";
 import { AsyncResult } from "effect/reactivity";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import { prepareTurnAttachments } from "../lib/attachmentUpload";
 import { DEFAULT_FOLLOW_UP_BEHAVIOR } from "../lib/followUpBehavior";
 import { mobilePreferencesAtom } from "./preferences";
@@ -284,7 +284,7 @@ export function useThreadComposerState(input: {
       ? EMPTY_THREAD_SEQUENCE_ATOM
       : environmentThreadDetails.sequenceAtom(selectedThreadDetailRef),
   );
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- prunes the app-wide acknowledged atom when the mounted thread catches up
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- prunes the app-wide acknowledged atom when the mounted thread catches up
   useEffect(() => {
     if (selectedThreadKey === null || acknowledgedMessages.length === 0) return;
     pruneCaughtUpAcknowledgedThreadMessages(selectedThreadKey, {
@@ -950,7 +950,7 @@ export function useThreadComposerState(input: {
     if (serverConfig.environment.capabilities.sideChats !== true) {
       return resolve(
         msg("Update this environment's {product} server to use side chats.", {
-          product: "T3 Code",
+          product: "cod3",
         }),
       );
     }

@@ -16,7 +16,12 @@ vi.mock("./useAvailableSettingsSearchItems", () => ({
 it("ignores composing keys in the search", async () => {
   await using screen = await render(
     <SidebarProvider defaultOpen>
-      <SettingsSidebarNav pathname="/settings/general" />
+      <SettingsSidebarNav
+        pathname="/settings/general"
+        compactOpen
+        onRequestSearch={() => {}}
+        onChoose={() => {}}
+      />
     </SidebarProvider>,
     { router: "/settings/general" },
   );
@@ -48,7 +53,12 @@ it("ignores composing keys in the search", async () => {
 function renderNav() {
   return render(
     <SidebarProvider defaultOpen>
-      <SettingsSidebarNav pathname="/settings/general" />
+      <SettingsSidebarNav
+        pathname="/settings/general"
+        compactOpen
+        onRequestSearch={() => {}}
+        onChoose={() => {}}
+      />
     </SidebarProvider>,
     { router: "/settings/general" },
   );

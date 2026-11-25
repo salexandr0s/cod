@@ -1,8 +1,8 @@
 /// <reference lib="dom" />
-import type { EnvironmentSpeechModel, EnvironmentSpeechStatus } from "@t3tools/contracts";
+import type { EnvironmentSpeechModel, EnvironmentSpeechStatus } from "@cod3/contracts";
 import { expect } from "e2e";
 
-import { test, WEB } from "./t3.ts";
+import { test, WEB } from "./cod3.ts";
 
 declare global {
   interface Window {
@@ -18,9 +18,9 @@ declare global {
 test(
   "Voice setup keeps the current microphone after an older refresh finishes",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("demo");
-    const thread = await t3.thread({ project, title: "Voice notes", messages: ["first"] });
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("demo");
+    const thread = await cod3.thread({ project, title: "Voice notes", messages: ["first"] });
 
     const model = {
       id: "scenario-speech",
@@ -103,7 +103,7 @@ test(
       };
     });
 
-    await t3.open(thread);
+    await cod3.open(thread);
     const threadPath = new URL(await browser.url()).pathname;
     const voice = screen.getByRole("button", "Start voice input");
     await voice.tap();

@@ -1,12 +1,12 @@
 import { assert, describe, it } from "@effect/vitest";
-import { ProviderInstanceId } from "@t3tools/contracts";
+import { ProviderInstanceId } from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as EffectAcpErrors from "effect-acp/errors";
 import type * as EffectAcpSchema from "effect-acp/compat";
 
-import { ProviderAdapterV2RuntimePolicy } from "@t3tools/provider-core/server/ProviderAdapter";
+import { ProviderAdapterV2RuntimePolicy } from "@cod3/provider-core/server/ProviderAdapter";
 
 import {
   applyFxModelSelection,
@@ -25,7 +25,7 @@ const editRequest = {
 } satisfies EffectAcpSchema.RequestPermissionRequest;
 
 describe("fx permission prompts", () => {
-  // In Auto, fx's own review asks only about what it refused itself; T3
+  // In Auto, fx's own review asks only about what it refused itself; cod3
   // answering those by its Auto policy would approve exactly what fx escalated.
   it("sends every Auto prompt to the user", () => {
     assert.equal(

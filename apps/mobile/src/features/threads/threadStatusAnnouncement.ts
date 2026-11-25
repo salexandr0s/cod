@@ -1,5 +1,5 @@
-import type { ThreadActivitySnapshot } from "@t3tools/client-runtime/state/thread-activity-announcement";
-import type { RunId, OrchestrationV2RunStatus } from "@t3tools/contracts";
+import type { ThreadActivitySnapshot } from "@cod3/client-runtime/state/thread-activity-announcement";
+import type { RunId, OrchestrationV2RunStatus } from "@cod3/contracts";
 
 export interface ThreadActivityInput {
   readonly approvalRequestId: string | null;

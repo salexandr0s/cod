@@ -21,7 +21,7 @@ import * as HttpRouter from "effect/http/HttpRouter";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as HttpApiScalar from "effect/http-api/HttpApiScalar";
 
-import { RelayApi } from "@t3tools/contracts/relay";
+import { RelayApi } from "@cod3/contracts/relay";
 
 import {
   RELAY_HTTP_ROUTER_CONFIG,
@@ -68,7 +68,7 @@ import * as EnvironmentPublishSignatures from "./environments/EnvironmentPublish
 import * as ManagedEndpointProvider from "./environments/ManagedEndpointProvider.ts";
 import * as ManagedEndpointReaper from "./environments/ManagedEndpointReaper.ts";
 import * as ManagedTunnelLimits from "./environments/ManagedTunnelLimits.ts";
-import * as T3ChatAccounts from "./t3chat/T3ChatAccounts.ts";
+import * as Cod3ChatAccounts from "./cod3chat/Cod3ChatAccounts.ts";
 import * as MobileRegistrations from "./agentActivity/MobileRegistrations.ts";
 import * as HookForwarder from "./hooks/HookForwarder.ts";
 import * as HeldHooks from "./hooks/HeldHooks.ts";
@@ -171,13 +171,13 @@ export const layer = Api.make(
     const clerkSecretKey = yield* Config.Redacted("CLERK_SECRET_KEY");
     const clerkPublishableKey = yield* Config.String("CLERK_PUBLISHABLE_KEY");
     const clerkJwtAudience = yield* Config.String("CLERK_JWT_AUDIENCE");
-    const t3ChatLinkSecret = Option.getOrUndefined(
+    const cod3ChatLinkSecret = Option.getOrUndefined(
       Option.filter(
-        yield* Config.option(Config.Redacted("T3CHAT_LINK_SECRET")),
+        yield* Config.option(Config.Redacted("COD3CHAT_LINK_SECRET")),
         (value) => Redacted.value(value).trim().length > 0,
       ),
     );
-    const t3ChatBaseUrl = yield* Config.String("T3CHAT_URL").pipe(
+    const cod3ChatBaseUrl = yield* Config.String("COD3CHAT_URL").pipe(
       Config.withDefault("https://t3.chat"),
     );
 
@@ -250,8 +250,8 @@ export const layer = Api.make(
         managedEndpointCleanupMode,
         legacyManagedEndpointCleanupMode,
         ...(legacyTunnelGraceMinutes === undefined ? {} : { legacyTunnelGraceMinutes }),
-        ...(t3ChatLinkSecret
-          ? { t3Chat: { baseUrl: t3ChatBaseUrl, linkSecret: t3ChatLinkSecret } }
+        ...(cod3ChatLinkSecret
+          ? { cod3Chat: { baseUrl: cod3ChatBaseUrl, linkSecret: cod3ChatLinkSecret } }
           : {}),
       });
     });
@@ -346,7 +346,7 @@ export const layer = Api.make(
           ManagedTunnelLimits.layer,
         ),
       ),
-      Layer.provideMerge(Layer.mergeAll(LiveActivities.layer, T3ChatAccounts.layer)),
+      Layer.provideMerge(Layer.mergeAll(LiveActivities.layer, Cod3ChatAccounts.layer)),
       Layer.provideMerge(DeliveryAttempts.layer),
       Layer.provideMerge(RelayTokens.layer.pipe(Layer.provideMerge(CloudMintSigner.layer))),
       Layer.provideMerge(
@@ -575,7 +575,7 @@ export const layer = Api.make(
           Layer.unwrap(
             Effect.map(RelayObservability, (observability) =>
               Axiom.Telemetry({
-                serviceName: "t3code-relay",
+                serviceName: "cod3-relay",
                 token: observability.workerIngestToken,
                 traces: observability.traces,
               }),

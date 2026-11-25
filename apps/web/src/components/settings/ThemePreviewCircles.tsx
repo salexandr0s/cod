@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import {
   STANDARD_THEME_PREVIEW_COLORS as SHARED_STANDARD_THEME_PREVIEW_COLORS,
   THEME_PREVIEW_RENDER_SPECS,
-} from "@t3tools/shared/themePreview";
+} from "@cod3/shared/themePreview";
 import { cn } from "../../lib/utils";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import {
@@ -59,7 +59,7 @@ const STANDARD_THEME_PREVIEW_COLORS: Record<
 export const STANDARD_THEME_CARDS: ReadonlyArray<ThemeCardDefinition> = [
   {
     id: "default",
-    label: "T3 Code",
+    label: "cod3",
     previews: (["light", "dark"] as const).map((mode) => ({
       mode,
       colors: STANDARD_THEME_PREVIEW_COLORS[mode],

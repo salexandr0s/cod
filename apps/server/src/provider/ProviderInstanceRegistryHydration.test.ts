@@ -6,10 +6,10 @@ import {
   SecretProviderId,
   SecretProviderKind,
   type ServerSettings,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as ProviderHost from "@t3tools/provider-core/server/ProviderHost";
+import * as ProviderHost from "@cod3/provider-core/server/ProviderHost";
 import { it as effectIt } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -118,7 +118,7 @@ describe("seedDevReplayInstance", () => {
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
-          ServerConfig.layerTest(process.cwd(), { prefix: "t3-dev-replay-seed-" }),
+          ServerConfig.layerTest(process.cwd(), { prefix: "cod3-dev-replay-seed-" }),
           ServerSettingsService.layerTest({
             providerInstances: {
               [DEV_REPLAY_INSTANCE_ID]: {

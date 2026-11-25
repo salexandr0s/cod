@@ -1,6 +1,6 @@
-import { PrimaryConnectionTarget } from "@t3tools/client-runtime/connection";
-import { EnvironmentId, ProjectId, ServerConfig } from "@t3tools/contracts";
-import { DEFAULT_CLIENT_SETTINGS } from "@t3tools/contracts/settings";
+import { PrimaryConnectionTarget } from "@cod3/client-runtime/connection";
+import { EnvironmentId, ProjectId, ServerConfig } from "@cod3/contracts";
+import { DEFAULT_CLIENT_SETTINGS } from "@cod3/contracts/settings";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import { expect, it, vi } from "vite-plus/test";
@@ -26,7 +26,7 @@ const config = Schema.decodeSync(ServerConfig)({
     policy: "loopback-browser",
     bootstrapMethods: ["one-time-token"],
     sessionMethods: ["browser-session-cookie"],
-    sessionCookieName: "t3_session",
+    sessionCookieName: "cod3_session",
   },
   cwd: "/workspace/browser",
   keybindingsConfigPath: "/workspace/keybindings.json",

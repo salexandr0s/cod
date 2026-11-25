@@ -1,4 +1,4 @@
-import type { ServerSelfUpdateOutcome } from "@t3tools/contracts";
+import type { ServerSelfUpdateOutcome } from "@cod3/contracts";
 
 // Protocol 4 launchers coordinate selection writes and reconcile the unit. A remote update
 // replaces only the child, so an installed protocol-3 launcher stays until a local update or
@@ -11,12 +11,12 @@ export const isSupportedLauncherProtocol = (
   protocol: unknown,
 ): protocol is SupportedLauncherProtocol =>
   protocol === 3 || protocol === SERVICE_LAUNCHER_PROTOCOL;
-export const SERVICE_LAUNCHER_CONTEXT_ENV = "T3_SERVICE_LAUNCHER_CONTEXT";
+export const SERVICE_LAUNCHER_CONTEXT_ENV = "COD3_SERVICE_LAUNCHER_CONTEXT";
 export const SERVICE_ENV_FILE = "service.env";
 export const SERVICE_STATE_FILE = "service-state.json";
 /** Set by the unit or launch agent to its own file name, so the launcher can
     find the definition that started it. */
-export const SERVICE_UNIT_ENV = "T3_BOOT_SERVICE_UNIT";
+export const SERVICE_UNIT_ENV = "COD3_BOOT_SERVICE_UNIT";
 /** Written before explicit stop to distinguish shutdown from update handoff. */
 export const SERVICE_STOP_MARKER_FILE = ".service-stopping";
 /** Marks a repointed unit whose service still runs the old version; launcher startup clears it. */
@@ -61,7 +61,7 @@ export const disabledServiceTask = (taskXml: string): string =>
 
 export function serviceUnitEnvironmentValueOf(
   contents: string,
-  name: "T3CODE_HOME" | "T3CODE_INSTALL_BIN_DIR",
+  name: "COD3_HOME" | "COD3_INSTALL_BIN_DIR",
 ): string | undefined {
   const systemd = new RegExp(`^Environment=${name}=(.*)$`, "m").exec(contents)?.[1];
   if (systemd !== undefined) return unquoteSystemdValue(systemd.trim());
@@ -70,7 +70,7 @@ export function serviceUnitEnvironmentValueOf(
 }
 
 export function serviceUnitBaseDirOf(contents: string): string | undefined {
-  const unix = serviceUnitEnvironmentValueOf(contents, "T3CODE_HOME");
+  const unix = serviceUnitEnvironmentValueOf(contents, "COD3_HOME");
   if (unix !== undefined) return unix;
   const task = /<Arguments>[^<]* "--base-dir" "([^"]*)"/.exec(contents)?.[1];
   return task === undefined ? undefined : unquoteWindowsArgument(task);

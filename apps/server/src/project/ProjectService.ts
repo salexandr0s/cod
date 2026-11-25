@@ -1,5 +1,8 @@
 import {
   CommandId,
+  type WorkspaceDiscoverProjectsResult,
+  type WorkspaceFoldersError,
+  type WorkspaceScanFoldersInput,
   type OrchestrationProjectShell,
   PROJECT_TRACKED_FOLDERS_MAX,
   ProjectId,
@@ -9,11 +12,11 @@ import {
   type ProjectUpdatePayload,
   type ProjectSnapshot,
   type ThreadId,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
 import * as Clock from "effect/Clock";
-import { isWslSharePath } from "@t3tools/shared/path";
+import { isWslSharePath } from "@cod3/shared/path";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -27,7 +30,7 @@ import * as Schema from "effect/Schema";
 
 import { withCommandMetrics } from "../observability/Metrics.ts";
 import * as EventSink from "../orchestration-v2/EventSink.ts";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
 import * as LegacyV1ThreadImporter from "../orchestration-v2/legacy/LegacyV1ThreadImporter.ts";
 import * as ProjectionStore from "../orchestration-v2/ProjectionStore.ts";
 import {
@@ -44,6 +47,7 @@ import { deletedProjectOverridePatch } from "../provider/ProjectSettingsOverride
 import { makeIsManagedWorktreePath } from "../worktreesDirectory.ts";
 import * as ProcessRunner from "../processRunner.ts";
 import * as ProjectEnrichmentService from "./ProjectEnrichmentService.ts";
+import { makeDiscoverProjects } from "../workspace/discoverProjects.ts";
 import { makeIsWorktreeContainer } from "./worktreeContainer.ts";
 import { isWithinRoot } from "../workspace/KnownWorkspaces.ts";
 import {
@@ -160,6 +164,9 @@ export class ProjectService extends Context.Service<
       projectId: ProjectId,
       options?: { readonly includeDeleted?: boolean },
     ) => Effect.Effect<Option.Option<Project>, ProjectOperationError>;
+    readonly discoverProjects: (
+      input: WorkspaceScanFoldersInput,
+    ) => Effect.Effect<WorkspaceDiscoverProjectsResult, WorkspaceFoldersError>;
     readonly getByWorkspaceRoot: (
       workspaceRoot: string,
       options?: { readonly includeDeleted?: boolean },
@@ -188,7 +195,7 @@ export class ProjectService extends Context.Service<
       readonly projectIds?: ReadonlyArray<ProjectId>;
     }) => Effect.Effect<ReadonlyArray<OrchestrationProjectShell>, ProjectOperationError>;
   }
->()("t3/project/ProjectService") {}
+>()("cod3/project/ProjectService") {}
 
 const FOLDER_SYNC_INTERVAL_MS = 30_000;
 
@@ -205,6 +212,7 @@ export const make = Effect.gen(function* () {
   const fileSystem = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const isManagedWorktreePath = yield* makeIsManagedWorktreePath;
+  const discoverProjects = yield* makeDiscoverProjects;
   const isWorktreeContainer = yield* makeIsWorktreeContainer.pipe(
     Effect.provide(ProcessRunner.layer),
   );
@@ -857,6 +865,7 @@ export const make = Effect.gen(function* () {
     delete: deleteProject,
     getById,
     getByWorkspaceRoot,
+    discoverProjects,
     workspaceScanDirectory,
     snapshot,
     listPage,

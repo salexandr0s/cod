@@ -1,8 +1,4 @@
-import {
-  EnvironmentId,
-  managedCapabilityDenial,
-  type ManagedPolicySummary,
-} from "@t3tools/contracts";
+import { EnvironmentId, managedCapabilityDenial, type ManagedPolicySummary } from "@cod3/contracts";
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import "~/index.css";

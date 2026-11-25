@@ -1,16 +1,13 @@
-import {
-  getPromptControlledTraits,
-  getTraitSelectChange,
-} from "@t3tools/client-runtime/model-traits";
+import { getPromptControlledTraits, getTraitSelectChange } from "@cod3/client-runtime/model-traits";
 import { T, useGT, useLocale, useMessages } from "gt-react-native";
 import * as Dialog from "../../components/ui/Dialog";
 import { createV5StackNavigator as createNativeStackNavigator } from "../../native/createV5StackNavigator";
 import { useSheetStackOptions } from "../layout/nested-stacks";
-import { DEFAULT_SERVER_SETTINGS, ProviderInstanceId } from "@t3tools/contracts";
+import { DEFAULT_SERVER_SETTINGS, ProviderInstanceId } from "@cod3/contracts";
 import {
   modelPreferencesMigrationPatch,
   resolveModelPreferences,
-} from "@t3tools/shared/serverSettings";
+} from "@cod3/shared/serverSettings";
 import type {
   EnvironmentId,
   ModelSelection,
@@ -20,14 +17,11 @@ import type {
   RuntimeMode,
   ServerSettings,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type { LegendListRenderItemProps } from "@legendapp/list/react-native";
 import { RegistryContext, useAtomMount, useAtomValue } from "@effect/atom-react";
 import { AnimatedLegendList } from "@legendapp/list/reanimated";
-import {
-  getProviderOptionCurrentLabel,
-  getProviderOptionCurrentValue,
-} from "@t3tools/shared/model";
+import { getProviderOptionCurrentLabel, getProviderOptionCurrentValue } from "@cod3/shared/model";
 import {
   useNavigation,
   useRoute,
@@ -72,7 +66,7 @@ import {
   type ProviderGroup,
   withStoredThreadModelOptions,
 } from "../../lib/modelOptions";
-import { groupModelsBySubProvider } from "@t3tools/client-runtime/providerSubProviders";
+import { groupModelsBySubProvider } from "@cod3/client-runtime/providerSubProviders";
 import { applyProviderOptionSelection } from "../../lib/providerOptions";
 import { resolveProviderOptionDescriptors } from "../../lib/providerOptions";
 import {
@@ -123,7 +117,7 @@ import {
   providerSectionIsCollapsed,
   visibleCatalogModels,
 } from "./thread-settings-sheet-state";
-import { formatProviderUpdateRequiredNotice } from "@t3tools/client-runtime/providerUpdateRequiredModels";
+import { formatProviderUpdateRequiredNotice } from "@cod3/client-runtime/providerUpdateRequiredModels";
 import type { MessageResolver } from "../../i18n/messages";
 
 const PRIMARY_PROVIDER_DRIVERS: ReadonlySet<string> = new Set([
@@ -169,17 +163,17 @@ function ProviderHeader(props: {
       )}
       {props.detail ? (
         <View className="min-w-0 flex-1 py-1">
-          <Text className="text-sm font-t3-medium text-foreground-muted">{props.label}</Text>
+          <Text className="text-sm font-cod3-medium text-foreground-muted">{props.label}</Text>
           <Text className="text-xs text-foreground-muted">{props.detail}</Text>
         </View>
       ) : (
-        <Text className="text-sm font-t3-medium text-foreground-muted">{props.label}</Text>
+        <Text className="text-sm font-cod3-medium text-foreground-muted">{props.label}</Text>
       )}
       {props.collapsible ? (
         <>
           <View className="flex-1" />
           {props.collapsed ? (
-            <Text className="text-2xs font-t3-medium text-foreground-muted">
+            <Text className="text-2xs font-cod3-medium text-foreground-muted">
               {props.modelCount}
             </Text>
           ) : null}
@@ -241,7 +235,7 @@ function DisclosureRow(props: {
       )}
       style={{ minHeight: ROW_MIN_HEIGHT.item }}
     >
-      <Text className="text-sm font-t3-medium text-foreground">{props.label}</Text>
+      <Text className="text-sm font-cod3-medium text-foreground">{props.label}</Text>
       <View className="flex-1" />
       {props.value ? (
         <Text className="text-sm text-foreground-muted" numberOfLines={1}>
@@ -271,7 +265,7 @@ function SwitchRow(props: {
         !props.isLast && "border-b border-border-subtle",
       )}
     >
-      <Text className="text-sm font-t3-medium text-foreground">{props.label}</Text>
+      <Text className="text-sm font-cod3-medium text-foreground">{props.label}</Text>
       <ThemedSwitch
         accessibilityLabel={props.label}
         onValueChange={props.onValueChange}
@@ -393,7 +387,7 @@ function ThreadSettingsSessionProvider(
     favorites: legacyFavorites,
   }).favorites;
   const saveSettings = useAtomCommand(serverEnvironment.updateSettings, "model favorites update");
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- writes the one-time legacy model favorites migration to server settings once per connection
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- writes the one-time legacy model favorites migration to server settings once per connection
   useEffect(() => {
     if (
       !props.environmentId ||
@@ -976,7 +970,7 @@ function ThreadSettingsOptionsItem(props: {
   return (
     <View style={{ paddingBottom: insets.bottom + props.bottomInset + 12 }}>
       <ChatGptSharingStatus provider={selectedProvider} />
-      <Text className="px-5 pb-2 pt-2 text-sm font-t3-medium text-foreground-muted">
+      <Text className="px-5 pb-2 pt-2 text-sm font-cod3-medium text-foreground-muted">
         <T>Options</T>
       </Text>
       <Animated.View
@@ -1041,7 +1035,7 @@ function ThreadSettingsOptionsItem(props: {
         </Animated.View>
       </Animated.View>
 
-      <Text className="px-5 pb-2 pt-7 text-sm font-t3-medium text-foreground-muted">
+      <Text className="px-5 pb-2 pt-7 text-sm font-cod3-medium text-foreground-muted">
         {gt("Catalog", { $context: "section heading for the model catalog" })}
       </Text>
       <View className="mx-4 overflow-hidden rounded-2xl bg-grouped-card">
@@ -1077,7 +1071,7 @@ function ThreadSettingsMainContent(props: {
     if (config?.environment.capabilities.modelCatalogRefresh !== true) return;
     void refreshProvidersCommand({ environmentId, input: { modelCatalogOnly: true } });
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- asks the server for newly released models when the model list opens
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- asks the server for newly released models when the model list opens
   useEffect(() => {
     refreshModelCatalog();
   }, []);
@@ -1173,7 +1167,7 @@ function ThreadSettingsMainContent(props: {
   };
 
   return (
-    // oxlint-disable-next-line t3code/require-registered-list-scroll -- Sheet content; sheets sit outside workspace columns and keep their own header handling.
+    // oxlint-disable-next-line cod3/require-registered-list-scroll -- Sheet content; sheets sit outside workspace columns and keep their own header handling.
     <AnimatedLegendList
       alwaysBounceVertical
       automaticallyAdjustsScrollIndicatorInsets

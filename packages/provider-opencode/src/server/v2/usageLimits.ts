@@ -1,9 +1,9 @@
-import type { ServerProviderUsageWindow } from "@t3tools/contracts";
+import type { ServerProviderUsageWindow } from "@cod3/contracts";
 import {
   clampPercent,
   makeUnavailableUsageLimits,
   makeUsageLimits,
-} from "@t3tools/provider-core/server/usageLimits";
+} from "@cod3/provider-core/server/usageLimits";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -24,7 +24,7 @@ const BudgetModel = Schema.Struct({
   name: Schema.String,
   spent: Schema.optionalKey(Schema.Finite),
 });
-// Decode only fields needed by T3, independently of the pinned 2.0 client.
+// Decode only fields needed by cod3, independently of the pinned 2.0 client.
 const ResponseBody = Schema.Struct({
   location: Schema.Struct({ directory: Schema.String }),
   data: Schema.NullOr(

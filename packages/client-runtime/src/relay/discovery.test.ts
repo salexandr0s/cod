@@ -1,8 +1,8 @@
-import { EnvironmentId } from "@t3tools/contracts";
+import { EnvironmentId } from "@cod3/contracts";
 import type {
   RelayClientEnvironmentRecord,
   RelayEnvironmentStatusResponse,
-} from "@t3tools/contracts/relay";
+} from "@cod3/contracts/relay";
 import { describe, expect, it } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -116,9 +116,9 @@ const makeHarness = Effect.fn("RelayDiscoveryTest.makeHarness")(function* () {
     createEnvironmentLinkChallenge: () => Effect.die("unused"),
     linkEnvironment: () => Effect.die("unused"),
     unlinkEnvironment: () => Effect.die("unused"),
-    getT3ChatLink: () => Effect.die("unused"),
-    createT3ChatLinkRequest: () => Effect.die("unused"),
-    unlinkT3Chat: () => Effect.die("unused"),
+    getCod3ChatLink: () => Effect.die("unused"),
+    createCod3ChatLinkRequest: () => Effect.die("unused"),
+    unlinkCod3Chat: () => Effect.die("unused"),
     connectEnvironment: () => Effect.die("unused"),
     registerDevice: () => Effect.die("unused"),
     unregisterDevice: () => Effect.die("unused"),
@@ -368,9 +368,9 @@ describe("RelayEnvironmentDiscovery", () => {
         createEnvironmentLinkChallenge: () => Effect.die("unused"),
         linkEnvironment: () => Effect.die("unused"),
         unlinkEnvironment: () => Effect.die("unused"),
-        getT3ChatLink: () => Effect.die("unused"),
-        createT3ChatLinkRequest: () => Effect.die("unused"),
-        unlinkT3Chat: () => Effect.die("unused"),
+        getCod3ChatLink: () => Effect.die("unused"),
+        createCod3ChatLinkRequest: () => Effect.die("unused"),
+        unlinkCod3Chat: () => Effect.die("unused"),
         connectEnvironment: () => Effect.die("unused"),
         registerDevice: () => Effect.die("unused"),
         unregisterDevice: () => Effect.die("unused"),

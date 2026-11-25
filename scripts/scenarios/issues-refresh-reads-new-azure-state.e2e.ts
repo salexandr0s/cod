@@ -3,9 +3,9 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import { run } from "./shell.ts";
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 // Stand in for the Azure CLI upstream. The real tracker builds WIQL and decodes its rows.
 const azureCli = String.raw`#!/usr/bin/env node
@@ -77,18 +77,18 @@ console.log(JSON.stringify(output));
 test(
   "Refreshing Closed issues picks up a new Azure DevOps finished state",
   WEB,
-  async ({ t3, app, screen }) => {
-    const workspace = await t3.project("demo");
+  async ({ cod3, app, screen }) => {
+    const workspace = await cod3.project("demo");
     const { repository, changed } = await runPromise(
       Effect.gen(function* () {
         const path = yield* Path.Path;
         const fs = yield* FileSystem.FileSystem;
-        const shim = path.join(T3_HOME, "bin", "az");
+        const shim = path.join(COD3_HOME, "bin", "az");
         yield* fs.writeFileString(shim, azureCli);
         yield* fs.chmod(shim, 0o755);
         return {
-          repository: path.join(T3_HOME, "release"),
-          changed: path.join(T3_HOME, "bin", "workflow-changed"),
+          repository: path.join(COD3_HOME, "release"),
+          changed: path.join(COD3_HOME, "bin", "workflow-changed"),
         };
       }),
     );
@@ -102,10 +102,10 @@ test(
         },
       ),
     );
-    const primary = makeState(T3_HOME);
+    const primary = makeState(COD3_HOME);
     await runPromise(primary.cli(["project", "add", repository, "--title", "Release"]));
     try {
-      await t3.open("/issues?status=closed");
+      await cod3.open("/issues?status=closed");
       // The initial Closed list warms the workflow cache.
       await screen.getByText("Release notes drafted", { exact: true }).waitFor({ timeout: 60_000 });
       await runPromise(

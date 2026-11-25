@@ -1,5 +1,5 @@
-import { isSshRemoteUrl } from "@t3tools/shared/sourceControl";
-import { parseDiffFilePaths } from "@t3tools/source-control-core/server/diffFileRevisions";
+import { isSshRemoteUrl } from "@cod3/shared/sourceControl";
+import { parseDiffFilePaths } from "@cod3/source-control-core/server/diffFileRevisions";
 import * as Cache from "effect/Cache";
 import * as Cause from "effect/Cause";
 import * as Clock from "effect/Clock";
@@ -75,8 +75,8 @@ import {
   type SourceControlProviderInfo,
   SourceControlProviderKind,
   type ThreadPullRequestKey,
-} from "@t3tools/contracts";
-import { resolveProjectSettings } from "@t3tools/shared/projectSettings";
+} from "@cod3/contracts";
+import { resolveProjectSettings } from "@cod3/shared/projectSettings";
 import { sourceControlDefinitions } from "../sourceControl/sourceControlDefinitions.ts";
 
 import * as ProjectService from "../project/ProjectService.ts";
@@ -84,8 +84,8 @@ import * as ServerSettings from "../serverSettings.ts";
 import * as PullRequestFilesViewed from "../persistence/PullRequestFilesViewed.ts";
 import * as RepositoryIdentityResolver from "../project/RepositoryIdentityResolver.ts";
 import * as SourceControlProviderRegistry from "../sourceControl/SourceControlProviderRegistry.ts";
-import type { SourceControlProviderContext } from "@t3tools/source-control-core/server/SourceControlProvider";
-import * as SourceControlRateLimit from "@t3tools/source-control-core/server/SourceControlRateLimit";
+import type { SourceControlProviderContext } from "@cod3/source-control-core/server/SourceControlProvider";
+import * as SourceControlRateLimit from "@cod3/source-control-core/server/SourceControlRateLimit";
 import {
   type ProviderChangeRequest,
   type ProviderChangeRequestDetail,
@@ -98,7 +98,7 @@ import {
   type ProviderChangeRequestWatchFingerprint,
   type PullRequestProviderApi,
   PullRequestProviderError,
-} from "@t3tools/source-control-core/server/PullRequestProvider";
+} from "@cod3/source-control-core/server/PullRequestProvider";
 import * as PullRequestReadCache from "./PullRequestReadCache.ts";
 import * as PullRequestProviderRegistry from "./PullRequestProviderRegistry.ts";
 import * as ViewedFiles from "./pullRequestViewedFiles.ts";
@@ -172,7 +172,7 @@ export type PullRequestError = PullRequestUnavailableError | PullRequestOperatio
 const routingCredential = Context.Reference<{
   readonly credentialFingerprint: string;
   readonly viewer: string;
-} | null>("t3/PullRequestService/routingCredential", { defaultValue: () => null });
+} | null>("cod3/PullRequestService/routingCredential", { defaultValue: () => null });
 const credentialNamespace = Symbol("pullRequestCredentialNamespace");
 type CredentialRef = PullRequestRef & { readonly [credentialNamespace]?: string };
 
@@ -256,7 +256,7 @@ export class PullRequestService extends Context.Service<
     ) => Effect.Effect<PullRequestActivity, PullRequestError>;
     /** Emits when the host reports a change; empty where the host has no event feed. */
     readonly changes: (input: PullRequestRef) => Stream.Stream<void>;
-    /** Whether the project's checkout is on a forge T3 reads change requests from. */
+    /** Whether the project's checkout is on a forge cod3 reads change requests from. */
     readonly servesProject: (projectId: ProjectId) => Effect.Effect<boolean>;
     /** The project as `servesProject` sees it: identity resolved, its forge refined. */
     readonly addressedProject: (
@@ -325,7 +325,7 @@ export class PullRequestService extends Context.Service<
       options?: { readonly notifyReaders?: boolean },
     ) => Effect.Effect<void>;
   }
->()("t3/pullRequest/PullRequestService") {}
+>()("cod3/pullRequest/PullRequestService") {}
 
 const VERDICT_LABELS: Record<PullRequestReviewVerdict, string> = {
   comment: "review",
@@ -386,7 +386,7 @@ interface WorkspaceProjects {
 const sharedProjectReads = Context.Reference<{
   open: boolean;
   readonly reads: Map<string, Effect.Effect<WorkspaceProjects, PullRequestError>>;
-} | null>("t3/PullRequestService/sharedProjectReads", { defaultValue: () => null });
+} | null>("cod3/PullRequestService/sharedProjectReads", { defaultValue: () => null });
 
 interface RepositoryBatch {
   readonly key: string;

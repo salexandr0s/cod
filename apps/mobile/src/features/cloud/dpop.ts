@@ -10,8 +10,8 @@ import { msg } from "gt-react-native";
 
 import { m } from "../../i18n/messages";
 import * as SecureStore from "expo-secure-store";
-import { DpopProof } from "@t3tools/client-runtime/relay";
-import { DpopPublicJwk } from "@t3tools/shared/dpopCommon";
+import { DpopProof } from "@cod3/client-runtime/relay";
+import { DpopPublicJwk } from "@cod3/shared/dpopCommon";
 import * as Layer from "effect/Layer";
 
 export class CloudDpopError extends Schema.TaggedError<CloudDpopError>()("CloudDpopError", {
@@ -75,7 +75,7 @@ export interface DpopProofKeyPair {
   readonly publicJwk: DpopPublicJwk;
 }
 
-const DPOP_PROOF_KEY_STORAGE_KEY = "t3code.cloud.dpop-proof-key";
+const DPOP_PROOF_KEY_STORAGE_KEY = "cod3.cloud.dpop-proof-key";
 
 interface NativeDpopKeys {
   /** A 32-byte private scalar followed by its 65-byte uncompressed public point. */
@@ -88,7 +88,7 @@ interface NativeDpopKeys {
 // Platform crypto: in Hermes, @noble/curves blocks JS for about a second on its first P-256 key.
 // Imported lazily: loading `expo` at module scope breaks Node tests that import this file.
 const nativeDpopKeys = async () =>
-  (await import("expo")).requireNativeModule<NativeDpopKeys>("T3NativeControls");
+  (await import("expo")).requireNativeModule<NativeDpopKeys>("Cod3NativeControls");
 
 function base64UrlToBytes(value: string): Uint8Array {
   return Result.getOrThrow(Base64Url.decode(value));

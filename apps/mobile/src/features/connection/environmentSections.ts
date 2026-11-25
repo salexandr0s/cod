@@ -1,5 +1,5 @@
-import type { EnvironmentId } from "@t3tools/contracts";
-import type { RelayClientEnvironmentRecord } from "@t3tools/contracts/relay";
+import type { EnvironmentId } from "@cod3/contracts";
+import type { RelayClientEnvironmentRecord } from "@cod3/contracts/relay";
 import type { ConnectedEnvironmentSummary } from "../../state/remote-runtime-types";
 
 export interface EnvironmentSectionsInput {

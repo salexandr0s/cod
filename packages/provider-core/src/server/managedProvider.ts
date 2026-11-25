@@ -2,8 +2,8 @@ import {
   DEFAULT_PROVIDER_HEALTH_REFRESH_INTERVAL,
   type ServerProvider,
   ServerSettingsError,
-} from "@t3tools/contracts";
-import { resolveServerBackgroundActivitySettings } from "@t3tools/shared/backgroundActivitySettings";
+} from "@cod3/contracts";
+import { resolveServerBackgroundActivitySettings } from "@cod3/shared/backgroundActivitySettings";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -49,9 +49,12 @@ const FAILED_CHECK_RECHECK_DELAY = "30 seconds";
  * True inside a `checkProvider` whose failure over a ready provider is discarded for a recheck.
  * A provider that also records check results in its own state must leave that failure out of it.
  */
-export const DeferringFailedCheck = Context.Reference<boolean>("t3/provider/DeferringFailedCheck", {
-  defaultValue: () => false,
-});
+export const DeferringFailedCheck = Context.Reference<boolean>(
+  "cod3/provider/DeferringFailedCheck",
+  {
+    defaultValue: () => false,
+  },
+);
 
 export const makeManagedServerProvider = Effect.fn("makeManagedServerProvider")(function* <
   Settings,

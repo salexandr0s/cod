@@ -1,4 +1,4 @@
-import { type EnvironmentContextRecord, resolveEnvironmentMachineKind } from "@t3tools/contracts";
+import { type EnvironmentContextRecord, resolveEnvironmentMachineKind } from "@cod3/contracts";
 
 import { useGT } from "gt-react";
 
@@ -36,7 +36,7 @@ export function EnvironmentContextChip(props: {
         }
       />
       <TooltipPopup side="top">
-        {environment ? gt("T3 Code environment") : gt("Machine not in this app")}
+        {environment ? gt("cod3 environment") : gt("Machine not in this app")}
       </TooltipPopup>
     </Tooltip>
   );

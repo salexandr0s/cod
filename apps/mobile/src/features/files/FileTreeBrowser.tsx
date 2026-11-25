@@ -1,7 +1,7 @@
 import { NativeScrollView } from "../../native/NativeScrollViewMarker";
 import { Button } from "../../components/ui/Button";
 import { LegendList } from "@legendapp/list/react-native";
-import type { ProjectEntry } from "@t3tools/contracts";
+import type { ProjectEntry } from "@cod3/contracts";
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
 import { SymbolView } from "../../components/ui/AppSymbol";
 import { T, useGT } from "gt-react-native";
@@ -83,10 +83,10 @@ const FileTreeRow = function FileTreeRow(props: {
         className={cn(
           "min-w-0 flex-1 text-sm leading-normal",
           props.selected
-            ? "font-t3-bold text-thread-selected-foreground"
+            ? "font-cod3-bold text-thread-selected-foreground"
             : node.ignored
-              ? "font-t3-medium text-foreground-tertiary"
-              : "font-t3-medium text-foreground-secondary",
+              ? "font-cod3-medium text-foreground-tertiary"
+              : "font-cod3-medium text-foreground-secondary",
         )}
         numberOfLines={1}
       >
@@ -151,12 +151,12 @@ export function FileTreeBrowser(props: {
   });
 
   const { revealSelection } = props;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- expands the controlled selection's ancestor directories in the file tree state
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- expands the controlled selection's ancestor directories in the file tree state
   useEffect(() => {
     revealSelection(controlledSelectedPath);
   }, [controlledSelectedPath, revealSelection]);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- requests listings for expanded directories that are not yet loaded or pending
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- requests listings for expanded directories that are not yet loaded or pending
   useEffect(() => {
     const visit = (nodes: ReadonlyArray<FileTreeNode>) => {
       for (const node of nodes) {
@@ -168,7 +168,7 @@ export function FileTreeBrowser(props: {
     visit(tree);
   }, [tree, expandedPaths, onLoadDirectory]);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears the pending selection timer on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears the pending selection timer on unmount
   useEffect(
     () => () => {
       if (pendingSelectionTimeoutRef.current !== null) {
@@ -259,7 +259,7 @@ export function FileTreeBrowser(props: {
         <View className="px-4 py-5">
           {props.error && props.entries.length === 0 ? (
             <>
-              <Text className="text-sm font-t3-bold text-foreground">
+              <Text className="text-sm font-cod3-bold text-foreground">
                 <T>Files unavailable</T>
               </Text>
               <Text
@@ -281,7 +281,7 @@ export function FileTreeBrowser(props: {
             <AppActivityIndicator size="small" />
           ) : (
             <>
-              <Text className="text-sm font-t3-bold text-foreground">
+              <Text className="text-sm font-cod3-bold text-foreground">
                 <T>No files found</T>
               </Text>
               <Text className="mt-1 text-xs leading-normal text-foreground-muted">

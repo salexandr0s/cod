@@ -1,6 +1,6 @@
 import type * as AcpSchema from "effect-acp/compat";
-import type { AcpToolCallState } from "@t3tools/provider-acp/server/runtimeModel";
-import type { AcpAdapterV2SubagentUpdate } from "@t3tools/provider-acp/server/adapter";
+import type { AcpToolCallState } from "@cod3/provider-acp/server/runtimeModel";
+import type { AcpAdapterV2SubagentUpdate } from "@cod3/provider-acp/server/adapter";
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -55,7 +55,7 @@ export function extractDevinSubagentUpdate(
   };
 }
 
-// Devin's plan exit offers several allow_once options in no promised order; T3 never answers with bypass.
+// Devin's plan exit offers several allow_once options in no promised order; cod3 never answers with bypass.
 export function devinAnswerablePermissionOptions(
   request: AcpSchema.RequestPermissionRequest,
 ): ReadonlyArray<AcpSchema.PermissionOption> {

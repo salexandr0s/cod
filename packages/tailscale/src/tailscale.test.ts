@@ -10,7 +10,7 @@ import * as Stream from "effect/Stream";
 import { HttpClient, HttpClientResponse } from "effect/http";
 import * as TestClock from "effect/testing/TestClock";
 import { ChildProcessSpawner } from "effect/process";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import {
   ensureTailscaleServe,
@@ -102,7 +102,7 @@ function layerMockSpawner(
 }
 
 describe("tailscale", () => {
-  it.effect("does not treat a non-T3 response on the HTTPS probe path as reachable", () =>
+  it.effect("does not treat a non-cod3 response on the HTTPS probe path as reachable", () =>
     Effect.gen(function* () {
       for (const [body, status] of [
         ["<!doctype html><title>Other application</title>", 200],
@@ -119,12 +119,12 @@ describe("tailscale", () => {
             ),
           ),
         );
-        assert.isFalse(reachable, `HTTP ${status} without a T3 descriptor`);
+        assert.isFalse(reachable, `HTTP ${status} without a cod3 descriptor`);
       }
     }),
   );
 
-  it.effect("does not treat another T3 server behind the Serve URL as this server", () =>
+  it.effect("does not treat another cod3 server behind the Serve URL as this server", () =>
     Effect.gen(function* () {
       const answer = (environmentId: string) =>
         HttpClient.make((request) =>
@@ -133,7 +133,7 @@ describe("tailscale", () => {
               request,
               Response.json({
                 environmentId,
-                label: "T3 server",
+                label: "cod3 server",
                 platform: { os: "linux", arch: "x64" },
                 serverVersion: "0.1.9",
                 capabilities: { repositoryIdentity: true },
@@ -163,7 +163,7 @@ describe("tailscale", () => {
       Web: {
         "box.tailnet.ts.net:443": {
           Handlers: {
-            "/t3": { Proxy: "http://127.0.0.1:3773" },
+            "/cod3": { Proxy: "http://127.0.0.1:3773" },
             "/dashboard": { Proxy: "http://127.0.0.1:9000" },
           },
         },
@@ -195,9 +195,9 @@ describe("tailscale", () => {
         },
       },
       Services: {
-        "svc:t3": {
+        "svc:cod3": {
           Web: {
-            "t3.tailnet.ts.net:443": { Handlers: { "/": { Proxy: "http://127.0.0.1:3773" } } },
+            "cod3.tailnet.ts.net:443": { Handlers: { "/": { Proxy: "http://127.0.0.1:3773" } } },
           },
         },
       },
@@ -207,7 +207,7 @@ describe("tailscale", () => {
     });
     assert.deepEqual(parseTailscaleServeRoutesTo(status, { host: "127.0.0.1", port: 3773 }), [
       { servePort: 7000 },
-      { servePort: 443, mount: "/t3", host: "box.tailnet.ts.net" },
+      { servePort: 443, mount: "/cod3", host: "box.tailnet.ts.net" },
       // `localhost` and `[::]` can dial either loopback, so they might be another service's.
       ...(
         [
@@ -230,7 +230,7 @@ describe("tailscale", () => {
         host: "box.tailnet.ts.net",
         ...(ambiguous === undefined ? {} : { ambiguous }),
       })),
-      { servePort: 443, mount: "/", host: "t3.tailnet.ts.net", owner: "svc:t3" },
+      { servePort: 443, mount: "/", host: "cod3.tailnet.ts.net", owner: "svc:cod3" },
       { servePort: 9000, ambiguous: "localhost", owner: "foreground" },
     ]);
     assert.deepEqual(
@@ -261,8 +261,8 @@ describe("tailscale", () => {
         "box.tailnet.ts.net:10002": { Handlers: { "/": { Text: "hi" } } },
       },
       Services: {
-        "svc:t3": {
-          Web: { "t3.tailnet.ts.net:10000": { Handlers: { "/": { Proxy: "4003" } } } },
+        "svc:cod3": {
+          Web: { "cod3.tailnet.ts.net:10000": { Handlers: { "/": { Proxy: "4003" } } } },
         },
       },
     });

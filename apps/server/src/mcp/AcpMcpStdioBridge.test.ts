@@ -50,8 +50,8 @@ describe("AcpMcpStdioBridge", () => {
     };
     process.env = {
       ...originalEnvironment,
-      T3_ACP_MCP_ENDPOINT: "http://127.0.0.1:1/mcp",
-      T3_ACP_MCP_AUTHORIZATION: "Bearer bridge-test",
+      COD3_ACP_MCP_ENDPOINT: "http://127.0.0.1:1/mcp",
+      COD3_ACP_MCP_AUTHORIZATION: "Bearer bridge-test",
     };
     const structuredContent = { taskId: "task-1", status: "failed" };
     const explanation = { type: "text", text: "The command failed." };
@@ -98,8 +98,8 @@ describe("AcpMcpStdioBridge", () => {
     };
     process.env = {
       ...originalEnvironment,
-      T3_ACP_MCP_ENDPOINT: "http://127.0.0.1:1/mcp",
-      T3_ACP_MCP_AUTHORIZATION: "Bearer bridge-test",
+      COD3_ACP_MCP_ENDPOINT: "http://127.0.0.1:1/mcp",
+      COD3_ACP_MCP_AUTHORIZATION: "Bearer bridge-test",
     };
     const calls: Array<unknown> = [];
     using _fetch = vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
@@ -423,7 +423,7 @@ describe("AcpMcpStdioBridge", () => {
       const fiber = yield* mcpToolSession({
         endpoint: "http://127.0.0.1:1/mcp",
         authorization: "Bearer bridge-test",
-        clientName: "t3-code-acp-cli",
+        clientName: "cod3-acp-cli",
         fetchImplementation: pendingFetch(started),
       }).pipe(
         Effect.flatMap((session) => session.call("orchestrator_capabilities", {})),
@@ -443,7 +443,7 @@ describe("AcpMcpStdioBridge", () => {
       const result = yield* mcpToolSession({
         endpoint: "http://127.0.0.1:1/mcp",
         authorization: "Bearer bridge-test",
-        clientName: "t3-code-acp-cli",
+        clientName: "cod3-acp-cli",
         fetchImplementation: async (_url, init) => {
           if (init?.method === "DELETE") return new Response(null, { status: 204 });
           const message = JSON.parse(String(init?.body)) as (typeof sent)[number];
@@ -474,11 +474,11 @@ describe("AcpMcpStdioBridge", () => {
 
   it.effect("keeps the server's JSON-RPC error on a failed tool call", () =>
     Effect.gen(function* () {
-      const rpcError = { code: -32602, message: "Tool 't3_feedback' not found" };
+      const rpcError = { code: -32602, message: "Tool 'cod3_feedback' not found" };
       const error = yield* mcpToolSession({
         endpoint: "http://127.0.0.1:1/mcp",
         authorization: "Bearer bridge-test",
-        clientName: "t3-thread-cli",
+        clientName: "cod3-thread-cli",
         fetchImplementation: async (_url, init) => {
           if (init?.method === "DELETE") return new Response(null, { status: 204 });
           const message = JSON.parse(String(init?.body)) as { id?: unknown; method?: string };
@@ -489,7 +489,7 @@ describe("AcpMcpStdioBridge", () => {
           return Response.json({ jsonrpc: "2.0", id: message.id, error: rpcError });
         },
       }).pipe(
-        Effect.flatMap((session) => session.call("t3_feedback", {})),
+        Effect.flatMap((session) => session.call("cod3_feedback", {})),
         Effect.scoped,
         Effect.asVoid,
         Effect.flip,

@@ -1,16 +1,16 @@
-import { threadPullRequestKeyOf } from "@t3tools/client-runtime/thread-pull-requests";
-import { filterComposerPullRequestMatches } from "@t3tools/shared/composerPullRequestMatches";
-import { EnvironmentId, MessageId, ThreadId, type AssistantCitation } from "@t3tools/contracts";
+import { threadPullRequestKeyOf } from "@cod3/client-runtime/thread-pull-requests";
+import { filterComposerPullRequestMatches } from "@cod3/shared/composerPullRequestMatches";
+import { EnvironmentId, MessageId, ThreadId, type AssistantCitation } from "@cod3/contracts";
 import {
   collectAssistantCitations,
   expandAssistantCitationsForProvider,
   serializeAssistantCitation,
-} from "@t3tools/shared/assistantCitations";
+} from "@cod3/shared/assistantCitations";
 import {
   DEFAULT_RESOLVED_KEYBINDINGS,
   compileResolvedKeybindingsConfig,
   mergeWithDefaultKeybindings,
-} from "@t3tools/shared/keybindings";
+} from "@cod3/shared/keybindings";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -349,35 +349,35 @@ describe("filterComposerPullRequestMatches", () => {
       host: "github.com",
       number: 7,
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       updatedAt: "2026-09-01T12:00:00.000Z",
     },
     {
       host: "github.com",
       number: 8987,
       projectId: "project-1",
-      repository: "T3Tools/T3Code",
+      repository: "Cod3Tools/Cod3",
       updatedAt: "2026-09-03T12:00:00.000Z",
     },
     {
       host: "github.com",
       number: 27,
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       updatedAt: "2026-09-02T12:00:00.000Z",
     },
     {
       host: "github.com",
       number: 27,
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       updatedAt: "2026-09-01T13:00:00.000Z",
     },
     {
       host: "github.com",
       number: 70,
       projectId: "project-2",
-      repository: "t3tools/other",
+      repository: "cod3tools/other",
       updatedAt: "2026-09-04T12:00:00.000Z",
     },
   ];
@@ -388,7 +388,7 @@ describe("filterComposerPullRequestMatches", () => {
         keyOf: threadPullRequestKeyOf,
         entries,
         projectId: "project-1",
-        repository: "t3tools/t3code",
+        repository: "cod3tools/cod3",
         query: "7",
         limit: 10,
       }).map((entry) => entry.number),
@@ -400,21 +400,21 @@ describe("filterComposerPullRequestMatches", () => {
       host: "github.com",
       number: 7,
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       updatedAt: "2020-01-01T00:00:00.000Z",
     };
     const newerSubstringMatches = Array.from({ length: 12 }, (_unused, index) => ({
       host: "github.com",
       number: 700 + index,
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       updatedAt: `2026-09-${String(index + 1).padStart(2, "0")}T12:00:00.000Z`,
     }));
     const matches = filterComposerPullRequestMatches({
       keyOf: threadPullRequestKeyOf,
       entries: [...newerSubstringMatches, exact],
       projectId: "project-1",
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       query: "7",
       limit: 10,
     });

@@ -1,6 +1,6 @@
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
 import { useNavigation } from "@react-navigation/native";
-import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
+import type { EnvironmentId, ThreadId } from "@cod3/contracts";
 import {
   htmlRenderFileName,
   htmlRenderFrameHeight,
@@ -8,7 +8,7 @@ import {
   htmlRenderThemeMessage,
   type HtmlRenderReference,
   type HtmlRenderTheme,
-} from "@t3tools/shared/htmlRender";
+} from "@cod3/shared/htmlRender";
 import { T, useGT } from "gt-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Platform, Pressable, View, type ColorValue } from "react-native";
@@ -48,7 +48,7 @@ function postTheme(view: WebView<object> | null, theme: HtmlRenderTheme) {
   );
 }
 
-const OVERFLOW_MESSAGE_TYPE = "t3-html-render-overflow";
+const OVERFLOW_MESSAGE_TYPE = "cod3-html-render-overflow";
 
 const OVERFLOW_SCRIPT = `(function(){var last;function report(){var d=document.documentElement,b=document.body;var x=Math.max(d.scrollWidth,b?b.scrollWidth:0)>window.innerWidth+1,y=Math.max(d.scrollHeight,b?b.scrollHeight:0)>window.innerHeight+1,o=x+","+y;if(o===last)return;last=o;window.ReactNativeWebView.postMessage(JSON.stringify({type:${JSON.stringify(OVERFLOW_MESSAGE_TYPE)},x:x,y:y}));}report();if(window.ResizeObserver){var r=new ResizeObserver(report);r.observe(document.documentElement);if(document.body)r.observe(document.body);}window.addEventListener("resize",report);})();true;`;
 
@@ -91,7 +91,7 @@ export function HtmlRenderWebView(props: {
   const crashes = useRef(0);
   const shownTheme = useRef<HtmlRenderTheme | null>(null);
   const source = { uri: props.uri + htmlRenderThemeFragment(initialTheme) };
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- posts theme changes into the already loaded WebView
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- posts theme changes into the already loaded WebView
   useEffect(() => {
     if (shownTheme.current === null || shownTheme.current === theme) return;
     shownTheme.current = theme;

@@ -2,7 +2,7 @@
 
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -13,7 +13,11 @@ import * as Stream from "effect/Stream";
 import { Command, Flag } from "effect/cli";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
 
-import { BRAND_ASSET_PATHS, DEVELOPMENT_PUBLIC_ICON_OVERRIDES } from "./lib/brand-assets.ts";
+import {
+  BRAND_ASSET_PATHS,
+  DEVELOPMENT_PUBLIC_ICON_OVERRIDES,
+  resolveWebIconOverrides,
+} from "./lib/brand-assets.ts";
 import { encodePngIco, readPngDimensions, WINDOWS_ICON_SIZES } from "./lib/icon-export.ts";
 
 const DESIGN_GENERATION = 26;
@@ -132,7 +136,7 @@ export class IconExportCommandFailedError extends Schema.TaggedError<IconExportC
 export class IconExportToolResolutionError extends Schema.TaggedError<IconExportToolResolutionError>()(
   "IconExportToolResolutionError",
   {
-    reason: Schema.Literals(["configured-invalid", "configured-outdated", "not-found"]),
+    reason: Schema.Literals(["configured-invalid", "not-found"]),
     designGeneration: Schema.Int,
     toolPath: Schema.optional(Schema.String),
     version: Schema.optional(Schema.String),
@@ -142,10 +146,8 @@ export class IconExportToolResolutionError extends Schema.TaggedError<IconExport
     switch (this.reason) {
       case "configured-invalid":
         return `ICON_COMPOSER_TOOL does not point to Icon Composer's export-capable ictool: ${this.toolPath}`;
-      case "configured-outdated":
-        return `ICON_COMPOSER_TOOL points to Icon Composer ${this.version}, but version 2 or newer is required for design generation ${this.designGeneration}.`;
       case "not-found":
-        return `Could not find an Icon Composer 2.x exporter compatible with design generation ${this.designGeneration}. Install a compatible Icon Composer/Xcode or set ICON_COMPOSER_TOOL to Icon Composer.app/Contents/Executables/ictool.`;
+        return `Could not find an Icon Composer exporter compatible with design generation ${this.designGeneration}. Install a compatible Icon Composer/Xcode or set ICON_COMPOSER_TOOL to Icon Composer.app/Contents/Executables/ictool.`;
     }
   }
 }
@@ -419,14 +421,6 @@ const resolveIconComposerTool = Effect.fn("iconExport.resolveIconComposerTool")(
         toolPath: configuredTool,
       });
     }
-    if (!tool.value.supportsDesignGeneration) {
-      return yield* new IconExportToolResolutionError({
-        reason: "configured-outdated",
-        designGeneration: DESIGN_GENERATION,
-        toolPath: configuredTool,
-        version: tool.value.version,
-      });
-    }
     return tool.value;
   }
 
@@ -462,7 +456,6 @@ const resolveIconComposerTool = Effect.fn("iconExport.resolveIconComposerTool")(
   const compatibleTools = probed
     .filter(Option.isSome)
     .map((tool) => tool.value)
-    .filter((tool) => tool.supportsDesignGeneration)
     .sort((left, right) =>
       right.bundleVersion.localeCompare(left.bundleVersion, undefined, { numeric: true }),
     );
@@ -476,7 +469,7 @@ const resolveIconComposerTool = Effect.fn("iconExport.resolveIconComposerTool")(
 });
 
 const renderIcon = Effect.fn("iconExport.renderIcon")(function* (
-  toolPath: string,
+  tool: IconComposerTool,
   sourcePath: string,
   outputPath: string,
   platform: IconPlatform,
@@ -498,13 +491,12 @@ const renderIcon = Effect.fn("iconExport.renderIcon")(function* (
     String(size),
     "--scale",
     "1",
-    "--design-generation",
-    String(DESIGN_GENERATION),
+    ...(tool.supportsDesignGeneration ? ["--design-generation", String(DESIGN_GENERATION)] : []),
   ];
-  const result = yield* runCommand(toolPath, args);
+  const result = yield* runCommand(tool.path, args);
   if (result.exitCode !== 0) {
     return yield* new IconExportCommandFailedError({
-      command: toolPath,
+      command: tool.path,
       argumentCount: args.length,
       exitCode: result.exitCode,
       sourcePath,
@@ -548,7 +540,7 @@ const renderIcon = Effect.fn("iconExport.renderIcon")(function* (
 });
 
 const renderVariant = Effect.fn("iconExport.renderVariant")(function* (
-  toolPath: string,
+  tool: IconComposerTool,
   repositoryRoot: string,
   temporaryDirectory: string,
   variant: IconVariant,
@@ -580,7 +572,7 @@ const renderVariant = Effect.fn("iconExport.renderVariant")(function* (
     if (cached) return cached;
 
     const outputPath = path.join(temporaryDirectory, `${variant.label}-${platform}-${size}.png`);
-    const contents = yield* renderIcon(toolPath, sourcePath, outputPath, platform, size);
+    const contents = yield* renderIcon(tool, sourcePath, outputPath, platform, size);
     renditionCache.set(cacheKey, contents);
     return contents;
   });
@@ -631,7 +623,7 @@ const writeAtomically = Effect.fn("iconExport.writeAtomically")(function* (
   const temporaryPath = yield* fs
     .makeTempFileScoped({
       directory: targetDirectory,
-      prefix: ".t3-icon-export-",
+      prefix: ".cod3-icon-export-",
       suffix: ".tmp",
     })
     .pipe(
@@ -705,7 +697,7 @@ export const exportBrandIcons = Effect.fn("exportBrandIcons")(function* (checkOn
   const tool = yield* resolveIconComposerTool();
   const temporaryDirectory = yield* fs
     .makeTempDirectoryScoped({
-      prefix: "t3-icon-export-",
+      prefix: "cod3-icon-export-",
     })
     .pipe(
       Effect.mapError(
@@ -724,22 +716,20 @@ export const exportBrandIcons = Effect.fn("exportBrandIcons")(function* (checkOn
   const generated = new Map<string, Buffer>();
   for (const variant of ICON_VARIANTS) {
     yield* Console.log(`Rendering ${variant.label} from ${variant.source}...`);
-    const variantAssets = yield* renderVariant(
-      tool.path,
-      repositoryRoot,
-      temporaryDirectory,
-      variant,
-    );
+    const variantAssets = yield* renderVariant(tool, repositoryRoot, temporaryDirectory, variant);
     for (const [relativePath, contents] of variantAssets) {
       generated.set(relativePath, contents);
     }
   }
 
-  for (const override of DEVELOPMENT_PUBLIC_ICON_OVERRIDES) {
+  const marketingIcons = resolveWebIconOverrides("production", "apps/marketing/public").filter(
+    ({ targetRelativePath }) => !targetRelativePath.includes("/icon-"),
+  );
+  for (const override of [...DEVELOPMENT_PUBLIC_ICON_OVERRIDES, ...marketingIcons]) {
     const sourceContents = generated.get(override.sourceRelativePath);
     if (sourceContents === undefined) {
       return yield* Effect.die(
-        new Error(`Generated development web icon is missing: ${override.sourceRelativePath}`),
+        new Error(`Generated web icon is missing: ${override.sourceRelativePath}`),
       );
     }
     generated.set(override.targetRelativePath, sourceContents);

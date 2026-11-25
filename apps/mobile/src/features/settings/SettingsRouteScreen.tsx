@@ -16,10 +16,10 @@ import { ScreenScrollView as ScrollView } from "../../components/ui/ScreenScroll
 import { EmptyState } from "../../components/ui/EmptyState";
 import { useAuth, useUser } from "@clerk/expo";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
-import { use, type ComponentProps } from "react";
+import { Fragment, use, type ComponentProps } from "react";
 import { Platform, View } from "react-native";
 import { useNativeColumnLayoutMetrics } from "../../native/native-layout-metrics";
-import { deriveProjectGroupLabel } from "@t3tools/client-runtime/state/project-grouping";
+import { deriveProjectGroupLabel } from "@cod3/client-runtime/state/project-grouping";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { hasCloudPublicConfig } from "../cloud/publicConfig";
@@ -105,7 +105,7 @@ export function SettingsListScreen(props: {
 type SettingsListRow = ComponentProps<typeof SettingsRow> & { readonly id: string };
 
 interface SettingsListSection {
-  readonly title?: string;
+  readonly title: string;
   readonly rows: readonly SettingsListRow[];
 }
 
@@ -127,7 +127,7 @@ function ConfiguredSettingsRouteScreen() {
         {
           id: "account",
           icon: "person.crop.circle",
-          label: gt("T3 Account"),
+          label: gt("cod3 Account"),
           value: accountLabel,
           disabled: !isLoaded,
           onPress: () => navigation.navigate("SettingsAuth"),
@@ -171,20 +171,17 @@ function SettingsList(props: { readonly connections: readonly SettingsListRow[] 
   // UIKit's scroll-edge material takes the scroll view's own color; like the chat list, match
   // the sidebar's surface so the bar doesn't darken over content at rest.
   // Grouped cards only lift off the screen surface; the drawer is as dark as they are.
-  const listSurface = use(SettingsSidebarContext) ? "bg-drawer" : "bg-screen";
+  const sidebar = use(SettingsSidebarContext);
+  const listSurface = sidebar ? "bg-drawer" : "bg-screen";
   const insets = useSafeAreaInsets();
   // UIKit insets the scroll view by its column's safe area, which this context can report as 0.
   const bottomSafeArea = useNativeColumnLayoutMetrics()?.safeArea.bottom ?? insets.bottom;
   const workspace = useWorkspaceTabs();
   const query = workspace?.state.tabs.settings.query ?? "";
   const overflowRows = useOverflowRows();
-  const indexSections = useSettingsIndexSections();
+  const indexSections = useSettingsIndexSections(props.connections);
   const sections = filterSettingsSections(
-    [
-      { rows: overflowRows },
-      { title: gt("Connections"), rows: props.connections },
-      ...indexSections,
-    ],
+    [...indexSections, { title: gt("Workspace"), rows: overflowRows }],
     query,
     m,
   );
@@ -196,7 +193,7 @@ function SettingsList(props: { readonly connections: readonly SettingsListRow[] 
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         className={`flex-1 ${listSurface}`}
-        contentContainerClassName="gap-4 px-5 pt-4"
+        contentContainerClassName={sidebar ? "gap-5 px-3 pt-3" : "gap-6 px-4 pt-4"}
         contentContainerStyle={{
           // The workspace's clearance keeps the last row above its search field and keyboard.
           paddingBottom:
@@ -207,10 +204,13 @@ function SettingsList(props: { readonly connections: readonly SettingsListRow[] 
         }}
       >
         {sections.length ? (
-          sections.map((section, index) => (
-            <SettingsSection key={section.title ?? `untitled-${index}`} title={section.title}>
-              {section.rows.map(({ id, ...row }) => (
-                <SettingsRow key={id} {...row} />
+          sections.map((section) => (
+            <SettingsSection key={section.title} title={section.title}>
+              {section.rows.map(({ id, ...row }, index) => (
+                <Fragment key={id}>
+                  {index > 0 && !sidebar ? <View className="ms-15 h-px bg-border-subtle" /> : null}
+                  <SettingsRow {...row} />
+                </Fragment>
               ))}
             </SettingsSection>
           ))
@@ -219,6 +219,8 @@ function SettingsList(props: { readonly connections: readonly SettingsListRow[] 
             variant="plain"
             title={gt("No results")}
             detail={gt("No settings match “{query}”.", { query: query.trim() })}
+            actionLabel={gt("Clear search")}
+            onAction={() => workspace?.dispatch({ type: "query", tab: "settings", query: "" })}
           />
         )}
       </ScrollView>
@@ -226,7 +228,7 @@ function SettingsList(props: { readonly connections: readonly SettingsListRow[] 
   );
 }
 
-function useSettingsIndexSections(): SettingsListSection[] {
+function useSettingsIndexSections(connections: readonly SettingsListRow[]): SettingsListSection[] {
   const gt = useGT();
   const { selectedTargets, projectGroups, selectedProjectKey } = useSettingsEnvironmentFilter();
   const noServerTargets = selectedTargets.length === 0;
@@ -256,6 +258,7 @@ function useSettingsIndexSections(): SettingsListSection[] {
   // The same pages and groups as Settings on web, minus what mobile has no setting for.
   return [
     {
+      title: gt("Preferences"),
       rows: [
         page("SettingsOrganization", "gearshape", gt("General")),
         page("SettingsAppearance", "paintbrush", gt("Appearance")),
@@ -292,7 +295,9 @@ function useSettingsIndexSections(): SettingsListSection[] {
         serverPage("SettingsWorktrees", "square.on.square", gt("Worktrees")),
       ],
     },
+    { title: gt("Connections"), rows: connections },
     {
+      title: gt("More"),
       rows: [
         serverPage("SettingsEnvironmentMaintenance", "arrow.clockwise", gt("Maintenance")),
         page("SettingsLabs", "flask", gt("Labs")),

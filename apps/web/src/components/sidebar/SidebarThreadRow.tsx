@@ -1,5 +1,5 @@
 import { useAtomMount } from "@effect/atom-react";
-import { asLaunchingThread } from "@t3tools/client-runtime/state/thread-inbox";
+import { asLaunchingThread } from "@cod3/client-runtime/state/thread-inbox";
 import { ThreadHoverCard, ThreadHoverCardPopup } from "../ThreadHoverCard";
 import { ThreadTerminalStatusButton } from "../ThreadStatusIndicators";
 import { discardComposerDraft } from "../../lib/discardComposerDraft";
@@ -8,7 +8,7 @@ import { contextMenuSourceOf } from "../../contextMenuSource";
 import { requestCustomSnooze } from "../CustomSnoozeDialog";
 import { useSupportsMultiplePullRequests } from "~/hooks/useSupportsMultiplePullRequests";
 import { useDeadlinePassed } from "~/hooks/useDeadline";
-import { resolveThreadCurrentPullRequestLink } from "@t3tools/client-runtime/thread-pull-requests";
+import { resolveThreadCurrentPullRequestLink } from "@cod3/client-runtime/thread-pull-requests";
 import { useDraggable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -16,28 +16,28 @@ import {
   canSnooze,
   hasQueuedTurnStart,
   QUEUED_TURN_START_GRACE_MS,
-} from "@t3tools/client-runtime/state/thread-settled";
-import { formatDiffCount } from "@t3tools/client-runtime/diff-count";
+} from "@cod3/client-runtime/state/thread-settled";
+import { formatDiffCount } from "@cod3/client-runtime/diff-count";
 import {
   resolveSettledThreadTimestamp,
   resolveThreadActivityTimestamp,
-} from "@t3tools/client-runtime/state/thread-sort";
-import { type EnvironmentThreadSearchMatch } from "@t3tools/client-runtime/state/thread-search";
+} from "@cod3/client-runtime/state/thread-sort";
+import { type EnvironmentThreadSearchMatch } from "@cod3/client-runtime/state/thread-search";
 import {
   formatWorkingDurationLabel,
   resolveThreadProviderStack,
-} from "@t3tools/client-runtime/state/models";
-import { scopeThreadRef, scopedThreadKey } from "@t3tools/client-runtime/environment";
-import { toServerClock } from "@t3tools/client-runtime/clock";
+} from "@cod3/client-runtime/state/models";
+import { scopeThreadRef, scopedThreadKey } from "@cod3/client-runtime/environment";
+import { toServerClock } from "@cod3/client-runtime/clock";
 import {
   AuthOrchestrationOperateScope,
   type ContextMenuSource,
   type EnvironmentId,
   type EnvironmentMachineKind,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
-import type { TimestampFormat } from "@t3tools/contracts/settings";
+import type { TimestampFormat } from "@cod3/contracts/settings";
 import {
   AlarmClockIcon,
   AlarmClockOffIcon,
@@ -85,7 +85,7 @@ import { useEnvironmentQuery } from "../../state/query";
 import { readEnvironmentScope, useEnvironmentScope } from "../../state/session";
 import { formatRelativeTime, parseTimestampDate } from "../../timestampFormat";
 import type { SidebarThreadSummary } from "../../types";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
 import { cn } from "~/lib/utils";
 import { textDirection } from "~/textDirection";
 import { EnvironmentMachineIcon } from "../EnvironmentMachineIcon";
@@ -117,7 +117,12 @@ import {
 import { pickSnoozePreset, resolveSnoozePresets, type SnoozePreset } from "../Sidebar.snooze";
 import { useThreadShell } from "../../state/entities";
 import { ProjectFavicon, type ProjectFaviconProject } from "../ProjectFavicon";
-import { ThreadSearchMatchExcerpt } from "../ThreadSearchMatch";
+import type { ThreadSearchMatch } from "@cod3/shared/paletteSearch";
+import {
+  HighlightedSearchText,
+  SearchMatchHintLine,
+  ThreadSearchMatchExcerpt,
+} from "../ThreadSearchMatch";
 import { makeWorkspaceFileDropHandlers } from "../chat/workspaceFileDrop";
 import { ProviderInstanceIcon } from "../chat/ProviderInstanceIcon";
 import { getTriggerDisplayModelName } from "../chat/providerIconUtils";
@@ -607,6 +612,7 @@ type SidebarThreadRowProps = {
   readOpensPullRequestsInRightPanel: () => boolean;
   jumpLabel: string | null;
   environmentLabel: string | null;
+  showEnvironmentInRow?: boolean;
   environmentMachine: EnvironmentMachineKind;
   project: EnvironmentProject | null;
   projectDisplayName: string | null;
@@ -848,6 +854,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                         }
                       : null;
   const isWokeStatus = topStatus?.icon === "woke";
+  const visibleStatusLabel = topStatus?.icon === "done" ? null : topStatus?.label;
 
   const branchMismatch = resolveLocalCheckoutBranchMismatch({
     effectiveEnvMode: thread.worktreePath === null ? "local" : "worktree",
@@ -1016,7 +1023,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
       !props.isActive &&
       "[&:not(:hover):not(:focus-within)_*:not(.live-activity-focus_*)]:text-secondary-label",
     props.isActive
-      ? "bg-sidebar-row-active text-sidebar-foreground light:ring-1 light:ring-inset light:ring-sidebar-border/70"
+      ? "bg-sidebar-row-active text-sidebar-foreground"
       : isSelected || props.sweepAction !== null
         ? "bg-sidebar-row-selected text-sidebar-foreground light:ring-1 light:ring-inset light:ring-sidebar-border/70"
         : hasUnsentDraft
@@ -1083,7 +1090,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
       ref={isRegeneratingTitle ? observeVisibleAnimation : undefined}
       className={cn(
         "min-w-0 flex-1 text-start text-sm transition-opacity motion-reduce:transition-none",
-        shouldRecede ? "font-normal" : "font-medium",
+        props.isActive ? "font-semibold" : shouldRecede ? "font-normal" : "font-medium",
         isRegeneratingTitle
           ? "relative truncate text-muted-foreground"
           : variant !== "slim"
@@ -1260,16 +1267,18 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
   ) : null;
 
   const diff = latestRunDiff(thread);
-  // Only the trailing icons would remain, so the row moves them to the title line instead.
+  const showEnvironment =
+    props.environmentLabel !== null &&
+    (props.showEnvironmentInRow !== false || variant === "folder-multiline");
   const metaLineEmpty =
-    props.environmentLabel === null &&
+    !showEnvironment &&
     prBadge === null &&
     issueBadge === null &&
     diff === null &&
     runningTerminalIds.length === 0;
   const metaLine = metaLineEmpty ? null : (
     <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-secondary-label text-xs">
-      {props.environmentLabel !== null ? (
+      {showEnvironment ? (
         <>
           <EnvironmentMachineIcon
             aria-hidden
@@ -1301,7 +1310,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
       </span>
     </div>
   );
-  const titleLineIcons = metaLineEmpty ? (
+  const inlineProviderStack = metaLineEmpty ? (
     <span aria-hidden className="inline-flex shrink-0 items-center gap-1">
       <SidebarProviderStack
         thread={thread}
@@ -1316,6 +1325,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
     return (
       <li
         data-thread-item={threadKey}
+        data-sidebar-card-height={variant === "slim" ? (metaLineEmpty ? 64 : 82) : undefined}
         {...sortableRootProps}
         {...(fileDropHandlers ?? {})}
         className={cn(
@@ -1342,8 +1352,8 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                   multiline
                     ? "flex flex-col justify-center px-2.5 py-1.5"
                     : "flex h-9 items-center gap-2.5 px-2.5",
-                  // Lines titles up with the folder name, past its chevron and icon.
-                  inFolder && "ps-9",
+                  inFolder &&
+                    "ps-8 before:pointer-events-none before:absolute before:inset-y-0 before:start-4 before:w-px before:bg-sidebar-border",
                 )}
                 onClick={handleClick}
                 onDoubleClick={handleDoubleClick}
@@ -1369,7 +1379,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               )}
               {draftIndicator}
               {title}
-              {multiline ? titleLineIcons : null}
+              {multiline ? inlineProviderStack : null}
               {pinIndicator}
               {multiline ? null : terminalStatusIcon}
               {multiline ? null : issueBadge}
@@ -1430,7 +1440,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                         )}
                       >
                         <TopStatusIcon icon={topStatus.icon} className="size-3" />
-                        {topStatus.label}
+                        {visibleStatusLabel}
                       </span>
                     ) : (
                       <span className="text-xs">
@@ -1557,23 +1567,28 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               metaLineEmpty && "h-auto",
             )}
           >
+            <div className="mb-1 flex min-w-0 items-center gap-1.5">
+              {title}
+              {isRegeneratingTitle ? (
+                <span role="status" className="sr-only">
+                  <T>Regenerating title</T>
+                </span>
+              ) : null}
+            </div>
             <div className="flex h-5 min-w-0 items-center gap-1.5">
               {draftIndicator}
               {props.project ? (
                 <ProjectFavicon project={props.project} className="size-4 shrink-0" />
               ) : null}
-              {/* Left of the status slot, the pin would slide when hover swaps the
-                label for the wider row controls. */}
               {pinIndicator}
               {props.projectDisplayName ? (
-                <span
-                  className={cn("min-w-0 flex-1 truncate font-normal text-secondary-label text-xs")}
-                >
+                <span className="min-w-0 flex-1 truncate text-xs text-secondary-label">
                   {props.projectDisplayName}
                 </span>
               ) : (
                 <span className="flex-1" />
               )}
+              {inlineProviderStack}
               {sortable?.isDragging ? (
                 dragDestination
               ) : (
@@ -1619,7 +1634,13 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                       ) : (
                         <span
                           className={cn(
-                            "inline-flex items-center gap-1 font-medium",
+                            "inline-flex min-w-0 items-center gap-1 font-medium",
+                            (status === "approval" ||
+                              status === "input" ||
+                              status === "request" ||
+                              status === "failed" ||
+                              status === "limited") &&
+                              "rounded-sm bg-current/10 px-1.5",
                             topStatus.className,
                           )}
                         >
@@ -1627,7 +1648,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                           {/* Not a live region: a collapsed sidebar is inert, so
                             BackgroundThreadAnnouncer and the open thread's
                             timeline speak status changes instead. */}
-                          {topStatus.label}
+                          {visibleStatusLabel}
                           {status === "preparing" || status === "working" ? (
                             <span aria-hidden>
                               <WorkingDuration
@@ -1714,15 +1735,6 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               )}
               {props.sweepAction !== null ? dragDestination : null}
             </div>
-            <div className="mt-1 flex min-w-0 items-center gap-1.5">
-              {title}
-              {isRegeneratingTitle ? (
-                <span role="status" className="sr-only">
-                  <T>Regenerating title</T>
-                </span>
-              ) : null}
-              {titleLineIcons}
-            </div>
             {metaLine}
           </div>
         </TooltipTrigger>
@@ -1752,11 +1764,13 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
   project: EnvironmentProject | null;
   projectDisplayName: string | null;
   environmentLabel: string | null;
+  showEnvironmentInRow?: boolean;
   environmentMachine: EnvironmentMachineKind;
   providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
   isHighlighted: boolean;
   isRouteActive: boolean;
   resultId: string;
+  fieldMatch?: ThreadSearchMatch | undefined;
   searchMatch: EnvironmentThreadSearchMatch | null;
   searchQuery: string;
   /** The query `searchMatch` was found for, which lags `searchQuery` while a search runs. */
@@ -1773,6 +1787,9 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
   const messages = useMessages();
   const thread =
     useThreadShell(scopeThreadRef(props.thread.environmentId, props.thread.id)) ?? props.thread;
+  const matchHint = props.fieldMatch?.explain?.();
+  const rowEnvironment = props.showEnvironmentInRow === false ? null : props.environmentLabel;
+  const contextLabel = [props.projectDisplayName, rowEnvironment].filter(Boolean).join(" · ");
   const accessibility = resolveSidebarRowAccessibility({
     title: thread.title,
     statusLabel: null,
@@ -1860,8 +1877,8 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
               tabIndex={-1}
               aria-selected={props.isHighlighted}
               aria-current={accessibility.current}
-              aria-describedby={`${props.resultId}-pr`}
-              aria-label={accessibility.label}
+              aria-describedby={`${props.resultId}-pr ${props.resultId}-detail`}
+              aria-label={[accessibility.label, rowEnvironment].filter(Boolean).join(", ")}
               {...dragListeners}
               onMouseMove={props.onHighlight}
               // Focus stays in the search box, as for Enter. A focused result would lose focus as
@@ -1881,35 +1898,30 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
                 );
               }}
               className={cn(
-                "group/sidebar-row group/v2-row flex min-h-9 w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-1 text-left text-sm outline-none",
-                props.isHighlighted || props.isRouteActive
-                  ? "bg-sidebar-row-active text-sidebar-foreground"
-                  : "text-sidebar-muted-foreground/75 hover:bg-sidebar-row-hover hover:text-sidebar-foreground",
+                "group/sidebar-row group/v2-row relative flex w-full cursor-pointer flex-col gap-0.5 rounded-md px-(--sidebar-row-content-inset) py-2 text-left text-sm outline-none",
+                props.isHighlighted
+                  ? "bg-sidebar-row-selected text-sidebar-foreground forced-colors:outline-1 forced-colors:-outline-offset-1 forced-colors:outline-solid"
+                  : props.isRouteActive
+                    ? "text-sidebar-foreground"
+                    : "text-sidebar-muted-foreground/75 hover:bg-sidebar-row-hover hover:text-sidebar-foreground",
                 isFileDragOver && "ring-1 ring-inset ring-primary/70",
                 isFileDragOver && !props.isRouteActive && "bg-sidebar-row-hover",
               )}
             />
           }
         >
-          {props.project ? (
-            <ProjectFavicon
-              project={props.project}
-              className={cn(
-                "size-4 shrink-0 transition-opacity",
-                props.isSettled &&
-                  !props.isRouteActive &&
-                  !props.isHighlighted &&
-                  "opacity-40 grayscale group-hover/sidebar-row:opacity-100 group-hover/sidebar-row:grayscale-0",
-              )}
-            />
-          ) : null}
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="flex min-w-0 items-center gap-2.5">
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="flex min-w-0 items-center gap-1.5">
               <span
+                dir={textDirection(thread.title)}
                 ref={isRegeneratingTitle ? observeVisibleAnimation : undefined}
                 className={cn(
                   "min-w-0 flex-1 truncate",
-                  props.isSettled ? "font-normal" : "font-medium",
+                  props.isRouteActive
+                    ? "font-semibold [&_mark]:font-bold"
+                    : props.isSettled
+                      ? "font-normal"
+                      : "font-medium",
                   isRegeneratingTitle
                     ? "relative text-muted-foreground"
                     : props.isSettled && !props.isHighlighted && !props.isRouteActive
@@ -1917,7 +1929,11 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
                       : "text-foreground",
                 )}
               >
-                {thread.title}
+                {props.fieldMatch && thread.title === props.thread.title ? (
+                  <HighlightedSearchText text={thread.title} ranges={props.fieldMatch.ranges} />
+                ) : (
+                  thread.title
+                )}
                 {isRegeneratingTitle ? (
                   <ActivityShimmerOverlay className="truncate">
                     {thread.title}
@@ -1932,19 +1948,38 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
                   settled={props.isSettled}
                 />
               </span>
-              <span className="w-8 shrink-0 text-right text-xs text-muted-foreground/55 tabular-nums">
+            </span>
+            <span className="flex min-w-0 items-center gap-1.5 text-xs text-secondary-label">
+              {props.project ? (
+                <ProjectFavicon
+                  project={props.project}
+                  className={cn(
+                    "size-3.5 shrink-0 transition-opacity",
+                    props.isSettled &&
+                      !props.isRouteActive &&
+                      !props.isHighlighted &&
+                      "opacity-40 grayscale group-hover/sidebar-row:opacity-100 group-hover/sidebar-row:grayscale-0",
+                  )}
+                />
+              ) : null}
+              <span className="min-w-0 flex-1 truncate">{contextLabel}</span>
+              <span className="shrink-0 tabular-nums">
                 <RelativeTimeLabel timestamp={resolveThreadActivityTimestamp(thread)} />
               </span>
             </span>
-            {props.searchMatch ? (
-              <ThreadSearchMatchExcerpt
-                match={{
-                  source: props.searchMatch.source,
-                  snippet: props.searchMatch.snippet,
-                  query: props.searchMatchQuery ?? props.searchQuery,
-                }}
-              />
-            ) : null}
+            <span id={`${props.resultId}-detail`} className="contents">
+              {props.searchMatch ? (
+                <ThreadSearchMatchExcerpt
+                  match={{
+                    source: props.searchMatch.source,
+                    snippet: props.searchMatch.snippet,
+                    query: props.searchMatchQuery ?? props.searchQuery,
+                  }}
+                />
+              ) : matchHint ? (
+                <SearchMatchHintLine hint={matchHint} />
+              ) : null}
+            </span>
           </span>
         </TooltipTrigger>
         <SidebarThreadTooltip

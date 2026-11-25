@@ -1,4 +1,4 @@
-import { RelayProtectedError } from "@t3tools/contracts/relay";
+import { RelayProtectedError } from "@cod3/contracts/relay";
 import * as Clock from "effect/Clock";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
@@ -28,7 +28,7 @@ export function relayRequestError(cause: unknown): RelayRequestError {
     ? cause
     : new RelayRequestError({
         rejection: "unavailable",
-        description: `Could not complete the T3 Connect relay request. ${isHttpClientError(cause) ? `The relay request failed (${cause.reason._tag}).` : "The relay returned an unexpected response."} Check this machine's network connection and relay availability, then retry.`,
+        description: `Could not complete the cod3 Connect relay request. ${isHttpClientError(cause) ? `The relay request failed (${cause.reason._tag}).` : "The relay returned an unexpected response."} Check this machine's network connection and relay availability, then retry.`,
       });
 }
 
@@ -62,16 +62,16 @@ export function relayRetryAfterMillis(error: unknown): number | undefined {
 function recoveryHint(error: RelayProtectedError): string {
   switch (error._tag) {
     case "RelayEnvironmentLinkLimitExceededError":
-      return "Unlink an unused environment in T3 Connect, then restart T3 Code on this machine.";
+      return "Unlink an unused environment in cod3 Connect, then restart cod3 on this machine.";
     case "RelayAuthInvalidError":
-      return "Run `t3 connect login` to check this machine's authorization. If the stored credential was revoked, sign out with `t3 connect logout`, then run `t3 connect` again. Restart T3 Code after signing in.";
+      return "Run `cod3 connect login` to check this machine's authorization. If the stored credential was revoked, sign out with `cod3 connect logout`, then run `cod3 connect` again. Restart cod3 after signing in.";
     case "RelayEnvironmentLinkProofInvalidError":
       if (error.reason === "environment_key_mismatch") {
-        return "T3 Connect already has this environment linked with a different key. Unlink it in T3 Connect, then restart T3 Code on this machine.";
+        return "cod3 Connect already has this environment linked with a different key. Unlink it in cod3 Connect, then restart cod3 on this machine.";
       }
-      return "Check this machine's date and time, update T3 Code, then restart it.";
+      return "Check this machine's date and time, update cod3, then restart it.";
     case "RelayEnvironmentLinkProofExpiredError":
-      return "Check this machine's date and time, update T3 Code, then restart it.";
+      return "Check this machine's date and time, update cod3, then restart it.";
     default:
       return "Retry when the relay is available. If this continues, include the trace ID when reporting it.";
   }
@@ -87,8 +87,8 @@ export const filterRelayResponse = Effect.fn("cloud.filter_relay_response")(func
   const ray = response.headers["cf-ray"];
   const requestId = ray && /^[a-zA-Z0-9-]{1,128}$/.test(ray) ? ` Cloudflare Ray ID: ${ray}.` : "";
   const description = Option.isSome(decoded)
-    ? `T3 Connect: ${decoded.value.message}. ${recoveryHint(decoded.value)} Trace ID: ${decoded.value.traceId}.`
-    : `T3 Connect relay returned HTTP ${response.status} without a recognized error response. Check relay access and any proxy or firewall restrictions, then restart T3 Code.${requestId}`;
+    ? `cod3 Connect: ${decoded.value.message}. ${recoveryHint(decoded.value)} Trace ID: ${decoded.value.traceId}.`
+    : `cod3 Connect relay returned HTTP ${response.status} without a recognized error response. Check relay access and any proxy or firewall restrictions, then restart cod3.${requestId}`;
 
   // Only a schema-decoded expired-proof 401 is retryable for clock skew; every other 401 is permanent.
   if (

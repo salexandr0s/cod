@@ -2,8 +2,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import {
   pullRequestChecksRefreshIntervalMs,
   resolvePullRequestDetailChecks,
-} from "@t3tools/client-runtime/pull-request-checks";
-import type { PullRequestDetail } from "@t3tools/contracts";
+} from "@cod3/client-runtime/pull-request-checks";
+import type { PullRequestDetail } from "@cod3/contracts";
 import { useEnvironmentServerConfig } from "../../state/entities";
 import { composerPullRequests } from "../../state/pull-requests";
 import { useEnvironmentQuery } from "../../state/query";

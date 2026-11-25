@@ -13,7 +13,7 @@ import {
   type RuntimeMode,
   type OrchestrationV2ThreadShell,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Cause from "effect/Cause";
@@ -192,7 +192,7 @@ const clientLaunchHarness = (input: {
     Layer.provideMerge(GitVcsDriver.layer),
     Layer.provideMerge(VcsProcess.layer),
     Layer.provideMerge(
-      ServerConfig.layerTest(process.cwd(), { prefix: "t3-client-launch-" }).pipe(
+      ServerConfig.layerTest(process.cwd(), { prefix: "cod3-client-launch-" }).pipe(
         Layer.provide(NodeServices.layer),
       ),
     ),
@@ -237,7 +237,7 @@ it.effect(
           ),
         );
         const result = yield* toolkit
-          .handle("t3_thread_launch", targeted === false ? input : { ...input, projectId })
+          .handle("cod3_thread_launch", targeted === false ? input : { ...input, projectId })
           .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
         return { result: result.at(-1)?.result, launched, projectId, modelSelection };
       });
@@ -249,7 +249,7 @@ it.effect(
       expect(belowCeiling.result).toMatchObject({
         projectId: belowCeiling.projectId,
         modelSelection: belowCeiling.modelSelection,
-        link: `[Fix](t3-thread://v2/environment/${belowCeiling.launched[0]?.threadId})`,
+        link: `[Fix](cod3-thread://v2/environment/${belowCeiling.launched[0]?.threadId})`,
       });
       expect(belowCeiling.launched[0]?.runtimeMode).toBe("approval-required");
       expect(belowCeiling.launched[0]?.initialMessage?.senderThreadId).toBeUndefined();
@@ -276,11 +276,11 @@ it.effect(
 
       const aboveCeiling = yield* launchWith("auto-accept-edits", "full-access", {
         title: "Fix",
-        hostedAppUrl: "https://t3.example.com",
+        hostedAppUrl: "https://cod3.example.com",
       });
       expect(aboveCeiling.launched[0]?.runtimeMode).toBe("auto-accept-edits");
       expect(aboveCeiling.result).toMatchObject({
-        link: `https://t3.example.com/threads/environment/${encodeURIComponent(aboveCeiling.launched[0]?.threadId ?? "")}`,
+        link: `https://cod3.example.com/threads/environment/${encodeURIComponent(aboveCeiling.launched[0]?.threadId ?? "")}`,
       });
 
       const requested = yield* launchWith("full-access", "approval-required", {
@@ -358,7 +358,7 @@ it.effect("a launch steps an inherited mode down to the provider's, and refuses 
         ),
       );
       const result = yield* toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           projectId,
           title: "Fix",
           modelSelection: { instanceId: pi, model: "pi-model" },
@@ -434,7 +434,7 @@ it.effect("a launch with a model its provider does not advertise creates no thre
     );
     const launchWith = (instanceId: string, model: string) =>
       toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           projectId,
           modelSelection: { instanceId: ProviderInstanceId.make(instanceId), model },
@@ -483,7 +483,7 @@ it.effect("a launch retried with the same clientRequestId replays the first one"
     );
     const launch = (clientRequestId: string | undefined) =>
       toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           projectId,
           message: "Fix the bug",
@@ -521,7 +521,7 @@ it.effect("a launch key of any length or content gives a short id and never a de
     );
     const launch = (clientRequestId: string) =>
       toolkit
-        .handle("t3_thread_launch", { title: "Fix", projectId, clientRequestId })
+        .handle("cod3_thread_launch", { title: "Fix", projectId, clientRequestId })
         .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
     // Percent-encoding would grow this six times; scratch folders are named from the id.
@@ -549,7 +549,7 @@ it.effect("a retried launch replays after the project loses its default model", 
       ),
     );
     const launch = toolkit
-      .handle("t3_thread_launch", { title: "Fix", projectId, clientRequestId: "fix-1" })
+      .handle("cod3_thread_launch", { title: "Fix", projectId, clientRequestId: "fix-1" })
       .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
     yield* launch;
@@ -567,7 +567,7 @@ it.effect("a launch binds only an existing checkout that is one of the project's
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const root = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-launch-worktree-" });
+    const root = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-launch-worktree-" });
     const repo = path.join(root, "repo");
     const worktree = path.join(root, "feature");
     const outside = path.join(root, "outside");
@@ -595,7 +595,7 @@ it.effect("a launch binds only an existing checkout that is one of the project's
     );
     const launchInto = (worktreePath: string, clientRequestId?: string) =>
       toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           projectId,
           ...(clientRequestId === undefined ? {} : { clientRequestId }),
@@ -637,7 +637,7 @@ it.effect("a launch into a new worktree creates nothing when its base ref has no
       checkWorktreeBase: ({ projectId, workspaceStrategy }) =>
         workspaceStrategy.type !== "worktree"
           ? Effect.void
-          : workspaceStrategy.baseRef === "t3/renamed"
+          : workspaceStrategy.baseRef === "cod3/renamed"
             ? Effect.fail(
                 new ThreadLaunch.ThreadLaunchBaseRefError({
                   projectId,
@@ -663,7 +663,7 @@ it.effect("a launch into a new worktree creates nothing when its base ref has no
     );
     const launchFrom = (baseRef: string, branch?: string) =>
       toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           projectId,
           workspaceStrategy: {
@@ -675,10 +675,10 @@ it.effect("a launch into a new worktree creates nothing when its base ref has no
         })
         .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
-    const refused = (yield* launchFrom("t3/renamed")).at(-1)?.result;
+    const refused = (yield* launchFrom("cod3/renamed")).at(-1)?.result;
     expect(refused).toMatchObject({ code: "invalid_request" });
     expect((refused as { message: string }).message).toContain(
-      'Base ref "t3/renamed" does not resolve to a commit in project "Client target" (/projects/client-target). No thread was created. Pass a branch, tag, or commit that exists there',
+      'Base ref "cod3/renamed" does not resolve to a commit in project "Client target" (/projects/client-target). No thread was created. Pass a branch, tag, or commit that exists there',
     );
     expect((yield* launchFrom("main", "feature/taken")).at(-1)?.result).toMatchObject({
       code: "invalid_request",
@@ -719,7 +719,7 @@ it.effect("a worktree launch that omits startFromOrigin follows the new-worktree
         ),
       );
       yield* toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           projectId,
           workspaceStrategy: {
@@ -740,8 +740,8 @@ it.effect("a worktree launch that omits startFromOrigin follows the new-worktree
 it.effect("a launch that omits its workspace follows the new-threads-in-a-worktree default", () =>
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
-    for (const source of ["setting", "t3.json"] as const) {
-      const repo = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-launch-env-mode-" });
+    for (const source of ["setting", "cod3.json"] as const) {
+      const repo = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-launch-env-mode-" });
       const launched: Array<ThreadLaunch.ThreadLaunchInput> = [];
       const { projectId, dependencies } = clientLaunchHarness({
         runtimeModeCeiling: "auto",
@@ -756,9 +756,9 @@ it.effect("a launch that omits its workspace follows the new-threads-in-a-worktr
       ]) {
         yield* git.execute({ operation: "test.setupRepo", cwd: repo, args });
       }
-      if (source === "t3.json")
+      if (source === "cod3.json")
         yield* fileSystem.writeFileString(
-          `${repo}/t3.json`,
+          `${repo}/cod3.json`,
           JSON.stringify({ defaultThreadEnvMode: "worktree" }),
         );
       const toolkit = yield* ProjectToolkit.pipe(
@@ -770,7 +770,7 @@ it.effect("a launch that omits its workspace follows the new-threads-in-a-worktr
       );
       for (const workspaceStrategy of [undefined, { type: "root" as const }]) {
         yield* toolkit
-          .handle("t3_thread_launch", {
+          .handle("cod3_thread_launch", {
             title: "Fix",
             projectId,
             ...(workspaceStrategy === undefined ? {} : { workspaceStrategy }),
@@ -796,7 +796,7 @@ it.effect("a defaulted worktree launch stays shared only when Git says HEAD has 
       ["branch tip object missing", "worktree"],
       ["git refuses the repository", "refused"],
     ] as const) {
-      const repo = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-launch-head-" });
+      const repo = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-launch-head-" });
       const launched: Array<ThreadLaunch.ThreadLaunchInput> = [];
       const { projectId, dependencies } = clientLaunchHarness({
         runtimeModeCeiling: "auto",
@@ -834,7 +834,7 @@ it.effect("a defaulted worktree launch stays shared only when Git says HEAD has 
         ),
       );
       const result = (yield* toolkit
-        .handle("t3_thread_launch", { title: "Fix", projectId })
+        .handle("cod3_thread_launch", { title: "Fix", projectId })
         .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies))).at(-1)?.result;
 
       if (expected === "refused") {
@@ -872,7 +872,7 @@ it.effect("a launch into a new worktree creates nothing when its branch collides
       ),
     );
     const refused = (yield* toolkit
-      .handle("t3_thread_launch", {
+      .handle("cod3_thread_launch", {
         title: "Fix",
         projectId,
         workspaceStrategy: { type: "worktree", baseRef: "main", branch: "werkstatt/baseline" },
@@ -905,7 +905,7 @@ it.effect("a launch into an unknown project says the project was not found", () 
       { type: "worktree", baseRef: "main", startFromOrigin: false } as const,
     ]) {
       const result = yield* toolkit
-        .handle("t3_thread_launch", {
+        .handle("cod3_thread_launch", {
           title: "Fix",
           message: "Fix the bug",
           projectId: ProjectId.make("current"),
@@ -947,7 +947,7 @@ it.effect("a retried worktree launch replays after its base ref is gone", () =>
       ),
     );
     const launch = toolkit
-      .handle("t3_thread_launch", {
+      .handle("cod3_thread_launch", {
         title: "Fix",
         projectId,
         clientRequestId: "fix-worktree",
@@ -1002,7 +1002,7 @@ it.effect("a client launches with the fallback for an exhausted default", () =>
       ),
     );
     const result = yield* toolkit
-      .handle("t3_thread_launch", {
+      .handle("cod3_thread_launch", {
         projectId,
         title: "Fallback",
       })
@@ -1011,6 +1011,36 @@ it.effect("a client launches with the fallback for an exhausted default", () =>
       modelSelection: fallbackModel,
     });
     expect(launched[0]?.modelSelection).toEqual(fallbackModel);
+  }),
+);
+
+it.effect("project discovery through MCP returns checkouts without registering them", () =>
+  Effect.gen(function* () {
+    const harness = clientLaunchHarness({ runtimeModeCeiling: "full-access", launched: [] });
+    const result = {
+      workspaceRoot: "/projects",
+      repositories: [{ path: "/projects/feature", name: "feature", linkedWorktree: true }],
+      truncated: false,
+      skipped: 0,
+    };
+    const dependencies = Layer.merge(
+      harness.dependencies,
+      Layer.mock(Project.ProjectService)({
+        discoverProjects: (input) => {
+          expect(input.workspaceRoot).toBe("/projects");
+          return Effect.succeed(result);
+        },
+      }),
+    );
+    const toolkit = yield* ProjectToolkit.pipe(
+      Effect.provide(
+        McpToolAccess.HandlersLayer.layer(ProjectHandlers.layer).pipe(Layer.provide(dependencies)),
+      ),
+    );
+    const response = yield* toolkit
+      .handle("cod3_project_discover", { workspaceRoot: "/projects" })
+      .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
+    expect(response.at(-1)?.result).toEqual(result);
   }),
 );
 
@@ -1030,7 +1060,7 @@ it.effect("creating a project through MCP refuses a model default instead of dro
     );
 
     const refused = yield* toolkit
-      .handle("t3_project_create", {
+      .handle("cod3_project_create", {
         title: "client-target",
         workspaceRoot: "/projects/client-target",
         defaultModelSelection: harness.modelSelection,
@@ -1039,7 +1069,7 @@ it.effect("creating a project through MCP refuses a model default instead of dro
 
     expect(refused.at(-1)?.result).toMatchObject({
       code: "invalid_request",
-      message: expect.stringContaining("t3_project_update"),
+      message: expect.stringContaining("cod3_project_update"),
     });
   }),
 );
@@ -1048,7 +1078,7 @@ it.effect("an agent's clone is not cut off while git is still transferring", () 
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const parent = yield* fs.makeTempDirectoryScoped({ prefix: "t3-mcp-clone-" });
+    const parent = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-mcp-clone-" });
     const destinationPath = path.join(parent, "repo");
     const started = yield* Deferred.make<void>();
     const transferred = yield* Deferred.make<void>();
@@ -1100,7 +1130,7 @@ it.effect("an agent's clone is not cut off while git is still transferring", () 
     );
 
     const clone = yield* toolkit
-      .handle("t3_project_clone", { remoteUrl: "https://example.test/repo.git", destinationPath })
+      .handle("cod3_project_clone", { remoteUrl: "https://example.test/repo.git", destinationPath })
       .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(repositories), Effect.forkChild);
     yield* Deferred.await(started);
     // A large repository over a slow link; agents' MCP calls get a far longer budget.
@@ -1149,7 +1179,7 @@ it.effect("deleting a project through MCP also discards its clone record", () =>
     );
 
     yield* toolkit
-      .handle("t3_project_delete", { projectId: harness.projectId })
+      .handle("cod3_project_delete", { projectId: harness.projectId })
       .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
     expect(discarded).toEqual([harness.projectId]);
@@ -1184,7 +1214,7 @@ it.effect("an agent cannot delete the built-in scratch project, even with force"
     );
 
     const refused = yield* toolkit
-      .handle("t3_project_delete", { projectId: harness.projectId, force: true })
+      .handle("cod3_project_delete", { projectId: harness.projectId, force: true })
       .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
     expect(deleted).toEqual([]);
@@ -1241,7 +1271,7 @@ it.effect("reading a project shows the default model and actions saved in Settin
     );
 
     const read = yield* toolkit
-      .handle("t3_project_read", { projectId: harness.projectId })
+      .handle("cod3_project_read", { projectId: harness.projectId })
       .pipe(Stream.unwrap, Stream.runCollect, Effect.provide(dependencies));
 
     expect(read.at(-1)?.result).toMatchObject({
@@ -1269,7 +1299,7 @@ it.effect("a project update or create that is refused tells the agent why", () =
     );
 
     const refused = yield* toolkit
-      .handle("t3_project_update", {
+      .handle("cod3_project_update", {
         projectId: harness.projectId,
         projectIcon: { kind: "monogram", text: "ABC", color: "blue" },
       })
@@ -1279,7 +1309,7 @@ it.effect("a project update or create that is refused tells the agent why", () =
 
     // A project started from its title has no folder yet for tracked folders to be checked against.
     const dropped = yield* toolkit
-      .handle("t3_project_create", {
+      .handle("cod3_project_create", {
         title: "Wrapper",
         trackedFolders: [{ path: "/repos/api", name: "api" }],
       })

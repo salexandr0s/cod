@@ -1,4 +1,4 @@
-import { expandHomePath } from "@t3tools/provider-core/server/pathExpansion";
+import { expandHomePath } from "@cod3/provider-core/server/pathExpansion";
 import * as NodePath from "@effect/platform-node/NodePath";
 import {
   EDITORS,
@@ -13,10 +13,10 @@ import {
   type EditorId,
   type FileManagerRevealKind,
   type LaunchEditorInput,
-} from "@t3tools/contracts";
-import { resolveEditorCommand } from "@t3tools/shared/editor";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { isCommandAvailable, resolveSpawnCommand } from "@t3tools/shared/shell";
+} from "@cod3/contracts";
+import { resolveEditorCommand } from "@cod3/shared/editor";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { isCommandAvailable, resolveSpawnCommand } from "@cod3/shared/shell";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -41,7 +41,7 @@ export {
   ExternalLauncherUnknownEditorError,
   ExternalLauncherUnsupportedEditorError,
   ExternalLauncherUnsupportedTargetError,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 export type { LaunchEditorInput };
 interface EditorLaunch {
   readonly editor: EditorId;
@@ -525,7 +525,7 @@ export class ExternalLauncher extends Context.Service<
     readonly launchBrowser: (target: string) => Effect.Effect<void, ExternalLauncherError>;
     readonly launchEditor: (input: LaunchEditorInput) => Effect.Effect<void, ExternalLauncherError>;
   }
->()("t3/process/externalLauncher") {}
+>()("cod3/process/externalLauncher") {}
 
 const resolveEditorLaunch = Effect.fn("resolveEditorLaunch")(function* (
   input: LaunchEditorInput,

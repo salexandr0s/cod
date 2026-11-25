@@ -7,7 +7,7 @@ import {
   EnvironmentId,
   SOURCE_CONTROL_MEDIA_ASSET,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { requireNativeModule } from "expo";
 import type {

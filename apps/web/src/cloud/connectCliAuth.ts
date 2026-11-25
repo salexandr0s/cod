@@ -3,8 +3,8 @@ import {
   connectLoopbackRedirectUri,
   CONNECT_OAUTH_SCOPES,
   type ConnectAuthorizeRequest,
-} from "@t3tools/shared/connectAuth";
-import { clerkFrontendApiUrlFromPublishableKey } from "@t3tools/shared/relayAuth";
+} from "@cod3/shared/connectAuth";
+import { clerkFrontendApiUrlFromPublishableKey } from "@cod3/shared/relayAuth";
 
 import { isHostedStaticApp } from "../hostedPairing";
 import { hasCloudPublicConfig, resolveCloudPublicConfig, trimNonEmpty } from "./publicConfig";

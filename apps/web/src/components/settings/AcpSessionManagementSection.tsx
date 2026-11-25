@@ -1,9 +1,9 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import {
   AuthOrchestrationOperateScope,
   AuthProvidersManageScope,
   AuthOrchestrationReadScope,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useEnvironmentScope, readEnvironmentScope } from "~/state/session";
 import type {
   AcpRegistryConfigurableProvider,
@@ -12,12 +12,12 @@ import type {
   ProjectId,
   ProviderInstanceId,
   ServerProvider,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { useLayoutEffect, useRef, useState } from "react";
 import { msg, T, useGT } from "gt-react";
 import { m } from "../../i18n/messages";
@@ -121,7 +121,7 @@ function InstanceSessionManagement(
   const { projectId } = props;
   const projectGeneration = useRef(0);
   const deletionsDuringList = useRef<Set<string> | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Late continuations must not act on a replaced project scope.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Late continuations must not act on a replaced project scope.
   useLayoutEffect(() => {
     return () => {
       projectGeneration.current += 1;
@@ -415,7 +415,7 @@ function InstanceSessionManagement(
     <div className="grid gap-3">
       <SettingsRow
         title={gt("Native sessions")}
-        description={gt("Resume agent-owned conversations as T3 threads.")}
+        description={gt("Resume agent-owned conversations as cod3 threads.")}
         status={
           canList && props.projects.length === 0
             ? gt("Add a project before importing sessions.")

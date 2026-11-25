@@ -10,17 +10,17 @@ import {
   type DeviceSummary,
   type ServerSettings as Settings,
   type SshDeviceHostConfig,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as NetService from "@t3tools/shared/Net";
-import { SshCommandError } from "@t3tools/ssh/errors";
+import * as NetService from "@cod3/shared/Net";
+import { SshCommandError } from "@cod3/ssh/errors";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Deferred from "effect/Deferred";
 import * as Fiber from "effect/Fiber";
 import * as FileSystem from "effect/FileSystem";
-import * as SecretResolver from "@t3tools/secret-provider-core/server/SecretResolver";
+import * as SecretResolver from "@cod3/secret-provider-core/server/SecretResolver";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as PlatformError from "effect/PlatformError";
@@ -38,7 +38,7 @@ import * as ProcessRunner from "../processRunner.ts";
 import * as ServerSettings from "../serverSettings.ts";
 import * as DeviceHost from "./DeviceHost.ts";
 import { makeDeviceHubOperations } from "./DeviceHubOperations.ts";
-import { NodeRuntimeUnavailableError } from "@t3tools/shared/nodeRuntime";
+import { NodeRuntimeUnavailableError } from "@cod3/shared/nodeRuntime";
 
 import * as DeviceService from "./DeviceService.ts";
 import * as SshDeviceHost from "./SshDeviceHost.ts";
@@ -463,7 +463,7 @@ describe("device setup consent", () => {
   it.effect("names the missing npm in the host status when device support cannot install", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
-      const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-device-no-npm-" });
+      const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-device-no-npm-" });
       const installError = yield* ensureDeviceHub(baseDir).pipe(
         Effect.provideService(ProcessRunner.ProcessRunner, {
           run: (input) =>
@@ -505,14 +505,14 @@ describe("device setup consent", () => {
       exitCode: 1,
       stderr: "private diagnostics",
       expected:
-        "Connected over SSH, but this host runs Windows, and SSH device hosts currently need macOS or Linux. To use this machine's devices, run T3 Code on it and connect to that environment.",
+        "Connected over SSH, but this host runs Windows, and SSH device hosts currently need macOS or Linux. To use this machine's devices, run cod3 on it and connect to that environment.",
     },
     {
       name: "a Windows host returning 9009",
       exitCode: 9009,
       stderr: "private diagnostics",
       expected:
-        "Connected over SSH, but this host runs Windows, and SSH device hosts currently need macOS or Linux. To use this machine's devices, run T3 Code on it and connect to that environment.",
+        "Connected over SSH, but this host runs Windows, and SSH device hosts currently need macOS or Linux. To use this machine's devices, run cod3 on it and connect to that environment.",
     },
     {
       name: "missing Node on a Windows host with a POSIX shell",
@@ -754,7 +754,7 @@ it.effect.each([
     exitCode: 255,
     stderr: "Host key verification failed.\r\n",
     reason:
-      "SSH encountered an untrusted host key while connecting to probe.test from the machine running this T3 Code server. Connect once with ssh from there to identify the host and verify its key before accepting it.",
+      "SSH encountered an untrusted host key while connecting to probe.test from the machine running this cod3 server. Connect once with ssh from there to identify the host and verify its key before accepting it.",
   },
   {
     name: "unrecognized SSH failure",
@@ -828,7 +828,7 @@ it.effect.each([
       Layer.mergeAll(
         ServerSettings.layerTest(),
         layerSecretResolver,
-        ServerConfig.layerTest(process.cwd(), { prefix: "t3-device-probe-" }),
+        ServerConfig.layerTest(process.cwd(), { prefix: "cod3-device-probe-" }),
         NodeCrypto.layer,
         NetService.layer,
       ).pipe(Layer.provideMerge(NodeServices.layer)),
@@ -1269,7 +1269,7 @@ it.effect.each(["shutdown", "close"] as const)(
         stopAgent: Effect.void,
         stop: Effect.void,
       };
-      const launchers = new Set(["t3-from-a-previous-run"]);
+      const launchers = new Set(["cod3-from-a-previous-run"]);
       const released: Array<[string, boolean]> = [];
       // Whether the device was still on when each session was released.
       const releasedWhileBooted: Array<boolean> = [];
@@ -1755,7 +1755,7 @@ it.effect("failed manual installation leaves lifecycle state unchanged and can b
 it.effect("reconciles SSH host settings without publishing no-op changes", () =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-device-reconcile-" });
+    const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-device-reconcile-" });
     const settings = yield* ServerSettings.ServerSettingsService;
     // Each change is acknowledged after reconciliation consumed it, so no-ops are observable.
     const changes = yield* Queue.unbounded<{ value: Settings; done: Deferred.Deferred<void> }>();
@@ -1847,12 +1847,15 @@ it.effect("reconciles SSH host settings without publishing no-op changes", () =>
       target: "remote-fixture",
     };
     const added = yield* update([host]);
-    expect(added.hosts.map((entry) => entry.id)).toEqual([LOCAL_DEVICE_HOST_ID, host.id]);
+    expect(added.hosts.map((entry) => entry.id)).toEqual([
+      ...initial.hosts.map((entry) => entry.id),
+      host.id,
+    ]);
     expect(yield* update([{ ...host }])).toEqual(added);
 
     yield* service.setHostStatus(host.id, { status: "failed", detail: "stale" });
     const removed = yield* update([]);
-    expect(removed.hosts.map((entry) => entry.id)).toEqual([LOCAL_DEVICE_HOST_ID]);
+    expect(removed.hosts).toEqual(initial.hosts);
     expect(removed.hostStatuses[host.id]).toBeUndefined();
     expect(removedFiles).toHaveLength(1);
   }).pipe(
@@ -1933,14 +1936,14 @@ it.effect.each(["exit", "missing"] as const)(
       expect(error.message).toBe(
         failure === "exit"
           ? "Device update device tool failed: The device command failed (exit code 243)."
-          : "Device update device tool failed: Device support needs npm, which is not on the T3 server's PATH. Install npm (it comes with Node.js from nodejs.org), restart T3 Code, then retry.",
+          : "Device update device tool failed: Device support needs npm, which is not on the cod3 server's PATH. Install npm (it comes with Node.js from nodejs.org), restart cod3, then retry.",
       );
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
           ServerSettings.layerTest({ enableDeviceSupport: true }),
           layerSecretResolver,
-          ServerConfig.layerTest(process.cwd(), { prefix: "t3-device-update-" }),
+          ServerConfig.layerTest(process.cwd(), { prefix: "cod3-device-update-" }),
           NodeCrypto.layer,
           NetService.layer,
         ).pipe(Layer.provideMerge(NodeServices.layer)),

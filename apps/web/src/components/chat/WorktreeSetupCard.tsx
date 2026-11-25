@@ -1,8 +1,8 @@
 import { T, msg, useGT, useMessages } from "gt-react";
 import { type MessageResolver } from "~/i18n/messages";
-import { type WorktreeSetupSnapshot, type WorktreeSetupStage } from "@t3tools/contracts";
-import { worktreeSetupStageLabel } from "@t3tools/client-runtime/contract-labels";
-import { formatDuration } from "@t3tools/shared/orchestrationTimingCopy";
+import { type WorktreeSetupSnapshot, type WorktreeSetupStage } from "@cod3/contracts";
+import { worktreeSetupStageLabel } from "@cod3/client-runtime/contract-labels";
+import { formatDuration } from "@cod3/shared/orchestrationTimingCopy";
 import {
   CheckIcon,
   CircleAlertIcon,

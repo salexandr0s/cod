@@ -1,4 +1,4 @@
-import { isWebhookDedupeTemplate, scheduledTaskThreadMode } from "@t3tools/contracts";
+import { isWebhookDedupeTemplate, scheduledTaskThreadMode } from "@cod3/contracts";
 import type {
   ModelSelection,
   ServerConfig,
@@ -9,20 +9,20 @@ import type {
   ScheduledTaskUpsertSchedule,
   ScheduledTaskWebhookSignature,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
-import { DEFAULT_SERVER_SETTINGS } from "@t3tools/contracts";
+import { DEFAULT_SERVER_SETTINGS } from "@cod3/contracts";
 import {
   parseMaxDeliveryAge,
   parseWebhookFilterDrafts,
   webhookFilterDrafts,
   webhookFilterDraftsChanged,
   type WebhookFilterDraft,
-} from "@t3tools/client-runtime/scheduled-task-webhook";
+} from "@cod3/client-runtime/scheduled-task-webhook";
 import {
   resolveProjectSettings,
   type LegacyProjectSettingsFields,
-} from "@t3tools/shared/projectSettings";
+} from "@cod3/shared/projectSettings";
 import {
   buildModelOptions,
   resolveDefaultableModelSelection,

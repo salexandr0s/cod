@@ -1,17 +1,17 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { NativeScrollView } from "../../native/NativeScrollViewMarker";
 import { LegendList } from "@legendapp/list/react-native";
 import { useAtomValue } from "@effect/atom-react";
 import { useNavigation, type StaticScreenProps } from "@react-navigation/native";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import {
   emptySelection,
   isSelected,
   changeBatches,
   selectionChanges,
   toggleSelection,
-} from "@t3tools/client-runtime/pull-request-selection";
-import type { PullRequestLabelCandidate } from "@t3tools/contracts";
+} from "@cod3/client-runtime/pull-request-selection";
+import type { PullRequestLabelCandidate } from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { T, useGT } from "gt-react-native";
 import { useEffect, useState } from "react";
@@ -67,7 +67,7 @@ export function PullRequestLabelsScreen({ route }: StaticScreenProps<PullRequest
     `${candidate.name} ${candidate.description ?? ""}`.toLowerCase().includes(needle),
   );
   const latest = result.data?.candidates;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- picks are sent when the sheet leaves the navigation stack, however it is dismissed
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- picks are sent when the sheet leaves the navigation stack, however it is dismissed
   useEffect(
     () =>
       navigation.addListener("beforeRemove", () => {

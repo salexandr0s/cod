@@ -1,10 +1,6 @@
-import { desktopTrackMismatchText } from "@t3tools/client-runtime/state/server";
-import type {
-  DesktopBridge,
-  DesktopUpdateActionResult,
-  DesktopUpdateState,
-} from "@t3tools/contracts";
-import { desktopUpdateChannelOf } from "@t3tools/shared/cliRelease";
+import { desktopTrackMismatchText } from "@cod3/client-runtime/state/server";
+import type { DesktopBridge, DesktopUpdateActionResult, DesktopUpdateState } from "@cod3/contracts";
+import { desktopUpdateChannelOf } from "@cod3/shared/cliRelease";
 import { msg } from "gt-react";
 
 import { m, type MessageResolver } from "../i18n/messages";
@@ -12,7 +8,7 @@ import { channelSwitchLabel } from "./sidebar/updateEverything.logic";
 
 export type DesktopUpdateButtonAction = "download" | "install" | "none";
 
-const DEFAULT_DESKTOP_RELEASE_REPOSITORY = "pingdotgg/t3code";
+const DEFAULT_DESKTOP_RELEASE_REPOSITORY = "salexandr0s/cod";
 const GITHUB_REPOSITORY_SEGMENT = /^[A-Za-z0-9._-]+$/u;
 
 function isValidRepositorySegment(value: string | undefined): value is string {
@@ -38,7 +34,7 @@ export function getDesktopUpdateDownloadedVersion(state: DesktopUpdateState): st
 
 export function getDesktopUpdateReleaseUrl(
   version: string | null,
-  repository: string | undefined = import.meta.env.T3CODE_DESKTOP_UPDATE_REPOSITORY,
+  repository: string | undefined = import.meta.env.COD3_DESKTOP_UPDATE_REPOSITORY,
 ): string | null {
   const normalizedVersion = version?.trim();
   if (!normalizedVersion) return null;
@@ -46,7 +42,7 @@ export function getDesktopUpdateReleaseUrl(
 }
 
 export function getDesktopUpdateReleaseHistoryUrl(
-  repository: string | undefined = import.meta.env.T3CODE_DESKTOP_UPDATE_REPOSITORY,
+  repository: string | undefined = import.meta.env.COD3_DESKTOP_UPDATE_REPOSITORY,
 ): string {
   return desktopReleaseRepositoryUrl(repository);
 }
@@ -93,20 +89,20 @@ export function getArm64IntelBuildWarningDescription(
   if (action === "download") {
     return resolve(
       msg(
-        "This Mac has Apple Silicon, but T3 Code is still running the Intel build under Rosetta. Download the available update to switch to the native Apple Silicon build.",
+        "This Mac has Apple Silicon, but cod3 is still running the Intel build under Rosetta. Download the available update to switch to the native Apple Silicon build.",
       ),
     );
   }
   if (action === "install") {
     return resolve(
       msg(
-        "This Mac has Apple Silicon, but T3 Code is still running the Intel build under Rosetta. Restart to install the downloaded Apple Silicon build.",
+        "This Mac has Apple Silicon, but cod3 is still running the Intel build under Rosetta. Restart to install the downloaded Apple Silicon build.",
       ),
     );
   }
   return resolve(
     msg(
-      "This Mac has Apple Silicon, but T3 Code is still running the Intel build under Rosetta. The next app update will replace it with the native Apple Silicon build.",
+      "This Mac has Apple Silicon, but cod3 is still running the Intel build under Rosetta. The next app update will replace it with the native Apple Silicon build.",
     ),
   );
 }
@@ -203,13 +199,13 @@ export function getDesktopUpdateInstallConfirmationMessage(
   return version
     ? resolve(
         msg(
-          "Install update {version} and restart T3 Code?\n\nAny running tasks will be interrupted. Make sure you're ready before continuing.",
+          "Install update {version} and restart cod3?\n\nAny running tasks will be interrupted. Make sure you're ready before continuing.",
           { version },
         ),
       )
     : resolve(
         msg(
-          "Install update and restart T3 Code?\n\nAny running tasks will be interrupted. Make sure you're ready before continuing.",
+          "Install update and restart cod3?\n\nAny running tasks will be interrupted. Make sure you're ready before continuing.",
         ),
       );
 }

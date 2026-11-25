@@ -3,8 +3,8 @@ import {
   groupWorkflowRuns,
   workflowResultLines,
   type WorkflowBeat,
-} from "@t3tools/client-runtime/workflows";
-import { EnvironmentId, ThreadId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/workflows";
+import { EnvironmentId, ThreadId } from "@cod3/contracts";
 import { StackActions, useNavigation, type StaticScreenProps } from "@react-navigation/native";
 import { useGT } from "gt-react-native";
 import { ScrollView, View } from "react-native";
@@ -84,7 +84,7 @@ export function WorkflowStepSheet({ route }: StaticScreenProps<WorkflowStepParam
                 const lines = workflowResultLines(step.result);
                 return (
                   <View key={step.name} className="gap-1">
-                    <Text className="font-t3-medium text-sm text-foreground">{step.name}</Text>
+                    <Text className="font-cod3-medium text-sm text-foreground">{step.name}</Text>
                     <Facts
                       facts={lines.flatMap((line) =>
                         line.label === null ? [] : [{ label: line.label, value: line.value }],

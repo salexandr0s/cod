@@ -1,16 +1,16 @@
 import { CollapsibleUserMessageBody } from "./CollapsibleUserMessageBody";
 import { msg, T, useGT, useLocale, useMessages } from "gt-react-native";
 import { m } from "../../i18n/messages";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import { toServerClock } from "@t3tools/client-runtime/clock";
-import { formatDuration } from "@t3tools/shared/orchestrationTimingCopy";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import { toServerClock } from "@cod3/client-runtime/clock";
+import { formatDuration } from "@cod3/shared/orchestrationTimingCopy";
 import { Sheet } from "../../components/ui/Sheet";
 import { ListActionRow } from "../../components/ui/ListActionRow";
 import { ListSection } from "../../components/ui/ListSection";
 import { collectMobileAssistantTextSelectors } from "../../lib/assistantCitationSelection";
 import { Button } from "../../components/ui/Button";
 import * as Dialog from "../../components/ui/Dialog";
-import { ASSISTANT_CITATION_MAX_TEXT_LENGTH, type AssistantCitation } from "@t3tools/contracts";
+import { ASSISTANT_CITATION_MAX_TEXT_LENGTH, type AssistantCitation } from "@cod3/contracts";
 import { useOpenPullRequest } from "../../native/useOpenPullRequest";
 import { useWorkspaceSettledContentWidth } from "../layout/workspace-content-width";
 import { useVisibleSecondClock } from "./use-visible-second-clock";
@@ -29,7 +29,7 @@ import {
   enrichedSkillInstructionsPath,
   enrichedSkillReference,
 } from "../../lib/enrichedLinkPresentation";
-import { formatProviderSkillDisplayName } from "@t3tools/shared/inlineSkills";
+import { formatProviderSkillDisplayName } from "@cod3/shared/inlineSkills";
 import {
   ThreadContextDivider,
   ThreadStatusLine,
@@ -57,15 +57,15 @@ import {
 import * as Haptics from "expo-haptics";
 import { KeyboardAwareLegendList } from "@legendapp/list/keyboard";
 import { useViewabilityAmount, type LegendListRef } from "@legendapp/list/react-native";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import type { HandoffEndpoints } from "@t3tools/client-runtime/handoff";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import type { HandoffEndpoints } from "@cod3/client-runtime/handoff";
 import {
   IDLE_COMPACTING_LABELS,
   resolveUserMessageFileCards,
   resolveUserMessagePresentation,
-} from "@t3tools/client-runtime/user-message";
-import { canForkProjectedAssistantItem } from "@t3tools/client-runtime/state/thread-workflows";
-import type { WorkflowOpening } from "@t3tools/client-runtime/state/subagentRuntime";
+} from "@cod3/client-runtime/user-message";
+import { canForkProjectedAssistantItem } from "@cod3/client-runtime/state/thread-workflows";
+import type { WorkflowOpening } from "@cod3/client-runtime/state/subagentRuntime";
 import {
   AuthFilesystemReadScope,
   idleCompactionOf,
@@ -81,43 +81,43 @@ import {
   type RunId,
   type ScheduledTaskId,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
-import type { ToolCallVisibility } from "@t3tools/contracts/settings";
-import { encodeComposerContextFragment } from "@t3tools/shared/composerContextClipboard";
-import { hasThreadLinks, hostedThreadLink, parseThreadLinkHref } from "@t3tools/shared/threadLinks";
-import { PROMPT_LINK_MAX_PROMPT_LENGTH } from "@t3tools/shared/promptLinks";
+} from "@cod3/contracts";
+import type { ToolCallVisibility } from "@cod3/contracts/settings";
+import { encodeComposerContextFragment } from "@cod3/shared/composerContextClipboard";
+import { hasThreadLinks, hostedThreadLink, parseThreadLinkHref } from "@cod3/shared/threadLinks";
+import { PROMPT_LINK_MAX_PROMPT_LENGTH } from "@cod3/shared/promptLinks";
 import {
   parseComposerContextHref,
   collectComposerContextReferences,
   replaceComposerContextReferences,
   formatComposerContextReference,
-} from "@t3tools/shared/composerContextReferences";
+} from "@cod3/shared/composerContextReferences";
 import { ComposerContextSheet } from "../../components/ComposerContextSheet";
 import { writeComposerContextClipboard } from "../../lib/composerContextClipboard";
-import type { CodexArtifactTemplate } from "@t3tools/shared/codexArtifactTemplates";
-import { codexArtifactTemplatePresentationLabel } from "@t3tools/shared/codexArtifactTemplatesCopy";
-import { resolveAssetUrl } from "@t3tools/client-runtime/state/assets";
-import { formatAttachmentSize } from "@t3tools/client-runtime/state/attachments";
+import type { CodexArtifactTemplate } from "@cod3/shared/codexArtifactTemplates";
+import { codexArtifactTemplatePresentationLabel } from "@cod3/shared/codexArtifactTemplatesCopy";
+import { resolveAssetUrl } from "@cod3/client-runtime/state/assets";
+import { formatAttachmentSize } from "@cod3/client-runtime/state/attachments";
 import {
   executeAtomQuery,
   isAtomCommandInterrupted,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { classifyMarkdownImageSource } from "@t3tools/client-runtime/markdown-images";
+} from "@cod3/client-runtime/state/runtime";
+import { classifyMarkdownImageSource } from "@cod3/client-runtime/markdown-images";
 import {
   contextCompactionTokenCounts,
   resolveViewedImageAsset,
-} from "@t3tools/client-runtime/work-log/presentation";
+} from "@cod3/client-runtime/work-log/presentation";
 import {
   renderCodexInlineDirectivesAsMarkdown,
   splitCodexArtifactTemplateMarkdown,
-} from "@t3tools/shared/codexMarkdownDirectives";
-import { CHAT_LIST_ANCHOR_OFFSET, resolveChatListAnchoredEndSpace } from "@t3tools/shared/chatList";
-import { imageMimeType } from "@t3tools/shared/image";
-import { videoMimeType } from "@t3tools/shared/video";
+} from "@cod3/shared/codexMarkdownDirectives";
+import { CHAT_LIST_ANCHOR_OFFSET, resolveChatListAnchoredEndSpace } from "@cod3/shared/chatList";
+import { imageMimeType } from "@cod3/shared/image";
+import { videoMimeType } from "@cod3/shared/video";
 import { SymbolView, type AppSymbolName } from "../../components/ui/AppSymbol";
-import { textDirection } from "@t3tools/shared/textDirection";
+import { textDirection } from "@cod3/shared/textDirection";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { useNativeWorkspaceColumnsSupported } from "../../native/NativeWorkspaceColumns";
 import { useDeviceType } from "../../native/native-layout-metrics";
@@ -269,7 +269,7 @@ import {
 } from "./pending-thread-feed";
 import type { QueuedThreadMessage } from "../../state/thread-outbox-model";
 import { resolveThreadFeedFixedItemSize } from "./thread-feed-item-size";
-import { htmlRenderFrameHeight } from "@t3tools/shared/htmlRender";
+import { htmlRenderFrameHeight } from "@cod3/shared/htmlRender";
 import { htmlRenderRowHeight, ThreadHtmlRender } from "./HtmlRenderWebView";
 import { ThreadMcpApp } from "./McpAppWebView";
 import { assetEnvironment, useAssetUrl, useRefreshAssetUrl } from "../../state/assets";
@@ -284,7 +284,7 @@ import {
   pickWorkspaceLinkMatch,
   WORKSPACE_BASENAME_LOOKUP_LIMIT,
   workspaceLinkLookupQuery,
-} from "@t3tools/client-runtime/workspace-basename-lookup";
+} from "@cod3/client-runtime/workspace-basename-lookup";
 import {
   resolveThreadLink,
   useEnvironmentPreviewTunnelOff,
@@ -868,7 +868,7 @@ function MessageAttachmentFile(props: {
             )}
           </View>
           <View className="min-w-0 flex-1 gap-1">
-            <Text className="font-t3-medium text-sm text-foreground" numberOfLines={2}>
+            <Text className="font-cod3-medium text-sm text-foreground" numberOfLines={2}>
               {attachment.name}
             </Text>
             <Text className="text-xs text-foreground-muted" numberOfLines={1}>
@@ -1276,7 +1276,7 @@ function ArtifactTemplateCard(props: {
         />
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="font-t3-bold text-sm text-foreground" numberOfLines={1}>
+        <Text className="font-cod3-bold text-sm text-foreground" numberOfLines={1}>
           {props.template.displayName}
         </Text>
         <Text className="text-xs text-foreground-muted">
@@ -1518,7 +1518,7 @@ function MarkdownDetailsFold(props: {
           size={12}
           tintColor={iconSubtleColor}
         />
-        <Text className="min-w-0 shrink font-t3-medium text-sm text-foreground">
+        <Text className="min-w-0 shrink font-cod3-medium text-sm text-foreground">
           {props.summary}
         </Text>
       </Pressable>
@@ -1642,7 +1642,7 @@ function AgentMessageFoldHeader(props: {
       />
       <Text
         numberOfLines={1}
-        className="max-w-[50%] shrink-0 font-t3-medium text-sm text-user-bubble-foreground-muted"
+        className="max-w-[50%] shrink-0 font-cod3-medium text-sm text-user-bubble-foreground-muted"
       >
         {label}
       </Text>
@@ -1679,7 +1679,7 @@ function OpenSenderThreadButton(props: {
         })
       }
     >
-      <Text className="font-t3-medium text-xs text-foreground-secondary">
+      <Text className="font-cod3-medium text-xs text-foreground-secondary">
         <T>Open thread</T>
       </Text>
     </Pressable>
@@ -1748,7 +1748,7 @@ function ThreadAutomationMessageRow(props: {
             tintColorClassName="accent-user-bubble-foreground-muted"
             type="monochrome"
           />
-          <Text className="font-t3-medium text-sm text-user-bubble-foreground-muted">
+          <Text className="font-cod3-medium text-sm text-user-bubble-foreground-muted">
             <T>Automation</T>
           </Text>
           <Text numberOfLines={1} className="min-w-0 shrink text-sm text-user-bubble-foreground">
@@ -1786,12 +1786,12 @@ function ThreadAutomationMessageRow(props: {
               hitSlop={6}
               onPress={() => openSettings(navigation, "SettingsScheduledTasks")}
             >
-              <Text className="font-t3-medium text-xs text-foreground-secondary">
+              <Text className="font-cod3-medium text-xs text-foreground-secondary">
                 <T>Open automation</T>
               </Text>
             </Pressable>
           ) : null}
-          <Text className="font-t3-medium text-xs tabular-nums text-foreground-secondary">
+          <Text className="font-cod3-medium text-xs tabular-nums text-foreground-secondary">
             {props.timestampLabel}
           </Text>
           <UserMessageCopyButton
@@ -1805,7 +1805,7 @@ function ThreadAutomationMessageRow(props: {
   );
 }
 
-/** Leads with why T3 Code compacted, when it did so without being asked. */
+/** Leads with why cod3 compacted, when it did so without being asked. */
 function compactionLabel(
   label: string,
   title: string | undefined,
@@ -1846,7 +1846,7 @@ function RunFoldWorking(props: {
       <Text
         key={props.rowSizing.textSizeKey}
         numberOfLines={1}
-        className="shrink font-t3-medium text-sm tabular-nums text-foreground-muted"
+        className="shrink font-cod3-medium text-sm tabular-nums text-foreground-muted"
       >
         {gt("Working for {duration}", {
           duration:
@@ -1891,7 +1891,7 @@ function RunFoldButton({
     );
   };
   const loadOnExpand = useEffectEvent(load);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Restored expanded folds load their deferred server history on mount.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Restored expanded folds load their deferred server history on mount.
   useEffect(() => {
     if (entry.expanded && anchorsKey && environmentId && threadId) loadOnExpand();
   }, [entry.expanded, anchorsKey, environmentId, threadId]);
@@ -1916,7 +1916,7 @@ function RunFoldButton({
         <Text
           key={rowSizing.textSizeKey}
           numberOfLines={1}
-          className="shrink font-t3-medium text-sm tabular-nums text-foreground-muted"
+          className="shrink font-cod3-medium text-sm tabular-nums text-foreground-muted"
         >
           {entry.label}
           {error ? ` · ${error}` : ""}
@@ -2037,7 +2037,7 @@ function renderFeedEntry(
           <Text
             key={props.workRowSizing.textSizeKey}
             numberOfLines={1}
-            className="shrink font-t3-medium text-sm text-foreground-muted"
+            className="shrink font-cod3-medium text-sm text-foreground-muted"
           >
             {m(msg("Pending", { $context: "message not yet sent" }))}
           </Text>
@@ -2372,9 +2372,9 @@ function renderFeedEntry(
           className={cn("items-end", props.userMessageGrouping.groupedWithNext ? "mb-1" : "mb-2")}
           {...(enterAnimated ? { entering: FadeInDown.duration(220) } : {})}
         >
-          {presentation.attribution === "t3code" ? (
-            <Text className="mb-1 pr-1 font-t3-medium text-2xs text-foreground-muted opacity-60">
-              {m(msg("Sent by T3 Code"))}
+          {presentation.attribution === "cod3" ? (
+            <Text className="mb-1 pr-1 font-cod3-medium text-2xs text-foreground-muted opacity-60">
+              {m(msg("Sent by cod3"))}
             </Text>
           ) : null}
           {presentation.guestName !== undefined ? (
@@ -2575,7 +2575,7 @@ function renderFeedEntry(
                   className="flex-row items-center gap-1"
                 >
                   <SymbolView name="arrow.uturn.forward" size={12} tintColor={iconSubtleColor} />
-                  <Text className="font-t3-medium text-xs text-foreground-secondary">
+                  <Text className="font-cod3-medium text-xs text-foreground-secondary">
                     {intentBadge.label}
                   </Text>
                 </View>
@@ -2585,12 +2585,12 @@ function renderFeedEntry(
                   accessible={false}
                   accessibilityElementsHidden
                   importantForAccessibility="no"
-                  className="font-t3-medium text-xs text-foreground-secondary"
+                  className="font-cod3-medium text-xs text-foreground-secondary"
                 >
                   ·
                 </Text>
               ) : null}
-              <Text className="font-t3-medium text-xs tabular-nums text-foreground-secondary">
+              <Text className="font-cod3-medium text-xs tabular-nums text-foreground-secondary">
                 {entry.pendingMessage &&
                 !entry.acknowledged &&
                 entry.id !== props.pendingFoldMessageId
@@ -2694,7 +2694,7 @@ function renderFeedEntry(
                 sourceTitle={props.threadTitle}
               />
             ) : null}
-            <Text className="font-t3-medium text-xs tabular-nums text-foreground-secondary">
+            <Text className="font-cod3-medium text-xs tabular-nums text-foreground-secondary">
               {timestampLabel}
             </Text>
           </View>
@@ -2752,7 +2752,7 @@ function UserMessageContent(props: UserMessageContentProps) {
   const text = replaceComposerContextReferences(liveText, (ref) => {
     const available = props.context?.records.some((record) => record.contextId === ref.contextId);
     const label = available ? ref.label : gt("{label} (unavailable)", { label: ref.label });
-    return `[${label}](t3-context://v1/${ref.kind}/${ref.contextId})`;
+    return `[${label}](cod3-context://v1/${ref.kind}/${ref.contextId})`;
   });
   const onLinkPress = (href: string) => {
     const reference = parseComposerContextHref(href);
@@ -2937,7 +2937,7 @@ function ThreadFeedPlaceholder(props: {
       }}
     >
       <View className="max-w-[320px] items-center gap-2">
-        <Text className="text-center font-t3-bold text-lg text-foreground">{props.title}</Text>
+        <Text className="text-center font-cod3-bold text-lg text-foreground">{props.title}</Text>
         <Text className="text-center text-sm leading-normal text-foreground-secondary">
           {props.detail}
         </Text>
@@ -3142,7 +3142,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
     props.threadId,
     props.contentPresentation.kind,
   ]);
-  // oxlint-disable-next-line react/exhaustive-effect-dependencies, t3code/no-unreasoned-state-sync -- A scope change (thread or presentation) aborts the pending link lookup opened from the old scope.
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies, cod3/no-unreasoned-state-sync -- A scope change (thread or presentation) aborts the pending link lookup opened from the old scope.
   useLayoutEffect(() => () => markdownLinkRequest.current?.abort(), [markdownLinkScope]);
   const [preview, setPreview] = useState<{
     readonly scope: string;
@@ -3770,7 +3770,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
     );
     handleMetricsChange();
   };
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes to the list's end state to report it to the parent
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes to the list's end state to report it to the parent
   useLayoutEffect(() => {
     const state = listRef.current?.getState();
     if (!state) return;
@@ -3786,7 +3786,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
       for (const stop of stops) stop();
     };
   }, [listRef, handleMetricsChange]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears the landing fallback timer when the feed unmounts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears the landing fallback timer when the feed unmounts
   useEffect(
     () => () => {
       if (landingFallback.current !== null) clearTimeout(landingFallback.current);
@@ -3871,7 +3871,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
     };
   });
   // A jump can unfold a run; keep end maintenance off until its position settles.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- scrolls the native list to the jump target after the commit that rendered its row
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- scrolls the native list to the jump target after the commit that rendered its row
   useEffect(() => {
     if (jumpIndex !== null) return landJump(jumpIndex);
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- Jumping to a different message whose row index is unchanged must still land the jump.
@@ -3925,7 +3925,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
     }
   }
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears copy feedback and disclosure animation timers and frames on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears copy feedback and disclosure animation timers and frames on unmount
   useEffect(
     () => () => {
       if (copyFeedbackTimeoutRef.current) clearTimeout(copyFeedbackTimeoutRef.current);
@@ -4145,7 +4145,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
   const { textSizeKey } = workRowSizing;
   const hasHtmlRenders = presentedFeed.some((entry) => entry.type === "html-render");
   const previousRowGeometry = useRef({ textSizeKey, contentWidth });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears LegendList size caches after the commit that brings new row geometry
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears LegendList size caches after the commit that brings new row geometry
   useLayoutEffect(() => {
     const previous = previousRowGeometry.current;
     if (previous.textSizeKey === textSizeKey && previous.contentWidth === contentWidth) return;
@@ -4278,7 +4278,7 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
           className="flex-1"
           style={splitLayout && viewportWidth > 0 ? { width: viewportWidth } : undefined}
         >
-          {/* oxlint-disable-next-line t3code/require-registered-list-scroll -- ThreadFeedScrollView is passed through the iOS-only spread below; the prop rejects undefined. */}
+          {/* oxlint-disable-next-line cod3/require-registered-list-scroll -- ThreadFeedScrollView is passed through the iOS-only spread below; the prop rejects undefined. */}
           <KeyboardAwareLegendList
             ref={attachList}
             dataKey={feedThreadKey}

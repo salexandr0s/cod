@@ -1,8 +1,8 @@
-import type { ScopedThreadRef } from "@t3tools/contracts";
+import type { ScopedThreadRef } from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { recordVisitForThread } from "~/browserHistoryStore";
 import { readLocalApi } from "~/localApi";
 import { previewEnvironment } from "~/state/preview";

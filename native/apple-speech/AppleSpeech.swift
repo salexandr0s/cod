@@ -1,6 +1,6 @@
-// t3-apple-speech available                      -> {"value":"en-US,fr-FR,..."}
-// t3-apple-speech prepare <locale>               -> {"value":"en-US"}  (resolved locale)
-// t3-apple-speech transcribe <locale> <wav-path> -> {"value":"..."}    (transcript)
+// cod3-apple-speech available                      -> {"value":"en-US,fr-FR,..."}
+// cod3-apple-speech prepare <locale>               -> {"value":"en-US"}  (resolved locale)
+// cod3-apple-speech transcribe <locale> <wav-path> -> {"value":"..."}    (transcript)
 // Exit codes are consumed by AppleSpeech.ts; failures print one message line to stderr.
 
 import Foundation

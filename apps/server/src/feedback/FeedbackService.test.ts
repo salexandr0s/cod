@@ -12,7 +12,7 @@ import {
   type ServerProvider,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -78,7 +78,7 @@ const turnItems = [
   item(5, { type: "assistant_message", text: "Done in /srv/checkouts/acme-app-7." }),
   item(6, {
     type: "dynamic_tool",
-    toolName: "mcp__t3-code__t3_thread_read",
+    toolName: "mcp__cod3__cod3_thread_read",
     status: "failed",
     startedAt: at(0),
     completedAt: at(1_500),
@@ -100,12 +100,12 @@ const turnItems = [
       item(turn, { type: "assistant_message", text: "z".repeat(2_000) }),
     ),
   ),
-  item(6, { type: "dynamic_tool", toolName: "t3-code.t3_thread_read", status: "running" }),
-  item(5, { type: "dynamic_tool", toolName: "mcp__t3-code__t3_feedback", status: "running" }),
-  item(6, { type: "dynamic_tool", toolName: "mcp__t3-code__t3_feedback", status: "failed" }),
+  item(6, { type: "dynamic_tool", toolName: "cod3.cod3_thread_read", status: "running" }),
+  item(5, { type: "dynamic_tool", toolName: "mcp__cod3__cod3_feedback", status: "running" }),
+  item(6, { type: "dynamic_tool", toolName: "mcp__cod3__cod3_feedback", status: "failed" }),
   // The call making the card in the active run, as Claude names it and as OpenCode 2 does.
-  item(6, { type: "dynamic_tool", toolName: "mcp__t3-code__t3_feedback", status: "running" }),
-  item(6, { type: "dynamic_tool", toolName: "t3-code-thread_1_t3_feedback", status: "running" }),
+  item(6, { type: "dynamic_tool", toolName: "mcp__cod3__cod3_feedback", status: "running" }),
+  item(6, { type: "dynamic_tool", toolName: "cod3-thread_1_cod3_feedback", status: "running" }),
 ];
 
 it("says so when the report asks for more turns than a trace can hold", () => {
@@ -117,7 +117,7 @@ it("says so when the report asks for more turns than a trace can hold", () => {
       turns,
       withText: true,
       sensitive: [],
-      t3Tools: [],
+      cod3Tools: [],
       driverOf: () => undefined,
       submittingRunId: many.at(-1)!.id,
     });
@@ -272,7 +272,7 @@ const harness = Effect.gen(function* () {
       });
     }),
   );
-  const layer = Feedback.layer(() => ["t3_thread_read", "t3_feedback"]).pipe(
+  const layer = Feedback.layer(() => ["cod3_thread_read", "cod3_feedback"]).pipe(
     Layer.provideMerge(Store.layer),
     Layer.provideMerge(
       Layer.mergeAll(
@@ -384,7 +384,7 @@ const approved = (
 
 const input = {
   kind: "bug" as const,
-  subject: "t3_thread_read",
+  subject: "cod3_thread_read",
   expected: "Items for a completed thread.",
   actual: "No items.",
   workaround: "",
@@ -424,7 +424,7 @@ it.effect("scrubs the caller's private values and sends only the event contract"
         cards,
         {
           kind: "other",
-          subject: "mcp__t3-code__t3_thread_read",
+          subject: "mcp__cod3__cod3_thread_read",
           expected: `Reading /srv/checkouts/acme-app-7 on acme/secret-launch as ${NodeOS.userInfo().username}`,
           actual:
             "git@github.com:acme/payments.git in Acme Payments with sk-proj-abcdefghij1234567890",
@@ -436,7 +436,7 @@ it.effect("scrubs the caller's private values and sends only the event contract"
       );
       expect(local).toMatchObject({
         kind: "other",
-        subject: "t3_thread_read",
+        subject: "cod3_thread_read",
         expected: "Reading [redacted] on [redacted] as [redacted]",
         actual: "[redacted] in [redacted] with [redacted]",
         workaround: "x".repeat(300),
@@ -452,14 +452,14 @@ it.effect("scrubs the caller's private values and sends only the event contract"
       expect(closed.conversationTrace).toBeUndefined();
 
       yield* Ref.set(telemetry, true);
-      const sent = yield* feedback.submit({ ...input, subject: "t3 thread show" }, fromThread);
+      const sent = yield* feedback.submit({ ...input, subject: "cod3 thread show" }, fromThread);
       expect("sent" in sent && sent.sent).toBe(true);
       expect(yield* Ref.get(events)).toEqual([
         [
           "agent.feedback",
           {
             kind: "bug",
-            subject: "t3 thread show",
+            subject: "cod3 thread show",
             expected: input.expected,
             actual: input.actual,
             workaround: "",
@@ -485,12 +485,9 @@ it.effect("scrubs the caller's private values and sends only the event contract"
           source: "cli",
         },
       ]);
-      yield* feedback.submit({ ...input, subject: "mcp__t3_code__t3_thread_read" }, fromThread);
-      // Codex's second server, for T3 tools kept out of Code Mode, in both of its forms.
-      for (const subject of [
-        "t3-code-direct.t3_thread_read",
-        "mcp__t3-code-direct__t3_thread_read",
-      ])
+      yield* feedback.submit({ ...input, subject: "mcp__cod3_code__cod3_thread_read" }, fromThread);
+      // Codex's second server, for cod3 tools kept out of Code Mode, in both of its forms.
+      for (const subject of ["cod3-direct.cod3_thread_read", "mcp__cod3-direct__cod3_thread_read"])
         yield* feedback.submit({ ...input, subject }, { source: "cli" });
       expect(
         (yield* listFeedbackReports).map(({ subject, userRequested, sent, threadId }) => ({
@@ -500,12 +497,12 @@ it.effect("scrubs the caller's private values and sends only the event contract"
           threadId,
         })),
       ).toEqual([
-        { subject: "t3_thread_read", userRequested: false, sent: true, threadId: null },
-        { subject: "t3_thread_read", userRequested: false, sent: true, threadId: null },
-        { subject: "t3_thread_read", userRequested: false, sent: true, threadId },
+        { subject: "cod3_thread_read", userRequested: false, sent: true, threadId: null },
+        { subject: "cod3_thread_read", userRequested: false, sent: true, threadId: null },
+        { subject: "cod3_thread_read", userRequested: false, sent: true, threadId },
         { subject: "general", userRequested: false, sent: true, threadId: null },
-        { subject: "t3 thread show", userRequested: false, sent: true, threadId },
-        { subject: "t3_thread_read", userRequested: true, sent: false, threadId },
+        { subject: "cod3 thread show", userRequested: false, sent: true, threadId },
+        { subject: "cod3_thread_read", userRequested: true, sent: false, threadId },
       ]);
     }).pipe(Effect.provide(layer));
   }),
@@ -521,10 +518,10 @@ it.effect(
         const limited = Effect.flip(feedback.submit(input, fromThread)).pipe(
           Effect.map((error) => error._tag),
         );
-        for (const subject of ["", "acme payments roadmap", "mcp__other__t3_thread_read"]) {
+        for (const subject of ["", "acme payments roadmap", "mcp__other__cod3_thread_read"]) {
           const error = yield* Effect.flip(feedback.submit({ ...input, subject }, fromThread));
           expect(error.message).toBe(
-            "Set subject to the exact T3 tool name, the t3 command, or `general`.",
+            "Set subject to the exact cod3 tool name, the cod3 command, or `general`.",
           );
         }
         const refused = (report: Partial<typeof input>, caller: Feedback.FeedbackCaller) =>
@@ -560,7 +557,7 @@ it.effect(
         expect((yield* Effect.flip(feedback.submit(input, fromThread))).message).toBe(
           "This turn already sent 3 agent feedback reports; nothing was sent.",
         );
-        // Outside a turn, such as `t3 feedback`, 10 an hour.
+        // Outside a turn, such as `cod3 feedback`, 10 an hour.
         const fromCli = { source: "cli" as const };
         yield* Effect.replicateEffect(feedback.submit(input, fromCli), 10, { discard: true });
         expect((yield* Effect.flip(feedback.submit(input, fromCli))).message).toBe(
@@ -593,16 +590,16 @@ it.effect("a card holds the outline and the conversation, and sends the one the 
         1, 2, 3, 4, 5,
       ]);
       expect(outline.entries.filter((entry) => entry.turn === 5 && entry.type === "tool")).toEqual([
-        { turn: 5, type: "tool", tool: "t3_thread_read", outcome: "error", durationMs: 1_500 },
+        { turn: 5, type: "tool", tool: "cod3_thread_read", outcome: "error", durationMs: 1_500 },
         { turn: 5, type: "tool", tool: "mcp", outcome: "ok" },
         { turn: 5, type: "tool", tool: "Read", outcome: "ok" },
         { turn: 5, type: "tool", tool: "shell", outcome: "error" },
-        { turn: 5, type: "tool", tool: "t3_thread_read", outcome: "unfinished" },
-        { turn: 5, type: "tool", tool: "t3_feedback", outcome: "error" },
+        { turn: 5, type: "tool", tool: "cod3_thread_read", outcome: "unfinished" },
+        { turn: 5, type: "tool", tool: "cod3_feedback", outcome: "error" },
       ]);
-      expect(outline.entries.filter((entry) => entry.tool === "t3_feedback")).toEqual([
-        { turn: 4, type: "tool", tool: "t3_feedback", outcome: "unfinished" },
-        { turn: 5, type: "tool", tool: "t3_feedback", outcome: "error" },
+      expect(outline.entries.filter((entry) => entry.tool === "cod3_feedback")).toEqual([
+        { turn: 4, type: "tool", tool: "cod3_feedback", outcome: "unfinished" },
+        { turn: 5, type: "tool", tool: "cod3_feedback", outcome: "error" },
       ]);
 
       // The conversation is the same outline with the scrubbed text of its turns, newest kept

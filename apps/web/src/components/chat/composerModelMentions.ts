@@ -1,5 +1,5 @@
-import { rankComposerModelMentions } from "@t3tools/client-runtime/composer-model-mentions";
-import type { ProviderInstanceId } from "@t3tools/contracts";
+import { rankComposerModelMentions } from "@cod3/client-runtime/composer-model-mentions";
+import type { ProviderInstanceId } from "@cod3/contracts";
 
 import { isProviderInstancePickerReady, type ProviderInstanceEntry } from "../../providerInstances";
 import type { ComposerCommandItem } from "./ComposerCommandMenu";

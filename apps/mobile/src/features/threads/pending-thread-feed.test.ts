@@ -6,7 +6,7 @@ import {
   MessageId,
   ProjectId,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type { QueuedThreadMessage } from "../../state/thread-outbox-model";
 import {
   appendAcceptedThreadMessages,
@@ -179,7 +179,7 @@ describe("pending timeline messages", () => {
       path: "src/Checkout.tsx",
     };
     const context = { version: 1 as const, records: [record] };
-    const text = "[Checkout.tsx](t3-context://v1/mention/setup-file)";
+    const text = "[Checkout.tsx](cod3-context://v1/mention/setup-file)";
     const entries = appendPendingThreadMessages([], [], [{ ...pending("context"), text, context }]);
     const entry = entries[0];
     expect(entry?.type).toBe("message");

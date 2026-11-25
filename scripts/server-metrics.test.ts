@@ -226,7 +226,7 @@ describe("loadWarnings", () => {
 
   it("names the worst run", () => {
     expect(loadWarnings("after", loaded(16, [13, 4.5], [14.2, 5]))[0]).toContain(
-      "after ran under heavy load in 2 of 2 runs (load up to 14.2 on 16 CPUs, other node/T3/agent processes up to 5 cores)",
+      "after ran under heavy load in 2 of 2 runs (load up to 14.2 on 16 CPUs, other node/cod3/agent processes up to 5 cores)",
     );
   });
 

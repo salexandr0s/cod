@@ -4,10 +4,13 @@ import {
   type SecretProviderConfig,
   type SecretProviderId,
   type SecretProviderKind,
-} from "@t3tools/contracts";
-import { builtInSecretProviderDefinitions } from "@t3tools/secret-provider-definitions/registry";
-import { invalidSecretReferenceText } from "@t3tools/client-runtime/secret-request";
-import { hasFeatureFlag } from "@t3tools/client-runtime/state/server";
+} from "@cod3/contracts";
+import { builtInSecretProviderDefinitions } from "@cod3/secret-provider-definitions/registry";
+import {
+  invalidSecretReferenceText,
+  supportedSecretProviderKinds,
+} from "@cod3/client-runtime/secret-request";
+import { hasFeatureFlag } from "@cod3/client-runtime/state/server";
 import { useAtomValue } from "@effect/atom-react";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -40,13 +43,18 @@ const decodeSecretReference = Schema.decodeUnknownOption(SecretReference);
 /** Secret providers a setting can point at; empty when the environment cannot read references. */
 export function useSecretSources(environmentId: EnvironmentId): ReadonlyArray<SecretSource> {
   const providers = useEnvironmentSettings(environmentId, (settings) => settings.secretProviders);
-  const supported = useAtomValue(
-    serverEnvironment.configValueAtom(environmentId),
-    (config) => hasFeatureFlag(config, "secretProviders") && config?.secretReferences === true,
+  const availableKinds = useAtomValue(serverEnvironment.configValueAtom(environmentId), (config) =>
+    hasFeatureFlag(config, "secretProviders") && config?.secretReferences === true
+      ? supportedSecretProviderKinds(config)
+      : null,
   );
-  if (!supported) return NO_SECRET_SOURCES;
+  if (!availableKinds) return NO_SECRET_SOURCES;
   return (Object.entries(providers) as Array<[SecretProviderId, SecretProviderConfig]>)
-    .filter(([, config]) => classifySecretProvider(config).kind !== "unsupported")
+    .filter(
+      ([, config]) =>
+        availableKinds.includes(config.kind) &&
+        classifySecretProvider(config).kind !== "unsupported",
+    )
     .map(([id, config]) => ({ id, kind: config.kind, label: config.label }));
 }
 
@@ -69,18 +77,19 @@ function SourceLabel(props: {
 /** Picks Value (`null`) or one of `sources`; a `value` no longer among them stays listed. */
 export function SecretSourceSelect(props: {
   readonly value: SecretProviderId | null;
-  readonly sources: ReadonlyArray<Pick<SecretSource, "id" | "label">>;
+  readonly sources: ReadonlyArray<SecretSource>;
   readonly label: string;
   readonly disabled?: boolean;
   readonly onValueChange: (provider: SecretProviderId | null) => void;
 }) {
   const gt = useGT();
   const { value, sources } = props;
-  const known = value === null || sources.some((source) => source.id === value);
+  const selected = sources.find((source) => source.id === value);
+  const known = value === null || selected !== undefined;
   const title =
     value === null
       ? gt("Value", { $context: "secret source: a value typed in directly" })
-      : (sources.find((source) => source.id === value)?.label ?? value);
+      : (selected?.label ?? value);
   return (
     <Select
       value={value ?? STORED_VALUE}
@@ -98,7 +107,15 @@ export function SecretSourceSelect(props: {
         title={title}
       >
         <SelectValue>
-          <SourceIcon icon={value === null ? TypeIcon : known ? OnePasswordIcon : KeyRoundIcon} />
+          <SourceIcon
+            icon={
+              value === null
+                ? TypeIcon
+                : selected?.kind === "one_password"
+                  ? OnePasswordIcon
+                  : KeyRoundIcon
+            }
+          />
         </SelectValue>
       </SelectTrigger>
       <SelectPopup align="start" alignItemWithTrigger={false}>
@@ -110,7 +127,10 @@ export function SecretSourceSelect(props: {
         </SelectItem>
         {sources.map((source) => (
           <SelectItem key={source.id} value={source.id}>
-            <SourceLabel icon={OnePasswordIcon} label={source.label} />
+            <SourceLabel
+              icon={source.kind === "one_password" ? OnePasswordIcon : KeyRoundIcon}
+              label={source.label}
+            />
           </SelectItem>
         ))}
         {known ? null : (

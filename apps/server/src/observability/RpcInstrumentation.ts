@@ -1,4 +1,4 @@
-import { ORCHESTRATION_V2_WS_METHODS, WS_METHODS, type WsRpcGroup } from "@t3tools/contracts";
+import { ORCHESTRATION_V2_WS_METHODS, WS_METHODS, type WsRpcGroup } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -202,6 +202,7 @@ const RPC_AGGREGATES = {
   [WS_METHODS.filesystemBrowse]: "workspace",
   [WS_METHODS.workspaceListFolders]: "workspace",
   [WS_METHODS.workspaceScanFolders]: "workspace",
+  [WS_METHODS.workspaceDiscoverProjects]: "workspace",
   [WS_METHODS.workspaceTaskFolder]: "workspace",
   [WS_METHODS.workspaceAddTaskFolderRepository]: "workspace",
   [WS_METHODS.filesystemGetMetadata]: "workspace",
@@ -285,7 +286,7 @@ const RPC_METHODS_WITH_TRACING_DISABLED: ReadonlySet<string> = new Set([
 
 /** Add after RpcScopeAuthorization to wrap authorization and record rejected calls. */
 export class RpcInstrumentation extends RpcMiddleware.Service<RpcInstrumentation>()(
-  "t3/server/RpcInstrumentation",
+  "cod3/server/RpcInstrumentation",
 ) {}
 
 export const rpcInstrumentationLayer = Layer.succeed(RpcInstrumentation)((effect, { rpc }) => {

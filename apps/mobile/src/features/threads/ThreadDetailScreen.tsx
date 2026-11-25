@@ -1,5 +1,5 @@
 import { ChildThreadApprovals } from "./ChildThreadApprovals";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { useOpenThreadInspector } from "./thread-inspector-navigation";
 import { useSidebarWorkspaceTabs } from "../layout/workspace/useSystemWorkspaceTabBar";
 import { useWorkspaceTabs } from "../layout/workspace/WorkspaceTabsContext";
@@ -7,13 +7,13 @@ import {
   isAtomCommandInterrupted,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { AsyncResult, Atom } from "effect/reactivity";
 import * as Dialog from "../../components/ui/Dialog";
 import { useAtomMount, useAtomValue } from "@effect/atom-react";
 import { mobilePreferencesAtom } from "../../state/preferences";
-import { parseThreadKey, threadKey } from "@t3tools/client-runtime/state/entities";
-import { createThreadVisitTracker } from "@t3tools/client-runtime/state/thread-visits";
+import { parseThreadKey, threadKey } from "@cod3/client-runtime/state/entities";
+import { createThreadVisitTracker } from "@cod3/client-runtime/state/thread-visits";
 import { useChildThreadInputs, useThreadReportedModelSelection } from "../../state/entities";
 import { UsageLimitRecoveryCard } from "./UsageLimitRecoveryCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -22,19 +22,19 @@ import {
   threadWokeAt,
   isThreadWokeUnseen,
   snoozeWakeLabel,
-} from "@t3tools/client-runtime/state/thread-settled";
+} from "@cod3/client-runtime/state/thread-settled";
 import type { WorktreeSetupCardProps } from "./worktree-setup-card";
-import type { ComposerTextPaste } from "../../native/T3ComposerEditor.types";
-import { type EnvironmentConnectionPhase } from "@t3tools/client-runtime/connection";
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import type { HandoffEndpoints } from "@t3tools/client-runtime/handoff";
-import { queuedRunEditBlockedReason } from "@t3tools/client-runtime/queued-run-edit";
+import type { ComposerTextPaste } from "../../native/Cod3ComposerEditor.types";
+import { type EnvironmentConnectionPhase } from "@cod3/client-runtime/connection";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import type { HandoffEndpoints } from "@cod3/client-runtime/handoff";
+import { queuedRunEditBlockedReason } from "@cod3/client-runtime/queued-run-edit";
 import {
   childThreadInputsTitle,
   type CodexFeedbackSubmission,
-} from "@t3tools/client-runtime/state/threads";
+} from "@cod3/client-runtime/state/threads";
 import { useKeyboardScrollToEnd } from "@legendapp/list/keyboard";
-import { resolveProviderSkillsForCwd } from "@t3tools/client-runtime/providerSkills";
+import { resolveProviderSkillsForCwd } from "@cod3/client-runtime/providerSkills";
 import type { LegendListRef } from "@legendapp/list/react-native";
 import { NativeLayoutObserver } from "../../native/NativeLayoutObserver";
 import {
@@ -47,20 +47,20 @@ import type {
   MessageId,
   RuntimeRequestId,
   ScopedThreadRef,
-  ServerConfig as T3ServerConfig,
+  ServerConfig as Cod3ServerConfig,
   UsageLimitsReport,
   RunId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   appendCodexArtifactTemplateUsePrompt,
   type CodexArtifactTemplate,
-} from "@t3tools/shared/codexArtifactTemplates";
+} from "@cod3/shared/codexArtifactTemplates";
 import {
   declinePendingApprovals,
   sendApprovalFeedback,
   type ApprovalResponder,
   type ThreadUserInputQuestion,
-} from "@t3tools/client-runtime/state/thread-requests";
+} from "@cod3/client-runtime/state/thread-requests";
 import { useDeadlinePassed } from "../../lib/clock";
 import {
   BACKGROUND_WORK_STOP_RETRY_AFTER_MS,
@@ -69,17 +69,17 @@ import {
   limitRecoveryOwnsSnooze,
   presentPendingBackgroundWork,
   presentProviderGoal,
-} from "@t3tools/client-runtime/state/thread-execution";
-import { resolveSubagentPillSegment } from "@t3tools/client-runtime/state/thread-subagents";
+} from "@cod3/client-runtime/state/thread-execution";
+import { resolveSubagentPillSegment } from "@cod3/client-runtime/state/thread-subagents";
 import {
   formatModelSelectionEffort,
   type ProviderSubagentStatus,
-} from "@t3tools/client-runtime/state/thread-execution";
-import { formatModelSlugName, resolveSelectableModel } from "@t3tools/shared/model";
-import { isProviderNativeSubagentThread } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/thread-execution";
+import { formatModelSlugName, resolveSelectableModel } from "@cod3/shared/model";
+import { isProviderNativeSubagentThread } from "@cod3/contracts";
 import type { QueuedRunEdit } from "../../state/queued-run-edit";
 import type { FollowUpBehavior } from "../../lib/followUpBehavior";
-import type { ActiveTurnComposerAction } from "@t3tools/client-runtime/state/composer-dispatch";
+import type { ActiveTurnComposerAction } from "@cod3/client-runtime/state/composer-dispatch";
 import * as Haptics from "expo-haptics";
 import {
   useCallback,
@@ -127,7 +127,7 @@ import {
 import { useNativeWorkspaceColumnsSupported } from "../../native/NativeWorkspaceColumns";
 import { useDeviceType, useNativeColumnLayoutMetrics } from "../../native/native-layout-metrics";
 import { useAppearancePreferences } from "../settings/appearance/AppearancePreferencesProvider";
-import { collectProviderUsageLimits } from "@t3tools/shared/usageLimits";
+import { collectProviderUsageLimits } from "@cod3/shared/usageLimits";
 import type { ComposerEditorHandle } from "../../components/ComposerEditor";
 import type { StatusTone } from "../../components/StatusPill";
 import {
@@ -137,8 +137,8 @@ import {
   insertComposerDraftText,
 } from "../../state/use-composer-drafts";
 import { assistantCitationDraftWithinLimit } from "../../lib/composerContext";
-import { serializeAssistantCitation } from "@t3tools/shared/assistantCitations";
-import type { AssistantCitation } from "@t3tools/contracts";
+import { serializeAssistantCitation } from "@cod3/shared/assistantCitations";
+import type { AssistantCitation } from "@cod3/contracts";
 import { RenderErrorBoundary, RenderFailureView } from "../../components/RenderErrorBoundary";
 import {
   ANDROID_READING_MAX_WIDTH,
@@ -172,8 +172,8 @@ import { appAtomRegistry } from "../../state/atom-registry";
 import { threadStreamHaptics } from "./threadStreamHaptics";
 import { useAtomCommand } from "../../state/use-atom-command";
 import { orchestrationEnvironment } from "../../state/orchestration";
-import type { PendingUserInputDraftAnswer } from "@t3tools/client-runtime/state/pending-user-input";
-import type { RunStopPresentation } from "@t3tools/client-runtime/state/thread-execution";
+import type { PendingUserInputDraftAnswer } from "@cod3/client-runtime/state/pending-user-input";
+import type { RunStopPresentation } from "@cod3/client-runtime/state/thread-execution";
 import type {
   PendingApproval,
   PendingUserInput,
@@ -222,8 +222,8 @@ import type { ThreadContentPresentation } from "./threadContentPresentation";
 import { resolveThreadFeedSubmissionAnchor } from "./thread-feed-scroll-position";
 import { useOpenLinkedThread } from "./useOpenLinkedThread";
 import { useGlobalVoiceInput } from "../voice-input/VoiceInputProvider";
-import type { OrchestrationV2ProviderSession } from "@t3tools/contracts";
-import { voiceInputBlocksSubmission } from "@t3tools/client-runtime/voice-input";
+import type { OrchestrationV2ProviderSession } from "@cod3/contracts";
+import { voiceInputBlocksSubmission } from "@cod3/client-runtime/voice-input";
 
 export interface ThreadDetailScreenProps {
   readonly header?: React.ReactNode;
@@ -292,7 +292,7 @@ export interface ThreadDetailScreenProps {
   readonly selectedThreadQueueCount: number;
   readonly queuedMessages: ReadonlyArray<QueuedThreadMessage>;
   readonly dispatchingMessageId: MessageId | null;
-  readonly serverConfig: T3ServerConfig | null;
+  readonly serverConfig: Cod3ServerConfig | null;
   readonly layoutVariant?: LayoutVariant;
   readonly usesAutomaticContentInsets?: boolean;
   readonly onHeaderMaterialVisibilityChange?: (visible: boolean) => void;
@@ -471,7 +471,7 @@ function ThreadDetailBody(
   // Android can lose IME hide callbacks on backgrounding. Quarantine translation on resume unless focused input retained its keyboard.
   const [keyboardStateSuspect, setKeyboardStateSuspect] = useState(false);
   const ownedInputFocusedRef = useRef(false);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes to AppState on Android to mark keyboard state suspect when the app resumes
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes to AppState on Android to mark keyboard state suspect when the app resumes
   useEffect(() => {
     if (Platform.OS !== "android") {
       return;
@@ -485,7 +485,7 @@ function ThreadDetailBody(
       subscription.remove();
     };
   }, []);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears the suspect flag whenever the native keyboard reports a visibility or height change
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears the suspect flag whenever the native keyboard reports a visibility or height change
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- Any native keyboard report clears the suspect flag set when the app resumed.
     setKeyboardStateSuspect(false);
@@ -522,7 +522,7 @@ function ThreadDetailBody(
   const composerEditorRef = props.draftMode?.editorRef ?? defaultComposerEditorRef;
   const isProviderSubagent = isProviderNativeSubagentThread(props.selectedThread.source);
   const editingRunId = props.queuedRunEdit?.runId ?? null;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- focuses the composer editor on the next animation frame when a queued run edit starts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- focuses the composer editor on the next animation frame when a queued run edit starts
   useEffect(() => {
     if (editingRunId === null) return;
     const frame = requestAnimationFrame(() => composerEditorRef.current?.focus());
@@ -628,7 +628,7 @@ function ThreadDetailBody(
   const configLoaded = props.serverConfig !== null;
   const snoozed = configLoaded && effectiveSnoozed(props.selectedThread, { now: lifecycleNow });
   const snoozedUntil = props.selectedThread.snoozedUntil;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- arms a timer that refreshes the lifecycle clock when the thread's snooze expires
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- arms a timer that refreshes the lifecycle clock when the thread's snooze expires
   useEffect(() => {
     if (!snoozed || snoozedUntil === null) return;
     const timer = setTimeout(
@@ -939,7 +939,7 @@ function ThreadDetailBody(
   const loadEarlierForJump = useEffectEvent(() => {
     if (jumpMessageId !== null) historyForJump?.onLoadThrough(jumpMessageId);
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- requests earlier history from the server until the jump target message loads, or ends the jump
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- requests earlier history from the server until the jump target message loads, or ends the jump
   useEffect(() => {
     if (jumpMessageId === null || jumpMessageLoaded || contentPresentationKind !== "ready") return;
     if (historyForJump?.loading) return;
@@ -1207,7 +1207,7 @@ function ThreadDetailBody(
     [userInputCoverageApplies],
   );
   // A jump this thread never reached lets go when it closes.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- aborts the thread scope, clears its timers and ends a pending message jump when the thread changes
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- aborts the thread scope, clears its timers and ends a pending message jump when the thread changes
   useEffect(() => {
     if (threadScope.current.signal.aborted) threadScope.current = new AbortController();
     const scope = threadScope.current;

@@ -25,9 +25,9 @@ import {
   PRIMARY_LOCAL_ENVIRONMENT_ID,
   DesktopTelemetryControlMessage,
   type DesktopTelemetryControlMessage as DesktopTelemetryControlMessageValue,
-} from "@t3tools/contracts";
-import { isRunningDatabaseMigrations } from "@t3tools/shared/databaseMigrationLog";
-import { waitForHttpReady as waitForHttpReadyShared } from "@t3tools/shared/httpReadiness";
+} from "@cod3/contracts";
+import { isRunningDatabaseMigrations } from "@cod3/shared/databaseMigrationLog";
+import { waitForHttpReady as waitForHttpReadyShared } from "@cod3/shared/httpReadiness";
 
 import * as DesktopObservability from "../app/DesktopObservability.ts";
 import * as DesktopTelemetryPublisher from "../telemetry/DesktopTelemetryPublisher.ts";
@@ -50,7 +50,7 @@ export const BACKEND_QUIT_STOP_TIMEOUT = Duration.sum(
   Duration.seconds(2),
 );
 const DEFAULT_BACKEND_OUTPUT_DRAIN_TIMEOUT = Duration.seconds(5);
-const BACKEND_READINESS_PATH = "/.well-known/t3/environment";
+const BACKEND_READINESS_PATH = "/.well-known/cod3/environment";
 // Three restarts without readiness is about 2 s of backoff: past a blip, early enough to help.
 const STARTUP_FAILURE_RESTART_ATTEMPTS = 3;
 const STARTUP_FAILURE_OUTPUT_CHARS = 4_000;
@@ -75,7 +75,7 @@ export type DesktopBackendBootstrapDelivery = "fd3" | "stdin";
 export interface DesktopBackendStartConfig extends BackendProcessContext {
   readonly args: ReadonlyArray<string>;
   readonly env: Record<string, string | undefined>;
-  /** False passes env verbatim, preventing the Windows T3CODE_HOME from leaking into WSL. */
+  /** False passes env verbatim, preventing the Windows COD3_HOME from leaking into WSL. */
   readonly extendEnv: boolean;
   readonly bootstrap: DesktopBackendBootstrapValue;
   readonly bootstrapDelivery: DesktopBackendBootstrapDelivery;
@@ -84,7 +84,7 @@ export interface DesktopBackendStartConfig extends BackendProcessContext {
   readonly preflightFailure: Option.Option<PreflightFailure>;
   readonly runningDistro?: string;
   readonly wslRuntimeId?: string;
-  readonly wslT3Home?: string | null;
+  readonly wslCod3Home?: string | null;
 }
 
 export interface PreflightFailure {
@@ -1007,7 +1007,7 @@ export const makeBackendInstance = Effect.fn("makeBackendInstance")(function* (
               yield* wslEnvironment.pruneRuntimes(
                 config.value.runningDistro,
                 config.value.wslRuntimeId,
-                config.value.wslT3Home ?? null,
+                config.value.wslCod3Home ?? null,
               );
             }
           }),

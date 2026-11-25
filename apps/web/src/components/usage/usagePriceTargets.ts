@@ -1,8 +1,4 @@
-import type {
-  EnvironmentId,
-  ServerSettingsPatch,
-  UsageModelPriceOverride,
-} from "@t3tools/contracts";
+import type { EnvironmentId, ServerSettingsPatch, UsageModelPriceOverride } from "@cod3/contracts";
 import { msg } from "gt-react";
 
 import { m } from "~/i18n/messages";

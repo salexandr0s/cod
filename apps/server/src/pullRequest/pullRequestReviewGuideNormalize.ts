@@ -1,6 +1,6 @@
-import type { PullRequestReviewGuideExcerpt, PullRequestReviewGuideStop } from "@t3tools/contracts";
-import type { ReviewGuideGenerationResult } from "@t3tools/provider-core/server/textGeneration";
-import { unquoteGitPatchPath } from "@t3tools/shared/gitPatchPath";
+import type { PullRequestReviewGuideExcerpt, PullRequestReviewGuideStop } from "@cod3/contracts";
+import type { ReviewGuideGenerationResult } from "@cod3/provider-core/server/textGeneration";
+import { unquoteGitPatchPath } from "@cod3/shared/gitPatchPath";
 
 const MAX_EXCERPT_LINES = 25;
 

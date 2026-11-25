@@ -1,5 +1,5 @@
-import { ASSISTANT_CITATION_MAX_COMMENT_LENGTH, type AssistantCitation } from "@t3tools/contracts";
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+import { ASSISTANT_CITATION_MAX_COMMENT_LENGTH, type AssistantCitation } from "@cod3/contracts";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
 import { useState } from "react";
 import { T, useGT } from "gt-react-native";
 import { Platform, ScrollView, TextInput, View } from "react-native";
@@ -68,7 +68,7 @@ export function AssistantCitationSheet(props: {
           <View className="w-1 rounded-full bg-primary" />
           <Text selectable textRole="body" className="min-w-0 flex-1 text-foreground-muted">
             {contextBefore(citation.prefix)}
-            <Text className="font-t3-medium text-foreground">{citation.text}</Text>
+            <Text className="font-cod3-medium text-foreground">{citation.text}</Text>
             {contextAfter(citation.suffix)}
           </Text>
         </View>

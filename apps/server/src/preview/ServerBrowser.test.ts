@@ -5,7 +5,7 @@ import * as NodeFSP from "node:fs/promises";
 
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import { it } from "@effect/vitest";
 import {
   type BrowserRecordingFrameRate,
@@ -17,7 +17,7 @@ import {
   type PreviewAutomationResizeResult,
   type PreviewAutomationSnapshot,
   type PreviewAutomationStatus,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
@@ -126,9 +126,9 @@ function makeSession(
       if (method === "Page.getFrameTree") return { frameTree: { frame: { id: "main" } } };
       if (method === "Page.createIsolatedWorld") {
         const worldContexts: Record<string, number> = {
-          "t3-preview-viewport": 9,
-          "t3-preview-title": 11,
-          "t3-preview": 1,
+          "cod3-preview-viewport": 9,
+          "cod3-preview-title": 11,
+          "cod3-preview": 1,
         };
         return {
           executionContextId: worldContexts[(input as { worldName: string }).worldName] ?? 7,
@@ -538,7 +538,7 @@ const dependencies = Layer.mergeAll(
   }),
   PreviewAgentActivity.layer,
 ).pipe(
-  Layer.provideMerge(ServerConfig.layerTest(process.cwd(), { prefix: "t3-server-browser-" })),
+  Layer.provideMerge(ServerConfig.layerTest(process.cwd(), { prefix: "cod3-server-browser-" })),
   Layer.provideMerge(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer)),
 );
 const layer = ServerBrowser.layer.pipe(Layer.provideMerge(dependencies));
@@ -1363,7 +1363,7 @@ it.effect.each([{ truncated: false }, { truncated: true }])(
         let stagedPath: string | undefined;
         const download = Promise.withResolvers<{ saveAs: (path: string) => Promise<void> }>();
         const sandbox = NodeVM.createContext({
-          __t3Recorder: {
+          __cod3Recorder: {
             frame: async () => true,
             stop: async () => ({ mimeType: "video/webm", count: 1, bytes }),
             chunk: async () => {

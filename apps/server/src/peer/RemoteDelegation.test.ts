@@ -20,7 +20,7 @@ import {
   type ServerProvider,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { expect, it } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -48,9 +48,9 @@ import { CodexProviderCapabilitiesV2 } from "../orchestration-v2/Adapters/CodexA
 import * as EventSink from "../orchestration-v2/EventSink.ts";
 import * as Orchestrator from "../orchestration-v2/Orchestrator.ts";
 import * as ProjectionStore from "../orchestration-v2/ProjectionStore.ts";
-import type * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+import type * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 import * as ProviderAdapterRegistry from "../orchestration-v2/ProviderAdapterRegistry.ts";
-import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+import * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
 import * as ThreadLaunch from "../orchestration-v2/ThreadLaunchService.ts";
 import * as ThreadManagement from "../orchestration-v2/ThreadManagementService.ts";
 import * as ProviderReplayHarness from "../orchestration-v2/testkit/ProviderReplayHarness.ts";
@@ -587,7 +587,7 @@ const boxToolkitLayer = (thread: BoxThread) => {
     Layer.provide(Layer.mock(GitVcsDriver.GitVcsDriver)({})),
     Layer.provide(Layer.mock(SourceControlRepositoryService.SourceControlRepositoryService)({})),
     Layer.provide(
-      ServerConfig.layerTest(process.cwd(), { prefix: "t3-remote-delegation-box-" }).pipe(
+      ServerConfig.layerTest(process.cwd(), { prefix: "cod3-remote-delegation-box-" }).pipe(
         Layer.provide(NodeServices.layer),
       ),
     ),
@@ -954,7 +954,7 @@ const captureThreadReads = (nativeFetch: typeof globalThis.fetch) => {
       } = JSON.parse(body);
       if (
         rpc.method === "tools/call" &&
-        rpc.params?.name === "t3_thread_read" &&
+        rpc.params?.name === "cod3_thread_read" &&
         rpc.params.arguments !== undefined
       ) {
         reads.push(rpc.params.arguments);
@@ -988,7 +988,7 @@ it.effect("a task delegated to the box wakes the laptop's parent when it ends th
       expect(yield* Ref.get(thread.launched)).toBe(delegated.remoteChild.threadId);
       // Its link opens the thread there, so the parent can mention it like any other.
       expect(delegated.link).toBe(
-        `[Laptop parent](t3-thread://v2/${box.environmentId}/${delegated.remoteChild.threadId})`,
+        `[Laptop parent](cod3-thread://v2/${box.environmentId}/${delegated.remoteChild.threadId})`,
       );
       // ...naming the parent here, so the thread there links back to it.
       expect(yield* Ref.get(thread.delegatedFrom)).toEqual({
@@ -2324,7 +2324,7 @@ it.effect("stopping the parent stops follow-up work on a task there that has its
       });
 
       // The parent sends the thread there a follow-up, which starts a run there as a new task.
-      const sent = yield* a.call("t3_thread_send", {
+      const sent = yield* a.call("cod3_thread_send", {
         environmentId: box.environmentId,
         threadId: delegated.remoteChild.threadId,
         message: "Now run the slow suite too.",
@@ -2387,12 +2387,12 @@ it.effect.each([
         yield* Deferred.succeed(thread.finished, undefined);
         yield* taskResult(a, delegated.taskId);
 
-        const sendFollowUp = a.call("t3_thread_send", {
+        const sendFollowUp = a.call("cod3_thread_send", {
           environmentId: box.environmentId,
           threadId: delegated.remoteChild.threadId,
           message: "Now run the slow suite too.",
         });
-        const sendQueued = a.call("t3_thread_send", {
+        const sendQueued = a.call("cod3_thread_send", {
           environmentId: box.environmentId,
           threadId: delegated.remoteChild.threadId,
           message: "Then the flaky suite.",
@@ -2456,12 +2456,12 @@ it.effect.each([
         yield* Deferred.succeed(thread.finished, undefined);
         yield* taskResult(a, delegated.taskId);
 
-        const followUp = yield* a.call("t3_thread_send", {
+        const followUp = yield* a.call("cod3_thread_send", {
           environmentId: box.environmentId,
           threadId: delegated.remoteChild.threadId,
           message: "Now run the slow suite too.",
         });
-        yield* a.call("t3_thread_send", {
+        yield* a.call("cod3_thread_send", {
           environmentId: box.environmentId,
           threadId: delegated.remoteChild.threadId,
           message: "Then the flaky suite.",
@@ -2534,7 +2534,7 @@ it.effect("a follow-up sent after the parent's own run ended is still a task", (
         ],
       });
 
-      const sent = yield* a.call("t3_thread_send", {
+      const sent = yield* a.call("cod3_thread_send", {
         environmentId: box.environmentId,
         threadId: delegated.remoteChild.threadId,
         message: "Now run the slow suite too.",
@@ -2594,7 +2594,7 @@ it.effect("a delayed Stop acknowledgement leaves a newer Stop owed", () =>
       });
       yield* Deferred.await(thread.stopStarted);
       // Work starts after the first Stop landed there, but before its acknowledgement returns.
-      const sent = yield* a.call("t3_thread_send", {
+      const sent = yield* a.call("cod3_thread_send", {
         environmentId: box.environmentId,
         threadId: delegated.remoteChild.threadId,
         message: "Run another check.",

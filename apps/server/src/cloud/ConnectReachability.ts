@@ -4,8 +4,8 @@ import {
   connectReachabilityHelpUrl,
   type EnvironmentConnectReachability,
   formatConnectReachable,
-} from "@t3tools/contracts";
-import { readTailscaleExitNode, type TailscaleExitNode } from "@t3tools/tailscale";
+} from "@cod3/contracts";
+import { readTailscaleExitNode, type TailscaleExitNode } from "@cod3/tailscale";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -84,21 +84,21 @@ export function classifyReachability(
     fix: string,
     hint: string | null = null,
   ): Unreachable => ({ status: "unreachable", checkedAt, cause, reason, hint, fix });
-  const restart = "Restart T3 Code. If it stays, run `t3 connect` again.";
+  const restart = "Restart cod3. If it stays, run `cod3 connect` again.";
 
   if (!facts.managedTunnelConfigured) {
-    // A running server reads the link `t3 connect` stores only at startup.
+    // A running server reads the link `cod3 connect` stores only at startup.
     return fail(
       "not_linked",
-      "The server has not set up a T3 Connect tunnel.",
-      "Run `t3 connect`, then restart T3 Code so it applies the link.",
+      "The server has not set up a cod3 Connect tunnel.",
+      "Run `cod3 connect`, then restart cod3 so it applies the link.",
     );
   }
   if (connector === null) {
     return fail(
       "connector_not_running",
       "The tunnel client (cloudflared) is not running.",
-      "Restart T3 Code. If it stays down, check the server log for relay client errors.",
+      "Restart cod3. If it stays down, check the server log for relay client errors.",
     );
   }
   const status = endpoint?.kind === "status" ? endpoint.status : null;
@@ -130,8 +130,8 @@ export function classifyReachability(
   if (status === 502) {
     return fail(
       "origin_unreachable",
-      "The tunnel is up, but it cannot reach the T3 server on this machine.",
-      "Restart T3 Code so the tunnel uses the port the server listens on.",
+      "The tunnel is up, but it cannot reach the cod3 server on this machine.",
+      "Restart cod3 so the tunnel uses the port the server listens on.",
     );
   }
   if (endpoint === null || connector.readyConnections === 0) {
@@ -154,15 +154,15 @@ export function classifyReachability(
   if (status === 530 && cloudflareError === "1016") {
     return fail(
       "dns_failed",
-      "The T3 Connect address no longer points to this machine's tunnel (Cloudflare error 1016). T3 Connect may have removed this environment.",
-      "Link this environment again. Turn T3 Connect off and on in Settings > Sharing & access, or run `t3 connect link` and then restart T3 Code.",
+      "The cod3 Connect address no longer points to this machine's tunnel (Cloudflare error 1016). cod3 Connect may have removed this environment.",
+      "Link this environment again. Turn cod3 Connect off and on in Settings > Sharing & access, or run `cod3 connect link` and then restart cod3.",
     );
   }
   if (status !== null) {
     const code = cloudflareError === undefined ? "" : ` (Cloudflare error ${cloudflareError})`;
     return fail(
       "unexpected_response",
-      `The T3 Connect address answered with HTTP ${status}${code}.`,
+      `The cod3 Connect address answered with HTTP ${status}${code}.`,
       restart,
     );
   }
@@ -172,7 +172,7 @@ export function classifyReachability(
     if (endpoint.existsPublicly === true) {
       return fail(
         "dns_failed",
-        "The T3 Connect address resolves in public DNS, but this network's DNS still has an old cached answer that it does not exist.",
+        "The cod3 Connect address resolves in public DNS, but this network's DNS still has an old cached answer that it does not exist.",
         "Wait. The cached answer usually clears within about 30 minutes.",
         exitNodeHint(exitNode),
       );
@@ -180,20 +180,20 @@ export function classifyReachability(
     if (endpoint.existsPublicly === false) {
       return fail(
         "dns_failed",
-        "The T3 Connect address is missing from public DNS. The relay did not publish it.",
+        "The cod3 Connect address is missing from public DNS. The relay did not publish it.",
         restart,
       );
     }
     return fail(
       "dns_failed",
-      "The T3 Connect address does not resolve from this machine.",
+      "The cod3 Connect address does not resolve from this machine.",
       "Check the DNS settings on this machine or its VPN.",
       exitNodeHint(exitNode),
     );
   }
   return fail(
     "timeout",
-    "The T3 Connect address did not answer from this machine.",
+    "The cod3 Connect address did not answer from this machine.",
     "Check the network, VPN, or proxy on this machine.",
     exitNodeHint(exitNode),
   );
@@ -202,7 +202,7 @@ export function classifyReachability(
 /** The loud diagnosis the CLI prints and the server logs. */
 export function formatReachabilityFailure(result: Unreachable): string {
   return [
-    "✕ T3 Connect is NOT reachable from other devices",
+    "✕ cod3 Connect is NOT reachable from other devices",
     `  ${result.reason}`,
     ...(result.hint ? [`  ${result.hint}`] : []),
     `  Fix: ${result.fix}`,
@@ -250,7 +250,7 @@ export class ConnectReachability extends Context.Service<
     readonly check: Effect.Effect<EnvironmentConnectReachability>;
     readonly latest: Effect.Effect<Option.Option<EnvironmentConnectReachability>>;
   }
->()("t3/cloud/ConnectReachability") {}
+>()("cod3/cloud/ConnectReachability") {}
 
 const make = Effect.gen(function* () {
   const runtime = yield* ManagedEndpointRuntime.CloudManagedEndpointRuntime;
@@ -303,7 +303,7 @@ const make = Effect.gen(function* () {
   const probeEndpoint = Effect.fn("ConnectReachability.probeEndpoint")(
     function* (hostname: string) {
       const response = yield* httpClient
-        .get(`https://${hostname}/.well-known/t3/environment`, { acceptJson: true })
+        .get(`https://${hostname}/.well-known/cod3/environment`, { acceptJson: true })
         .pipe(Effect.timeoutOption(ENDPOINT_REQUEST_TIMEOUT));
       if (Option.isNone(response)) return { kind: "timeout" } satisfies EndpointProbe;
       const { status } = response.value;
@@ -475,7 +475,7 @@ const make = Effect.gen(function* () {
       );
     } else {
       yield* Effect.logInfo(
-        `T3 Connect is reachable from other devices. ${formatConnectReachable(result)}`,
+        `cod3 Connect is reachable from other devices. ${formatConnectReachable(result)}`,
       );
     }
     return result;

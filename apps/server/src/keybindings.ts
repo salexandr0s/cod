@@ -9,7 +9,7 @@ import {
   type ServerRemoveKeybindingInput,
   type ServerUpsertKeybindingInput,
   ServerConfigIssue,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Array from "effect/Array";
 import * as Cache from "effect/Cache";
 import * as Cause from "effect/Cause";
@@ -32,8 +32,8 @@ import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as Semaphore from "effect/Semaphore";
 import * as ServerConfig from "./config.ts";
-import { writeFileStringAtomically } from "@t3tools/shared/atomicWrite";
-import { fromJsonStringPretty, fromLenientJson } from "@t3tools/shared/schemaJson";
+import { writeFileStringAtomically } from "@cod3/shared/atomicWrite";
+import { fromJsonStringPretty, fromLenientJson } from "@cod3/shared/schemaJson";
 import {
   DEFAULT_KEYBINDINGS,
   mergeWithDefaultKeybindings,
@@ -41,7 +41,7 @@ import {
   compileResolvedKeybindingsConfig,
   parseKeybindingShortcut,
   parseKeybindingWhenExpression,
-} from "@t3tools/shared/keybindings";
+} from "@cod3/shared/keybindings";
 
 export const ResolvedKeybindingFromConfig = KeybindingRule.pipe(
   Schema.decodeTo(
@@ -249,7 +249,7 @@ export class Keybindings extends Context.Service<
       input: ServerRemoveKeybindingInput,
     ) => Effect.Effect<KeybindingsConfigState, KeybindingsConfigError>;
   }
->()("t3/keybindings") {}
+>()("cod3/keybindings") {}
 
 const make = Effect.gen(function* () {
   const { keybindingsConfigPath } = yield* ServerConfig.ServerConfig;

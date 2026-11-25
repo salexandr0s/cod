@@ -1,14 +1,10 @@
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { describe, expect, it } from "@effect/vitest";
-import {
-  DEFAULT_SERVER_SETTINGS,
-  ProviderDriverKind,
-  ProviderInstanceId,
-} from "@t3tools/contracts";
+import { DEFAULT_SERVER_SETTINGS, ProviderDriverKind, ProviderInstanceId } from "@cod3/contracts";
 import { AcpRegistrySettings } from "../settings.ts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { SpawnExecutableResolution } from "@t3tools/shared/shell";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { SpawnExecutableResolution } from "@cod3/shared/shell";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -24,7 +20,7 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 
 import * as AcpRegistrySupport from "./AcpRegistrySupport.ts";
 import { prefersHttpMcpTransport } from "./mcpTransport.ts";
-import * as TestProviderHost from "@t3tools/provider-testing/TestProviderHost";
+import * as TestProviderHost from "@cod3/provider-testing/TestProviderHost";
 
 const registryUrl = "https://registry.test/registry.json";
 const archiveUrl = "https://registry.test/example-agent.bin";
@@ -236,7 +232,7 @@ describe("AcpRegistrySupport", () => {
     const requests: Array<string> = [];
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
-      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-acp-local-" });
+      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-acp-local-" });
       const commandPath = `${cacheDir}/dsh`;
       yield* fileSystem.writeFileString(commandPath, "#!/bin/sh\n");
       yield* fileSystem.chmod(commandPath, 0o755);
@@ -287,7 +283,9 @@ describe("AcpRegistrySupport", () => {
   it.effect("resolves a local executable path and inherits the host environment", () =>
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
-      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-acp-local-path-" });
+      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
+        prefix: "cod3-acp-local-path-",
+      });
       const commandPath = `${cacheDir}/dsh wrapper`;
       yield* fileSystem.writeFileString(commandPath, "#!/bin/sh\n");
       yield* fileSystem.chmod(commandPath, 0o755);
@@ -341,7 +339,7 @@ describe("AcpRegistrySupport", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-command-code-",
+        prefix: "cod3-acp-command-code-",
       });
       const catalog = (executable: string) =>
         AcpRegistrySupport.makeAcpRegistryCatalog({
@@ -368,7 +366,7 @@ describe("AcpRegistrySupport", () => {
         source: "local",
         commandPath: "node.exe",
         commandArgs: [
-          "C:\\Users\\me\\.t3\\bin\\cmdcode\\node_modules\\command-code\\dist\\index.mjs",
+          "C:\\Users\\me\\.cod3\\bin\\cmdcode\\node_modules\\command-code\\dist\\index.mjs",
           "acp",
         ],
       });
@@ -389,7 +387,7 @@ describe("AcpRegistrySupport", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-local-missing-",
+        prefix: "cod3-acp-local-missing-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -443,7 +441,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-override-",
+        prefix: "cod3-acp-registry-override-",
       });
       const commandPath = `${cacheDir}/example-agent`;
       yield* fileSystem.writeFileString(commandPath, "#!/bin/sh\n");
@@ -483,14 +481,14 @@ describe("AcpRegistrySupport", () => {
     );
   });
 
-  it.effect("installs into T3 home a package and launches its exposed command", () => {
+  it.effect("installs into cod3 home a package and launches its exposed command", () => {
     const agent = makeAgent({
       npx: { package: "@example/acp@V1.2.3", args: ["--stdio"] },
     });
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-global-package-",
+        prefix: "cod3-acp-registry-global-package-",
       });
       const toolchain = yield* makeFakeNpmToolchain(cacheDir);
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
@@ -548,7 +546,7 @@ describe("AcpRegistrySupport", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-user-global-package-",
+        prefix: "cod3-acp-registry-user-global-package-",
       });
       const toolchain = yield* makeFakeNpmToolchain(cacheDir);
       const systemPrefix = path.join(cacheDir, "system-global");
@@ -587,7 +585,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-windows-npm-prefix-",
+        prefix: "cod3-acp-registry-windows-npm-prefix-",
       });
       const toolchain = yield* makeFakeNpmToolchain(cacheDir);
       const environment = { ...toolchain.environment, NPM_CONFIG_PREFIX: "C:\\inherited-npm" };
@@ -637,7 +635,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-failed-install-",
+        prefix: "cod3-acp-registry-failed-install-",
       });
       const toolchain = yield* makeFakeNpmToolchain(cacheDir);
       const environment = { ...toolchain.environment, FAKE_NPM_INSTALL_FAILURE_LINES: "40000" };
@@ -673,7 +671,7 @@ describe("AcpRegistrySupport", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-uv-path-collision-",
+        prefix: "cod3-acp-registry-uv-path-collision-",
       });
       const toolchain = yield* makeFakeUvToolchain(cacheDir);
       const userBin = path.join(cacheDir, "user-bin");
@@ -710,7 +708,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-windows-package-path-",
+        prefix: "cod3-acp-registry-windows-package-path-",
       });
       const toolchain = yield* makeFakeUvToolchain(cacheDir);
       const linuxResolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
@@ -772,7 +770,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-install-",
+        prefix: "cod3-acp-registry-install-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -813,54 +811,59 @@ describe("AcpRegistrySupport", () => {
     );
   });
 
-  it.effect("gives Antigravity a T3-owned temp directory that is removed with the process", () => {
-    const agent = {
-      ...makeAgent({ binary: { "linux-x86_64": { archive: archiveUrl, cmd: "./agy" } } }),
-      id: "antigravity-acp",
-    };
-    return Effect.gen(function* () {
-      const fileSystem = yield* FileSystem.FileSystem;
-      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-runtime-temp-",
-      });
-      const runtimeTempDir = `${cacheDir}/antigravity-tmp/acp-registry`;
-      yield* fileSystem.makeDirectory(`${runtimeTempDir}/run-killed/_MEI123`, { recursive: true });
-      const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
-        cacheDir,
-        toolsDir: `${cacheDir}/tools`,
-        runtimeTempDir,
-        registryUrl,
-      });
-      expect(yield* fileSystem.exists(`${runtimeTempDir}/run-killed`)).toBe(false);
+  it.effect(
+    "gives Antigravity a cod3-owned temp directory that is removed with the process",
+    () => {
+      const agent = {
+        ...makeAgent({ binary: { "linux-x86_64": { archive: archiveUrl, cmd: "./agy" } } }),
+        id: "antigravity-acp",
+      };
+      return Effect.gen(function* () {
+        const fileSystem = yield* FileSystem.FileSystem;
+        const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
+          prefix: "cod3-acp-registry-runtime-temp-",
+        });
+        const runtimeTempDir = `${cacheDir}/antigravity-tmp/acp-registry`;
+        yield* fileSystem.makeDirectory(`${runtimeTempDir}/run-killed/_MEI123`, {
+          recursive: true,
+        });
+        const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
+          cacheDir,
+          toolsDir: `${cacheDir}/tools`,
+          runtimeTempDir,
+          registryUrl,
+        });
+        expect(yield* fileSystem.exists(`${runtimeTempDir}/run-killed`)).toBe(false);
 
-      const temp = yield* Effect.scoped(
-        Effect.gen(function* () {
-          const resolved = yield* resolver.resolve(
-            settings({ agentId: "antigravity-acp" }),
-            "/workspace",
-            { TMPDIR: "/tmp" },
-          );
-          const directory = resolved.spawn.env?.TMPDIR ?? "";
-          expect(directory.startsWith(`${runtimeTempDir}/run-`)).toBe(true);
-          expect(yield* fileSystem.exists(directory)).toBe(true);
-          return directory;
-        }),
-      );
-      expect(yield* fileSystem.exists(temp)).toBe(false);
-    }).pipe(
-      Effect.scoped,
-      Effect.provide(
-        layerResolver((request) =>
-          Effect.succeed(
-            HttpClientResponse.fromWeb(
-              request,
-              new Response(request.url === registryUrl ? makeRegistry(agent) : "#!/bin/sh\n"),
+        const temp = yield* Effect.scoped(
+          Effect.gen(function* () {
+            const resolved = yield* resolver.resolve(
+              settings({ agentId: "antigravity-acp" }),
+              "/workspace",
+              { TMPDIR: "/tmp" },
+            );
+            const directory = resolved.spawn.env?.TMPDIR ?? "";
+            expect(directory.startsWith(`${runtimeTempDir}/run-`)).toBe(true);
+            expect(yield* fileSystem.exists(directory)).toBe(true);
+            return directory;
+          }),
+        );
+        expect(yield* fileSystem.exists(temp)).toBe(false);
+      }).pipe(
+        Effect.scoped,
+        Effect.provide(
+          layerResolver((request) =>
+            Effect.succeed(
+              HttpClientResponse.fromWeb(
+                request,
+                new Response(request.url === registryUrl ? makeRegistry(agent) : "#!/bin/sh\n"),
+              ),
             ),
           ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
 
   it.effect("installs a contained binary whose name starts with two dots", () => {
     const agent = makeAgent({
@@ -869,7 +872,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-dot-name-",
+        prefix: "cod3-acp-registry-dot-name-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -912,7 +915,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-advance-",
+        prefix: "cod3-acp-registry-advance-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -979,10 +982,10 @@ describe("AcpRegistrySupport", () => {
         const fileSystem = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-system-",
+          prefix: "cod3-acp-registry-system-",
         });
         const systemBinDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-system-bin-",
+          prefix: "cod3-acp-registry-system-bin-",
         });
         const systemBinary = path.join(systemBinDir, "example-agent");
         yield* fileSystem.writeFileString(systemBinary, "#!/bin/sh\necho system\n");
@@ -1051,7 +1054,9 @@ describe("AcpRegistrySupport", () => {
     });
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
-      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-acp-root-entry-" });
+      const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
+        prefix: "cod3-acp-root-entry-",
+      });
       const source = `${cacheDir}/source`;
       yield* fileSystem.makeDirectory(source);
       yield* fileSystem.writeFileString(`${source}/agent`, "#!/bin/sh\necho managed\n");
@@ -1123,7 +1128,7 @@ describe("AcpRegistrySupport", () => {
       return Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-outside-link-",
+          prefix: "cod3-acp-outside-link-",
         });
         const outsideFile = `${cacheDir}/outside`;
         yield* fileSystem.writeFileString(outsideFile, "private\n");
@@ -1210,7 +1215,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-search-",
+        prefix: "cod3-acp-registry-search-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1258,7 +1263,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-refresh-",
+        prefix: "cod3-acp-registry-refresh-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1297,7 +1302,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-retry-",
+        prefix: "cod3-acp-registry-retry-",
       });
       yield* fileSystem.makeDirectory(`${cacheDir}/acp-registry`, { recursive: true });
       yield* fileSystem.writeFileString(
@@ -1342,7 +1347,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-refresh-fallback-",
+        prefix: "cod3-acp-registry-refresh-fallback-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1393,7 +1398,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-runner-filter-",
+        prefix: "cod3-acp-registry-runner-filter-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1435,7 +1440,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-blank-fields-",
+        prefix: "cod3-acp-registry-blank-fields-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1470,7 +1475,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-unpinned-",
+        prefix: "cod3-acp-registry-unpinned-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1501,7 +1506,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-runner-syntax-",
+        prefix: "cod3-acp-registry-runner-syntax-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1549,7 +1554,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-checksum-",
+        prefix: "cod3-acp-registry-checksum-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1586,7 +1591,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-cache-",
+        prefix: "cod3-acp-registry-cache-",
       });
       const registryDirectory = `${cacheDir}/acp-registry`;
       yield* fileSystem.makeDirectory(registryDirectory, { recursive: true });
@@ -1634,7 +1639,7 @@ describe("AcpRegistrySupport", () => {
       return Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-stale-",
+          prefix: "cod3-acp-registry-stale-",
         });
         yield* fileSystem.makeDirectory(`${cacheDir}/acp-registry`, { recursive: true });
         yield* fileSystem.writeFileString(
@@ -1682,7 +1687,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-invalid-",
+        prefix: "cod3-acp-registry-invalid-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -1712,7 +1717,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-cold-inspect-",
+        prefix: "cod3-acp-registry-cold-inspect-",
       });
       const registryDirectory = `${cacheDir}/acp-registry`;
       yield* fileSystem.makeDirectory(registryDirectory, { recursive: true });
@@ -1747,7 +1752,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-offline-",
+        prefix: "cod3-acp-registry-offline-",
       });
       yield* fileSystem.makeDirectory(`${cacheDir}/acp-registry`, { recursive: true });
       yield* fileSystem.writeFileString(`${cacheDir}/acp-registry/registry.json`, "{not json");
@@ -1791,7 +1796,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-effective-env-",
+        prefix: "cod3-acp-registry-effective-env-",
       });
       const registryDirectory = `${cacheDir}/acp-registry`;
       yield* fileSystem.makeDirectory(registryDirectory, { recursive: true });
@@ -1838,7 +1843,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-non-file-",
+        prefix: "cod3-acp-registry-non-file-",
       });
       const registryDirectory = `${cacheDir}/acp-registry`;
       const fakeExecutable = `${cacheDir}/tools/example-agent/1.2.3/linux-x86_64/bin/example-agent`;
@@ -1885,7 +1890,7 @@ describe("AcpRegistrySupport", () => {
       return Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-uninstall-",
+          prefix: "cod3-acp-registry-uninstall-",
         });
         const agentRoot = `${cacheDir}/tools/example-agent`;
         const runnerCache = `${cacheDir}/external-npx-cache/example-agent/package.json`;
@@ -1946,7 +1951,7 @@ describe("AcpRegistrySupport", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-uninstall-packages-",
+        prefix: "cod3-acp-uninstall-packages-",
       });
       const versionRoot = `${cacheDir}/tools/example-agent/1.2.3`;
       yield* fileSystem.makeDirectory(`${versionRoot}/linux-x86_64`, { recursive: true });
@@ -1992,7 +1997,7 @@ describe("AcpRegistrySupport", () => {
       return yield* Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-uninstall-race-",
+          prefix: "cod3-acp-registry-uninstall-race-",
         });
         const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
           cacheDir,
@@ -2089,7 +2094,7 @@ describe("AcpRegistrySupport", () => {
       return yield* Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-registry-parallel-install-",
+          prefix: "cod3-acp-registry-parallel-install-",
         });
         const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
           cacheDir,
@@ -2152,7 +2157,7 @@ describe("AcpRegistrySupport", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-uninstall-reservation-",
+        prefix: "cod3-acp-registry-uninstall-reservation-",
       });
       const resolver = yield* AcpRegistrySupport.makeAcpRegistryCatalog({
         cacheDir,
@@ -2194,7 +2199,7 @@ describe("acpRegistryManagedBinaryDirectories", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const cacheDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-acp-registry-bins-",
+        prefix: "cod3-acp-registry-bins-",
       });
       const install = (agent: string, version: string, target: string, commandDirectory = "") =>
         fileSystem.makeDirectory(

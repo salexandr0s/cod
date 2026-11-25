@@ -7,19 +7,19 @@ import {
   threadRepositorySections,
   type ThreadRepositorySection,
   type ThreadRepositorySections as RepositorySections,
-} from "@t3tools/client-runtime/state/thread-repositories";
-import { formatDiffCount } from "@t3tools/client-runtime/diff-count";
+} from "@cod3/client-runtime/state/thread-repositories";
+import { formatDiffCount } from "@cod3/client-runtime/diff-count";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import type {
   EnvironmentId,
   ProjectId,
   ScopedThreadRef,
   TaskFolder,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import {
   ChevronDownIcon,

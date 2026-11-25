@@ -1,4 +1,4 @@
-import type { EnvironmentIssueEntry } from "@t3tools/client-runtime/issue-list";
+import type { EnvironmentIssueEntry } from "@cod3/client-runtime/issue-list";
 import { useGT } from "gt-react-native";
 import { memo } from "react";
 import { Pressable, View } from "react-native";
@@ -86,7 +86,7 @@ export const IssueListRow = memo(function IssueListRow(props: {
             </Text>
           </View>
           <Text
-            className={cn("text-base leading-5 font-t3-medium", foreground)}
+            className={cn("text-base leading-5 font-cod3-medium", foreground)}
             numberOfLines={2}
             ellipsizeMode="tail"
           >

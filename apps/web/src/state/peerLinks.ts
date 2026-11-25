@@ -3,13 +3,13 @@ import {
   linkableMachines,
   linkedEnvironmentNames,
   offersLinkedEnvironments,
-} from "@t3tools/client-runtime/link-request";
-import { linkBackOffer, type LinkBackOffer } from "@t3tools/client-runtime/link-batch";
+} from "@cod3/client-runtime/link-request";
+import { linkBackOffer, type LinkBackOffer } from "@cod3/client-runtime/link-batch";
 import {
   createPeerLinkEnvironmentAtoms,
   linkThroughRoutes,
-} from "@t3tools/client-runtime/state/peerLinks";
-import { AuthAccessReadScope, AuthAccessWriteScope, type EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/peerLinks";
+import { AuthAccessReadScope, AuthAccessWriteScope, type EnvironmentId } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import { Atom } from "effect/reactivity";
 import { useEffect, useEffectEvent } from "react";
@@ -75,7 +75,7 @@ export function usePeerLinkHosts() {
 
 /**
  * The user's other machines, for picking one to link `environmentId` to,
- * including those only on their T3 Connect account. Reads that environment's
+ * including those only on their cod3 Connect account. Reads that environment's
  * links only while `enabled`, since listing them asks every linked machine
  * whether it answers.
  */
@@ -89,7 +89,7 @@ export function useLinkableMachines(environmentId: EnvironmentId, enabled: boole
   const discoverIfUnasked = useEffectEvent(() => {
     if (discovery.environments.size === 0 && !discovery.refreshing) void refreshDiscovery();
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- discovery follows the picker's visibility, which a card's mount or a dialog's open sets
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- discovery follows the picker's visibility, which a card's mount or a dialog's open sets
   useEffect(() => {
     if (enabled) discoverIfUnasked();
   }, [enabled]);

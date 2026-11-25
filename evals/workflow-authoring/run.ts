@@ -28,7 +28,7 @@ if (!values.out) throw new Error("Use --out <directory> [--model <id>] [--skill 
 const outDirectory = values.out;
 const models = values.model ?? ["gpt-6.1-terra", "gpt-6-luna"];
 const skillFile =
-  values.skill ?? NodePath.resolve(import.meta.dirname, "../../skills/t3-workflows/SKILL.md");
+  values.skill ?? NodePath.resolve(import.meta.dirname, "../../skills/cod3-workflows/SKILL.md");
 // An agent is given the skill's body; the front matter only decides when it loads.
 const skill = NodeFS.readFileSync(skillFile, "utf8")
   .replace(/^---\n[\s\S]*?\n---\n/, "")
@@ -55,7 +55,7 @@ const decodeResponse = Schema.decodeUnknownSync(
 );
 
 const instructions = [
-  "You write workflow definitions files for T3 Code. This is everything you know about them:",
+  "You write workflow definitions files for cod3. This is everything you know about them:",
   "",
   "<skill>",
   skill,

@@ -5,15 +5,15 @@ import * as NodeURL from "node:url";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Layer from "effect/Layer";
-import { ProviderInstanceId } from "@t3tools/contracts";
-import { AcpRegistrySettings } from "@t3tools/provider-acp-registry/settings";
+import { ProviderInstanceId } from "@cod3/contracts";
+import { AcpRegistrySettings } from "@cod3/provider-acp-registry/settings";
 import { describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
 import * as EffectAcpErrors from "effect-acp/errors";
 
-import type * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
+import type * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
 import {
   acpRegistryProbeFailure,
   acpRegistryProbeResult,
@@ -22,8 +22,8 @@ import {
   normalizeAcpRegistryAuthMethods,
   normalizeAcpRegistryCommands,
   probeAcpRegistryConfiguration,
-} from "@t3tools/provider-acp-registry/testing";
-import * as AcpRegistrySupport from "@t3tools/provider-acp-registry/server/AcpRegistrySupport";
+} from "@cod3/provider-acp-registry/testing";
+import * as AcpRegistrySupport from "@cod3/provider-acp-registry/server/AcpRegistrySupport";
 
 const instanceId = ProviderInstanceId.make("acpRegistry_codex");
 const __dirname = NodePath.dirname(NodeURL.fileURLToPath(import.meta.url));
@@ -379,8 +379,8 @@ describe("ACP Registry probe", () => {
             args: [mockAgentPath],
             env: {
               ...process.env,
-              T3_ACP_SESSION_LIFECYCLE: "1",
-              T3_ACP_AUTH_METHOD_ID: "mock-login",
+              COD3_ACP_SESSION_LIFECYCLE: "1",
+              COD3_ACP_AUTH_METHOD_ID: "mock-login",
             },
           },
         }),
@@ -440,9 +440,9 @@ describe("ACP Registry probe", () => {
                 args: [mockAgentPath],
                 env: {
                   ...process.env,
-                  T3_ACP_V2_MANAGEMENT: "1",
-                  T3_ACP_REQUEST_LOG_PATH: requestLogPath,
-                  ...(deleteOutcome === "fails" ? { T3_ACP_FAIL_DELETE_SESSION: "1" } : {}),
+                  COD3_ACP_V2_MANAGEMENT: "1",
+                  COD3_ACP_REQUEST_LOG_PATH: requestLogPath,
+                  ...(deleteOutcome === "fails" ? { COD3_ACP_FAIL_DELETE_SESSION: "1" } : {}),
                 },
               },
             }),

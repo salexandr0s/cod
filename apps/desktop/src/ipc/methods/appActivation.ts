@@ -1,4 +1,4 @@
-import { DesktopAppActivationResponse } from "@t3tools/contracts";
+import { DesktopAppActivationResponse } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 

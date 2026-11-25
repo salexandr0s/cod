@@ -1,4 +1,4 @@
-import type { ComposerContextRecord, EnvironmentId, ThreadId } from "@t3tools/contracts";
+import type { ComposerContextRecord, EnvironmentId, ThreadId } from "@cod3/contracts";
 import {
   composerChipSizeSuffix,
   contextChipIcon,
@@ -7,7 +7,7 @@ import {
   type ContextChipIconRef,
   UNAVAILABLE_CONTEXT_CHIP_PRESENTATION,
 } from "./composerChipPresentation";
-import { formatComposerModelMention } from "@t3tools/client-runtime/composer-model-mentions";
+import { formatComposerModelMention } from "@cod3/client-runtime/composer-model-mentions";
 import type {
   SelectableMarkdownModel,
   SelectableMarkdownSkill,
@@ -15,9 +15,9 @@ import type {
 import {
   formatComposerContextHref,
   parseComposerContextHref,
-} from "@t3tools/shared/composerContextReferences";
-import { hasThreadLinks, parseThreadLinkHref } from "@t3tools/shared/threadLinks";
-import { EXTENSIONLESS_FILE_NAMES } from "@t3tools/shared/markdownLinks";
+} from "@cod3/shared/composerContextReferences";
+import { hasThreadLinks, parseThreadLinkHref } from "@cod3/shared/threadLinks";
+import { EXTENSIONLESS_FILE_NAMES } from "@cod3/shared/markdownLinks";
 
 export function enrichedContextLinkPresentation(
   href: string,
@@ -63,7 +63,7 @@ export function threadChipTargets(
 ): ReadonlyArray<ThreadChipTarget> {
   const targets = new Map<string, ThreadChipTarget>();
   if (hasThreadLinks(markdown)) {
-    for (const [, href = ""] of markdown.matchAll(/\]\(<?(t3-thread:\/\/v[12]\/[^\s>)]+)>?\)/g)) {
+    for (const [, href = ""] of markdown.matchAll(/\]\(<?(cod3-thread:\/\/v[12]\/[^\s>)]+)>?\)/g)) {
       const link = parseThreadLinkHref(href);
       if (link) {
         targets.set(href, {

@@ -7,7 +7,7 @@ import {
   ThreadId,
   type OrchestrationV2Checkpoint,
   type OrchestrationV2CheckpointScope,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import { describe, expect, it } from "vite-plus/test";
 
@@ -75,7 +75,7 @@ function checkpoint(
     parentCheckpointId: null,
     ordinalWithinScope: ordinal,
     appRunOrdinal: null,
-    ref: CheckpointRef.make(`refs/t3/${id}`),
+    ref: CheckpointRef.make(`refs/cod3/${id}`),
     status: "ready",
     files: [],
     capturedAt: now,

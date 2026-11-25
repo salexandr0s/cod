@@ -1,50 +1,50 @@
-import type { EnvironmentServerConfig } from "@t3tools/client-runtime/connection";
-import { scopeThreadRef, scopedThreadKey } from "@t3tools/client-runtime/environment";
-import { resolveThreadWorkingStartedAt } from "@t3tools/client-runtime/state/models";
-import { isShownUnderParent } from "@t3tools/client-runtime/state/threads";
-import { backgroundWorkHoldsCompletion } from "@t3tools/shared/orchestrationV2PendingBackgroundWork";
-import { threadPullRequestSearchTerms } from "@t3tools/shared/threadPullRequests";
+import type { EnvironmentServerConfig } from "@cod3/client-runtime/connection";
+import { scopeThreadRef, scopedThreadKey } from "@cod3/client-runtime/environment";
+import { resolveThreadWorkingStartedAt } from "@cod3/client-runtime/state/models";
+import { isShownUnderParent } from "@cod3/client-runtime/state/threads";
+import { backgroundWorkHoldsCompletion } from "@cod3/shared/orchestrationV2PendingBackgroundWork";
+import { threadPullRequestSearchTerms } from "@cod3/shared/threadPullRequests";
 import * as React from "react";
 import { msg } from "gt-react";
 import { m, type MessageResolver } from "../i18n/messages";
 import {
   isAtomCommandInterrupted,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { defaultAnimateLayoutChanges, type AnimateLayoutChanges } from "@dnd-kit/sortable";
 import {
   threadSearchMatchKey,
   threadSearchSubject,
   type ThreadSearchShell,
-} from "@t3tools/client-runtime/state/thread-search";
-import { foldSearchQuery, rankSearchItems, scoreThreadSearch } from "@t3tools/shared/paletteSearch";
+} from "@cod3/client-runtime/state/thread-search";
+import { foldSearchQuery, rankSearchItems, scoreThreadSearch } from "@cod3/shared/paletteSearch";
 import {
   type ContextMenuItem,
   type EnvironmentId,
   type ResolvedKeybindingsConfig,
   type ScopedThreadRef,
   type ThreadId,
-} from "@t3tools/contracts";
-import type { SidebarProjectSortOrder, SidebarThreadSortOrder } from "@t3tools/contracts/settings";
+} from "@cod3/contracts";
+import type { SidebarProjectSortOrder, SidebarThreadSortOrder } from "@cod3/contracts/settings";
 import type { AsyncResult } from "effect/reactivity";
 import {
   effectiveSnoozed,
   hasUnseenRunFailure,
   type ThreadSnoozeShell,
-} from "@t3tools/client-runtime/state/thread-settled";
+} from "@cod3/client-runtime/state/thread-settled";
 import {
   getThreadSortTimestamp,
   planPinnedReorder,
   sortThreads,
   toSortableTimestamp,
   type ThreadSortInput,
-} from "@t3tools/client-runtime/state/thread-sort";
+} from "@cod3/client-runtime/state/thread-sort";
 import type { SidebarThreadSummary, Thread } from "../types";
 import { normalizeSearchText } from "../lib/utils";
 import { isLatestRunSettled } from "../session-logic";
-import { THREAD_STATUS_TEXT } from "@t3tools/client-runtime/state/thread-activity-announcement";
+import { THREAD_STATUS_TEXT } from "@cod3/client-runtime/state/thread-activity-announcement";
 import { observeIntersection } from "../lib/observeIntersection";
-import { deadlineAfter, deadlineStore, type ClockStore } from "@t3tools/client-runtime/clock";
+import { deadlineAfter, deadlineStore, type ClockStore } from "@cod3/client-runtime/clock";
 import { useDeadlinePassed } from "../hooks/useDeadline";
 import { legacyProjectCwdPreferenceKey } from "../uiStateStore";
 import { isElectron } from "../env";
@@ -1123,14 +1123,14 @@ export function firstValidTimestampMs(
   return 0;
 }
 
-export { sortActiveThreadsByOrderKey as sortThreadsForSidebar } from "@t3tools/client-runtime/state/thread-sort";
+export { sortActiveThreadsByOrderKey as sortThreadsForSidebar } from "@cod3/client-runtime/state/thread-sort";
 export {
   sortInboxThreadsByReturn,
   sortWorkingThreadsBySend,
-} from "@t3tools/client-runtime/state/thread-inbox";
+} from "@cod3/client-runtime/state/thread-inbox";
 
-export { pinOrderKeyBetween } from "@t3tools/client-runtime/state/thread-sort";
-export { sortPinnedThreadsByOrderKey as sortPinnedThreadsForSidebar } from "@t3tools/client-runtime/state/thread-sort";
+export { pinOrderKeyBetween } from "@cod3/client-runtime/state/thread-sort";
+export { sortPinnedThreadsByOrderKey as sortPinnedThreadsForSidebar } from "@cod3/client-runtime/state/thread-sort";
 
 const EMPTY_CONTENT_MATCH_KEYS: ReadonlySet<string> = new Set<string>();
 
@@ -1149,7 +1149,7 @@ export function searchSidebarThreads<
   query: string,
   contentMatchKeys: ReadonlySet<string> = EMPTY_CONTENT_MATCH_KEYS,
   now = Date.now(),
-): { readonly titleMatches: T[]; readonly contentMatches: T[] } {
+) {
   const normalizedQuery = foldSearchQuery(query);
   if (normalizedQuery.length === 0) return { titleMatches: [], contentMatches: [] };
   const titleMatches = rankSearchItems(threads, (thread, options) =>
@@ -1157,8 +1157,8 @@ export function searchSidebarThreads<
       ...options,
       picks: false,
     }),
-  ).map(({ item }) => item);
-  const listed = new Set(titleMatches);
+  );
+  const listed = new Set(titleMatches.map(({ item }) => item));
   // In the order the server ranked their messages, as the palette lists them.
   const threadByKey = new Map(
     threads.map((thread) => [
@@ -1183,6 +1183,7 @@ export function pullRequestMatchesSearchQuery(
   return normalizedQuery.split(" ").every((token) => haystack.includes(token));
 }
 
+export const DISCOVER_PROJECTS_SCOPE_ITEM_VALUE = "discover-projects";
 export const ADD_PROJECT_SCOPE_ITEM_VALUE = "add-project";
 
 export function filterSidebarProjectScopeItems<TItem extends { readonly value: string }>(input: {
@@ -1196,6 +1197,7 @@ export function filterSidebarProjectScopeItems<TItem extends { readonly value: s
     (item) =>
       item.value !== "all" &&
       item.value !== ADD_PROJECT_SCOPE_ITEM_VALUE &&
+      item.value !== DISCOVER_PROJECTS_SCOPE_ITEM_VALUE &&
       input.matches(item, query),
   );
 }

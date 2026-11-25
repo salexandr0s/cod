@@ -4,10 +4,10 @@ import * as NodeOS from "node:os";
 
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import * as NetService from "@t3tools/shared/Net";
-import { resolveGitWorktreePath, resolveWorktreeT3Home } from "@t3tools/shared/devHome";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { resolveSpawnCommand } from "@t3tools/shared/shell";
+import * as NetService from "@cod3/shared/Net";
+import { resolveGitWorktreePath, resolveWorktreeCod3Home } from "@cod3/shared/devHome";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { resolveSpawnCommand } from "@cod3/shared/shell";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -67,36 +67,36 @@ function sharedBackendTargetHost(host: string | undefined): string {
   return "127.0.0.1";
 }
 
-export const DEFAULT_T3_HOME = Effect.map(Effect.service(Path.Path), (path) =>
-  path.join(NodeOS.homedir(), ".t3"),
+export const DEFAULT_COD3_HOME = Effect.map(Effect.service(Path.Path), (path) =>
+  path.join(NodeOS.homedir(), ".cod3"),
 );
 
 const MODE_ARGS = {
   dev: [
     "run",
-    "--filter=@t3tools/contracts",
-    "--filter=@t3tools/web",
-    "--filter=t3",
+    "--filter=@cod3/contracts",
+    "--filter=@cod3/web",
+    "--filter=cod3",
     "--parallel",
     "dev",
   ],
-  "dev:server": ["run", "--filter=t3", "dev"],
-  "dev:web": ["run", "--filter=@t3tools/web", "dev"],
-  "dev:desktop": ["run", "--filter=@t3tools/desktop", "--filter=@t3tools/web", "dev"],
+  "dev:server": ["run", "--filter=cod3", "dev"],
+  "dev:web": ["run", "--filter=@cod3/web", "dev"],
+  "dev:desktop": ["run", "--filter=@cod3/desktop", "--filter=@cod3/web", "dev"],
 } as const satisfies Record<string, ReadonlyArray<string>>;
 
 // `--built`: the web package rebuilds into apps/web/dist and the backend serves
 // it, so no Vite dev server runs.
 const BUILT_DEV_ARGS = [
   "run",
-  "--filter=@t3tools/web",
-  "--filter=t3",
+  "--filter=@cod3/web",
+  "--filter=cod3",
   "--parallel",
   "dev:built",
 ] as const;
 
 type DevMode = keyof typeof MODE_ARGS;
-// Only backend ports honor --host/T3CODE_HOST; web ports stay loopback.
+// Only backend ports honor --host/COD3_HOST; web ports stay loopback.
 type PortAvailabilityCheck<R = never> = (
   port: number,
   role?: "server" | "web",
@@ -123,7 +123,7 @@ export class DevRunnerConfigurationError extends Schema.TaggedError<DevRunnerCon
 export class DevRunnerInvalidPortOffsetError extends Schema.TaggedError<DevRunnerInvalidPortOffsetError>()(
   "DevRunnerInvalidPortOffsetError",
   {
-    configKey: Schema.Literal("T3CODE_PORT_OFFSET"),
+    configKey: Schema.Literal("COD3_PORT_OFFSET"),
     portOffset: Schema.Number,
     minimum: Schema.Number,
   },
@@ -219,8 +219,8 @@ const optionalIntegerConfig = (name: string): Config.Config<number | undefined> 
     Config.map((value) => Option.getOrUndefined(value)),
   );
 const OffsetConfig = Config.all({
-  portOffset: optionalIntegerConfig("T3CODE_PORT_OFFSET"),
-  devInstance: optionalStringConfig("T3CODE_DEV_INSTANCE"),
+  portOffset: optionalIntegerConfig("COD3_PORT_OFFSET"),
+  devInstance: optionalStringConfig("COD3_DEV_INSTANCE"),
 });
 
 export function resolveOffset(config: {
@@ -235,7 +235,7 @@ export function resolveOffset(config: {
     if (config.portOffset < 0) {
       return Effect.fail(
         new DevRunnerInvalidPortOffsetError({
-          configKey: "T3CODE_PORT_OFFSET",
+          configKey: "COD3_PORT_OFFSET",
           portOffset: config.portOffset,
           minimum: 0,
         }),
@@ -243,7 +243,7 @@ export function resolveOffset(config: {
     }
     return Effect.succeed({
       offset: config.portOffset,
-      source: `T3CODE_PORT_OFFSET=${config.portOffset}`,
+      source: `COD3_PORT_OFFSET=${config.portOffset}`,
     });
   }
 
@@ -252,12 +252,12 @@ export function resolveOffset(config: {
     if (/^\d+$/.test(seed)) {
       return Effect.succeed({
         offset: Number(seed),
-        source: `numeric T3CODE_DEV_INSTANCE=${seed}`,
+        source: `numeric COD3_DEV_INSTANCE=${seed}`,
       });
     }
 
     const offset = ((Hash.string(seed) >>> 0) % MAX_HASH_OFFSET) + 1;
-    return Effect.succeed({ offset, source: `hashed T3CODE_DEV_INSTANCE=${seed}` });
+    return Effect.succeed({ offset, source: `hashed COD3_DEV_INSTANCE=${seed}` });
   }
 
   const worktreePath = config.worktreePath?.trim();
@@ -285,7 +285,7 @@ const resolveBaseDir = Effect.fn("dev-runner.resolveBaseDir")(function* (
     return path.resolve(configured);
   }
 
-  return yield* DEFAULT_T3_HOME;
+  return yield* DEFAULT_COD3_HOME;
 });
 
 interface CreateDevRunnerEnvInput {
@@ -293,7 +293,7 @@ interface CreateDevRunnerEnvInput {
   readonly baseEnv: NodeJS.ProcessEnv;
   readonly serverOffset: number;
   readonly webOffset: number;
-  readonly t3Home: string | undefined;
+  readonly cod3Home: string | undefined;
   readonly browser: boolean | undefined;
   readonly autoBootstrapProjectFromCwd: boolean | undefined;
   readonly logWebSocketEvents: boolean | undefined;
@@ -307,7 +307,7 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
   baseEnv,
   serverOffset,
   webOffset,
-  t3Home,
+  cod3Home,
   browser,
   autoBootstrapProjectFromCwd,
   logWebSocketEvents,
@@ -317,7 +317,7 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
 }: CreateDevRunnerEnvInput): Effect.fn.Return<NodeJS.ProcessEnv, never, Path.Path> {
   const serverPort = port ?? BASE_SERVER_PORT + serverOffset;
   const webPort = BASE_WEB_PORT + webOffset;
-  const configuredBaseDir = t3Home?.trim() || undefined;
+  const configuredBaseDir = cod3Home?.trim() || undefined;
   const resolvedBaseDir = yield* resolveBaseDir(configuredBaseDir);
   const isDesktopMode = mode === "dev:desktop";
 
@@ -330,26 +330,26 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
   };
 
   const path = yield* Path.Path;
-  // The server stores an explicit home's state in userdata, which for ~/.t3 is the live
-  // install. Left implicit, dev state goes to ~/.t3/dev.
-  const isLiveHome = resolvedBaseDir === path.join(yield* HostProcess.HomeDirectory, ".t3");
+  // The server stores an explicit home's state in userdata, which for ~/.cod3 is the live
+  // install. Left implicit, dev state goes to ~/.cod3/dev.
+  const isLiveHome = resolvedBaseDir === path.join(yield* HostProcess.HomeDirectory, ".cod3");
   if (configuredBaseDir !== undefined && !isLiveHome) {
-    output.T3CODE_HOME = resolvedBaseDir;
+    output.COD3_HOME = resolvedBaseDir;
   } else {
-    delete output.T3CODE_HOME;
+    delete output.COD3_HOME;
   }
 
-  // Managed T3 service shells leak launcher variables that make dev servers fail version checks.
+  // Managed cod3 service shells leak launcher variables that make dev servers fail version checks.
   // Dev-runner servers are never launcher-managed (serviceLauncherClient.ts resolveStartup).
-  delete output.T3_SERVICE_LAUNCHER_CONTEXT;
-  delete output.T3_BOOT_SERVICE_UNIT;
+  delete output.COD3_SERVICE_LAUNCHER_CONTEXT;
+  delete output.COD3_BOOT_SERVICE_UNIT;
 
   // Each worktree has its own state, so a dev server would count as a new
   // install of the developer's real accounts. Set it explicitly to opt in.
-  output.T3CODE_TELEMETRY_ENABLED = baseEnv.T3CODE_TELEMETRY_ENABLED ?? "false";
+  output.COD3_TELEMETRY_ENABLED = baseEnv.COD3_TELEMETRY_ENABLED ?? "false";
 
   if (!isDesktopMode) {
-    output.T3CODE_PORT = String(serverPort);
+    output.COD3_PORT = String(serverPort);
     // An inherited HOST pins Vite's HMR socket via explicitHost in apps/web/vite.config.ts.
     // Only desktop mode should set it.
     delete output.HOST;
@@ -363,61 +363,61 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
       // which merges `.env`/`.env.local` *under* this env, so a developer
       // with either URL in their `.env` would get it back and silently lose
       // single-origin mode.
-      output.T3CODE_SINGLE_ORIGIN_DEV = "1";
+      output.COD3_SINGLE_ORIGIN_DEV = "1";
     } else {
       output.VITE_HTTP_URL = `http://localhost:${serverPort}`;
       output.VITE_WS_URL = `ws://localhost:${serverPort}`;
-      delete output.T3CODE_SINGLE_ORIGIN_DEV;
+      delete output.COD3_SINGLE_ORIGIN_DEV;
     }
   } else {
-    output.T3CODE_PORT = String(serverPort);
+    output.COD3_PORT = String(serverPort);
     output.VITE_HTTP_URL = `http://${DESKTOP_DEV_LOOPBACK_HOST}:${serverPort}`;
     output.VITE_WS_URL = `ws://${DESKTOP_DEV_LOOPBACK_HOST}:${serverPort}`;
     // Desktop pins the renderer to loopback on purpose; an ambient marker
     // must not make Vite drop those URLs.
-    delete output.T3CODE_SINGLE_ORIGIN_DEV;
-    delete output.T3CODE_MODE;
-    delete output.T3CODE_NO_BROWSER;
-    delete output.T3CODE_DEV_AUTH_TOKEN;
+    delete output.COD3_SINGLE_ORIGIN_DEV;
+    delete output.COD3_MODE;
+    delete output.COD3_NO_BROWSER;
+    delete output.COD3_DEV_AUTH_TOKEN;
   }
 
-  // Agent shells inherit the parent T3 server's bind settings; only --host widens the dev server.
-  delete output.T3CODE_LAN;
+  // Agent shells inherit the parent cod3 server's bind settings; only --host widens the dev server.
+  delete output.COD3_LAN;
   if (!isDesktopMode && host !== undefined) {
-    output.T3CODE_HOST = host;
+    output.COD3_HOST = host;
   } else {
-    delete output.T3CODE_HOST;
+    delete output.COD3_HOST;
   }
 
   if (!isDesktopMode) {
-    output.T3CODE_NO_BROWSER = browser === true ? "0" : "1";
+    output.COD3_NO_BROWSER = browser === true ? "0" : "1";
   }
 
   if (autoBootstrapProjectFromCwd !== undefined) {
-    output.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD = autoBootstrapProjectFromCwd ? "1" : "0";
+    output.COD3_AUTO_BOOTSTRAP_PROJECT_FROM_CWD = autoBootstrapProjectFromCwd ? "1" : "0";
   } else {
-    delete output.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD;
+    delete output.COD3_AUTO_BOOTSTRAP_PROJECT_FROM_CWD;
   }
 
   if (logWebSocketEvents !== undefined) {
-    output.T3CODE_LOG_WS_EVENTS = logWebSocketEvents ? "1" : "0";
+    output.COD3_LOG_WS_EVENTS = logWebSocketEvents ? "1" : "0";
   } else {
-    delete output.T3CODE_LOG_WS_EVENTS;
+    delete output.COD3_LOG_WS_EVENTS;
   }
 
   if (mode === "dev") {
-    output.T3CODE_MODE = "web";
-    delete output.T3CODE_DESKTOP_WS_URL;
+    output.COD3_MODE = "web";
+    delete output.COD3_DESKTOP_WS_URL;
   }
 
   if (mode === "dev:server" || mode === "dev:web") {
-    output.T3CODE_MODE = "web";
-    delete output.T3CODE_DESKTOP_WS_URL;
+    output.COD3_MODE = "web";
+    delete output.COD3_DESKTOP_WS_URL;
   }
 
   if (isDesktopMode) {
     output.HOST = DESKTOP_DEV_LOOPBACK_HOST;
-    delete output.T3CODE_DESKTOP_WS_URL;
+    delete output.COD3_DESKTOP_WS_URL;
   }
 
   return output;
@@ -643,7 +643,12 @@ const prepareFirstStart = Effect.fn("dev-runner.prepareFirstStart")(function* (i
         );
       }
     }
-    const source = path.join(yield* HostProcess.HomeDirectory, ".t3", "userdata", "statev2.sqlite");
+    const source = path.join(
+      yield* HostProcess.HomeDirectory,
+      ".cod3",
+      "userdata",
+      "statev2.sqlite",
+    );
     // A V1 state.sqlite counts as data too: the server imports it only while
     // statev2.sqlite is missing, so seeding would hide it.
     if (
@@ -659,7 +664,7 @@ const prepareFirstStart = Effect.fn("dev-runner.prepareFirstStart")(function* (i
           );
         } else {
           yield* Effect.logInfo(
-            `[dev-runner] seeding ${input.worktreeHome} from ${source} (read-only). --no-seed or T3CODE_DEV_SEED=0 skips this.`,
+            `[dev-runner] seeding ${input.worktreeHome} from ${source} (read-only). --no-seed or COD3_DEV_SEED=0 skips this.`,
           );
           yield* runRepoScript(
             "apps/server/scripts/migrate-dev-db.ts",
@@ -677,7 +682,9 @@ const prepareFirstStart = Effect.fn("dev-runner.prepareFirstStart")(function* (i
   if (input.mode !== "dev:web") {
     const crate = path.join(repoRoot, "native/resource-monitor");
     const binary =
-      (yield* HostProcess.Platform) === "win32" ? "t3-resource-monitor.exe" : "t3-resource-monitor";
+      (yield* HostProcess.Platform) === "win32"
+        ? "cod3-resource-monitor.exe"
+        : "cod3-resource-monitor";
     if (
       !(yield* exists(path.join(crate, "target/release", binary))) &&
       !(yield* exists(path.join(crate, "target/debug", binary)))
@@ -717,7 +724,7 @@ const prepareFirstStart = Effect.fn("dev-runner.prepareFirstStart")(function* (i
 
 interface DevRunnerCliInput {
   readonly mode: DevMode;
-  readonly t3Home: string | undefined;
+  readonly cod3Home: string | undefined;
   readonly browser: boolean | undefined;
   readonly autoBootstrapProjectFromCwd: boolean | undefined;
   readonly logWebSocketEvents: boolean | undefined;
@@ -739,7 +746,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
     Effect.mapError(
       (cause) =>
         new DevRunnerConfigurationError({
-          configKeys: ["T3CODE_PORT_OFFSET", "T3CODE_DEV_INSTANCE"],
+          configKeys: ["COD3_PORT_OFFSET", "COD3_DEV_INSTANCE"],
           cause,
         }),
     ),
@@ -775,22 +782,22 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
 
   const hostEnvironment = yield* HostProcess.Environment;
   // A dev server started inside a worktree defaults to that worktree's own
-  // (gitignored) `.t3` — see @t3tools/shared/devHome for why this must
-  // outrank an ambient T3CODE_HOME. `--home-dir` still wins.
-  const worktreeHome = yield* resolveWorktreeT3Home(yield* HostProcess.WorkingDirectory);
+  // (gitignored) `.cod3` — see @cod3/shared/devHome for why this must
+  // outrank an ambient COD3_HOME. `--home-dir` still wins.
+  const worktreeHome = yield* resolveWorktreeCod3Home(yield* HostProcess.WorkingDirectory);
   // Trim before choosing: `--home-dir ""` is not a selection, and treating it
   // as one would skip the worktree default and land on the shared home —
   // exactly the outcome this precedence exists to prevent.
-  const resolvedT3Home =
-    (input.t3Home?.trim() || undefined) ??
+  const resolvedCod3Home =
+    (input.cod3Home?.trim() || undefined) ??
     worktreeHome ??
-    (hostEnvironment.T3CODE_HOME?.trim() || undefined);
+    (hostEnvironment.COD3_HOME?.trim() || undefined);
   const env = yield* createDevRunnerEnv({
     mode: input.mode,
     baseEnv: hostEnvironment,
     serverOffset,
     webOffset,
-    t3Home: resolvedT3Home,
+    cod3Home: resolvedCod3Home,
     browser: input.browser,
     autoBootstrapProjectFromCwd: input.autoBootstrapProjectFromCwd,
     logWebSocketEvents: input.logWebSocketEvents,
@@ -803,10 +810,10 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
     serverOffset !== offset || webOffset !== offset
       ? ` selectedOffset(server=${serverOffset},web=${webOffset})`
       : "";
-  const baseDir = env.T3CODE_HOME ?? (yield* DEFAULT_T3_HOME);
+  const baseDir = env.COD3_HOME ?? (yield* DEFAULT_COD3_HOME);
 
   yield* Effect.logInfo(
-    `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.T3CODE_PORT)} webPort=${String(env.PORT)} baseDir=${baseDir}`,
+    `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.COD3_PORT)} webPort=${String(env.PORT)} baseDir=${baseDir}`,
   );
 
   // Before the share block: --dry-run only resolves and prints. Sharing would
@@ -839,7 +846,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
           ...(input.built
             ? {
                 localTarget: {
-                  port: Number(env.T3CODE_PORT),
+                  port: Number(env.COD3_PORT),
                   host: sharedBackendTargetHost(input.host),
                 },
               }
@@ -873,10 +880,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
         // The app is reached from the tailnet origin. Vite already allows
         // *.ts.net hosts; the backend needs the origin for credentialed
         // requests that bypass the proxy (desktop renderer, direct calls).
-        env.T3CODE_DEV_ALLOWED_ORIGINS = [
-          env.T3CODE_DEV_ALLOWED_ORIGINS,
-          new URL(shared.url).origin,
-        ]
+        env.COD3_DEV_ALLOWED_ORIGINS = [env.COD3_DEV_ALLOWED_ORIGINS, new URL(shared.url).origin]
           .filter((entry) => entry && entry.length > 0)
           .join(",");
         if (input.devUrl === undefined) {
@@ -884,13 +888,13 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
         }
         if (input.built) {
           built = true;
-          env.T3CODE_BUILT_DEV = "1";
-        } else if (env.T3CODE_BUNDLED_DEV === undefined) {
+          env.COD3_BUILT_DEV = "1";
+        } else if (env.COD3_BUNDLED_DEV === undefined) {
           // A shared origin serves a remote browser, where unbundled dev's
           // per-module requests each pay a tailnet round trip — a cold module
           // graph takes minutes to first paint. Bundled dev collapses that to a
           // few chunk requests.
-          env.T3CODE_BUNDLED_DEV = "1";
+          env.COD3_BUNDLED_DEV = "1";
         }
         yield* Effect.logInfo(`[dev-runner] shared on tailnet: ${shared.url}`);
       } else if (input.built) {
@@ -970,9 +974,9 @@ const devRunnerCli = Command.make("dev-runner", {
   mode: Argument.Literals("mode", DEV_RUNNER_MODES).pipe(
     Argument.withDescription("Development mode to run."),
   ),
-  t3Home: Flag.String("home-dir").pipe(
+  cod3Home: Flag.String("home-dir").pipe(
     Flag.withDescription(
-      "Explicit T3 Code data directory; runtime state is stored under userdata (equivalent to T3CODE_HOME). Inside a git worktree this defaults to that worktree's own .t3 so dev state stays off the shared home.",
+      "Explicit cod3 data directory; runtime state is stored under userdata (equivalent to COD3_HOME). Inside a git worktree this defaults to that worktree's own .cod3 so dev state stays off the shared home.",
     ),
     Flag.optional,
     Flag.map(Option.getOrUndefined),
@@ -983,18 +987,18 @@ const devRunnerCli = Command.make("dev-runner", {
   ),
   autoBootstrapProjectFromCwd: Flag.Boolean("auto-bootstrap-project-from-cwd").pipe(
     Flag.withDescription(
-      "Auto-bootstrap toggle (equivalent to T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD).",
+      "Auto-bootstrap toggle (equivalent to COD3_AUTO_BOOTSTRAP_PROJECT_FROM_CWD).",
     ),
-    Flag.withFallbackConfig(optionalBooleanConfig("T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD")),
+    Flag.withFallbackConfig(optionalBooleanConfig("COD3_AUTO_BOOTSTRAP_PROJECT_FROM_CWD")),
   ),
   logWebSocketEvents: Flag.Boolean("log-websocket-events").pipe(
-    Flag.withDescription("WebSocket event logging toggle (equivalent to T3CODE_LOG_WS_EVENTS)."),
+    Flag.withDescription("WebSocket event logging toggle (equivalent to COD3_LOG_WS_EVENTS)."),
     Flag.withAlias("log-ws-events"),
-    Flag.withFallbackConfig(optionalBooleanConfig("T3CODE_LOG_WS_EVENTS")),
+    Flag.withFallbackConfig(optionalBooleanConfig("COD3_LOG_WS_EVENTS")),
   ),
   host: Flag.String("host").pipe(
     Flag.withDescription(
-      "Server host/interface override (forwards to T3CODE_HOST). Ambient T3CODE_HOST is ignored: agent shells inherit it from the T3 server that spawned them.",
+      "Server host/interface override (forwards to COD3_HOST). Ambient COD3_HOST is ignored: agent shells inherit it from the cod3 server that spawned them.",
     ),
     Flag.optional,
     Flag.map(Option.getOrUndefined),
@@ -1002,7 +1006,7 @@ const devRunnerCli = Command.make("dev-runner", {
   port: Flag.Int("port").pipe(
     Flag.withSchema(Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 65535 }))),
     Flag.withDescription(
-      "Server port override (forwards to T3CODE_PORT). Ambient T3CODE_PORT is ignored: agent shells inherit it from the T3 server that spawned them.",
+      "Server port override (forwards to COD3_PORT). Ambient COD3_PORT is ignored: agent shells inherit it from the cod3 server that spawned them.",
     ),
     Flag.optional,
     Flag.map(Option.getOrUndefined),
@@ -1027,9 +1031,9 @@ const devRunnerCli = Command.make("dev-runner", {
   ),
   seed: Flag.Boolean("seed").pipe(
     Flag.withDescription(
-      "Seed an empty worktree database from ~/.t3 on first start (read-only, via migrate-dev-db) if the source is at most 500 MiB. On by default; --no-seed or T3CODE_DEV_SEED=0 skips it.",
+      "Seed an empty worktree database from ~/.cod3 on first start (read-only, via migrate-dev-db) if the source is at most 500 MiB. On by default; --no-seed or COD3_DEV_SEED=0 skips it.",
     ),
-    Flag.withFallbackConfig(optionalBooleanConfig("T3CODE_DEV_SEED")),
+    Flag.withFallbackConfig(optionalBooleanConfig("COD3_DEV_SEED")),
   ),
   built: Flag.Boolean("built").pipe(
     Flag.withDescription(
@@ -1040,10 +1044,10 @@ const devRunnerCli = Command.make("dev-runner", {
   memoryLimitGb: Flag.Int("memory-limit-gb").pipe(
     Flag.withSchema(NonNegativeInt),
     Flag.withDescription(
-      "Stop the dev server when it and its child processes use more than this many GiB of RAM plus swap (equivalent to T3CODE_DEV_MEMORY_LIMIT_GB). Defaults to half of RAM, at most 16. 0 turns it off. Linux only.",
+      "Stop the dev server when it and its child processes use more than this many GiB of RAM plus swap (equivalent to COD3_DEV_MEMORY_LIMIT_GB). Defaults to half of RAM, at most 16. 0 turns it off. Linux only.",
     ),
     Flag.withFallbackConfig(
-      Config.schema(NonNegativeInt, "T3CODE_DEV_MEMORY_LIMIT_GB").pipe(
+      Config.schema(NonNegativeInt, "COD3_DEV_MEMORY_LIMIT_GB").pipe(
         Config.option,
         Config.map(Option.getOrUndefined),
       ),

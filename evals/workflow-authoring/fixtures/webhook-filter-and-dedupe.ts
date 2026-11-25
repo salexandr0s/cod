@@ -1,6 +1,6 @@
 // Written the way an agent with only the skill would write it.
 // @effect-diagnostics globalDateInEffect:off globalJsonInEffect:off
-const { workflow, agent, stop, webhook, WebhookRequest } = T3;
+const { workflow, agent, stop, webhook, WebhookRequest } = cod3;
 
 export default [
   workflow(

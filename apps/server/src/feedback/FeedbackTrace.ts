@@ -1,7 +1,7 @@
-import type { OrchestrationV2Run, OrchestrationV2TurnItem } from "@t3tools/contracts";
+import type { OrchestrationV2Run, OrchestrationV2TurnItem } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 
-import { FEEDBACK_TRACE_TURNS, type FeedbackTrace, resolveT3ToolName } from "./FeedbackReport.ts";
+import { FEEDBACK_TRACE_TURNS, type FeedbackTrace, resolveCod3ToolName } from "./FeedbackReport.ts";
 import { scrubFeedbackText } from "./scrubFeedback.ts";
 
 const MAX_ENTRIES = 80;
@@ -21,7 +21,7 @@ export const FEEDBACK_TRACE_ITEM_TYPES = [
 ] as const satisfies ReadonlyArray<OrchestrationV2TurnItem["type"]>;
 
 // Claude and Codex namespace or mark tools from other MCP servers; other harnesses name them
-// like built-ins, so there every tool that is not T3's could be one.
+// like built-ins, so there every tool that is not cod3's could be one.
 const NAMES_BUILT_IN_TOOLS: ReadonlySet<string> = new Set(["claudeAgent", "codex"]);
 const BUILT_IN_NAME = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/u;
 /** Every tool from the user's other MCP servers, whose names describe their setup. */
@@ -31,14 +31,14 @@ type Entry = FeedbackTrace["entries"][number];
 
 const toolName = (
   item: OrchestrationV2TurnItem,
-  t3Tools: ReadonlyArray<string>,
+  cod3Tools: ReadonlyArray<string>,
   namesBuiltIns: boolean,
 ): string => {
   if (item.type === "command_execution") return "shell";
   if (item.type !== "dynamic_tool") return item.type;
   const name = item.toolName ?? "";
-  const t3 = resolveT3ToolName(name, t3Tools);
-  if (t3 !== undefined) return t3;
+  const cod3 = resolveCod3ToolName(name, cod3Tools);
+  if (cod3 !== undefined) return cod3;
   return namesBuiltIns &&
     item.toolSource?.kind !== "integration" &&
     !/^mcp/iu.test(name) &&
@@ -72,7 +72,7 @@ export const buildFeedbackTrace = (input: {
   readonly turns: number;
   readonly withText: boolean;
   readonly sensitive: ReadonlyArray<string>;
-  readonly t3Tools: ReadonlyArray<string>;
+  readonly cod3Tools: ReadonlyArray<string>;
   readonly driverOf: (run: OrchestrationV2Run) => string | undefined;
   readonly submittingRunId: OrchestrationV2Run["id"];
 }): FeedbackTrace => {
@@ -83,12 +83,12 @@ export const buildFeedbackTrace = (input: {
   const runs = started.slice(-window);
   const firstTextTurn = input.withText ? runs.length - input.turns + 1 : Infinity;
   const turnOf = new Map(runs.map((run, index) => [run.id, { turn: index + 1, run }] as const));
-  // The `t3_feedback` call making this report is still running; listed, it reads as a hung call.
+  // The `cod3_feedback` call making this report is still running; listed, it reads as a hung call.
   const submitting = (item: OrchestrationV2TurnItem) =>
     item.runId === input.submittingRunId &&
     item.type === "dynamic_tool" &&
     outcome(item) === "unfinished" &&
-    resolveT3ToolName(item.toolName ?? "", input.t3Tools) === "t3_feedback";
+    resolveCod3ToolName(item.toolName ?? "", input.cod3Tools) === "cod3_feedback";
   // Asked for more turns than the window holds, in a thread long enough to have them.
   let truncated = input.turns > window && started.length >= window;
   const entries = input.items
@@ -119,7 +119,7 @@ export const buildFeedbackTrace = (input: {
       return {
         turn,
         type: "tool",
-        tool: toolName(item, input.t3Tools, NAMES_BUILT_IN_TOOLS.has(input.driverOf(run) ?? "")),
+        tool: toolName(item, input.cod3Tools, NAMES_BUILT_IN_TOOLS.has(input.driverOf(run) ?? "")),
         outcome: outcome(item),
         ...(started !== null && completed !== null
           ? {

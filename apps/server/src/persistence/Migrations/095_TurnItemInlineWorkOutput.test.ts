@@ -1,5 +1,5 @@
 import { assert, it } from "@effect/vitest";
-import * as NodeSqliteClient from "@t3tools/shared/nodeSqliteClient";
+import * as NodeSqliteClient from "@cod3/shared/nodeSqliteClient";
 import * as Effect from "effect/Effect";
 import * as SqlClient from "effect/sql/SqlClient";
 
@@ -13,11 +13,11 @@ layer("095_TurnItemInlineWorkOutput", (it) => {
       const sql = yield* SqlClient.SqlClient;
       yield* runMigrations({ toMigrationInclusive: 94 });
       const rows: ReadonlyArray<readonly [string, string, object, number]> = [
-        ["delegate", "dynamic_tool", { toolName: "mcp__t3_code__delegate_task" }, 1],
+        ["delegate", "dynamic_tool", { toolName: "mcp__cod3_code__delegate_task" }, 1],
         ["html", "dynamic_tool", { toolName: "x", output: { htmlRender: {} } }, 1],
-        ["mcp-app", "dynamic_tool", { toolName: "x", output: { t3McpApp: {} } }, 1],
+        ["mcp-app", "dynamic_tool", { toolName: "x", output: { cod3McpApp: {} } }, 1],
         ["image", "dynamic_tool", { toolName: "view_image", viewedImagePath: "/a.png" }, 1],
-        ["send", "dynamic_tool", { toolName: "mcp__t3-code__send_to_user" }, 1],
+        ["send", "dynamic_tool", { toolName: "mcp__cod3__send_to_user" }, 1],
         ["sent", "dynamic_tool", { toolName: "execute", output: '{"sentMessage":"Hi"}' }, 1],
         ["plain", "dynamic_tool", { toolName: "mcp__docs__search", output: "ok" }, 0],
         ["command", "command_execution", { output: "htmlRender" }, 0],

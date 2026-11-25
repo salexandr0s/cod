@@ -2,7 +2,7 @@
 import { msg } from "gt-i18n";
 import { type MarkedText, markedTextEnglish } from "../errors/translatable.ts";
 import * as Schema from "effect/Schema";
-import { extractPng } from "@t3tools/shared/png";
+import { extractPng } from "@cod3/shared/png";
 import { withDeviceHubQuery } from "./hubAccess.ts";
 import type { DeviceStreamTarget } from "./stream.ts";
 
@@ -23,12 +23,13 @@ export class DeviceScreenshotError extends Schema.TaggedError<DeviceScreenshotEr
 
 export async function captureDeviceScreenshot(target: DeviceStreamTarget, signal: AbortSignal) {
   const vendor = target.platform === "ios" ? "serve-sim" : "serve-emu";
+  const mac = target.platform === "macos";
   const url = withDeviceHubQuery(
-    `${target.access.httpBase}/vendor/${vendor}/api/screenshot?device=${encodeURIComponent(target.deviceId)}`,
+    `${target.access.httpBase}${mac ? "/mac/frame" : `/vendor/${vendor}/api/screenshot`}?device=${encodeURIComponent(target.deviceId)}${mac ? "&still=1" : ""}`,
     target.access,
   );
   const response = await fetch(url, {
-    method: "POST",
+    method: mac ? "GET" : "POST",
     credentials: target.access.credentials ? "include" : "omit",
     signal: AbortSignal.any([signal, AbortSignal.timeout(20_000)]),
   });

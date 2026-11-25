@@ -5,9 +5,9 @@ import {
   MessageId,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import { threadContextRecord } from "@t3tools/shared/composerContextReferences";
+} from "@cod3/contracts";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import { threadContextRecord } from "@cod3/shared/composerContextReferences";
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 import {
   DraftId,

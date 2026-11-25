@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import {
   PROVIDER_SEND_TURN_MAX_ATTACHMENTS,
   PROVIDER_SEND_TURN_MAX_IMAGE_BYTES,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type { ComposerAttachmentUploadState } from "./composerAttachmentUploadQueue";
 
 const files = new Map<
@@ -127,7 +127,7 @@ vi.mock("./uuid", () => ({
 
 import { convertPastedImagesToAttachments, persistComposerAttachmentFile } from "./composerImages";
 
-const STORED = "file:///documents/t3-composer-attachments/attachment-id";
+const STORED = "file:///documents/cod3-composer-attachments/attachment-id";
 
 function oversizedPng(): string {
   const png = Buffer.alloc(PROVIDER_SEND_TURN_MAX_IMAGE_BYTES + 1);
@@ -209,9 +209,9 @@ describe("native pasted image cleanup", () => {
 
   it("stores owned pastes in an attachment file and deletes the source", async () => {
     const uri =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/id.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/id.png";
     const gif =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/anim.gif";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/anim.gif";
     files.set(uri, { base64: "aGVsbG8=", deleted: false });
     files.set(gif, { base64: "R0lGODlh", deleted: false });
 
@@ -235,9 +235,9 @@ describe("native pasted image cleanup", () => {
 
   it("deletes rejected and overflow owned files without deleting user-owned files", async () => {
     const rejected =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/bad.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/bad.png";
     const overflow =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/overflow.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/overflow.png";
     const userOwned = "file:///private/var/mobile/photos/library.png";
     files.set(rejected, { base64: "", deleted: false });
     files.set(overflow, { base64: "aGVsbG8=", deleted: false });
@@ -255,7 +255,7 @@ describe("native pasted image cleanup", () => {
 
   it("re-renders an over-limit paste whose dimensions already fit, like the photo picker", async () => {
     const uri =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/photo.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/photo.png";
     files.set(uri, { base64: oversizedPng(), deleted: false });
     manipulator.state.sourceSize = { width: 2000, height: 2000 };
 
@@ -271,9 +271,9 @@ describe("native pasted image cleanup", () => {
 
   it("keeps the readable images of a paste and still reports the one it dropped", async () => {
     const gone =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/gone.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/gone.png";
     const kept =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/kept.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/kept.png";
     files.set(kept, { base64: "aGVsbG8=", deleted: false });
 
     const result = await convertPastedImagesToAttachments({ uris: [gone, kept], existingCount: 0 });
@@ -286,7 +286,7 @@ describe("native pasted image cleanup", () => {
 
   it("reports the size limit when even the JPEG re-render is too large", async () => {
     const uri =
-      "file:///private/var/mobile/Containers/Data/Application/app/tmp/t3-composer-paste/huge.png";
+      "file:///private/var/mobile/Containers/Data/Application/app/tmp/cod3-composer-paste/huge.png";
     files.set(uri, { base64: oversizedPng(), deleted: false });
     manipulator.state.sourceSize = { width: 2000, height: 2000 };
     manipulator.state.renderedBase64 = oversizedPng();

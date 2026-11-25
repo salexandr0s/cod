@@ -5,7 +5,7 @@ import {
   resolveEnvironmentMachineKind,
   type ServerSettings,
   type WorktreeSubmodules,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { CheckIcon, ChevronRightIcon, LayersIcon } from "lucide-react";
 import * as Equal from "effect/Equal";
 import { msg, T, useGT, useMessages } from "gt-react";
@@ -26,7 +26,7 @@ import { isProjectScopedSettingKey } from "./scopedSettings";
 import { settingsScopeEnvironmentLabels } from "./settingsScopeAxis";
 
 interface InheritanceLayer {
-  readonly key: "project" | "environment" | "t3.json" | "built-in";
+  readonly key: "project" | "environment" | "cod3.json" | "built-in";
   readonly label: string;
   readonly value: string;
   readonly effective: boolean;
@@ -151,14 +151,14 @@ export function settingInheritanceLayers(
   });
   if (fileBacked && target.projectId !== null) {
     layers.push({
-      key: "t3.json",
-      label: "t3.json",
+      key: "cod3.json",
+      label: "cod3.json",
       value:
-        source === "t3.json"
+        source === "cod3.json"
           ? formatValue(key, target.settings[key], resolve)
           : resolve(msg("Inherits")),
-      effective: source === "t3.json",
-      set: source === "t3.json",
+      effective: source === "cod3.json",
+      set: source === "cod3.json",
     });
   }
   // File-backed defaults come from the resolver, not the schema's decoded null.

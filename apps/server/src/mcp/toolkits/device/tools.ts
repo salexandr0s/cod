@@ -7,7 +7,7 @@ import {
   DeviceToolOpenResult,
   DeviceToolScreenshotResult,
   DeviceToolTargetInput,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
@@ -50,7 +50,7 @@ const DeviceListTool = Tool.make("device_list", {
 
 const DeviceOpenTool = Tool.make("device_open", {
   description:
-    "Open a simulator or emulator for this thread. Pass `deviceId` and `hostId` from `device_list`. Boots it if needed and shows it in the user's Device panel. Returns the `agent-device` CLI call pinned to that device. Drive the device with that CLI.",
+    "Open an isolated Mac VM, simulator or emulator for this thread. Pass `deviceId` and `hostId` from `device_list`. Boots it if needed and shows it in the user's Device panel. Returns the CLI command pinned to that device. Drive the device with that CLI.",
   parameters: DeviceToolOpenInput,
   success: DeviceToolOpenResult,
   failure: DeviceToolFailure,
@@ -72,7 +72,7 @@ const DeviceOpenTool = Tool.make("device_open", {
 
 export const DeviceScreenshotTool = Tool.make("device_screenshot", {
   description:
-    "Get a PNG of an open device's screen. For taps and text, use the `agent-device` CLI.",
+    "Get a PNG of an open device's screen. For clicks and typing, use the bound command returned by device_open.",
   parameters: DeviceToolTargetInput,
   success: DeviceToolScreenshotResult,
   failure: DeviceToolFailure,

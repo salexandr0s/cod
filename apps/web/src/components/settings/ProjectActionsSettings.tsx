@@ -1,17 +1,17 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import { useScopedSettingsWriteAllowed } from "./useScopedSettings";
-import { AuthSettingsWriteScope } from "@t3tools/contracts";
-import { EnvironmentId, type T3ProjectFileScript } from "@t3tools/contracts";
+import { AuthSettingsWriteScope } from "@cod3/contracts";
+import { EnvironmentId, type Cod3ProjectFileScript } from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { DEFAULT_RESOLVED_KEYBINDINGS } from "@t3tools/shared/keybindings";
+} from "@cod3/client-runtime/state/runtime";
+import { DEFAULT_RESOLVED_KEYBINDINGS } from "@cod3/shared/keybindings";
 import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { T, useGT } from "gt-react";
 import { useState } from "react";
-import { useT3ProjectFileState } from "../../hooks/useT3ProjectFileScripts";
+import { useCod3ProjectFileState } from "../../hooks/useCod3ProjectFileScripts";
 import { useEnvironments } from "../../state/environments";
 import {
   EMPTY_PROJECT_SCRIPT_INPUT,
@@ -75,11 +75,11 @@ export function ProjectActionsSettings() {
   );
 
   const representativeMember = target?.projectId ? memberById.get(target.projectId) : undefined;
-  const t3File = useT3ProjectFileState(
+  const cod3File = useCod3ProjectFileState(
     representativeMember?.environmentId ?? EnvironmentId.make("none"),
     representativeMember?.workspaceRoot ?? null,
   );
-  const importableScripts = t3File.scripts.filter(
+  const importableScripts = cod3File.scripts.filter(
     (fileScript) =>
       !scripts.some(
         (script) =>
@@ -87,7 +87,7 @@ export function ProjectActionsSettings() {
           script.name.toLowerCase() === fileScript.name.toLowerCase(),
       ),
   );
-  const importFileScript = async (fileScript: T3ProjectFileScript) => {
+  const importFileScript = async (fileScript: Cod3ProjectFileScript) => {
     const payload: NewProjectScriptInput = {
       name: fileScript.name,
       command: fileScript.command,
@@ -146,7 +146,7 @@ export function ProjectActionsSettings() {
                 <MenuPopup align="end">
                   <MenuGroup>
                     <MenuGroupLabel>
-                      <T>Import from t3.json</T>
+                      <T>Import from cod3.json</T>
                     </MenuGroupLabel>
                     <p className="px-2 pb-2 text-pretty text-sm text-muted-foreground">
                       <T>Add actions declared by this checkout without editing them first.</T>
@@ -197,11 +197,11 @@ export function ProjectActionsSettings() {
           onEdit={(script) => setRequest(editorRequestForScript(script, keybindings))}
         />
       )}
-      {t3File.status === "invalid" ? (
+      {cod3File.status === "invalid" ? (
         <SettingsRow
-          title={gt("t3.json is invalid")}
+          title={gt("cod3.json is invalid")}
           description={gt(
-            "A t3.json exists in this checkout but fails to parse, so every action and icon it declares is ignored. Check the JSON syntax and icon values.",
+            "A cod3.json exists in this checkout but fails to parse, so every action and icon it declares is ignored. Check the JSON syntax and icon values.",
           )}
           className="text-warning"
         />

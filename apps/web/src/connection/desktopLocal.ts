@@ -1,9 +1,9 @@
-import type { ConnectionTarget } from "@t3tools/client-runtime/connection";
+import type { ConnectionTarget } from "@cod3/client-runtime/connection";
 import {
   PRIMARY_LOCAL_ENVIRONMENT_ID,
   type DesktopBridge,
   type DesktopEnvironmentBootstrap,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
 const DESKTOP_LOCAL_CONNECTION_ID_PREFIX = "local:";
 

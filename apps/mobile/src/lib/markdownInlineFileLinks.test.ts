@@ -16,7 +16,7 @@ const rewrite = (markdown: string) =>
 describe("absolute paths in prose", () => {
   it("become links without corrupting the source around them", () => {
     const path =
-      "/tmp/claude-1000/-home-user--t3-worktrees-app-t3-abc123/session/scratchpad/notes.md";
+      "/tmp/claude-1000/-home-user--cod3-worktrees-app-cod3-abc123/session/scratchpad/notes.md";
     expect(rewrite(`Saved to ${path}.`)).toBe(`Saved to [${path}](<${path}>).`);
     expect(
       markdownForNativeRendering(

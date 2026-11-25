@@ -1,4 +1,4 @@
-import type { EnvironmentId, ProjectId } from "@t3tools/contracts";
+import type { EnvironmentId, ProjectId } from "@cod3/contracts";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -37,7 +37,7 @@ const useWorktreeRepositoryChoiceStore = create<WorktreeRepositoryChoiceStore>()
         })),
     }),
     {
-      name: "t3code:worktree-repository-choices:v1",
+      name: "cod3:worktree-repository-choices:v1",
       storage: createJSONStorage(() =>
         resolveStorage(typeof window !== "undefined" ? window.localStorage : undefined),
       ),

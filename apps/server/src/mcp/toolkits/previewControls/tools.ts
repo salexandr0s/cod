@@ -5,7 +5,7 @@ import {
   PreviewAutomationError,
   PreviewListResult,
   PreviewTabId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { McpSchema, Tool, Toolkit } from "effect/ai";
 import * as ThreadManagementService from "../../../orchestration-v2/ThreadManagementService.ts";
@@ -23,7 +23,7 @@ const shared = {
     PreviewAutomationBroker.PreviewAutomationBroker,
   ],
 };
-const PreviewListTool = Tool.make("t3_preview_list", {
+const PreviewListTool = Tool.make("cod3_preview_list", {
   ...shared,
   description:
     "List this thread's preview tabs. Only `runtime:'server'` entries can be automated here. Others are in the user's local desktop app. Never pass a non-server `tabId` to a `preview_*` tool. Tell the user that tab is on their local desktop and this environment cannot reach it.",
@@ -39,7 +39,7 @@ const PreviewListTool = Tool.make("t3_preview_list", {
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
   .annotate(McpSchema.EnabledWhen, McpInvocationContext.hiddenFromOutsideClients);
-const PreviewCloseTool = Tool.make("t3_preview_close", {
+const PreviewCloseTool = Tool.make("cod3_preview_close", {
   ...shared,
   description:
     "Close one preview tab this thread owns. Use it on a tab you opened for your own check when you finish.",

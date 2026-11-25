@@ -1,5 +1,5 @@
-import { usesChatGptSharing } from "@t3tools/shared/usageLimits";
-import type { ServerProvider } from "@t3tools/contracts";
+import { usesChatGptSharing } from "@cod3/shared/usageLimits";
+import type { ServerProvider } from "@cod3/contracts";
 import { T, useGT } from "gt-react";
 import { useId } from "react";
 import { OpenAI } from "../Icons";

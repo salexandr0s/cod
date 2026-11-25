@@ -1,12 +1,12 @@
 import { Button } from "../../components/ui/Button";
 import { QuestionAttachments } from "./QuestionAttachments";
-import type { EnvironmentId, RuntimeRequestId, ThreadId } from "@t3tools/contracts";
-import type { ThreadUserInputQuestion } from "@t3tools/client-runtime/state/thread-requests";
+import type { EnvironmentId, RuntimeRequestId, ThreadId } from "@cod3/contracts";
+import type { ThreadUserInputQuestion } from "@cod3/client-runtime/state/thread-requests";
 import {
   markdownProseDirection,
   textDirection,
   type TextDirection,
-} from "@t3tools/shared/textDirection";
+} from "@cod3/shared/textDirection";
 import { useNavigation } from "@react-navigation/native";
 import { Plural, T, useGT, Var } from "gt-react-native";
 import { useRef } from "react";
@@ -35,7 +35,7 @@ import { useLiveThreadLinkLabels } from "../../state/entities";
 import {
   isPendingUserInputOptionSelected,
   type PendingUserInputDraftAnswer,
-} from "@t3tools/client-runtime/state/pending-user-input";
+} from "@cod3/client-runtime/state/pending-user-input";
 import type { PendingUserInput } from "../../lib/threadActivity";
 
 export interface PendingUserInputCardProps {
@@ -200,7 +200,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
         onPress={props.onToggleCollapsed}
         className="min-h-10 flex-1 flex-row items-center gap-2 active:opacity-70"
       >
-        <Text className="font-t3-bold text-2xs uppercase tracking-[1.1px] text-foreground-secondary">
+        <Text className="font-cod3-bold text-2xs uppercase tracking-[1.1px] text-foreground-secondary">
           <T>User input needed</T>
         </Text>
         <Text className="font-sans text-xs text-foreground-muted">
@@ -248,10 +248,10 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
           className="flex-1 flex-row items-start gap-2"
         >
           <View className="flex-1 gap-2.5">
-            <Text className="font-t3-bold text-2xs uppercase tracking-[1.1px] text-foreground-secondary">
+            <Text className="font-cod3-bold text-2xs uppercase tracking-[1.1px] text-foreground-secondary">
               <T>User input needed</T>
             </Text>
-            <Text className="font-t3-bold text-lg text-foreground">
+            <Text className="font-cod3-bold text-lg text-foreground">
               <T>Fill in the pending answers</T>
             </Text>
           </View>
@@ -288,7 +288,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
           return (
             <View key={question.id} className="gap-2 pt-1">
               <Text
-                className="font-t3-bold text-xs uppercase tracking-[1px] text-foreground-muted"
+                className="font-cod3-bold text-xs uppercase tracking-[1px] text-foreground-muted"
                 style={proseDirectionStyle(question.header, setDirection)}
               >
                 {question.header}
@@ -328,7 +328,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
                         <View className="min-w-0 flex-1 gap-0.5">
                           <Text
                             className={cn(
-                              "font-t3-bold text-sm",
+                              "font-cod3-bold text-sm",
                               selected ? "text-foreground" : "text-foreground-secondary",
                             )}
                             style={proseDirectionStyle(option.label, setDirection)}

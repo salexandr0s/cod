@@ -3,9 +3,9 @@ import type {
   ServerConfig,
   ServerInstallation,
   ServerSelfUpdateCapability,
-} from "@t3tools/contracts";
-import type { ServerUpdateState } from "@t3tools/client-runtime/state/server";
-import { compareSemverVersions, parseSemver } from "@t3tools/shared/semver";
+} from "@cod3/contracts";
+import type { ServerUpdateState } from "@cod3/client-runtime/state/server";
+import { compareSemverVersions, parseSemver } from "@cod3/shared/semver";
 import * as Schema from "effect/Schema";
 import { msg } from "gt-react";
 
@@ -19,7 +19,7 @@ export interface VersionMismatch {
   readonly hint: string;
 }
 
-const VERSION_MISMATCH_DISMISSALS_STORAGE_KEY = "t3code:version-mismatch-dismissals:v1";
+const VERSION_MISMATCH_DISMISSALS_STORAGE_KEY = "cod3:version-mismatch-dismissals:v1";
 
 const dismissedServerUpdateFailures = new WeakSet<ServerUpdateState>();
 
@@ -77,7 +77,7 @@ export function resolveVersionMismatch(
     clientVersion: normalizedClientVersion,
     serverVersion: normalizedServerVersion,
     hint: resolve(
-      msg("Version mismatch. Try syncing the client and server to the same T3 Code version."),
+      msg("Version mismatch. Try syncing the client and server to the same cod3 version."),
     ),
   };
 }
@@ -107,15 +107,15 @@ export function manualServerUpdateCommand(
 ): string {
   const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
   if (installation?.kind === "npm-global") {
-    return `npm install --global --prefix ${quote(installation.prefix)} t3@${targetVersion}`;
+    return `npm install --global --prefix ${quote(installation.prefix)} cod3@${targetVersion}`;
   }
-  if (installation?.kind === "t3-launcher") {
-    // An inherited T3CODE_HOME would otherwise send the update to a home the launcher is not in.
+  if (installation?.kind === "cod3-launcher") {
+    // An inherited COD3_HOME would otherwise send the update to a home the launcher is not in.
     return `${quote(installation.launcher)} update --base-dir ${quote(installation.baseDir)} ${targetVersion}`;
   }
   const runner =
     installation?.kind === "pnpm-dlx" ? "pnpm dlx" : installation?.kind === "bunx" ? "bunx" : "npx";
-  return `${runner} t3@${targetVersion}`;
+  return `${runner} cod3@${targetVersion}`;
 }
 
 export function buildVersionMismatchDismissalKey(

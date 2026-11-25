@@ -1,6 +1,6 @@
 ---
 name: launch-video
-description: Make a short launch video (1920x1080 MP4 plus an outro PNG) that demos a T3 Code feature, built from the real app with added motion, for an X/Twitter announcement or release thread. Use when asked for a launch video, demo video, feature teaser or announcement clip, or to add a video to a release tweet.
+description: Make a short launch video (1920x1080 MP4 plus an outro PNG) that demos a cod3 feature, built from the real app with added motion, for an X/Twitter announcement or release thread. Use when asked for a launch video, demo video, feature teaser or announcement clip, or to add a video to a release tweet.
 ---
 
 # Launch videos
@@ -27,7 +27,7 @@ There are two ways to build one:
 2. **Write the story** before any code: who the user is, what they want, and two or three
    beats that get them there. Show it to the maintainer if the angle is a guess.
 3. **Stage it.** Copy `stagings/linked-environments/` to `stagings/<slug>/`.
-   - `serve.mjs` builds fresh homes under `.t3/launch/<slug>/` with `scripts/stage-env.mjs`.
+   - `serve.mjs` builds fresh homes under `.cod3/launch/<slug>/` with `scripts/stage-env.mjs`.
      Each home gets a fictional machine label, the replay agent, and no paid provider.
      It starts the servers, creates projects, writes `<out>/stage.json` and keeps running.
      Run it in the background.
@@ -38,14 +38,14 @@ There are two ways to build one:
      `scripts/fake-claude.mjs` as its CLI, so the video shows Claude's logo, models, thinking
      and tool rows. Each turn is `{ match, steps }`: `think`, `text`, `bash` (+ `output`, `ms`),
      `wait`, `edit` (+ `old`, `new`) and `write` (+ `content`), which change the file for real
-     so diffs and checkpoints show them, and `tool` (+ `input`), which calls that T3 MCP tool
+     so diffs and checkpoints show them, and `tool` (+ `input`), which calls that cod3 MCP tool
      for real, e.g. `delegate_task`; with `server` and `output` it plays another MCP server's
      tool instead. `<var:name>` is filled from the JSON file at `FAKE_CLAUDE_VARS`, for ids
      that change every run. `bash` with `run: true` executes the command in the session's cwd
      (to push a branch or open a pull request with a forge CLI); `as: "name"` keeps its output,
      or the `pick` regex match in it, as `<var:name>` for the turn's later steps. A workflow
      `agent` step with `returns` finishes on `submit: { ... }`, which hands it that value
-     through `t3_submit_output`. `fake-claude.log` in the home records the protocol, for debugging.
+     through `cod3_submit_output`. `fake-claude.log` in the home records the protocol, for debugging.
    - Titles, commit messages and branch names come from `claude -p --json-schema`: answer them
      with `{ match, json }` turns, where `match` is tested against the schema plus the prompt
      (`'"title"'`, `'"subject"[\\s\\S]*products\\.ts'`). Unanswered ones fail in the app.
@@ -59,7 +59,7 @@ There are two ways to build one:
    - Data a real flow can't produce cheaply goes into the app's own stores, never into pixels.
      `insertPeerLinks` writes link rows into a stopped server; `serveDescriptors` makes fake
      machines answer the reachability probe. The client's saved environments and routes live
-     in IndexedDB (`t3code:connection-runtime` / `catalog` / `document`): write the document
+     in IndexedDB (`cod3:connection-runtime` / `catalog` / `document`): write the document
      from the page after its first load, then reload. Route kinds come from hostnames
      (`*.localhost` is LAN, `*.ts.net` Tailscale); Chrome's
      `--host-resolver-rules=MAP *.tail-demo.ts.net 127.0.0.1` makes fake tailnet names work.
@@ -78,8 +78,8 @@ There are two ways to build one:
    `scripts/sheet.sh ~/launch-videos/<slug> 1,4.5,8,12,16,21,26` then Read `sheet.png`.
    The times are video seconds (after `Kit.timeline`), not animation seconds. Read the
    full-size frames in `probe/` to check small text. A probe takes about 2 s a frame.
-7. **Render:** `scripts/render.sh ~/launch-videos/<slug> t3code-<slug>` gives
-   `t3code-<slug>.mp4` and `outro.png`. A 30 s video takes 3–6 minutes.
+7. **Render:** `scripts/render.sh ~/launch-videos/<slug> cod3-<slug>` gives
+   `cod3-<slug>.mp4` and `outro.png`. A 30 s video takes 3–6 minutes.
 8. **Hand back** with the video and outro embedded (`![...](/abs/path.mp4)`), the caption
    copy, any `Kit.text` edits, and anything you assumed rather than verified.
 
@@ -89,7 +89,7 @@ harness's task stop; it ends its servers' process groups.
 
 ### Staging traps
 
-- **Machine names and icons.** `T3CODE_ENVIRONMENT_LABEL` and `T3CODE_ENVIRONMENT_MACHINE_KIND`
+- **Machine names and icons.** `COD3_ENVIRONMENT_LABEL` and `COD3_ENVIRONMENT_MACHINE_KIND`
   (laptop, desktop, cloud, linux, mac-mini, mac-studio) override what the server detects.
   `prepareHome({ label, machine })` records them and `startEnvironment` and `cli()` pass them
   on; the CLI needs them too, because a link introduces the machine by its label.
@@ -182,7 +182,7 @@ seeks every animation (in the story and inside each beat) to each frame's time.
   throws if two overlap; two captions crossfading read as garbled text.
 - **Pacing**: `Kit.timeline([[realSeconds, animFrom, animTo], ...])` maps video time to
   animation time; `animFrom == animTo` holds a frame. It also sets the video length.
-- **Outro** `.outro`: logo, a two-line headline, "Available now in **T3 Code** `<version>`",
+- **Outro** `.outro`: logo, a two-line headline, "Available now in **cod3** `<version>`",
   `t3.codes`. Change the headline and version, keep the rest. Hold it about 3 s.
 
 Two animations on one property of one element fight (the later one wins for its whole

@@ -1,8 +1,8 @@
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { expect, it } from "@effect/vitest";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as NetService from "@t3tools/shared/Net";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as NetService from "@cod3/shared/Net";
 import * as Cause from "effect/Cause";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
@@ -24,13 +24,13 @@ const none = Option.none<boolean>();
 
 it.each([
   {
-    label: "a new machine starts from T3 Connect and asks",
+    label: "a new machine starts from cod3 Connect and asks",
     setup: { installed: false, connect: false, lan: false },
     flags: { connect: none, lan: none },
     expected: { routes: { connect: true, lan: false }, ask: ["connect", "lan"] },
   },
   {
-    label: "a build without T3 Connect never offers it",
+    label: "a build without cod3 Connect never offers it",
     setup: { installed: false, connect: null, lan: false },
     flags: { connect: none, lan: none },
     expected: { routes: { connect: false, lan: false }, ask: ["lan"] },
@@ -61,8 +61,8 @@ const SERVICE = {
   supported: true,
   installed: true,
   current: true,
-  unitPath: "/home/me/.config/systemd/user/t3code.service",
-  logPath: "/home/me/.t3/userdata/logs/boot-service.log",
+  unitPath: "/home/me/.config/systemd/user/cod3.service",
+  logPath: "/home/me/.cod3/userdata/logs/boot-service.log",
 } as const;
 
 it.each([
@@ -114,7 +114,7 @@ it.each([
     revoked: false,
     on: false,
   },
-] as const)("T3 Connect is on for $label: $on", ({ label: _, on, ...link }) => {
+] as const)("cod3 Connect is on for $label: $on", ({ label: _, on, ...link }) => {
   expect(connectEnabled(link)).toBe(on);
 });
 
@@ -153,294 +153,299 @@ const answering = (text: string) =>
     display: () => Effect.void,
   });
 
-it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))("t3 up", (it) => {
-  afterEach(() => vi.restoreAllMocks());
+it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))(
+  "cod3 up",
+  (it) => {
+    afterEach(() => vi.restoreAllMocks());
 
-  it.effect.each<{
-    readonly label: string;
-    readonly installed: boolean;
-    readonly status?: Partial<BootService.BootServiceStatus>;
-    readonly installFails?: boolean;
-    readonly restartFails?: boolean;
-    readonly fails?: boolean;
-    readonly reportStatus?: boolean;
-    /** Runs as if in a terminal, answering each question with this text. */
-    readonly answer?: string;
-    /** Lines the run prints, with `<baseDir>` standing for the test's home. */
-    readonly prints?: ReadonlyArray<string>;
-    readonly omits?: string;
-    readonly json?: object;
-    readonly env: string;
-    readonly args: ReadonlyArray<string>;
-    readonly installs: number;
-    readonly restarts: number;
-    readonly envAfter: string;
-  }>([
-    {
-      label: "nothing changed",
-      installed: true,
-      env: "T3CODE_LAN=false\n",
-      args: ["--no-lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "the local network opens",
-      prints: ["Run `t3 pair --base-dir <baseDir>`."],
-      installed: true,
-      env: "T3CODE_LAN=false\n",
-      args: ["--lan"],
-      installs: 0,
-      restarts: 1,
-      envAfter: "T3CODE_LAN=true\n",
-    },
-    {
-      label: "a new service starts with its settings",
-      installed: false,
-      env: "",
-      args: ["--lan"],
-      installs: 1,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=true\n",
-    },
-    {
-      label: "a route turns off with no service to run",
-      prints: ["Run `t3 --base-dir <baseDir>` to use T3 Code here."],
-      installed: false,
-      env: "T3CODE_LAN=true\n",
-      args: ["--no-lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "a stopped newer service starts as it is",
-      installed: true,
-      status: { current: false, installedVersion: "999.0.0", problems: ["service-stopped"] },
-      env: "T3CODE_LAN=false\n",
-      args: ["--yes"],
-      installs: 0,
-      restarts: 1,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "a failed update keeps service.env matching the old service",
-      // The old service still runs, so no foreground server is offered.
-      prints: ["Fix that, then run `t3 up --base-dir <baseDir>` again."],
-      installed: true,
-      status: { current: false },
-      installFails: true,
-      env: "",
-      args: ["--no-lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "",
-    },
-    {
-      label: "a failed restart puts service.env back and restarts on it",
-      installed: true,
-      restartFails: true,
-      env: "T3CODE_LAN=false\n",
-      args: ["--lan"],
-      installs: 0,
-      restarts: 2,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "declining an update changes nothing",
-      installed: true,
-      status: { current: false },
-      answer: "n",
-      env: "T3CODE_LAN=false\n",
-      args: ["--lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "a service for another home is refused without a restart",
-      installed: true,
-      status: { current: false, otherBaseDir: "/srv/t3 home" },
-      fails: true,
-      answer: "y",
-      env: "T3CODE_LAN=false\n",
-      args: ["--lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=false\n",
-    },
-    {
-      label: "another home's service supplies no local network default",
-      installed: true,
-      status: { current: false, otherBaseDir: "/srv/t3 home" },
-      reportStatus: true,
-      json: {
-        service: { otherBaseDir: "/srv/t3 home" },
-        lan: { enabled: false, inheritedDefault: false },
+    it.effect.each<{
+      readonly label: string;
+      readonly installed: boolean;
+      readonly status?: Partial<BootService.BootServiceStatus>;
+      readonly installFails?: boolean;
+      readonly restartFails?: boolean;
+      readonly fails?: boolean;
+      readonly reportStatus?: boolean;
+      /** Runs as if in a terminal, answering each question with this text. */
+      readonly answer?: string;
+      /** Lines the run prints, with `<baseDir>` standing for the test's home. */
+      readonly prints?: ReadonlyArray<string>;
+      readonly omits?: string;
+      readonly json?: object;
+      readonly env: string;
+      readonly args: ReadonlyArray<string>;
+      readonly installs: number;
+      readonly restarts: number;
+      readonly envAfter: string;
+    }>([
+      {
+        label: "nothing changed",
+        installed: true,
+        env: "COD3_LAN=false\n",
+        args: ["--no-lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=false\n",
       },
-      env: "",
-      args: ["--json"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "",
-    },
-    {
-      label: "status hints keep the caller's --base-dir",
-      installed: true,
-      reportStatus: true,
-      prints: [
-        "Turn it off: `t3 up --base-dir <baseDir> --no-lan`.",
-        "Change access: `t3 up --base-dir <baseDir>`.",
-      ],
-      env: "",
-      args: [],
-      installs: 0,
-      restarts: 0,
-      envAfter: "",
-    },
-    {
-      label: "a host override gets no --no-lan hint it would ignore",
-      installed: true,
-      reportStatus: true,
-      prints: ["overridden · T3CODE_HOST=0.0.0.0"],
-      omits: "--no-lan",
-      env: "T3CODE_HOST=0.0.0.0\n",
-      args: [],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_HOST=0.0.0.0\n",
-    },
-    {
-      label: "no service manager still records the choice",
-      installed: false,
-      status: { supported: false },
-      env: "",
-      args: ["--lan"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=true\n",
-    },
-    {
-      label: "the old default is kept",
-      installed: true,
-      env: "",
-      args: ["--yes"],
-      installs: 0,
-      restarts: 0,
-      envAfter: "T3CODE_LAN=true\n",
-    },
-  ])("keeps service changes and access settings consistent: $label", (input) =>
-    Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
-      const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-up-test-" });
-      yield* fs.writeFileString(`${baseDir}/service.env`, input.env);
-      let installs = 0;
-      let restarts = 0;
-      const status = {
-        ...SERVICE,
-        installed: input.installed,
-        current: input.installed,
-        ...input.status,
-      };
-      vi.spyOn(BootService, "layer").mockReturnValue(
-        Layer.succeed(
-          BootService.BootService,
-          BootService.BootService.of({
-            status: Effect.succeed(status),
-            withStopped: (operation) => operation,
-            restart: Effect.sync(() => restarts++).pipe(
-              Effect.andThen(
-                input.restartFails === true
-                  ? Effect.fail(new BootService.BootServiceCommandError({ step: "restart" }))
-                  : Effect.succeed("restarted" as const),
+      {
+        label: "the local network opens",
+        prints: ["Run `cod3 pair --base-dir <baseDir>`."],
+        installed: true,
+        env: "COD3_LAN=false\n",
+        args: ["--lan"],
+        installs: 0,
+        restarts: 1,
+        envAfter: "COD3_LAN=true\n",
+      },
+      {
+        label: "a new service starts with its settings",
+        installed: false,
+        env: "",
+        args: ["--lan"],
+        installs: 1,
+        restarts: 0,
+        envAfter: "COD3_LAN=true\n",
+      },
+      {
+        label: "a route turns off with no service to run",
+        prints: ["Run `cod3 --base-dir <baseDir>` to use cod3 here."],
+        installed: false,
+        env: "COD3_LAN=true\n",
+        args: ["--no-lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=false\n",
+      },
+      {
+        label: "a stopped newer service starts as it is",
+        installed: true,
+        status: { current: false, installedVersion: "999.0.0", problems: ["service-stopped"] },
+        env: "COD3_LAN=false\n",
+        args: ["--yes"],
+        installs: 0,
+        restarts: 1,
+        envAfter: "COD3_LAN=false\n",
+      },
+      {
+        label: "a failed update keeps service.env matching the old service",
+        // The old service still runs, so no foreground server is offered.
+        prints: ["Fix that, then run `cod3 up --base-dir <baseDir>` again."],
+        installed: true,
+        status: { current: false },
+        installFails: true,
+        env: "",
+        args: ["--no-lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "",
+      },
+      {
+        label: "a failed restart puts service.env back and restarts on it",
+        installed: true,
+        restartFails: true,
+        env: "COD3_LAN=false\n",
+        args: ["--lan"],
+        installs: 0,
+        restarts: 2,
+        envAfter: "COD3_LAN=false\n",
+      },
+      {
+        label: "declining an update changes nothing",
+        installed: true,
+        status: { current: false },
+        answer: "n",
+        env: "COD3_LAN=false\n",
+        args: ["--lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=false\n",
+      },
+      {
+        label: "a service for another home is refused without a restart",
+        installed: true,
+        status: { current: false, otherBaseDir: "/srv/cod3 home" },
+        fails: true,
+        answer: "y",
+        env: "COD3_LAN=false\n",
+        args: ["--lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=false\n",
+      },
+      {
+        label: "another home's service supplies no local network default",
+        installed: true,
+        status: { current: false, otherBaseDir: "/srv/cod3 home" },
+        reportStatus: true,
+        json: {
+          service: { otherBaseDir: "/srv/cod3 home" },
+          lan: { enabled: false, inheritedDefault: false },
+        },
+        env: "",
+        args: ["--json"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "",
+      },
+      {
+        label: "status hints keep the caller's --base-dir",
+        installed: true,
+        reportStatus: true,
+        prints: [
+          "Turn it off: `cod3 up --base-dir <baseDir> --no-lan`.",
+          "Change access: `cod3 up --base-dir <baseDir>`.",
+        ],
+        env: "",
+        args: [],
+        installs: 0,
+        restarts: 0,
+        envAfter: "",
+      },
+      {
+        label: "a host override gets no --no-lan hint it would ignore",
+        installed: true,
+        reportStatus: true,
+        prints: ["overridden · COD3_HOST=0.0.0.0"],
+        omits: "--no-lan",
+        env: "COD3_HOST=0.0.0.0\n",
+        args: [],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_HOST=0.0.0.0\n",
+      },
+      {
+        label: "no service manager still records the choice",
+        installed: false,
+        status: { supported: false },
+        env: "",
+        args: ["--lan"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=true\n",
+      },
+      {
+        label: "the old default is kept",
+        installed: true,
+        env: "",
+        args: ["--yes"],
+        installs: 0,
+        restarts: 0,
+        envAfter: "COD3_LAN=true\n",
+      },
+    ])("keeps service changes and access settings consistent: $label", (input) =>
+      Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem;
+        const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-up-test-" });
+        yield* fs.writeFileString(`${baseDir}/service.env`, input.env);
+        let installs = 0;
+        let restarts = 0;
+        const status = {
+          ...SERVICE,
+          installed: input.installed,
+          current: input.installed,
+          ...input.status,
+        };
+        vi.spyOn(BootService, "layer").mockReturnValue(
+          Layer.succeed(
+            BootService.BootService,
+            BootService.BootService.of({
+              status: Effect.succeed(status),
+              withStopped: (operation) => operation,
+              restart: Effect.sync(() => restarts++).pipe(
+                Effect.andThen(
+                  input.restartFails === true
+                    ? Effect.fail(new BootService.BootServiceCommandError({ step: "restart" }))
+                    : Effect.succeed("restarted" as const),
+                ),
               ),
-            ),
-            install: () =>
-              status.otherBaseDir !== undefined
-                ? Effect.fail(
-                    new BootService.BootServiceOtherBaseDirError({
-                      installedBaseDir: status.otherBaseDir,
-                      baseDir,
-                    }),
-                  )
-                : input.installFails === true
+              install: () =>
+                status.otherBaseDir !== undefined
                   ? Effect.fail(
-                      new BootService.BootServicePrerequisiteError({ problem: "linger-disabled" }),
-                    )
-                  : Effect.sync(() => {
-                      installs++;
-                      return {
-                        program: ["t3"],
+                      new BootService.BootServiceOtherBaseDirError({
+                        installedBaseDir: status.otherBaseDir,
                         baseDir,
-                        unitPath: status.unitPath,
-                        logPath: status.logPath,
-                      };
-                    }),
-            uninstall: Effect.succeed(false),
-          }),
-        ),
-      );
-
-      if (input.answer !== undefined) yield* asTerminal;
-      const run = input.reportStatus
-        ? Command.runWith(statusCommand, { version: packageJson.version })
-        : Command.runWith(upCommand, { version: packageJson.version });
-      const { exit, lines } = yield* run(["--base-dir", baseDir, ...input.args]).pipe(
-        Effect.provideService(HostProcess.Environment, {}),
-        input.answer === undefined
-          ? (effect) => effect
-          : Effect.provideService(Terminal.Terminal, answering(input.answer)),
-        Effect.exit,
-        Effect.flatMap((exit) =>
-          Effect.map(TestConsole.logLines, (lines) => ({ exit, lines: lines.map(String) })),
-        ),
-        Effect.provide(
-          Layer.mergeAll(
-            ConfigProvider.layer(ConfigProvider.fromEnv({ env: {} })),
-            Layer.fresh(TestConsole.layer),
+                      }),
+                    )
+                  : input.installFails === true
+                    ? Effect.fail(
+                        new BootService.BootServicePrerequisiteError({
+                          problem: "linger-disabled",
+                        }),
+                      )
+                    : Effect.sync(() => {
+                        installs++;
+                        return {
+                          program: ["cod3"],
+                          baseDir,
+                          unitPath: status.unitPath,
+                          logPath: status.logPath,
+                        };
+                      }),
+              uninstall: Effect.succeed(false),
+            }),
           ),
-        ),
-      );
-      for (const line of input.prints ?? []) {
-        expect(lines.join("\n")).toContain(line.replace("<baseDir>", baseDir));
-      }
-      if (input.omits !== undefined) {
-        expect(lines.join("\n")).not.toContain(input.omits);
-      }
-      if (input.json !== undefined) {
-        expect(JSON.parse(lines.join("\n"))).toMatchObject(input.json);
-      }
-      expect(exit._tag).toBe(
-        input.restartFails === true || input.fails === true ? "Failure" : "Success",
-      );
-      expect({ installs, restarts }).toEqual({
-        installs: input.installs,
-        restarts: input.restarts,
-      });
-      expect(yield* fs.readFileString(`${baseDir}/service.env`)).toBe(input.envAfter);
-    }),
-  );
-});
+        );
+
+        if (input.answer !== undefined) yield* asTerminal;
+        const run = input.reportStatus
+          ? Command.runWith(statusCommand, { version: packageJson.version })
+          : Command.runWith(upCommand, { version: packageJson.version });
+        const { exit, lines } = yield* run(["--base-dir", baseDir, ...input.args]).pipe(
+          Effect.provideService(HostProcess.Environment, {}),
+          input.answer === undefined
+            ? (effect) => effect
+            : Effect.provideService(Terminal.Terminal, answering(input.answer)),
+          Effect.exit,
+          Effect.flatMap((exit) =>
+            Effect.map(TestConsole.logLines, (lines) => ({ exit, lines: lines.map(String) })),
+          ),
+          Effect.provide(
+            Layer.mergeAll(
+              ConfigProvider.layer(ConfigProvider.fromEnv({ env: {} })),
+              Layer.fresh(TestConsole.layer),
+            ),
+          ),
+        );
+        for (const line of input.prints ?? []) {
+          expect(lines.join("\n")).toContain(line.replace("<baseDir>", baseDir));
+        }
+        if (input.omits !== undefined) {
+          expect(lines.join("\n")).not.toContain(input.omits);
+        }
+        if (input.json !== undefined) {
+          expect(JSON.parse(lines.join("\n"))).toMatchObject(input.json);
+        }
+        expect(exit._tag).toBe(
+          input.restartFails === true || input.fails === true ? "Failure" : "Success",
+        );
+        expect({ installs, restarts }).toEqual({
+          installs: input.installs,
+          restarts: input.restarts,
+        });
+        expect(yield* fs.readFileString(`${baseDir}/service.env`)).toBe(input.envAfter);
+      }),
+    );
+  },
+);
 
 it("rewrites only the named service.env keys and keeps the user's lines", () => {
-  const before = ["# my settings", "T3CODE_PORT=4000", "export T3CODE_LAN=0", "T3CODE_LAN=1", ""];
-  expect(upsertServiceEnv(before.join("\n"), { T3CODE_LAN: "true", T3CODE_HOST: undefined })).toBe(
-    ["# my settings", "T3CODE_PORT=4000", "T3CODE_LAN=true", ""].join("\n"),
+  const before = ["# my settings", "COD3_PORT=4000", "export COD3_LAN=0", "COD3_LAN=1", ""];
+  expect(upsertServiceEnv(before.join("\n"), { COD3_LAN: "true", COD3_HOST: undefined })).toBe(
+    ["# my settings", "COD3_PORT=4000", "COD3_LAN=true", ""].join("\n"),
   );
-  expect(upsertServiceEnv("", { T3CODE_LAN: "false" })).toBe("T3CODE_LAN=false\n");
+  expect(upsertServiceEnv("", { COD3_LAN: "false" })).toBe("COD3_LAN=false\n");
   expect(
-    upsertServiceEnv('T3CODE_LAN="a\nb"\nCUSTOM="x\nT3CODE_LAN=y"\nT3CODE_LAN=true\n', {
-      T3CODE_LAN: "false",
+    upsertServiceEnv('COD3_LAN="a\nb"\nCUSTOM="x\nCOD3_LAN=y"\nCOD3_LAN=true\n', {
+      COD3_LAN: "false",
     }),
-  ).toBe('T3CODE_LAN=false\nCUSTOM="x\nT3CODE_LAN=y"\n');
+  ).toBe('COD3_LAN=false\nCUSTOM="x\nCOD3_LAN=y"\n');
   expect(
-    upsertServiceEnv('T3CODE_LAN=\u00a0"unused\nCUSTOM=keep\nEND="\nT3CODE_LAN=true\n', {
-      T3CODE_LAN: "false",
+    upsertServiceEnv('COD3_LAN=\u00a0"unused\nCUSTOM=keep\nEND="\nCOD3_LAN=true\n', {
+      COD3_LAN: "false",
     }),
-  ).toBe('T3CODE_LAN=false\nCUSTOM=keep\nEND="\n');
+  ).toBe('COD3_LAN=false\nCUSTOM=keep\nEND="\n');
   const long = `CUSTOM="${"\n".repeat(130_000)}"\n`;
-  expect(upsertServiceEnv(`${long}T3CODE_LAN=true\n`, { T3CODE_LAN: "false" })).toBe(
-    `${long}T3CODE_LAN=false\n`,
+  expect(upsertServiceEnv(`${long}COD3_LAN=true\n`, { COD3_LAN: "false" })).toBe(
+    `${long}COD3_LAN=false\n`,
   );
 });

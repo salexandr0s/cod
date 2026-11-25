@@ -6,6 +6,7 @@ import { AppText as Text } from "./AppText";
 
 export function ListSection(props: {
   readonly title?: string;
+  readonly prominentTitle?: boolean;
   readonly titleIcon?: ReactNode;
   readonly trailing?: ReactNode;
   readonly children: ReactNode;
@@ -23,7 +24,15 @@ export function ListSection(props: {
             }
           >
             {props.titleIcon}
-            <Text textRole="footnote" className="shrink font-t3-medium text-foreground-muted">
+            <Text
+              accessibilityRole="header"
+              textRole="footnote"
+              className={
+                props.prominentTitle
+                  ? "shrink font-cod3-semibold text-foreground"
+                  : "shrink font-cod3-medium text-foreground-muted"
+              }
+            >
               {props.title}
             </Text>
           </View>

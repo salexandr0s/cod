@@ -1,9 +1,9 @@
-import { parsePullRequestAnchor } from "@t3tools/shared/pullRequestAnchor";
+import { parsePullRequestAnchor } from "@cod3/shared/pullRequestAnchor";
 import { usePullRequestConnected } from "./usePullRequestConnected";
 import { useAtomValue } from "@effect/atom-react";
 import { useNavigation } from "@react-navigation/native";
-import type { PullRequestAction, PullRequestDetail } from "@t3tools/contracts";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import type { PullRequestAction, PullRequestDetail } from "@cod3/contracts";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { changeRequestTermKind } from "../../lib/changeRequestTerm";
 import Animated from "react-native-reanimated";
 import { PR_ROW_LAYOUT, PR_DISCLOSURE_ENTER, PR_ROW_EXIT } from "./pullRequestAnimations";
@@ -74,7 +74,7 @@ export function PullRequestStatusMenu(props: RowProps) {
       className="min-h-8 flex-row items-center gap-1.5 active:opacity-70"
     >
       <SymbolView name={status.icon} size={14} tintColorClassName={status.tint} />
-      <Text className={`text-xs font-t3-medium ${status.text}`}>{status.label}</Text>
+      <Text className={`text-xs font-cod3-medium ${status.text}`}>{status.label}</Text>
       {actions.length ? (
         <SymbolView name="chevron.down" size={9} tintColorClassName="accent-icon-muted" />
       ) : null}
@@ -348,7 +348,7 @@ export function PullRequestReviewersRow(props: RowProps) {
                 }
               />
               <PullRequestAvatar actor={review.author} size={32} />
-              <Text className="min-w-0 flex-1 text-sm font-t3-medium" numberOfLines={1}>
+              <Text className="min-w-0 flex-1 text-sm font-cod3-medium" numberOfLines={1}>
                 {review.author?.login ?? gt("Unknown reviewer")}
               </Text>
               {review.outdated ? (
@@ -369,7 +369,7 @@ export function PullRequestReviewersRow(props: RowProps) {
               >
                 <SymbolView name="clock" size={18} tintColorClassName="accent-icon-muted" />
                 <PullRequestAvatar actor={reviewer} size={32} />
-                <Text className="min-w-0 flex-1 text-sm font-t3-medium" numberOfLines={1}>
+                <Text className="min-w-0 flex-1 text-sm font-cod3-medium" numberOfLines={1}>
                   {reviewer.login}
                 </Text>
               </View>

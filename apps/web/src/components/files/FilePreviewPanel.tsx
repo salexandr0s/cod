@@ -1,4 +1,4 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { DownloadIcon, CopyIcon, CheckIcon, Code2Icon, EyeIcon, Table2Icon } from "lucide-react";
 import { msg, T, useGT, useMessages, Var } from "gt-react";
 import { m, type MessageResolver } from "~/i18n/messages";
@@ -12,9 +12,9 @@ import {
   type ProjectId,
   type ResolvedKeybindingsConfig,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
-import { filePreviewDelimiter } from "@t3tools/shared/delimitedPreview";
-import { AuthFilesystemWriteScope } from "@t3tools/contracts";
+} from "@cod3/contracts";
+import { filePreviewDelimiter } from "@cod3/shared/delimitedPreview";
+import { AuthFilesystemWriteScope } from "@cod3/contracts";
 import {
   isWorkspaceAudioPreviewPath,
   isWorkspaceImagePreviewPath,
@@ -22,7 +22,7 @@ import {
   isWorkspaceVideoPreviewPath,
   officePreviewKind,
   binaryPreviewKind,
-} from "@t3tools/shared/filePreview";
+} from "@cod3/shared/filePreview";
 import { useAtomMount, useAtomValue } from "@effect/atom-react";
 import { Atom } from "effect/reactivity";
 import {
@@ -45,8 +45,8 @@ import { useFilesystemReadAccess } from "~/state/filesystem";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { mediaFileReference } from "@t3tools/client-runtime/media-reference";
+} from "@cod3/client-runtime/state/runtime";
+import { mediaFileReference } from "@cod3/client-runtime/media-reference";
 import { FolderTree, Globe2, WrapTextIcon } from "lucide-react";
 import * as Schema from "effect/Schema";
 import {
@@ -70,14 +70,14 @@ import { useRemoteOpenState } from "~/remoteOpen";
 import { useClientSettings } from "~/hooks/useSettings";
 import { useTheme } from "~/hooks/useTheme";
 import { useStableCallback } from "~/hooks/useStableCallback";
-import { getLocalStorageItem, setLocalStorageItem, useLocalStorage } from "~/hooks/useLocalStorage";
+import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { resolveDiffThemeName } from "~/lib/diffRendering";
 import { PREFERRED_HIGHLIGHTER } from "~/lib/syntaxHighlighting";
 import { cn, isMacPlatform } from "~/lib/utils";
 import { requestWorkspaceFocus } from "~/lib/workspaceFocus";
 import type { ChatFileAttachment } from "~/types";
-import { isHostPath } from "@t3tools/shared/path";
-import { resolvePathLinkTarget } from "@t3tools/shared/fileLinks";
+import { isHostPath } from "@cod3/shared/path";
+import { resolvePathLinkTarget } from "@cod3/shared/fileLinks";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { stackedThreadToast, toastManager } from "~/components/ui/toast";
 import { type DraftId, useComposerDraftStore } from "~/composerDraftStore";
@@ -98,11 +98,13 @@ import { BrowserDocumentFrame, isPdfPreviewFile } from "./BrowserDocumentFrame";
 import { DelimitedTablePreview } from "./DelimitedTablePreview";
 import { PreviewImage } from "./PreviewImage";
 import FileBrowserPanel from "./FileBrowserPanel";
+import { projectDocumentRank } from "./projectDocuments.logic";
+import { ChecklistProgress } from "./ChecklistProgress";
 import { FileExplorerPane } from "./FileExplorerPane";
 import { FileBreadcrumbs } from "./FileBreadcrumbs";
 import { breadcrumbPathOf, retainedBreadcrumbTrail, trailChildOf } from "./filePath";
 import { ChunkedMarkdown } from "./ChunkedMarkdown";
-import { splitMarkdown } from "@t3tools/shared/markdownChunks";
+import { splitMarkdown } from "@cod3/shared/markdownChunks";
 import {
   type FileCommentAnnotationEntry,
   type FileCommentAnnotationGroup,
@@ -135,7 +137,7 @@ import {
   shouldShowFileExplorer,
   workspaceAssetResource,
 } from "./filePreviewMode";
-import { setMarkdownTaskChecked } from "@t3tools/shared/markdownTaskEdits";
+import { setMarkdownTaskChecked } from "@cod3/shared/markdownTaskEdits";
 import { changeFileSaveSession, useFileSaveSession } from "./fileSaveSessions";
 import { revisionedQuery } from "~/state/revisionedQuery";
 import {
@@ -175,10 +177,10 @@ const MermaidFilePreview = lazy(() =>
   import("./MermaidFilePreview").then((module) => ({ default: module.MermaidFilePreview })),
 );
 
-const FILE_EXPLORER_STORAGE_KEY = "t3code.fileExplorerOpen";
-const RENDER_MARKDOWN_STORAGE_KEY = "t3code.renderMarkdown";
-const RENDER_BROWSER_FILE_STORAGE_KEY = "t3code.renderBrowserFile";
-const RENDER_TABLE_STORAGE_KEY = "t3code.renderTable";
+const FILE_EXPLORER_STORAGE_KEY = "cod3.fileExplorerOpen";
+const RENDER_MARKDOWN_STORAGE_KEY = "cod3.renderMarkdown";
+const RENDER_BROWSER_FILE_STORAGE_KEY = "cod3.renderBrowserFile";
+const RENDER_TABLE_STORAGE_KEY = "cod3.renderTable";
 type FilePostRender = <LAnnotation>(
   fileContainer: HTMLElement,
   instance: FileInstance<LAnnotation, undefined>,
@@ -314,7 +316,7 @@ export function WorkspaceBrowserPreview(props: {
       void refreshAssetUrl().catch(() => undefined);
     }
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- mints a fresh URL shortly before the loaded page's grant expires
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- mints a fresh URL shortly before the loaded page's grant expires
   useEffect(() => {
     if (frame === null) return;
     const timer = setTimeout(() => renewGrant(frame.url), frame.renewAt - Date.now());
@@ -1035,7 +1037,7 @@ function EditableFileSurface({
   const hasOpenCommentForm = lineAnnotations.some((annotation) =>
     annotation.metadata.entries.some((entry) => entry.kind === "draft"),
   );
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- installs selection dismissal listeners on the editor surface DOM node
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- installs selection dismissal listeners on the editor surface DOM node
   useEffect(() => {
     const root = surfaceRef.current;
     if (!root) return;
@@ -1221,15 +1223,6 @@ function renderedToggleLabel(
   return rendered ? resolve(msg("Show HTML source")) : resolve(msg("Show rendered page"));
 }
 
-function initialExplorerOpen(): boolean {
-  try {
-    return getLocalStorageItem(FILE_EXPLORER_STORAGE_KEY, Schema.Boolean) ?? true;
-  } catch (error) {
-    console.error(error);
-    return true;
-  }
-}
-
 export default function FilePreviewPanel({
   environmentId,
   cwd,
@@ -1319,7 +1312,12 @@ export default function FilePreviewPanel({
     serverConfig?.shellRevealInFileManager === true;
   // Everything preview-related keys off previewPath; a folder has no preview.
   const previewPath = isFolder ? null : relativePath;
-  const [explorerOpen, setExplorerOpen] = useState(initialExplorerOpen);
+  const documentRank = !isHostFile && previewPath !== null ? projectDocumentRank(previewPath) : -1;
+  const [explorerOpen, setExplorerOpen] = useLocalStorage(
+    FILE_EXPLORER_STORAGE_KEY,
+    documentRank < 0,
+    Schema.Boolean,
+  );
   const showExplorer = shouldShowFileExplorer({
     relativePath: previewPath,
     explorerOpen,
@@ -1327,7 +1325,7 @@ export default function FilePreviewPanel({
   });
   const [renderMarkdownPreferred, setRenderMarkdownPreferred] = useLocalStorage(
     RENDER_MARKDOWN_STORAGE_KEY,
-    false,
+    documentRank >= 0,
     Schema.Boolean,
   );
   const [renderBrowserFilePreferred, setRenderBrowserFilePreferred] = useLocalStorage(
@@ -1348,7 +1346,7 @@ export default function FilePreviewPanel({
   const isMarkdown = previewPath ? isMarkdownPreviewFile(previewPath) : false;
   const isMermaid = previewPath !== null && /\.(mmd|mermaid)$/i.test(previewPath);
   const [renderMermaidPreferred, setRenderMermaidPreferred] = useLocalStorage(
-    "t3code.renderMermaid",
+    "cod3.renderMermaid",
     true,
     Schema.Boolean,
   );
@@ -1512,7 +1510,7 @@ export default function FilePreviewPanel({
       : NO_FILE_REVISION_ATOM,
   );
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- scrolls the breadcrumb DOM so the deepest and current crumbs are in view after commit
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- scrolls the breadcrumb DOM so the deepest and current crumbs are in view after commit
   useEffect(() => {
     const crumbs = breadcrumbRef.current?.querySelectorAll<HTMLElement>("[data-file-crumb]");
     // Show the deepest crumb when it fits, but never at the cost of the current one.
@@ -1522,18 +1520,6 @@ export default function FilePreviewPanel({
       ?.scrollIntoView({ block: "nearest", inline: "nearest" });
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- A new path or trail re-renders the crumbs, so the current one scrolls back into view.
   }, [breadcrumbPath, breadcrumbTrail]);
-
-  const toggleExplorer = () => {
-    setExplorerOpen((current) => {
-      const next = !current;
-      try {
-        setLocalStorageItem(FILE_EXPLORER_STORAGE_KEY, next, Schema.Boolean);
-      } catch (error) {
-        console.error(error);
-      }
-      return next;
-    });
-  };
 
   const handleOpenInBrowser = () => {
     if (!canReadFiles || !canOperatePreview || !absolutePath || !environmentHttpBaseUrl) return;
@@ -1678,7 +1664,7 @@ export default function FilePreviewPanel({
             <FileSurfaceAction
               label={explorerOpen ? gt("Hide file explorer") : gt("Show file explorer")}
               pressed={explorerOpen}
-              onPress={toggleExplorer}
+              onPress={() => setExplorerOpen(!explorerOpen)}
             >
               <FolderTree className="size-3.5" />
             </FileSurfaceAction>
@@ -1851,17 +1837,23 @@ export default function FilePreviewPanel({
                 <MermaidFilePreview text={file.data.contents} />
               </Suspense>
             ) : isMarkdown && renderMarkdown ? (
-              <RenderedMarkdownSurface
-                key={relativePath}
-                environmentId={environmentId}
-                cwd={cwd}
-                relativePath={relativePath}
-                threadRef={threadRef}
-                contents={file.data.contents}
-                workspaceMutationId={workspaceMutationId}
-                readOnly={file.data.truncated || isHostFile || !canWriteFiles}
-                onPendingChange={onPendingChange}
-              />
+              <div
+                className="flex min-h-0 flex-1 flex-col"
+                data-project-checklist={documentRank === 0 ? "" : undefined}
+              >
+                {documentRank === 0 && <ChecklistProgress contents={file.data.contents} />}
+                <RenderedMarkdownSurface
+                  key={relativePath}
+                  environmentId={environmentId}
+                  cwd={cwd}
+                  relativePath={relativePath}
+                  threadRef={threadRef}
+                  contents={file.data.contents}
+                  workspaceMutationId={workspaceMutationId}
+                  readOnly={file.data.truncated || isHostFile || !canWriteFiles}
+                  onPendingChange={onPendingChange}
+                />
+              </div>
             ) : tableDelimiter && renderTable ? (
               <DelimitedTablePreview
                 key={relativePath}

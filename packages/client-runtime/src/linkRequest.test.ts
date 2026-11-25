@@ -1,5 +1,5 @@
-import { EnvironmentId, type ServerConfig, ThreadId, TurnItemId } from "@t3tools/contracts";
-import type { RelayEnvironmentStatusResponse } from "@t3tools/contracts/relay";
+import { EnvironmentId, type ServerConfig, ThreadId, TurnItemId } from "@cod3/contracts";
+import type { RelayEnvironmentStatusResponse } from "@cod3/contracts/relay";
 import * as Option from "effect/Option";
 import { describe, expect, it } from "vite-plus/test";
 
@@ -158,8 +158,8 @@ const discovered = (
     environmentId: EnvironmentId.make(id),
     label,
     endpoint: {
-      httpBaseUrl: `https://${id}.t3.example`,
-      wsBaseUrl: `wss://${id}.t3.example`,
+      httpBaseUrl: `https://${id}.cod3.example`,
+      wsBaseUrl: `wss://${id}.cod3.example`,
       providerKind: "cloudflare_tunnel",
     },
     linkedAt: "2026-10-01T00:00:00.000Z",
@@ -171,8 +171,8 @@ const discovered = (
       : Option.some({
           environmentId: EnvironmentId.make(id),
           endpoint: {
-            httpBaseUrl: `https://${id}.t3.example`,
-            wsBaseUrl: `wss://${id}.t3.example`,
+            httpBaseUrl: `https://${id}.cod3.example`,
+            wsBaseUrl: `wss://${id}.cod3.example`,
             providerKind: "cloudflare_tunnel",
           },
           status: "online",
@@ -226,7 +226,7 @@ describe("linkableMachines", () => {
     ]);
   });
 
-  it("reaches a machine saved only over T3 Connect at its Connect address", () => {
+  it("reaches a machine saved only over cod3 Connect at its Connect address", () => {
     const here = presentation("environment-here", "Here", { saved: ["http://localhost:3773"] });
     const box = presentation("environment-box", "Box");
     const [listed] = linkableMachines({
@@ -235,7 +235,7 @@ describe("linkableMachines", () => {
       links: [],
       connect: new Map([[box.environmentId, discovered(box.environmentId, "Box")]]),
     });
-    expect(listed?.urls).toEqual(["https://environment-box.t3.example"]);
+    expect(listed?.urls).toEqual(["https://environment-box.cod3.example"]);
     // Until discovery has found it, there is no address to offer.
     expect(
       linkableMachines({
@@ -262,7 +262,7 @@ describe("linkableMachines", () => {
     expect(listed?.urls).toEqual([
       "https://vps.ts.net",
       "http://192.168.1.20:3773",
-      "https://environment-vps.t3.example",
+      "https://environment-vps.cod3.example",
     ]);
   });
 
@@ -287,7 +287,7 @@ describe("linkableMachines", () => {
     ]);
   });
 
-  it("offers machines only on T3 Connect after the saved ones, at their Connect address", () => {
+  it("offers machines only on cod3 Connect after the saved ones, at their Connect address", () => {
     const here = presentation("environment-here", "Here", { saved: ["http://localhost:3773"] });
     const vps = presentation("environment-vps", "VPS", { saved: ["https://vps.ts.net"] });
     const listed = linkableMachines({
@@ -314,7 +314,7 @@ describe("linkableMachines", () => {
       connected: false,
       connectOnly: true,
       linked: false,
-      urls: ["https://environment-mini.t3.example"],
+      urls: ["https://environment-mini.cod3.example"],
     });
     expect(listed[2]).toMatchObject({ machine: "server", linked: true });
 
@@ -422,7 +422,7 @@ describe("linkRequestTarget", () => {
     connected: true,
     connectOnly: false,
     linked: false,
-    urls: ["http://10.0.0.2:3773", "https://box.t3connect.example/"],
+    urls: ["http://10.0.0.2:3773", "https://box.cod3connect.example/"],
   } as const;
 
   it("takes a machine from an address the agent gave only where this app already reaches it", () => {
@@ -436,12 +436,12 @@ describe("linkRequestTarget", () => {
     expect(linkRequestTarget(unfamiliar, [box], box.environmentId)).toEqual({ kind: "address" });
     expect(linkRequestTargetName(unfamiliar)).toBe("https://other.example");
     // A username in the address must not pass for the host the code goes to.
-    expect(linkRequestTargetName({ url: "https://box.t3connect.example@other.example/x" })).toBe(
+    expect(linkRequestTargetName({ url: "https://box.cod3connect.example@other.example/x" })).toBe(
       "https://other.example",
     );
     // A known address in another spelling is the box, linked at its own addresses only.
     expect(
-      linkRequestTarget({ url: "https://BOX.t3connect.example:443/mcp" }, [box], null),
+      linkRequestTarget({ url: "https://BOX.cod3connect.example:443/mcp" }, [box], null),
     ).toEqual({
       kind: "machine",
       environmentId: box.environmentId,
@@ -449,13 +449,13 @@ describe("linkRequestTarget", () => {
       urls: box.urls,
       linked: false,
     });
-    expect(linkRequestTarget({ url: "http://box.t3connect.example" }, [box], null)).toEqual({
+    expect(linkRequestTarget({ url: "http://box.cod3connect.example" }, [box], null)).toEqual({
       kind: "address",
     });
     expect(linkRequestTarget({ url: "not a url" }, [box], null)).toEqual({ kind: "address" });
-    expect(linkRequestTarget({ url: "blob:https://box.t3connect.example/1" }, [box], null)).toEqual(
-      { kind: "address" },
-    );
+    expect(
+      linkRequestTarget({ url: "blob:https://box.cod3connect.example/1" }, [box], null),
+    ).toEqual({ kind: "address" });
     // A private address two machines share names neither.
     const mini = { ...box, environmentId: EnvironmentId.make("environment-mini") };
     expect(linkRequestTarget({ url: "http://10.0.0.2:3773" }, [box, mini], null)).toEqual({

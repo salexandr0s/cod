@@ -1,17 +1,17 @@
 import { Debouncer } from "@tanstack/react-pacer";
-import { PullRequestMergeMethod } from "@t3tools/contracts";
+import { PullRequestMergeMethod } from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { create } from "zustand";
-import { normalizeProjectPathForComparison } from "@t3tools/client-runtime/state/projects";
+import { normalizeProjectPathForComparison } from "@cod3/client-runtime/state/projects";
 
-export const PERSISTED_STATE_KEY = "t3code:ui-state:v1";
+export const PERSISTED_STATE_KEY = "cod3:ui-state:v1";
 const LEGACY_PERSISTED_STATE_KEYS = [
-  "t3code:renderer-state:v8",
-  "t3code:renderer-state:v7",
-  "t3code:renderer-state:v6",
-  "t3code:renderer-state:v5",
-  "t3code:renderer-state:v4",
-  "t3code:renderer-state:v3",
+  "cod3:renderer-state:v8",
+  "cod3:renderer-state:v7",
+  "cod3:renderer-state:v6",
+  "cod3:renderer-state:v5",
+  "cod3:renderer-state:v4",
+  "cod3:renderer-state:v3",
   "codething:renderer-state:v4",
   "codething:renderer-state:v3",
   "codething:renderer-state:v2",

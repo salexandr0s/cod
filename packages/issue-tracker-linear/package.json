@@ -1,5 +1,5 @@
 {
-  "name": "@t3tools/issue-tracker-linear",
+  "name": "@cod3/issue-tracker-linear",
   "private": true,
   "type": "module",
   "exports": {
@@ -18,8 +18,8 @@
     "generate": "graphqlgen"
   },
   "dependencies": {
-    "@t3tools/contracts": "workspace:*",
-    "@t3tools/source-control-core": "workspace:*",
+    "@cod3/contracts": "workspace:*",
+    "@cod3/source-control-core": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {

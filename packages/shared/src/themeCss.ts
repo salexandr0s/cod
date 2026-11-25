@@ -90,9 +90,9 @@ export const THEME_CSS_HOOKS = [
   { selector: '[data-slot="scroll-area-thumb"]', styles: "overlay scrollbar thumb" },
 ] as const;
 
-/** What an agent needs to restyle the app. `t3_theme_read` returns it. */
+/** What an agent needs to restyle the app. `cod3_theme_read` returns it. */
 export const THEME_GUIDE = [
-  "Themes restyle T3 Code on web and desktop. Mobile does not use them.",
+  "Themes restyle cod3 on web and desktop. Mobile does not use them.",
   "",
   "Colors: `canvas` and `accent` (hex) derive a full palette. `colors` overrides single roles, and `variants.light` or `variants.dark` does that for the other appearance. Prefer colors over CSS.",
   `Roles: ${THEME_COLOR_ROLES.join(", ")}.`,
@@ -109,5 +109,5 @@ export const THEME_GUIDE = [
   ...THEME_CSS_HOOKS.map((hook) => `- ${hook.selector}: ${hook.styles}`),
   "",
   "You cannot see the result. Make small changes, then ask the user how it looks.",
-  "To undo, set `t3-code`, the stock T3 Code theme, or another built-in theme. An empty `current` means the stock theme or no environment theme.",
+  "To undo, set `cod3`, the stock cod3 theme, or another built-in theme. An empty `current` means the stock theme or no environment theme.",
 ].join("\n");

@@ -1,4 +1,4 @@
-import { chunkTerminalWrite } from "@t3tools/contracts";
+import { chunkTerminalWrite } from "@cod3/contracts";
 
 import { encodeTerminalPaste } from "./terminalInput";
 

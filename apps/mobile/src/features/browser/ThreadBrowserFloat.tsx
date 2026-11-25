@@ -1,6 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
-import type { EnvironmentId, PreviewSessionSnapshot, ThreadId } from "@t3tools/contracts";
-import { previewPdfAssetUrl } from "@t3tools/shared/preview";
+import type { EnvironmentId, PreviewSessionSnapshot, ThreadId } from "@cod3/contracts";
+import { previewPdfAssetUrl } from "@cod3/shared/preview";
 import * as Option from "effect/Option";
 import { useGT, useMessages } from "gt-react-native";
 import { useState } from "react";

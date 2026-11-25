@@ -1,8 +1,5 @@
-import type {
-  EnvironmentProject,
-  EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
-import { EnvironmentId, ThreadId } from "@t3tools/contracts";
+import type { EnvironmentProject, EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { EnvironmentId, ThreadId } from "@cod3/contracts";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
 
 import { scopedThreadKey } from "../../../lib/scopedEntities";

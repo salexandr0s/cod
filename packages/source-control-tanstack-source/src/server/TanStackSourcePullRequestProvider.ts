@@ -3,7 +3,7 @@ import {
   type PullRequestCapabilities,
   type PullRequestListState,
   type PullRequestViewerPermissions,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   PullRequestProviderError,
   tailLogLines,
@@ -12,7 +12,7 @@ import {
   type ProviderCheckRerun,
   type ProviderRepositoryRef,
   type PullRequestProviderApi,
-} from "@t3tools/source-control-core/server/PullRequestProvider";
+} from "@cod3/source-control-core/server/PullRequestProvider";
 import * as Cache from "effect/Cache";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -784,10 +784,7 @@ export const make = Effect.gen(function* () {
           yield* send(input.action, input, { method: "DELETE", path: `${path}/auto-merge` });
           return;
         default:
-          return yield* failure(
-            input.action,
-            `TanStack Source cannot ${input.action} from T3 Code.`,
-          );
+          return yield* failure(input.action, `TanStack Source cannot ${input.action} from cod3.`);
       }
     }),
 

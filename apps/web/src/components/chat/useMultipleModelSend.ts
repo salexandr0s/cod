@@ -1,16 +1,16 @@
 import { msg } from "gt-react";
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import {
   type EnvironmentId,
   type ModelSelection,
   type RuntimeMode,
   type ThreadId,
-} from "@t3tools/contracts";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import { deriveThreadTitleSeed } from "@t3tools/client-runtime/operations";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
+} from "@cod3/contracts";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import { deriveThreadTitleSeed } from "@cod3/client-runtime/operations";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
 import { useNavigate } from "@tanstack/react-router";
 import { newMessageId } from "~/lib/utils";
 import { collapseExpandedComposerCursor } from "../../composer-logic";

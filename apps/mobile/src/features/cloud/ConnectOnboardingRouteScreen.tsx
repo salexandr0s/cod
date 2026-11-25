@@ -10,7 +10,7 @@ import { View } from "react-native";
 import { RefreshControl } from "../../components/ui/RefreshControl";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { reportAtomCommandResult, settlePromise } from "@t3tools/client-runtime/state/runtime";
+import { reportAtomCommandResult, settlePromise } from "@cod3/client-runtime/state/runtime";
 import { AppText as Text } from "../../components/ui/AppText";
 import { useRemoteConnections } from "../../state/use-remote-environment-registry";
 import { CloudEnvironmentRows } from "../connection/CloudEnvironmentRows";
@@ -19,7 +19,7 @@ import { useConnectionController } from "../connection/useConnectionController";
 import { optOutOfConnectOnboarding } from "./connectOnboardingOptOut";
 import { hasCloudPublicConfig } from "./publicConfig";
 
-// Only reachable with cloud config: onboarding is requested after a T3 Connect
+// Only reachable with cloud config: onboarding is requested after a cod3 Connect
 // sign-in, and appLinking drops the deep link otherwise.
 export function ConnectOnboardingRouteScreen() {
   return hasCloudPublicConfig() ? <ConfiguredConnectOnboardingRouteScreen /> : null;
@@ -62,7 +62,7 @@ function ConfiguredConnectOnboardingRouteScreen() {
   return (
     <View collapsable={false} className="flex-1 bg-sheet">
       <AppBar
-        title={gt("Set up {product}", { product: "T3 Connect" })}
+        title={gt("Set up {product}", { product: "cod3 Connect" })}
         onClose={handleClose}
         refresh={{
           accessibilityLabel: gt("Refresh environments"),
@@ -94,7 +94,7 @@ function ConfiguredConnectOnboardingRouteScreen() {
         ) : (
           <View collapsable={false} className="rounded-[24px] bg-grouped-card p-5">
             <Text className="text-sm leading-normal text-foreground-muted">
-              {gt("Sign in to your T3 account to set up {product}.", { product: "T3 Connect" })}
+              {gt("Sign in to your cod3 account to set up {product}.", { product: "cod3 Connect" })}
             </Text>
           </View>
         )}

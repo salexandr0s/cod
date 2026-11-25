@@ -9,10 +9,10 @@ import type {
   ServerSettings,
   SourceControlDiscoveryResult,
   SourceControlRepositoryInfo,
-} from "@t3tools/contracts";
-import { SourceControlProviderKind } from "@t3tools/contracts";
-import { cloneUrlRepositoryPath } from "@t3tools/shared/cloneUrl";
-import { isAbsolutePath, isExplicitRelativePath, newProjectFolderName } from "@t3tools/shared/path";
+} from "@cod3/contracts";
+import { SourceControlProviderKind } from "@cod3/contracts";
+import { cloneUrlRepositoryPath } from "@cod3/shared/cloneUrl";
+import { isAbsolutePath, isExplicitRelativePath, newProjectFolderName } from "@cod3/shared/path";
 import * as Arr from "effect/Array";
 import * as Option from "effect/Option";
 import * as Order from "effect/Order";

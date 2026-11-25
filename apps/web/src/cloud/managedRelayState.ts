@@ -1,25 +1,25 @@
 import { useAtomValue } from "@effect/atom-react";
 import {
   createManagedRelayQueryManager,
-  createManagedRelayT3ChatLinkRequest,
+  createManagedRelayCod3ChatLinkRequest,
   deregisterManagedRelayEnvironment,
   ManagedRelay,
   managedRelaySessionAtom,
   readManagedRelaySnapshotState,
-  unlinkManagedRelayT3Chat,
-} from "@t3tools/client-runtime/relay";
+  unlinkManagedRelayCod3Chat,
+} from "@cod3/client-runtime/relay";
 import {
   createAtomCommandScheduler,
   createRuntimeCommand,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   DEFAULT_MANAGED_TUNNEL_LIMIT,
-  T3CHAT_PLAN_TUNNEL_LIMITS,
+  COD3CHAT_PLAN_TUNNEL_LIMITS,
   type RelayClientDeviceRecord,
   type RelayClientEnvironmentRecord,
-  type RelayT3ChatLinkResponse,
-} from "@t3tools/contracts/relay";
-import type { EnvironmentId } from "@t3tools/contracts";
+  type RelayCod3ChatLinkResponse,
+} from "@cod3/contracts/relay";
+import type { EnvironmentId } from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -60,39 +60,39 @@ const accountSerial = {
   key: (input: { readonly accountId: string }) => input.accountId,
 } as const;
 
-export const createManagedRelayT3ChatLinkRequestCommand = createRuntimeCommand(
+export const createManagedRelayCod3ChatLinkRequestCommand = createRuntimeCommand(
   managedRelayAtomRuntime,
   {
-    label: "web:managed-relay:create-t3chat-link-request",
+    label: "web:managed-relay:create-cod3chat-link-request",
     scheduler: managedRelayMutationScheduler,
     concurrency: accountSerial,
     execute: (input: { readonly accountId: string }, registry) =>
-      createManagedRelayT3ChatLinkRequest(registry, input),
+      createManagedRelayCod3ChatLinkRequest(registry, input),
   },
 );
 
-export const unlinkManagedRelayT3ChatCommand = createRuntimeCommand(managedRelayAtomRuntime, {
-  label: "web:managed-relay:unlink-t3chat",
+export const unlinkManagedRelayCod3ChatCommand = createRuntimeCommand(managedRelayAtomRuntime, {
+  label: "web:managed-relay:unlink-cod3chat",
   scheduler: managedRelayMutationScheduler,
   concurrency: accountSerial,
   execute: (input: { readonly accountId: string }, registry) =>
-    unlinkManagedRelayT3Chat(registry, input),
+    unlinkManagedRelayCod3Chat(registry, input),
 });
 
-const EMPTY_T3CHAT_LINK_ATOM = Atom.make(
-  AsyncResult.success<RelayT3ChatLinkResponse>({ available: false, link: null }),
-).pipe(Atom.keepAlive, Atom.withLabel("managed-relay:web:t3chat-link:null"));
+const EMPTY_COD3CHAT_LINK_ATOM = Atom.make(
+  AsyncResult.success<RelayCod3ChatLinkResponse>({ available: false, link: null }),
+).pipe(Atom.keepAlive, Atom.withLabel("managed-relay:web:cod3chat-link:null"));
 
-export function useManagedRelayT3ChatLink() {
+export function useManagedRelayCod3ChatLink() {
   const session = useAtomValue(managedRelaySessionAtom);
   const accountId = session?.accountId ?? null;
   const atom = accountId
-    ? managedRelayQueryManager.t3ChatLinkAtom(accountId)
-    : EMPTY_T3CHAT_LINK_ATOM;
+    ? managedRelayQueryManager.cod3ChatLinkAtom(accountId)
+    : EMPTY_COD3CHAT_LINK_ATOM;
   const snapshot = readManagedRelaySnapshotState(useAtomValue(atom));
   const refresh = () => {
     if (accountId) {
-      managedRelayQueryManager.refreshT3ChatLink(appAtomRegistry, accountId);
+      managedRelayQueryManager.refreshCod3ChatLink(appAtomRegistry, accountId);
     }
   };
 
@@ -151,19 +151,19 @@ export function useManagedRelayDevices() {
 export type ManagedTunnelUpgrade = "link" | "pro" | "premier" | null;
 
 // Mirrors the relay's cap: a manual override is exact, otherwise the T3 Chat plan raises the default.
-function managedTunnelCap(t3Chat: RelayT3ChatLinkResponse): {
+function managedTunnelCap(cod3Chat: RelayCod3ChatLinkResponse): {
   readonly limit: number;
   readonly upgrade: ManagedTunnelUpgrade;
 } {
-  if (t3Chat.maxTunnelsOverride !== undefined) {
-    return { limit: t3Chat.maxTunnelsOverride, upgrade: null };
+  if (cod3Chat.maxTunnelsOverride !== undefined) {
+    return { limit: cod3Chat.maxTunnelsOverride, upgrade: null };
   }
-  if (!t3Chat.available) return { limit: DEFAULT_MANAGED_TUNNEL_LIMIT, upgrade: null };
-  switch (t3Chat.link?.plan) {
+  if (!cod3Chat.available) return { limit: DEFAULT_MANAGED_TUNNEL_LIMIT, upgrade: null };
+  switch (cod3Chat.link?.plan) {
     case "premier":
-      return { limit: T3CHAT_PLAN_TUNNEL_LIMITS.premier, upgrade: null };
+      return { limit: COD3CHAT_PLAN_TUNNEL_LIMITS.premier, upgrade: null };
     case "pro":
-      return { limit: T3CHAT_PLAN_TUNNEL_LIMITS.pro, upgrade: "premier" };
+      return { limit: COD3CHAT_PLAN_TUNNEL_LIMITS.pro, upgrade: "premier" };
     case "free":
       return { limit: DEFAULT_MANAGED_TUNNEL_LIMIT, upgrade: "pro" };
     case undefined:
@@ -176,20 +176,20 @@ export function refreshManagedTunnelUsage() {
   const accountId = appAtomRegistry.get(managedRelaySessionAtom)?.accountId;
   if (!accountId) return;
   managedRelayQueryManager.refreshEnvironments(appAtomRegistry, accountId);
-  managedRelayQueryManager.refreshT3ChatLink(appAtomRegistry, accountId);
+  managedRelayQueryManager.refreshCod3ChatLink(appAtomRegistry, accountId);
 }
 
 /** Managed tunnels on this account and its cap. Null fields are still loading or failed. */
 export function useManagedTunnelUsage() {
   const environments = useManagedRelayEnvironments();
-  const t3Chat = useManagedRelayT3ChatLink();
+  const cod3Chat = useManagedRelayCod3ChatLink();
   const used =
     environments.accountId === null
       ? null
       : (environments.data?.filter(
           (environment) => environment.endpoint.providerKind === "cloudflare_tunnel",
         ).length ?? null);
-  const cap = t3Chat.accountId !== null && t3Chat.data ? managedTunnelCap(t3Chat.data) : null;
+  const cap = cod3Chat.accountId !== null && cod3Chat.data ? managedTunnelCap(cod3Chat.data) : null;
   return {
     used,
     limit: cap?.limit ?? null,

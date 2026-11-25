@@ -12,11 +12,11 @@ import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import { Cookies, FetchHttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
-import { ManagedRelay } from "@t3tools/client-runtime/relay";
+import { ManagedRelay } from "@cod3/client-runtime/relay";
 
-import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
-import type { RelayAgentActivityAggregateState } from "@t3tools/contracts/relay";
-import { verifyDpopProof } from "@t3tools/shared/dpop";
+import type { EnvironmentId, ThreadId } from "@cod3/contracts";
+import type { RelayAgentActivityAggregateState } from "@cod3/contracts/relay";
+import { verifyDpopProof } from "@cod3/shared/dpop";
 import * as Dpop from "../cloud/dpop";
 import * as ManagedRelayLayer from "../cloud/managedRelayLayer";
 import {
@@ -278,7 +278,7 @@ const layerRelayTest = ManagedRelayLayer.layer("https://relay.example.test").pip
 const runBackgroundOperations = Effect.fn("TestRemoteRegistration.runBackgroundOperations")(
   function* () {
     let idlePasses = 0;
-    // oxlint-disable-next-line t3code/no-polling-loop-in-tests -- This harness drains mocked runtime jobs and their promise continuations, not external I/O or elapsed time.
+    // oxlint-disable-next-line cod3/no-polling-loop-in-tests -- This harness drains mocked runtime jobs and their promise continuations, not external I/O or elapsed time.
     for (;;) {
       yield* Effect.promise(() => Promise.resolve());
       const pending = backgroundRuntime.pending.shift();
@@ -1026,7 +1026,7 @@ describe("makeRelayDeviceRegistrationRequest", () => {
     });
 
     const aggregate: RelayAgentActivityAggregateState = {
-      title: "T3 Code",
+      title: "cod3",
       subtitle: "Agent work in progress",
       activeCount: 1,
       updatedAt: "2026-10-18T10:00:00.000Z",
@@ -1034,7 +1034,7 @@ describe("makeRelayDeviceRegistrationRequest", () => {
         {
           environmentId: "env-1" as EnvironmentId,
           threadId: "thread-1" as ThreadId,
-          projectTitle: "t3code",
+          projectTitle: "cod3",
           threadTitle: "Fix the widget",
           modelTitle: "GPT-5.5",
           phase: "running",
@@ -1061,9 +1061,9 @@ describe("makeRelayDeviceRegistrationRequest", () => {
           relayUrl: "https://relay.example.test",
           listEnvironments: unexpected,
           listDevices: unexpected,
-          getT3ChatLink: unexpected,
-          createT3ChatLinkRequest: unexpected,
-          unlinkT3Chat: unexpected,
+          getCod3ChatLink: unexpected,
+          createCod3ChatLinkRequest: unexpected,
+          unlinkCod3Chat: unexpected,
           createEnvironmentLinkChallenge: unexpected,
           linkEnvironment: unexpected,
           unlinkEnvironment: unexpected,

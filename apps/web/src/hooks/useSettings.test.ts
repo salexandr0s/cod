@@ -1,5 +1,5 @@
-import { DEFAULT_SERVER_SETTINGS, ProviderInstanceId } from "@t3tools/contracts";
-import { DEFAULT_CLIENT_SETTINGS, type ClientSettings } from "@t3tools/contracts/settings";
+import { DEFAULT_SERVER_SETTINGS, ProviderInstanceId } from "@cod3/contracts";
+import { DEFAULT_CLIENT_SETTINGS, type ClientSettings } from "@cod3/contracts/settings";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const persistenceMocks = vi.hoisted(() => ({
@@ -21,7 +21,7 @@ import {
   persistClientSettingsUpdate,
   prepareModelPreferencesPatch,
 } from "./useSettings";
-import { applyServerSettingsPatch } from "@t3tools/shared/serverSettings";
+import { applyServerSettingsPatch } from "@cod3/shared/serverSettings";
 
 beforeEach(() => {
   persistenceMocks.getClientSettings.mockReset().mockResolvedValue(null);
@@ -203,9 +203,7 @@ describe("persistClientSettingsPatch", () => {
       await ensureClientSettingsHydrated();
       const otherTabSettings = { ...DEFAULT_CLIENT_SETTINGS, timestampFormat: "12-hour" as const };
       persistenceMocks.getClientSettings.mockResolvedValue(otherTabSettings);
-      window.dispatchEvent(
-        Object.assign(new Event("storage"), { key: "t3code:client-settings:v1" }),
-      );
+      window.dispatchEvent(Object.assign(new Event("storage"), { key: "cod3:client-settings:v1" }));
 
       await persistClientSettingsPatch({ wordWrap: false });
 

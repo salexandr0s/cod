@@ -1,10 +1,10 @@
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
 import {
   ChatFileAttachment,
   INCOGNITO_BROWSER_PROFILE_ID,
   PreviewSessionSnapshot,
   ScopedThreadRef,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -82,7 +82,9 @@ const isClosedViewEntry = (entry: unknown): entry is ClosedViewEntry => {
             typeof surface.target.hostId === "string" &&
             typeof surface.target.deviceId === "string" &&
             typeof surface.target.name === "string" &&
-            (surface.target.platform === "ios" || surface.target.platform === "android")))
+            (surface.target.platform === "ios" ||
+              surface.target.platform === "android" ||
+              surface.target.platform === "macos")))
       );
     case "thread":
       return typeof surface.threadId === "string" && surface.id === `thread:${surface.threadId}`;
@@ -148,7 +150,7 @@ export const useClosedViewStore = create<ClosedViewStoreState>()(
         set((state) => ({ entries: state.entries.filter((entry) => entry.id !== id) })),
     }),
     {
-      name: "t3code:closed-views:v2",
+      name: "cod3:closed-views:v2",
       storage: createJSONStorage(() =>
         resolveStorage(typeof window !== "undefined" ? window.localStorage : undefined),
       ),

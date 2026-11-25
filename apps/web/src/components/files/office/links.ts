@@ -1,5 +1,5 @@
 // Adapted from opencode (MIT). Copyright (c) 2025 opencode. See LICENSE.opencode.
-import { parseUrl } from "@t3tools/shared/url";
+import { parseUrl } from "@cod3/shared/url";
 
 import type { WordLink } from "./word-protocol";
 

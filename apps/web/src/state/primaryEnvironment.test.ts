@@ -3,8 +3,8 @@ import {
   PrimaryConnectionTarget,
   SshConnectionTarget,
   RelayConnectionTarget,
-} from "@t3tools/client-runtime/connection";
-import { EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/connection";
+import { EnvironmentId } from "@cod3/contracts";
 import { Atom, AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vite-plus/test";
 
@@ -34,7 +34,7 @@ describe("localEnvironmentIdAtom", () => {
     ).toBe(PRIMARY);
   });
 
-  it("uses the connected background service sharing the app's T3 home when there is no primary", () => {
+  it("uses the connected background service sharing the app's cod3 home when there is no primary", () => {
     expect(localEnvironmentId({ primary: null, host: "service", catalog: [REMOTE, SERVICE] })).toBe(
       SERVICE,
     );

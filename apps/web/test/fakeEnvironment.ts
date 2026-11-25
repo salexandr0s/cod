@@ -35,15 +35,15 @@ import {
   type OrchestrationV2TurnItem,
   type TerminalMetadataStreamEvent,
   type ResolvedKeybindingsConfig,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type {
   ConnectionAttemptError,
   ConnectionCatalogEntry,
   EnvironmentConnectionLease,
   RouteCheck,
-} from "@t3tools/client-runtime/connection";
-import type { WsRpcProtocolClient } from "@t3tools/client-runtime/rpc";
-import { DEFAULT_RESOLVED_KEYBINDINGS } from "@t3tools/shared/keybindings";
+} from "@cod3/client-runtime/connection";
+import type { WsRpcProtocolClient } from "@cod3/client-runtime/rpc";
+import { DEFAULT_RESOLVED_KEYBINDINGS } from "@cod3/shared/keybindings";
 import { APP_VERSION } from "~/branding";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -78,7 +78,7 @@ const auth = {
   policy: "loopback-browser",
   bootstrapMethods: ["one-time-token"],
   sessionMethods: ["browser-session-cookie"],
-  sessionCookieName: "t3_session",
+  sessionCookieName: "cod3_session",
 };
 
 const readyProvider = (
@@ -119,13 +119,13 @@ const makeServerConfig = (
     },
     auth,
     cwd: "/workspace/render",
-    keybindingsConfigPath: "/workspace/.t3/keybindings.json",
+    keybindingsConfigPath: "/workspace/.cod3/keybindings.json",
     keybindings: [],
     issues: [],
     providers,
     availableEditors: [],
     observability: {
-      logsDirectoryPath: "/workspace/.t3/logs",
+      logsDirectoryPath: "/workspace/.cod3/logs",
       localTracingEnabled: false,
       otlpTracesEnabled: false,
       otlpMetricsEnabled: false,
@@ -636,7 +636,7 @@ export function installFakeEnvironment(
   globalThis.fetch = async (input, init) => {
     const url = new URL(input instanceof Request ? input.url : String(input), window.location.href);
     if (url.origin !== window.location.origin) return realFetch(input, init);
-    if (url.pathname === "/.well-known/t3/environment") return json(encodedDescriptor);
+    if (url.pathname === "/.well-known/cod3/environment") return json(encodedDescriptor);
     if (url.pathname === "/api/auth/session") {
       return json({
         authenticated: true,

@@ -17,9 +17,9 @@ describe("scrubFeedback", () => {
     ],
     [
       "known values only as whole words",
-      "t3_feedback failed for t3 and Bob, not bobcat",
-      ["t3", "Bob", "x"],
-      "t3_feedback failed for t3 and [redacted], not bobcat",
+      "cod3_feedback failed for cod3 and Bob, not bobcat",
+      ["cod3", "Bob", "x"],
+      "cod3_feedback failed for cod3 and [redacted], not bobcat",
     ],
     [
       "URLs with credentials before emails inside them",
@@ -35,9 +35,9 @@ describe("scrubFeedback", () => {
     ],
     [
       "long random runs, not long identifiers or paths",
-      "aB3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW t3_environment_preferences_update apps/server/src/persistence/Migrations/088",
+      "aB3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW cod3_environment_preferences_update apps/server/src/persistence/Migrations/088",
       [],
-      "[redacted] t3_environment_preferences_update apps/server/src/persistence/Migrations/088",
+      "[redacted] cod3_environment_preferences_update apps/server/src/persistence/Migrations/088",
     ],
     [
       "whole absolute paths",
@@ -59,9 +59,9 @@ describe("scrubFeedback", () => {
     ],
     [
       "nothing that only looks like a path",
-      "See https://github.com/org/repo for t3 thread send and t3_thread_read: 3/10 and/or a / b /mcp /compact /secret.env",
+      "See https://github.com/org/repo for cod3 thread send and cod3_thread_read: 3/10 and/or a / b /mcp /compact /secret.env",
       [],
-      "See https://github.com/org/repo for t3 thread send and t3_thread_read: 3/10 and/or a / b /mcp /compact /secret.env",
+      "See https://github.com/org/repo for cod3 thread send and cod3_thread_read: 3/10 and/or a / b /mcp /compact /secret.env",
     ],
     [
       "quoted paths with spaces",
@@ -142,10 +142,10 @@ describe("scrubFeedback", () => {
       'Opened [redacted]\nand "[redacted]" then',
     ],
     [
-      "a two-letter username such as t3",
-      "t3 thread send failed for t3",
-      ["t3"],
-      "t3 thread send failed for t3",
+      "a two-letter username such as cod3",
+      "cod3 thread send failed for cod3",
+      ["cod3"],
+      "cod3 thread send failed for cod3",
     ],
     ["a 1,200-character adversarial path", `/a/b${" x/".repeat(398)}`, [], "[redacted]"],
   ])("scrubs %s", (_, text, sensitive, expected) => {

@@ -1,6 +1,6 @@
-import { SourceControlProviderKind } from "@t3tools/contracts";
+import { SourceControlProviderKind } from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
-import { EnvironmentId, ProjectId } from "@t3tools/contracts";
+import { EnvironmentId, ProjectId } from "@cod3/contracts";
 
 import {
   findExistingAddProject,
@@ -49,11 +49,11 @@ describe("add project shared logic", () => {
     );
 
     for (const input of [
-      "pingdotgg/t3code",
+      "pingdotgg/cod3",
       "mona-cat_octo/repo",
       "pingdotgg",
-      "https://github.com/pingdotgg/t3code.git",
-      "git@github.com:pingdotgg/t3code.git",
+      "https://github.com/pingdotgg/cod3.git",
+      "git@github.com:pingdotgg/cod3.git",
     ]) {
       expect(githubIncompleteOwnerRepositoryMessage(github, input)).toBeNull();
     }
@@ -70,8 +70,8 @@ describe("add project shared logic", () => {
     expect(normalizePastedCloneUrl("imputnet/helium")).toBe(
       "https://github.com/imputnet/helium.git",
     );
-    expect(normalizePastedCloneUrl("  pingdotgg/t3code  ")).toBe(
-      "https://github.com/pingdotgg/t3code.git",
+    expect(normalizePastedCloneUrl("  pingdotgg/cod3  ")).toBe(
+      "https://github.com/pingdotgg/cod3.git",
     );
   });
 
@@ -97,12 +97,12 @@ describe("add project shared logic", () => {
 
   it("clones the repository when given a page URL copied from the browser", () => {
     for (const [pageUrl, pageRoute, repository] of [
-      ["https://github.com/pingdotgg/t3code/tree/main", "/tree/", "t3code"],
+      ["https://github.com/pingdotgg/cod3/tree/main", "/tree/", "cod3"],
       ["https://gitlab.com/gitlab-org/gitlab-runner/-/tree/main", "/-/", "gitlab-runner"],
-      ["https://git.cafe/pingdotgg/t3code/tree/main", "/tree/", "t3code"],
+      ["https://git.cafe/pingdotgg/cod3/tree/main", "/tree/", "cod3"],
       ["https://gitlab.example.test/g/p/-/blob/main/src/branch/x", "/-/", "p"],
       ["https://code.company.test/g/p/-/tree/main", "/-/", "p"],
-      ["https://github.com/pingdotgg/t3code/tree/release.git", "/tree/", "t3code"],
+      ["https://github.com/pingdotgg/cod3/tree/release.git", "/tree/", "cod3"],
     ] as const) {
       const cloneUrl = normalizePastedCloneUrl(pageUrl);
       expect(cloneUrl).not.toContain(pageRoute);

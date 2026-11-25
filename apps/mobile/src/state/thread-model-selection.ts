@@ -1,11 +1,11 @@
-import { runAtomCommand, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { runAtomCommand, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import {
   AuthOrchestrationOperateScope,
   type EnvironmentId,
   type ModelSelection,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
 import { scopedThreadKey } from "../lib/scopedEntities";
 import * as Dialog from "../components/ui/Dialog";

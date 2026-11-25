@@ -5,13 +5,13 @@ import {
   workflowAnswer,
   type WorkflowBeat,
   type WorkflowRunNode,
-} from "@t3tools/client-runtime/workflows";
-import type { EnvironmentId, WorkflowStep } from "@t3tools/contracts";
+} from "@cod3/client-runtime/workflows";
+import type { EnvironmentId, WorkflowStep } from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { useGT } from "gt-react-native";
 import type { ReactNode } from "react";
 import { View } from "react-native";
@@ -56,7 +56,7 @@ export function Facts(props: {
       {props.facts.map((fact) => (
         <View key={fact.label} className="max-w-full flex-row gap-1 rounded-md bg-subtle px-2 py-1">
           <Text className="text-xs text-foreground-muted">{fact.label}</Text>
-          <Text className="shrink font-t3-medium text-xs text-foreground">{fact.value}</Text>
+          <Text className="shrink font-cod3-medium text-xs text-foreground">{fact.value}</Text>
         </View>
       ))}
     </View>

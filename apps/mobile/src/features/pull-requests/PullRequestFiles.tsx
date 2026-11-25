@@ -1,8 +1,8 @@
 import { NativeScrollView } from "../../native/NativeScrollViewMarker";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { AnimatedLegendList } from "@legendapp/list/reanimated";
 import { StackActions, useNavigation, type StaticScreenProps } from "@react-navigation/native";
-import type { PullRequestChangeBreakdown } from "@t3tools/contracts";
+import type { PullRequestChangeBreakdown } from "@cod3/contracts";
 import { msg, T, useGT, useMessages, Var } from "gt-react-native";
 import { useState } from "react";
 import { View } from "react-native";
@@ -131,7 +131,7 @@ function FileRow(props: {
     >
       <PierreEntryIcon kind="file" path={file.path} size={20} />
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text textRole="footnote" className="font-t3-medium" numberOfLines={2}>
+        <Text textRole="footnote" className="font-cod3-medium" numberOfLines={2}>
           {file.path.split("/").at(-1)}
         </Text>
         {props.directory ? (

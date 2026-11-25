@@ -8,9 +8,10 @@ import {
 } from "./duoControl.ts";
 import * as Schema from "effect/Schema";
 import * as Option from "effect/Option";
+import { createMacStream } from "./macStream.ts";
 import { createCanvasFrameSink, type DeviceFrameSink } from "./frame.ts";
 import { type DeviceHubAccess, withDeviceHubQuery } from "./hubAccess.ts";
-import type { DevicePlatform } from "@t3tools/contracts";
+import type { DevicePlatform } from "@cod3/contracts";
 import { mFallback, msg } from "gt-i18n";
 import type { MFunctionType } from "gt-i18n/types";
 
@@ -417,6 +418,7 @@ export function createDeviceStreamClient(
 ): DeviceStreamClient {
   const { access, platform, deviceId } = target;
   const sink = "present" in output ? output : createCanvasFrameSink(output);
+  if (platform === "macos") return createMacStream(target, sink, events, resolve);
   // Android normally streams over serve-emu's socket; a serve-sim-only host serves it like iOS.
   const serveSimOnly = target.serveSimOnly === true;
   const avcc = platform === "ios" || serveSimOnly;

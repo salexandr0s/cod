@@ -5,7 +5,7 @@ import { useNavigation, type StaticScreenProps } from "@react-navigation/native"
 import { T, useGT, Var } from "gt-react-native";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { formatDiffCount } from "@t3tools/client-runtime/diff-count";
+import { formatDiffCount } from "@cod3/client-runtime/diff-count";
 
 import { SymbolView } from "../../../components/ui/AppSymbol";
 import { AppText as Text, AppTextInput as TextInput } from "../../../components/ui/AppText";
@@ -96,7 +96,7 @@ export function GitCommitSheet(props: GitCommitSheetProps) {
         </Text>
       ) : null}
       <View className="gap-2">
-        <Text className="text-sm font-t3-medium text-foreground">
+        <Text className="text-sm font-cod3-medium text-foreground">
           <T>Commit message</T>
         </Text>
         <TextInput
@@ -115,7 +115,7 @@ export function GitCommitSheet(props: GitCommitSheetProps) {
       <View>
         <View className="flex-row items-center justify-between gap-2 pb-2">
           <View className="flex-1 gap-1">
-            <Text className="text-base font-t3-bold text-foreground">
+            <Text className="text-base font-cod3-bold text-foreground">
               <T>Changed files</T>
             </Text>
             <Text className="text-xs text-foreground-muted">
@@ -186,7 +186,7 @@ export function GitCommitSheet(props: GitCommitSheetProps) {
                   <Text
                     numberOfLines={1}
                     ellipsizeMode="middle"
-                    className="text-sm font-t3-medium text-foreground"
+                    className="text-sm font-cod3-medium text-foreground"
                   >
                     {name}
                   </Text>

@@ -133,12 +133,12 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
       const opaque = "35bea692fa95447fbdae6333fec5515f";
       const matched = yield* read(profile, opaque, describeAntigravitySubagentLaunches([LAUNCH]));
       expect(matched.map((child) => child.role)).toEqual([LAUNCH.role]);
-      // T3 knows a second batch with this text that the agent has not recorded yet.
+      // cod3 knows a second batch with this text that the agent has not recorded yet.
       const twin = { nativeTaskId: "f00d", ...describeAntigravitySubagentLaunches([LAUNCH]) };
       expect(
         yield* read(profile, opaque, describeAntigravitySubagentLaunches([LAUNCH]), [twin]),
       ).toEqual([]);
-      // T3 stores the launch from the bounded tool payload, which keeps only a long prompt's tail.
+      // cod3 stores the launch from the bounded tool payload, which keeps only a long prompt's tail.
       const stored = antigravitySubagentLaunches(
         sanitizeAntigravityToolPayload({ Subagents: [{ Role: long.role, Prompt: long.prompt }] }),
       );
@@ -201,7 +201,7 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const outside = yield* fs.makeTempDirectoryScoped({ prefix: "t3-agy-outside-" });
+      const outside = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-agy-outside-" });
       const secret = path.join(outside, "transcript.jsonl");
       yield* fs.writeFileString(secret, JSON.stringify(transcriptLines[3]) + "\n");
       const named = yield* makeProfile({
@@ -349,7 +349,7 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const profile = yield* fs.makeTempDirectoryScoped({ prefix: "t3-agy-detached-" });
+      const profile = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-agy-detached-" });
       const sibling = "b468c0e1-d2f3-4a5b-6c7d-8e9f0a1b2c3d";
       const writeJson = (segments: ReadonlyArray<string>, value: unknown) => {
         const file = path.join(profile, "antigravity-acp", "brain", ...segments);
@@ -503,7 +503,7 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const profile = yield* fs.makeTempDirectoryScoped({ prefix: "t3-agy-killed-" });
+      const profile = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-agy-killed-" });
       const killed = "0a591388-d9d9-439d-a2a0-90932fd25b39";
       const writeJson = (segments: ReadonlyArray<string>, value: unknown) => {
         const file = path.join(profile, "antigravity-acp", "brain", ...segments);
@@ -578,7 +578,7 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const profile = yield* fs.makeTempDirectoryScoped({ prefix: "t3-agy-pending-reply-" });
+        const profile = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-agy-pending-reply-" });
         const write = (segments: ReadonlyArray<string>, body: string) => {
           const file = path.join(
             profile,
@@ -662,7 +662,7 @@ it.layer(NodeServices.layer)("readAntigravityChildWork", (it) => {
         expect(yield* pending()).toBe(false);
 
         // Symlinked transcript fails closed.
-        const outside = yield* fs.makeTempDirectoryScoped({ prefix: "t3-agy-pending-outside-" });
+        const outside = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-agy-pending-outside-" });
         const external = path.join(outside, "transcript.jsonl");
         yield* fs.writeFileString(
           external,

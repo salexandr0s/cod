@@ -7,12 +7,12 @@ import {
   pullRequestReactionName,
   pullRequestReactionTooltip,
   pullRequestReactionsSignature,
-} from "@t3tools/client-runtime/pull-request-reactions";
+} from "@cod3/client-runtime/pull-request-reactions";
 import type {
   PullRequestComment,
   PullRequestReaction,
   PullRequestReactionContent,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { T, useGT, useLocale, useMessages } from "gt-react-native";
 import { useState } from "react";
@@ -80,7 +80,7 @@ export function ReactionPills(props: {
           )}
         >
           <Text className="text-sm">{pullRequestReactionEmoji(reaction.content)}</Text>
-          <Text className="text-xs font-t3-medium text-foreground-muted">{reaction.count}</Text>
+          <Text className="text-xs font-cod3-medium text-foreground-muted">{reaction.count}</Text>
         </Pressable>
       ))}
       {props.canReact ? (
@@ -202,7 +202,7 @@ export function PullRequestCommentFooter(props: {
           className={cn(PILL, "ml-auto border-transparent")}
         >
           <SymbolView name="pencil" size={13} tintColorClassName="accent-icon-muted" />
-          <Text className="text-xs font-t3-medium text-foreground-muted">
+          <Text className="text-xs font-cod3-medium text-foreground-muted">
             <T context="verb, edit a comment">Edit</T>
           </Text>
         </Pressable>

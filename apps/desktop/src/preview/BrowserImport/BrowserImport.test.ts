@@ -1,16 +1,16 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 
 import * as BrowserSession from "../BrowserSession.ts";
-import { readManagedPolicyFile } from "@t3tools/shared/managedPolicyFile";
+import { readManagedPolicyFile } from "@cod3/shared/managedPolicyFile";
 import * as DesktopManagedPolicy from "../../app/DesktopManagedPolicy.ts";
 import * as BrowserImport from "./BrowserImport.ts";
 import { BROWSER_IMPORT_SOURCES, sourcePathContext } from "./Sources.ts";
-import { symlinksSupported } from "@t3tools/shared/testing/symlinks";
+import { symlinksSupported } from "@cod3/shared/testing/symlinks";
 
 const helium = BROWSER_IMPORT_SOURCES.find((source) => source.id === "helium")!;
 
@@ -40,7 +40,7 @@ const layerRejectedBeforeSession = Layer.succeed(
 
 const withImporter = Effect.fnUntraced(function* () {
   const fileSystem = yield* FileSystem.FileSystem;
-  const home = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3code-import-" });
+  const home = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-import-" });
   const layerEnvironment = Layer.succeed(HostProcess.Environment, { HOME: home });
   const context = yield* sourcePathContext.pipe(
     Effect.provideService(HostProcess.Environment, { HOME: home }),
@@ -58,7 +58,7 @@ const withImporter = Effect.fnUntraced(function* () {
         Layer.provide(DesktopManagedPolicy.layerTest()),
         Layer.provide(layerEnvironment),
         Layer.provide(Layer.succeed(HostProcess.Platform, "darwin")),
-        Layer.provide(Layer.succeed(HostProcess.ExecutablePath, "/Applications/T3 Code.app")),
+        Layer.provide(Layer.succeed(HostProcess.ExecutablePath, "/Applications/cod3.app")),
         Layer.provide(NodeServices.layer),
       ),
     ),
@@ -82,7 +82,7 @@ describe("BrowserImport.importCookies", () => {
             sourceProfileDirectory: "../../../../secrets",
             targetProfileId: "default",
           },
-          scope: "persist:t3code-preview-test",
+          scope: "persist:cod3-preview-test",
           persistent: true,
         })
         .pipe(Effect.flip);
@@ -107,7 +107,7 @@ describe("BrowserImport.importCookies", () => {
               sourceProfileDirectory: "Default",
               targetProfileId: "default",
             },
-            scope: "persist:t3code-preview-test",
+            scope: "persist:cod3-preview-test",
             persistent: true,
           })
           .pipe(Effect.flip);
@@ -122,7 +122,7 @@ describe("BrowserImport.checkBrowserImportPolicy", () => {
   it.effect("allows imports unless a readable policy turns them off, and fails closed", () =>
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
-      const dir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3code-import-policy-" });
+      const dir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-import-policy-" });
       const outcome = (contents: string | undefined) =>
         Effect.gen(function* () {
           const policyPath = `${dir}/policy.json`;

@@ -1,6 +1,6 @@
 import * as NodeUtil from "node:util";
 
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -126,10 +126,10 @@ export const reconcileService = Effect.fn("cli.service.reconcile")(function* (op
     return { changed: false, status } satisfies ServiceReconcileResult;
   }
   if (status.supported && !status.installed) {
-    // A new service listens on this machine only, until `t3 up` opens the local network.
+    // A new service listens on this machine only, until `cod3 up` opens the local network.
     const { entries } = yield* readServiceEnv(baseDir);
-    if (entries.T3CODE_LAN === undefined && entries.T3CODE_HOST === undefined) {
-      yield* writeServiceEnv(baseDir, { T3CODE_LAN: "false" });
+    if (entries.COD3_LAN === undefined && entries.COD3_HOST === undefined) {
+      yield* writeServiceEnv(baseDir, { COD3_LAN: "false" });
     }
   }
   if (
@@ -154,9 +154,9 @@ export function formatServiceChange(
   result: Extract<ServiceReconcileResult, { readonly changed: true }>,
 ): string {
   if (result.plan.handedOff === true) {
-    return `Service update to t3@${packageJson.version} queued. This session will disconnect.\nLog: ${result.plan.logPath}`;
+    return `Service update to cod3@${packageJson.version} queued. This session will disconnect.\nLog: ${result.plan.logPath}`;
   }
-  return `Service ${result.previouslyInstalled ? "updated" : "installed"} · t3@${packageJson.version}\nLog: ${result.plan.logPath}`;
+  return `Service ${result.previouslyInstalled ? "updated" : "installed"} · cod3@${packageJson.version}\nLog: ${result.plan.logPath}`;
 }
 
 const MEMORY_CONTROLLER_DISABLED =
@@ -170,8 +170,8 @@ function formatProtection(
     !protection.memoryControllerAvailable
       ? `  Memory protection: unavailable, ${MEMORY_CONTROLLER_DISABLED}`
       : protection.unprotected === undefined
-        ? `  Memory protection: on${protection.setByProtect ? " (t3 service protect)" : ""}`
-        : `  Memory protection: off, ${protection.unprotected} grants none. Run \`t3 service protect\`.`,
+        ? `  Memory protection: on${protection.setByProtect ? " (cod3 service protect)" : ""}`
+        : `  Memory protection: off, ${protection.unprotected} grants none. Run \`cod3 service protect\`.`,
     ...(protection.oomScoreAdj === undefined ? [] : [`  OOM score: ${protection.oomScoreAdj}`]),
   ];
 }
@@ -183,15 +183,15 @@ function formatServiceStatus(
   protection?: ServiceProtection.ServiceProtectionState,
 ): string {
   if (!status.supported) {
-    return "T3 Code service\n  Status: unavailable on this machine\n  Supported on: Linux with systemd, macOS with launchd, Windows with Task Scheduler";
+    return "cod3 service\n  Status: unavailable on this machine\n  Supported on: Linux with systemd, macOS with launchd, Windows with Task Scheduler";
   }
   if (!status.installed) {
-    return `T3 Code service\n  Status: not installed\n  Next: Run \`${commands.install}\`.`;
+    return `cod3 service\n  Status: not installed\n  Next: Run \`${commands.install}\`.`;
   }
   if (status.otherBaseDir !== undefined) {
     return [
-      "T3 Code service",
-      "  Status: installed for another T3 home",
+      "cod3 service",
+      "  Status: installed for another cod3 home",
       `  Base dir: ${status.otherBaseDir}`,
       `  Next: Pass \`${BootService.formatBootServiceBaseDirOption(status.otherBaseDir)}\` to manage it.`,
     ].join("\n");
@@ -206,8 +206,8 @@ function formatServiceStatus(
     compareExactServiceVersions(status.installedVersion, cliVersion) > 0
   ) {
     return [
-      "T3 Code service",
-      `  Status: installed · t3@${installedVersion} (newer than this t3@${cliVersion} CLI)`,
+      "cod3 service",
+      `  Status: installed · cod3@${installedVersion} (newer than this cod3@${cliVersion} CLI)`,
       `  Unit: ${status.unitPath}`,
       `  Logs: ${status.logPath}`,
       ...formatProtection(protection),
@@ -216,8 +216,8 @@ function formatServiceStatus(
     ].join("\n");
   }
   return [
-    "T3 Code service",
-    `  Status: ${status.current ? `installed · t3@${installedVersion}` : "needs an update or repair"}`,
+    "cod3 service",
+    `  Status: ${status.current ? `installed · cod3@${installedVersion}` : "needs an update or repair"}`,
     `  Unit: ${status.unitPath}`,
     `  Logs: ${status.logPath}`,
     ...formatProtection(protection),
@@ -245,7 +245,7 @@ const serviceReconcileFlags = {
 
 const serviceInstallCommand = Command.make("install", serviceReconcileFlags).pipe(
   Command.withDescription(
-    "Install T3 Code as a background service for this user. `t3 up` also chooses how your other devices reach it.",
+    "Install cod3 as a background service for this user. `cod3 up` also chooses how your other devices reach it.",
   ),
   Command.withHandler((flags) =>
     runServiceCommand(
@@ -254,7 +254,7 @@ const serviceInstallCommand = Command.make("install", serviceReconcileFlags).pip
         const result = yield* reconcileService({ allowDowngrade: flags.allowDowngrade });
         if (!result.changed) {
           yield* Console.log(
-            `T3 Code service is already installed with t3@${packageJson.version} (${yield* resolveEntryPath}).`,
+            `cod3 service is already installed with cod3@${packageJson.version} (${yield* resolveEntryPath}).`,
           );
           return;
         }
@@ -269,19 +269,19 @@ const serviceInstallCommand = Command.make("install", serviceReconcileFlags).pip
 );
 
 const serviceUpdateCommand = Command.make("update", serviceReconcileFlags).pipe(
-  Command.withDescription("Deprecated. Run `t3 update` to move to a newer release."),
+  Command.withDescription("Deprecated. Run `cod3 update` to move to a newer release."),
   Command.unlisted,
   Command.withHandler((flags) =>
     runServiceCommand(
       flags,
       Effect.gen(function* () {
         yield* Console.log(
-          "`t3 service update` is deprecated: run `t3 update` to move to a newer release, or `t3 service install` to repair the service. Repairing now.",
+          "`cod3 service update` is deprecated: run `cod3 update` to move to a newer release, or `cod3 service install` to repair the service. Repairing now.",
         );
         const result = yield* reconcileService({ allowDowngrade: flags.allowDowngrade });
         if (!result.changed) {
           yield* Console.log(
-            `T3 Code service is already using t3@${packageJson.version} (${yield* resolveEntryPath}).`,
+            `cod3 service is already using cod3@${packageJson.version} (${yield* resolveEntryPath}).`,
           );
           return;
         }
@@ -293,7 +293,7 @@ const serviceUpdateCommand = Command.make("update", serviceReconcileFlags).pipe(
 
 const serviceRestartCommand = Command.make("restart", projectLocationFlags).pipe(
   Command.withDescription(
-    "Restart the background service. Picks up a version installed by `t3 update` that was not restarted at the time.",
+    "Restart the background service. Picks up a version installed by `cod3 update` that was not restarted at the time.",
   ),
   Command.withHandler((flags) =>
     runServiceCommand(
@@ -303,15 +303,15 @@ const serviceRestartCommand = Command.make("restart", projectLocationFlags).pipe
         const status = yield* service.status;
         const outcome = yield* service.restart;
         const onVersion =
-          status.installedVersion === undefined ? "" : ` on t3@${status.installedVersion}`;
+          status.installedVersion === undefined ? "" : ` on cod3@${status.installedVersion}`;
         yield* Console.log(
           outcome === "restarted"
-            ? `Restarted the T3 Code service${onVersion}.`
+            ? `Restarted the cod3 service${onVersion}.`
             : outcome === "queued"
-              ? `Queued a restart of the T3 Code service${onVersion}. This session runs inside the service and disconnects when it goes down.\nLogs: ${status.logPath}`
+              ? `Queued a restart of the cod3 service${onVersion}. This session runs inside the service and disconnects when it goes down.\nLogs: ${status.logPath}`
               : status.otherBaseDir !== undefined
-                ? `The T3 Code service serves ${status.otherBaseDir}, so it was not restarted. Pass \`${BootService.formatBootServiceBaseDirOption(status.otherBaseDir)}\` to restart it.`
-                : "T3 Code service is not installed.",
+                ? `The cod3 service serves ${status.otherBaseDir}, so it was not restarted. Pass \`${BootService.formatBootServiceBaseDirOption(status.otherBaseDir)}\` to restart it.`
+                : "cod3 service is not installed.",
         );
       }),
     ),
@@ -319,7 +319,7 @@ const serviceRestartCommand = Command.make("restart", projectLocationFlags).pipe
 );
 
 const serviceUninstallCommand = Command.make("uninstall", projectLocationFlags).pipe(
-  Command.withDescription("Stop and remove the T3 Code background service."),
+  Command.withDescription("Stop and remove the cod3 background service."),
   Command.withHandler((flags) =>
     runServiceCommand(
       flags,
@@ -332,13 +332,13 @@ const serviceUninstallCommand = Command.make("uninstall", projectLocationFlags).
         );
         if (otherBaseDir !== undefined) {
           yield* Console.log(
-            `The T3 Code service serves ${otherBaseDir}, so it was not removed. Pass \`${BootService.formatBootServiceBaseDirOption(otherBaseDir)}\` to remove it.`,
+            `The cod3 service serves ${otherBaseDir}, so it was not removed. Pass \`${BootService.formatBootServiceBaseDirOption(otherBaseDir)}\` to remove it.`,
           );
           return;
         }
         const removed = yield* service.uninstall;
         yield* Console.log(
-          removed ? "Removed the T3 Code service." : "T3 Code service is not installed.",
+          removed ? "Removed the cod3 service." : "cod3 service is not installed.",
         );
       }),
     ),
@@ -346,7 +346,7 @@ const serviceUninstallCommand = Command.make("uninstall", projectLocationFlags).
 );
 
 const serviceStatusCommand = Command.make("status", projectLocationFlags).pipe(
-  Command.withDescription("Show whether the T3 Code background service is installed."),
+  Command.withDescription("Show whether the cod3 background service is installed."),
   Command.withHandler((flags) =>
     runServiceCommand(
       flags,
@@ -393,16 +393,16 @@ const serviceProtectCommand = Command.make("protect", {
   ),
 }).pipe(
   Command.withDescription(
-    "Protect the T3 Code server from agents under memory pressure (Linux with systemd). Asks for sudo.",
+    "Protect the cod3 server from agents under memory pressure (Linux with systemd). Asks for sudo.",
   ),
   Command.withHandler((flags) =>
     Effect.gen(function* () {
       const unsupported = "Service protection needs Linux with systemd.";
       if ((yield* HostProcess.Platform) !== "linux") return yield* Console.log(unsupported);
-      // Before resolving config, which creates T3 directories that root would then own.
+      // Before resolving config, which creates cod3 directories that root would then own.
       if ((yield* HostProcess.UserId) === 0) {
         return yield* Console.log(
-          "Run `t3 service protect` as the user that runs T3 Code, without sudo. It asks for sudo when it needs root.",
+          "Run `cod3 service protect` as the user that runs cod3, without sudo. It asks for sudo when it needs root.",
         );
       }
       return yield* runServiceCommand(
@@ -425,7 +425,7 @@ const serviceProtectCommand = Command.make("protect", {
               }),
             );
             if (installed === undefined) {
-              return yield* Console.log("T3 Code service protection is not set up.");
+              return yield* Console.log("cod3 service protection is not set up.");
             }
             yield* Console.log(
               [
@@ -436,19 +436,19 @@ const serviceProtectCommand = Command.make("protect", {
                 ),
               ].join("\n"),
             );
-            if (!(yield* confirm(flags.yes, "Remove T3 Code service protection?"))) return;
+            if (!(yield* confirm(flags.yes, "Remove cod3 service protection?"))) return;
             yield* ServiceProtection.removeProtection(installed);
             return yield* Console.log(
-              "Removed T3 Code service protection. The server's OOM score returns to normal after `t3 service restart`.",
+              "Removed cod3 service protection. The server's OOM score returns to normal after `cod3 service restart`.",
             );
           }
 
           yield* Console.log(
             [
-              "Keeps T3 Code running when agents fill this machine's memory:",
-              "  - reserves memory for the T3 Code server, so the kernel takes memory from agents first",
+              "Keeps cod3 running when agents fill this machine's memory:",
+              "  - reserves memory for the cod3 server, so the kernel takes memory from agents first",
               "  - makes the out-of-memory killer pick agents before the server",
-              "It adds systemd drop-in files and changes nothing else. Undo with `t3 service protect --undo`.",
+              "It adds systemd drop-in files and changes nothing else. Undo with `cod3 service protect --undo`.",
             ].join("\n"),
           );
           const names = remote.map((unit) => unit.replace(/\.service$/, "")).join(" and ");
@@ -479,8 +479,8 @@ const serviceProtectCommand = Command.make("protect", {
           yield* ServiceProtection.applyProtection(plan);
           yield* Console.log(
             memoryController
-              ? "Protected T3 Code. Memory protection applies now; the server takes its OOM score after `t3 service restart`. Undo with `t3 service protect --undo`."
-              : "Protected T3 Code's OOM score; the server takes it after `t3 service restart`. Memory protection applies once the kernel's memory controller is enabled. Undo with `t3 service protect --undo`.",
+              ? "Protected cod3. Memory protection applies now; the server takes its OOM score after `cod3 service restart`. Undo with `cod3 service protect --undo`."
+              : "Protected cod3's OOM score; the server takes it after `cod3 service restart`. Memory protection applies once the kernel's memory controller is enabled. Undo with `cod3 service protect --undo`.",
           );
         }).pipe(Effect.provide(ProcessRunner.layer)),
       );
@@ -489,7 +489,7 @@ const serviceProtectCommand = Command.make("protect", {
 );
 
 export const serviceCommand = Command.make("service").pipe(
-  Command.withDescription("Manage the T3 Code background service."),
+  Command.withDescription("Manage the cod3 background service."),
   Command.withSubcommands([
     serviceInstallCommand,
     serviceRestartCommand,

@@ -9,7 +9,7 @@ import {
   VoiceTranscriptionError,
   throwIfVoiceTranscriptionAborted,
   type VoiceTranscriber,
-} from "@t3tools/client-runtime/voice-input";
+} from "@cod3/client-runtime/voice-input";
 
 type PreparedGoogleTranscription = { readonly locale: string; readonly mode: number };
 
@@ -22,7 +22,7 @@ type GoogleTranscriptionModule = {
   startLive?(id: number, uri: string, locale: string, mode: number): Promise<string>;
 };
 
-const native = requireOptionalNativeModule<GoogleTranscriptionModule>("T3VoiceTranscription");
+const native = requireOptionalNativeModule<GoogleTranscriptionModule>("Cod3VoiceTranscription");
 
 const nativeErrorMessages: Readonly<Record<string, string>> = {
   unavailable: msg("On-device voice transcription is not available for this device language."),

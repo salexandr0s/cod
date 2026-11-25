@@ -2,7 +2,21 @@
 
 Use a new thread for a separate task. Choose **New worktree** when its code changes
 need a separate branch and working directory. Threads in the same checkout share its
-branch, so T3 Code refuses a branch switch there while one of them is working.
+branch, so cod3 refuses a branch switch there while one of them is working.
+
+Drag the sidebar’s right edge to resize it, or focus the edge and use the Left and Right arrow keys.
+Home and End choose the minimum and maximum widths. Double-click the edge to restore the default.
+
+## Browse your AI configuration
+
+Open **AI configuration** (the book icon in the sidebar footer) on desktop or web.
+cod3 selects an open project named `ai-config` or `AI_Config` automatically.
+Use the project picker to choose a different checkout or a copy on another machine.
+
+Search across the library by name, path, or description. Choose a section to narrow the results,
+or filter by Claude or Codex. Open a skill to read its instructions.
+When the assistants have different versions, you can switch between them in the reader.
+Use **On this page** to jump to a heading, **Skill files** for supporting material or **Show markdown source** to inspect the frontmatter.
 
 ## Start a thread
 
@@ -12,8 +26,11 @@ the current project, or use a project's own new-thread action. A new thread carr
 your model and mode selections, unless the destination project has its own model default.
 Its branch and workspace mode come from your configured defaults. To continue in
 an existing worktree, use **New thread in this worktree** from the branch toolbar.
-While the sidebar is filtered to one project, the sidebar's **New thread** button
-starts the thread in that project instead of asking which project to use.
+Use **All projects** to filter the sidebar. Shift-click projects to select several, or press
+Shift+Enter on a highlighted project. The × beside the project name or count shows all projects
+again and keeps your thread search. In the default sidebar, filtering to one project makes
+**New thread** start there.
+In the project-grouped sidebar, use the folder's pen button to start in that project.
 
 On mobile, **New thread** starts in the current thread's project, or else in the
 project the thread list is filtered to, or else in the last project you opened
@@ -22,7 +39,7 @@ off **Settings → General → Use last project** to choose a project every time
 When you pick a project that is on more than one machine, the thread starts on
 a connected one if any is connected.
 
-When you change a new thread's project, T3 Code stays in the current environment
+When you change a new thread's project, cod3 stays in the current environment
 if that project exists there. Otherwise it selects an environment that has it.
 
 ### Start without a project
@@ -35,8 +52,8 @@ list. It starts on your current machine; before sending, pick another machine
 from the machine menu to move it there. To move a draft into a project, pick the
 project in the heading.
 
-Each thread without a project works in its own folder under `~/.t3/scratch` (the
-`scratch` folder of your T3 data directory), named after its date, the first words
+Each thread without a project works in its own folder under `~/.cod3/scratch` (the
+`scratch` folder of your cod3 data directory), named after its date, the first words
 of its first message, and a short id, like
 `2026-09-25-convert-these-pngs-to-webp-a1b2c3d4`. Deleting a thread keeps its
 folder, so the files the agent wrote stay until you delete them. Branch, worktree, and diff controls stay hidden because
@@ -117,7 +134,7 @@ position, so using **Un-settle** returns it to the top. Pinning and snoozing pre
 position until you move it again. Thread activity does not change the order. The settled shelf
 continues to use settlement time.
 
-If dragging is unavailable for one environment, update the T3 Code server running in that
+If dragging is unavailable for one environment, update the cod3 server running in that
 environment. Pinned and active reordering require server support. Threads from older servers keep
 their default order until the server is updated.
 
@@ -129,7 +146,7 @@ To change how titles are written, add **Thread title instructions** in **Setting
 Text generation**, under Advanced, such as a length limit or an identifier to put first. They apply to new and
 regenerated titles. Select a project to give it its own instructions.
 
-Agents connected through T3 Code can use the same server-owned metadata workflow to
+Agents connected through cod3 can use the same server-owned metadata workflow to
 rename a thread, regenerate its title, or link and unlink a pull request. These changes
 appear on web, desktop, and mobile without requiring the originating browser to remain
 open.
@@ -154,10 +171,11 @@ cannot drag or move threads within it. Your saved order returns when you turn it
 ### Group threads by project (beta)
 
 Turn on **Settings → Labs → Boring sidebar (group by project)** on web and desktop to put active
-threads in a folder for each project. Pinned projects come first. A project with no active
-threads has no folder unless it is pinned or you pick it in the project filter. An archived
-project's folder comes last and shows only while it has active threads. Click a folder to open or
-close it. A closed folder shows how many threads it holds, and a dot when one of them
+threads in a folder for each project. **Projects** includes newly added projects before their first
+thread. Home-directory projects appear under **Devices**. Pinned projects come first within each
+section. An archived project's folder shows only while it has active threads. Click a folder to open or
+close it. Use **Collapse all folders** or **Expand all folders** beside a section name to change
+its folders together. A closed folder shows how many threads are hidden, and a dot when one of them
 needs you. Use the pen button on a folder, or right-click it, to start a thread in that project.
 Pinned threads stay above the folders, and Snoozed and Settled stay below them. In this mode you
 can drag a thread onto the composer to mention it, but not within the sidebar, and the Working
@@ -173,13 +191,13 @@ sending an answer or restarting the agent. Settling also closes the thread's
 terminals that wait at an idle prompt, and keeps their output. A terminal that
 runs a command, such as a dev server, stays open unless its action has **Stop this action
 when the thread settles** enabled in Settings > Projects > Actions. You can also set
-`"stopOnSettle": true` on a `t3.json` action and import it there. Start the command through
-that action so T3 can stop its terminal and child processes. Commands started through an
+`"stopOnSettle": true` on a `cod3.json` action and import it there. Start the command through
+that action so cod3 can stop its terminal and child processes. Commands started through an
 agent's own shell tools are managed by the provider.
 
 To reclaim disk space from settled work, turn on **Run in the thread's worktree when the
 thread settles** for one of the project's actions, or set `"runOnSettle": true` on a
-`t3.json` script, for example `cargo clean`. It runs each time a thread in its own
+`cod3.json` script, for example `cargo clean`. It runs each time a thread in its own
 worktree settles, manually or automatically, even if a terminal there still runs a
 command such as a dev server. Threads in the project's main checkout skip it. Its terminal
 closes when the command succeeds and stays open when it fails.
@@ -239,7 +257,13 @@ The linked pull request participates in automatic settlement.
 
 ## Find and reference work
 
-On web and desktop, open the command palette with `Cmd/Ctrl+K` to search threads
+In the web and desktop sidebar, press `/` from a thread or folder to focus search.
+Use the Up and Down arrows to choose a result and Enter to open it. Results under
+**In messages** take you to the matching message. Escape clears the query. Press Escape
+with an empty search to return to the row you started from. If a project filter
+leaves you with no matches, **Search all projects** keeps your query and widens the search.
+
+Open the command palette with `Cmd/Ctrl+K` to search threads
 across connected environments by title, branch, pull request, or project.
 Threads you open often or recently rank higher, and for three weeks the thread
 you last picked for a query ranks higher when you type that query again.
@@ -257,7 +281,7 @@ you paste it and pastes into a composer as a thread chip (see
 [sharing a thread](./prompt-links.md#share-a-thread)). To copy the thread even
 when it has a PR, choose **Copy → Thread** from its context menu, or **Copy
 thread** from its long-press menu on mobile.
-**Thread ID** copies the bare ID for scripts and the `t3` CLI. See
+**Thread ID** copies the bare ID for scripts and the `cod3` CLI. See
 [keybindings](./keybindings.md) for custom configuration.
 
 ## Inspect agent work
@@ -308,7 +332,7 @@ thread's terminals or its Claude agent started, with their ports. Not every one
 serves a web page. A server the agent started stays listed after the agent's
 turn ends.
 Select a server to open it in the browser panel. **Stop** ends the server's job
-and keeps the agent, the terminal, and T3 Code running. Stop needs terminal
+and keeps the agent, the terminal, and cod3 running. Stop needs terminal
 access to the environment and is not available on Windows.
 
 To choose what the thread details card shows, right-click the card or open

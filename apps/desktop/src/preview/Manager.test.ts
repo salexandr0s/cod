@@ -6,9 +6,9 @@ import type {
   DesktopPreviewRecordingInputEvent,
   PreviewAnnotationPayload,
   PreviewAnnotationRect,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { parseKeybindingShortcut } from "@t3tools/shared/keybindings";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { parseKeybindingShortcut } from "@cod3/shared/keybindings";
 import { app, shell } from "electron";
 import * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
@@ -201,8 +201,8 @@ vi.mock("electron", () => ({
 const layerBrowserSession = Layer.succeed(
   BrowserSession.BrowserSession,
   BrowserSession.BrowserSession.of({
-    getPartition: () => Effect.succeed("persist:t3code-preview-test"),
-    isPartition: (partition) => partition.startsWith("persist:t3code-preview-"),
+    getPartition: () => Effect.succeed("persist:cod3-preview-test"),
+    isPartition: (partition) => partition.startsWith("persist:cod3-preview-"),
     getSession: () => Effect.succeed(previewSession as unknown as Electron.Session),
     clearCookies: () => Effect.void,
     cookiesCleared: () => Effect.void,
@@ -213,8 +213,8 @@ const layerBrowserSession = Layer.succeed(
 const layerEnvironment = Layer.succeed(
   DesktopEnvironment.DesktopEnvironment,
   DesktopEnvironment.DesktopEnvironment.of({
-    browserArtifactsDir: "/tmp/t3/dev/browser-artifacts",
-    dirname: "/tmp/t3/desktop",
+    browserArtifactsDir: "/tmp/cod3/dev/browser-artifacts",
+    dirname: "/tmp/cod3/desktop",
     path: {
       join: (...parts: ReadonlyArray<string>) => parts.join("/"),
     },
@@ -648,7 +648,7 @@ describe("PreviewManager", () => {
     (existing) =>
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
-        const dir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-download-test-" });
+        const dir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-download-test-" });
         const downloads = `${dir}/downloads`;
         yield* fs.makeDirectory(downloads);
         using _downloads = vi.spyOn(app, "getPath").mockReturnValue(downloads);
@@ -2495,7 +2495,7 @@ describe("PreviewManager", () => {
             message: JSON.stringify({
               id: 1,
               method: "Page.captureScreenshot",
-              sessionId: "t3-preview-page",
+              sessionId: "cod3-preview-page",
             }),
           }),
         );
@@ -2564,7 +2564,7 @@ describe("PreviewManager", () => {
               id: 1,
               method: "Runtime.evaluate",
               params: { expression: "document.querySelector('a').click()" },
-              sessionId: "t3-preview-page",
+              sessionId: "cod3-preview-page",
             }),
           }),
         );
@@ -3694,19 +3694,21 @@ describe("PreviewManager", () => {
   effectIt.effect("reveals only files inside the configured browser artifact directory", () =>
     withManager((manager) =>
       Effect.gen(function* () {
-        yield* manager.revealArtifact("/tmp/t3/dev/browser-artifacts/browser-screenshot-test.png");
+        yield* manager.revealArtifact(
+          "/tmp/cod3/dev/browser-artifacts/browser-screenshot-test.png",
+        );
 
         expect(showItemInFolder).toHaveBeenCalledWith(
-          "/tmp/t3/dev/browser-artifacts/browser-screenshot-test.png",
+          "/tmp/cod3/dev/browser-artifacts/browser-screenshot-test.png",
         );
-        const exit = yield* Effect.exit(manager.revealArtifact("/tmp/t3/dev/settings.json"));
+        const exit = yield* Effect.exit(manager.revealArtifact("/tmp/cod3/dev/settings.json"));
         expect(Exit.isFailure(exit)).toBe(true);
         if (Exit.isSuccess(exit)) return;
         const error = Option.getOrThrow(Cause.findErrorOption(exit.cause));
         expect(error).toMatchObject({
           _tag: "PreviewArtifactPathOutsideDirectoryError",
-          artifactPath: "/tmp/t3/dev/settings.json",
-          artifactDirectory: "/tmp/t3/dev/browser-artifacts",
+          artifactPath: "/tmp/cod3/dev/settings.json",
+          artifactDirectory: "/tmp/cod3/dev/browser-artifacts",
         });
         expect("cause" in error).toBe(false);
       }),

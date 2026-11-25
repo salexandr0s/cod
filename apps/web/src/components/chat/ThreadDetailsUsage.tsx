@@ -4,22 +4,22 @@ import type {
   ServerProviderUsageLimits,
   ServerProviderUsageWindow,
   UsageLimitSourceSnapshots,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   type LimitPace,
   type LimitPoolWindow,
   paceOf,
   paceRemainingPercent,
   remainingPercent,
-} from "@t3tools/shared/usageLimits";
-import { formatDuration, limitsNotice } from "@t3tools/shared/usageLimitsCopy";
+} from "@cod3/shared/usageLimits";
+import { formatDuration, limitsNotice } from "@cod3/shared/usageLimitsCopy";
 import { Link } from "@tanstack/react-router";
 import { msg, useGT, useLocale, useMessages } from "gt-react";
 import type { ReactNode } from "react";
 
 import { usePrimarySettings } from "../../hooks/useSettings";
 import { useNowMinute } from "../../hooks/useNowMinute";
-import type { ContextWindowSnapshot } from "@t3tools/client-runtime/state/context-window";
+import type { ContextWindowSnapshot } from "@cod3/client-runtime/state/context-window";
 import { formatContextWindowTokens } from "../../lib/contextWindow";
 import { cn } from "../../lib/utils";
 import { formatUpcomingTimestamp } from "../../timestampFormat";

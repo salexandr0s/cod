@@ -1,20 +1,20 @@
 import { expect } from "e2e";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 test(
   "A queued message shows its @-file mention by name, not as a raw link",
   WEB,
-  async ({ t3, app, screen, browser }) => {
-    const project = await t3.project("demo", { "src/foo.ts": "export {};\n" });
-    const thread = await t3.thread({
+  async ({ cod3, app, screen, browser }) => {
+    const project = await cod3.project("demo", { "src/foo.ts": "export {};\n" });
+    const thread = await cod3.thread({
       project,
       title: "Long work",
       messages: ["Show me around"],
       model: "showcase",
     });
-    await t3.open(thread);
+    await cod3.open(thread);
 
     const composer = screen.getByRole("textbox");
     await composer.pressSequentially("Review @foo");
@@ -22,7 +22,9 @@ test(
     await expect(composer).toContainText("foo.ts");
 
     // The showcase recording streams for several seconds, long enough to queue behind its turn.
-    await runPromise(makeState(T3_HOME).cli(["thread", "send", thread.threadId, "Show me again"]));
+    await runPromise(
+      makeState(COD3_HOME).cli(["thread", "send", thread.threadId, "Show me again"]),
+    );
     await screen.getByText("Working for", { exact: false }).waitFor();
     // Enter steers by default; the alternate send queues.
     await browser.keyboard.press("ControlOrMeta+Enter");

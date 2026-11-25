@@ -11,16 +11,16 @@ import {
   type SecretRequestItem,
   type SecretRequestReply,
   type SecretRequestSource,
-} from "@t3tools/client-runtime/secret-request";
+} from "@cod3/client-runtime/secret-request";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import type {
   EnvironmentId,
   OrchestrationV2ProjectedTurnItem,
   SecretProviderId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import { useGT, useMessages } from "gt-react-native";
 import { useRef, useState } from "react";
@@ -146,7 +146,7 @@ function PendingSecretRequestForm(props: {
   return (
     <View className="mb-3 gap-3 rounded-[20px] border border-border bg-card-alt p-4">
       <View className="gap-1">
-        <Text className="font-t3-bold text-base text-foreground">{item.label}</Text>
+        <Text className="font-cod3-bold text-base text-foreground">{item.label}</Text>
         {item.reason.trim() ? (
           <Text className="font-sans text-sm leading-5 text-foreground-muted" selectable>
             {item.reason}
@@ -222,7 +222,7 @@ function PendingSecretRequestForm(props: {
           );
           return multiple ? (
             <View key={input.key} className="gap-1.5">
-              <Text className="font-t3-medium text-sm text-foreground-muted">{input.label}</Text>
+              <Text className="font-cod3-medium text-sm text-foreground-muted">{input.label}</Text>
               {field}
             </View>
           ) : (

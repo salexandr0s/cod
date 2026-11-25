@@ -5,7 +5,7 @@ import {
   replaceDescriptorCurrentValue,
   selectableProviderOptionChoices,
   isReasoningSelect,
-} from "@t3tools/client-runtime/model-traits";
+} from "@cod3/client-runtime/model-traits";
 import {
   type ModelSelection,
   type ProviderDriverKind,
@@ -14,14 +14,14 @@ import {
   type ProviderOptionSelection,
   type ScopedThreadRef,
   type ServerProviderModel,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   buildProviderOptionSelectionsFromDescriptors,
   getProviderOptionCurrentLabel,
   getProviderOptionDescriptors,
   isClaudeUltrathinkPrompt,
   normalizeModelSlug,
-} from "@t3tools/shared/model";
+} from "@cod3/shared/model";
 import { msg, T, useMessages } from "gt-react";
 import { memo } from "react";
 import { GaugeIcon } from "lucide-react";

@@ -1,4 +1,4 @@
-import { resolveProviderProbeTimeoutMs } from "@t3tools/provider-core/server/snapshotProbe";
+import { resolveProviderProbeTimeoutMs } from "@cod3/provider-core/server/snapshotProbe";
 import {
   ANTIGRAVITY_DEFAULT_MODEL,
   ProviderDriverKind,
@@ -9,8 +9,8 @@ import {
   type ServerProviderModel,
   type ServerProviderSlashCommand,
   type ServerProviderUsageLimits,
-} from "@t3tools/contracts";
-import { createModelCapabilities } from "@t3tools/shared/model";
+} from "@cod3/contracts";
+import { createModelCapabilities } from "@cod3/shared/model";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -24,23 +24,23 @@ import * as SubscriptionRef from "effect/SubscriptionRef";
 import type * as EffectAcpErrors from "effect-acp/errors";
 import type * as EffectAcpSchema from "effect-acp/compat";
 
-import type * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
-import { parseSessionModeState } from "@t3tools/provider-acp/server/runtimeModel";
-import { acpProviderOptionDescriptors } from "@t3tools/provider-acp/server/sessionConfig";
+import type * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
+import { parseSessionModeState } from "@cod3/provider-acp/server/runtimeModel";
+import { acpProviderOptionDescriptors } from "@cod3/provider-acp/server/sessionConfig";
 import {
   DeferringFailedCheck,
   makeManagedServerProvider,
-} from "@t3tools/provider-core/server/managedProvider";
+} from "@cod3/provider-core/server/managedProvider";
 import {
   makeManualOnlyProviderMaintenanceCapabilities,
   type ProviderMaintenanceCapabilities,
-} from "@t3tools/provider-core/server/maintenanceResolver";
+} from "@cod3/provider-core/server/maintenanceResolver";
 import {
   buildServerProvider,
   isCommandMissingCause,
   type ServerProviderDraft,
-} from "@t3tools/provider-core/server/snapshotProbe";
-import { resolveUsageLimitsAfterProbe } from "@t3tools/provider-core/server/usageLimits";
+} from "@cod3/provider-core/server/snapshotProbe";
+import { resolveUsageLimitsAfterProbe } from "@cod3/provider-core/server/usageLimits";
 
 import { antigravityThinkingConfig } from "./acp/AntigravityAcpSupport.ts";
 
@@ -51,7 +51,7 @@ const SIGN_IN_MESSAGE = "Sign in with Google to use Antigravity.";
 const AUTH_UNCHECKED_MESSAGE =
   "Antigravity is installed. Google account access is not checked yet.";
 // Set while a finished quota read republishes, so that health check does not read again.
-const PublishingUsage = Context.Reference<boolean>("t3/provider/AntigravityPublishingUsage", {
+const PublishingUsage = Context.Reference<boolean>("cod3/provider/AntigravityPublishingUsage", {
   defaultValue: () => false,
 });
 
@@ -224,7 +224,7 @@ export const makeAntigravityProvider = Effect.fn("makeAntigravityProvider")(func
         auth: { status: "unknown", ...(options.auth ? { type: options.auth.type } : {}) },
         message: settings.enabled
           ? "Checking Antigravity availability."
-          : "Antigravity is disabled in T3 Code settings.",
+          : "Antigravity is disabled in cod3 settings.",
       },
     }),
     setup: { canAuthenticate: true, canInstall: true },

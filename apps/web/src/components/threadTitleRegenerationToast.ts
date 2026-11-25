@@ -1,10 +1,10 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import type { ThreadTitleRegenerationOutcome } from "@t3tools/contracts";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import type { ThreadTitleRegenerationOutcome } from "@cod3/contracts";
 import {
   type AtomCommandResult,
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { msg } from "gt-react";
 
 import { m } from "../i18n/messages";

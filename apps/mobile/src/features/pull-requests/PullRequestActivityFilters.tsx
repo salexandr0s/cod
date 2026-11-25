@@ -37,7 +37,7 @@ export function PullRequestActivityFilters({
           })}
           className="min-h-11 flex-row items-center gap-2 active:opacity-60"
         >
-          <Text className="text-sm font-t3-semibold">
+          <Text className="text-sm font-cod3-semibold">
             {kinds.find((kind) => kind.id === value.kind)?.title}
           </Text>
           <SymbolView name="chevron.down" size={11} tintColorClassName="accent-icon-muted" />

@@ -1,5 +1,5 @@
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import { EnvironmentId, ThreadId } from "@t3tools/contracts";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import { EnvironmentId, ThreadId } from "@cod3/contracts";
 import { useRef, useState } from "react";
 import { expect, it, vi } from "vite-plus/test";
 

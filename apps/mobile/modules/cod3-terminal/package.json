@@ -1,0 +1,17 @@
+{
+  "name": "@cod3/mobile-terminal-native",
+  "version": "0.0.0",
+  "private": true,
+  "expo-module": {
+    "ios": {
+      "modules": [
+        "Cod3TerminalModule"
+      ]
+    },
+    "android": {
+      "modules": [
+        "expo.modules.cod3terminal.Cod3TerminalModule"
+      ]
+    }
+  }
+}

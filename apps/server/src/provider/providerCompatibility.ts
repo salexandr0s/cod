@@ -6,9 +6,9 @@ import {
   type ProviderInstanceId,
   type ServerProvider,
   type ServerProviderCompatibilityAdvisory,
-} from "@t3tools/contracts";
-import { brokenVersionDetail } from "@t3tools/provider-core/server/compatibility";
-import { satisfiesSemverRange } from "@t3tools/shared/semver";
+} from "@cod3/contracts";
+import { brokenVersionDetail } from "@cod3/provider-core/server/compatibility";
+import { satisfiesSemverRange } from "@cod3/shared/semver";
 import * as Schema from "effect/Schema";
 import packageJson from "../../package.json" with { type: "json" };
 
@@ -34,7 +34,7 @@ const compilePattern = (pattern: string) => {
 };
 const Policy = Schema.Struct({
   driver: TrimmedNonEmptyString,
-  t3CodeRange: VersionRange,
+  cod3Range: VersionRange,
   /** Matches a reported version that is not plain `X.Y.Z`; its first group is the version to rate. */
   versionPattern: Schema.optionalKey(
     TrimmedNonEmptyString.pipe(
@@ -74,10 +74,10 @@ export function resolveProviderCompatibility(
   policies: ReadonlyArray<ProviderCompatibilityPolicy> | undefined,
   driver: ProviderDriverKind,
   version: string | null,
-  t3CodeVersion = packageJson.version,
+  cod3Version = packageJson.version,
 ): ServerProviderCompatibilityAdvisory | undefined {
   const policy = policies?.find(
-    (entry) => entry.driver === driver && satisfiesSemverRange(t3CodeVersion, entry.t3CodeRange),
+    (entry) => entry.driver === driver && satisfiesSemverRange(cod3Version, entry.cod3Range),
   );
   if (!policy) return undefined;
   const unprefixed = version?.replace(/^v/, "");
@@ -91,11 +91,11 @@ export function resolveProviderCompatibility(
       : "unknown";
   const message =
     status === "broken"
-      ? "This provider version is known to be incompatible with this T3 Code release."
+      ? "This provider version is known to be incompatible with this cod3 release."
       : status === "unsupported"
-        ? "This provider version is outside the supported range for this T3 Code release."
+        ? "This provider version is outside the supported range for this cod3 release."
         : status === "graceful"
-          ? "This provider version has limited compatibility with this T3 Code release."
+          ? "This provider version has limited compatibility with this cod3 release."
           : null;
   const recommendedVersion = policy.recommendedVersion ?? null;
   const recommendedRange = policy.recommendedRange ?? null;

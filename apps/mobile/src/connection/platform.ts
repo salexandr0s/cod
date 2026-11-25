@@ -1,11 +1,11 @@
-import { ClientCapabilities, PlatformConnectionSource } from "@t3tools/client-runtime/platform";
+import { ClientCapabilities, PlatformConnectionSource } from "@cod3/client-runtime/platform";
 import {
   ConnectionBlockedError,
   ConnectionTransientError,
   Connectivity,
   Wakeups,
-} from "@t3tools/client-runtime/connection";
-import { managedRelayAccountChanges, managedRelaySessionAtom } from "@t3tools/client-runtime/relay";
+} from "@cod3/client-runtime/connection";
+import { managedRelayAccountChanges, managedRelaySessionAtom } from "@cod3/client-runtime/relay";
 import * as Clock from "effect/Clock";
 import { msg } from "gt-react-native";
 import { m } from "../i18n/messages";
@@ -161,7 +161,9 @@ const layerCapabilities = Layer.effectContext(
             return yield* new ConnectionBlockedError({
               reason: "authentication",
               detail: m(
-                msg("Sign in to {product} to connect this environment.", { product: "T3 Connect" }),
+                msg("Sign in to {product} to connect this environment.", {
+                  product: "cod3 Connect",
+                }),
               ),
             });
           }
@@ -177,7 +179,7 @@ const layerCapabilities = Layer.effectContext(
           if (token === null) {
             return yield* new ConnectionBlockedError({
               reason: "authentication",
-              detail: m(msg("The {product} session is unavailable.", { product: "T3 Connect" })),
+              detail: m(msg("The {product} session is unavailable.", { product: "cod3 Connect" })),
             });
           }
           return token;

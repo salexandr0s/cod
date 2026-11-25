@@ -7,8 +7,8 @@ import type {
   VcsListRemotesResult,
   VcsListWorkspaceFilesResult,
   VcsRepositoryIdentity,
-} from "@t3tools/contracts";
-import { CheckpointRef } from "@t3tools/contracts";
+} from "@cod3/contracts";
+import { CheckpointRef } from "@cod3/contracts";
 import * as VcsProcess from "./VcsProcess.ts";
 
 export interface VcsCaptureCheckpointInput {
@@ -115,4 +115,4 @@ export class VcsDriver extends Context.Service<
     ) => Effect.Effect<ReadonlyArray<string>, VcsError>;
     readonly initRepository: (input: VcsInitInput) => Effect.Effect<void, VcsError>;
   }
->()("t3/vcs/VcsDriver") {}
+>()("cod3/vcs/VcsDriver") {}

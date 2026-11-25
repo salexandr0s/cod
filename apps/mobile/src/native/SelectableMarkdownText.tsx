@@ -1,8 +1,8 @@
 import { Platform } from "react-native";
 import { useState } from "react";
 import { useGT } from "gt-react-native";
-import type { AssistantCitation } from "@t3tools/contracts";
-import { parseAssistantCitationHref } from "@t3tools/shared/assistantCitations";
+import type { AssistantCitation } from "@cod3/contracts";
+import { parseAssistantCitationHref } from "@cod3/shared/assistantCitations";
 import { AssistantCitationSheet } from "../components/AssistantCitationSheet";
 import { copyTextWithHaptic } from "../lib/copyTextWithHaptic";
 import type { SelectableMarkdownTextProps } from "./SelectableMarkdownText.types";
@@ -25,7 +25,7 @@ export type {
 export function SelectableMarkdownText(props: SelectableMarkdownTextProps) {
   const [citation, setCitation] = useState<AssistantCitation | null>(null);
   const gt = useGT();
-  const hasCitations = props.markdown.includes("t3-citation:");
+  const hasCitations = props.markdown.includes("cod3-citation:");
   const theme = useUniwindTheme();
   const selectionColor = themeColorWithAlpha(theme["--color-focus"], 0.32);
   const selectionHandleColor = theme["--color-focus"];

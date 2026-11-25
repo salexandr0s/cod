@@ -9,9 +9,9 @@ import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as NodeSqliteClient from "@t3tools/shared/nodeSqliteClient";
-import { fromJsonStringPretty } from "@t3tools/shared/schemaJson";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as NodeSqliteClient from "@cod3/shared/nodeSqliteClient";
+import { fromJsonStringPretty } from "@cod3/shared/schemaJson";
 import * as Clock from "effect/Clock";
 import * as Cause from "effect/Cause";
 import * as Console from "effect/Console";
@@ -43,7 +43,7 @@ import {
   ORCHESTRATION_PROTOCOL_VERSION_TEXT,
   ThreadId,
   WsRpcGroup,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   HttpClient,
   HttpClientRequest,
@@ -444,7 +444,7 @@ const inspect = Effect.fn("serverMetrics.inspect")(function* (url: string) {
     loopStart: send("Runtime.evaluate", {
       awaitPromise: true,
       expression: `(async () => {
-        const bench = (globalThis.__t3ServerMetrics ??= (() => {
+        const bench = (globalThis.__cod3ServerMetrics ??= (() => {
           const { monitorEventLoopDelay, PerformanceObserver } = process.getBuiltinModule("node:perf_hooks");
           const state = { delay: monitorEventLoopDelay({ resolution: ${LOOP_RESOLUTION_MS} }), gcCount: 0, gcMs: 0 };
           state.count = (entries) => {
@@ -466,7 +466,7 @@ const inspect = Effect.fn("serverMetrics.inspect")(function* (url: string) {
     loopRead: send("Runtime.evaluate", {
       awaitPromise: true,
       expression: `(async () => {
-        const bench = globalThis.__t3ServerMetrics;
+        const bench = globalThis.__cod3ServerMetrics;
         bench.delay.disable();
         await new Promise((resolve) => setImmediate(resolve));
         await new Promise((resolve) => setImmediate(resolve));
@@ -489,7 +489,7 @@ const inspect = Effect.fn("serverMetrics.inspect")(function* (url: string) {
     // Off-heap and touched, so it adds RSS (and page tables to copy on fork) but no GC work.
     ballast: (mb: number) =>
       send("Runtime.evaluate", {
-        expression: `globalThis.__t3ServerMetricsBallast = Array.from({ length: ${mb} }, () => new Uint8Array(1 << 20).fill(1)), 0`,
+        expression: `globalThis.__cod3ServerMetricsBallast = Array.from({ length: ${mb} }, () => new Uint8Array(1 << 20).fill(1)), 0`,
       }).pipe(Effect.asVoid),
     heapAfterGc: Effect.gen(function* () {
       yield* send("HeapProfiler.collectGarbage");
@@ -703,7 +703,7 @@ const seedBaseDir = Effect.fn("serverMetrics.seedBaseDir")(function* (
       pathRewrites(prefix, path.join(gone, `root-${index}`)).map(([from, to], spelling) => ({
         from,
         to,
-        marker: `«t3-bench-gone-${index}-${spelling}»`,
+        marker: `«cod3-bench-gone-${index}-${spelling}»`,
       })),
     );
     for (const { table, column } of columns) {
@@ -781,7 +781,7 @@ const prepareSeed = Effect.fn("serverMetrics.prepareSeed")(function* (
 ) {
   const fs = yield* FileSystem.FileSystem;
   const node = yield* HostProcess.ExecutablePath;
-  const dir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-server-metrics-seed-" });
+  const dir = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-server-metrics-seed-" });
   yield* Console.error(`seeding ${checkout} from the real database (read-only)...`);
   // Its output names the kept projects, so it stays out of ours.
   const seeded = yield* run(
@@ -854,7 +854,7 @@ const startServer = Effect.fn("serverMetrics.startServer")(function* (
   );
   const dropped = new Set([
     "ANTHROPIC_AUTH_TOKEN",
-    "T3CODE_HOME",
+    "COD3_HOME",
     "CLAUDE_CONFIG_DIR",
     ...(environment.noAgentScope ? ["XDG_RUNTIME_DIR"] : []),
   ]);
@@ -870,7 +870,7 @@ const startServer = Effect.fn("serverMetrics.startServer")(function* (
     ANTHROPIC_API_KEY: "sk-bench",
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
     OTEL_SDK_DISABLED: "true",
-    T3CODE_DEV_SEED: "0",
+    COD3_DEV_SEED: "0",
   };
   const port = yield* freePort;
   const started = yield* nowMs;
@@ -1641,7 +1641,7 @@ const runOnce = Effect.fn("serverMetrics.runOnce")(function* (options: RunOption
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const machine = yield* watchMachine;
-  const home = yield* fs.makeTempDirectoryScoped({ prefix: "t3-server-metrics-" });
+  const home = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-server-metrics-" });
   const api = yield* serveFakeAnthropic();
   const environment: Environment = {
     home,
@@ -1981,10 +1981,10 @@ const machineLoad = Effect.gen(function* () {
 );
 
 /** Comm names of the processes that compete with a measured server on a developer's machine. */
-const COMPETING = /^(node|node-MainThread|t3|claude|codex|vite|pnpm)/;
+const COMPETING = /^(node|node-MainThread|cod3|claude|codex|vite|pnpm)/;
 
 /**
- * CPU seconds of every node, T3, claude or codex process outside this script's own tree, keyed by
+ * CPU seconds of every node, cod3, claude or codex process outside this script's own tree, keyed by
  * pid and start time so a reused pid is a new process. Linux only; elsewhere none, and the run
  * records only the load average.
  */
@@ -2042,7 +2042,7 @@ const load1 = Effect.gen(function* () {
 
 /**
  * Starts watching the machine for one run; the returned effect reads what competed with it: the
- * highest 1-minute load seen and the cores other T3, node and agent processes kept busy.
+ * highest 1-minute load seen and the cores other cod3, node and agent processes kept busy.
  */
 const watchMachine = Effect.gen(function* () {
   const startedAt = yield* nowMs;

@@ -32,7 +32,7 @@ import {
   RpcScopeAuthorization,
   WS_METHODS,
   WsRpcGroup,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Layer from "effect/Layer";
@@ -188,6 +188,7 @@ export const RPC_REQUIRED_SCOPES = {
   [WS_METHODS.filesystemBrowse]: AuthFilesystemReadScope,
   [WS_METHODS.workspaceListFolders]: AuthFilesystemReadScope,
   [WS_METHODS.workspaceScanFolders]: AuthFilesystemReadScope,
+  [WS_METHODS.workspaceDiscoverProjects]: AuthFilesystemReadScope,
   [WS_METHODS.workspaceTaskFolder]: AuthFilesystemReadScope,
   [WS_METHODS.filesystemGetMetadata]: AuthFilesystemReadScope,
   [WS_METHODS.agentSessionsScan]: AuthOrchestrationReadScope,

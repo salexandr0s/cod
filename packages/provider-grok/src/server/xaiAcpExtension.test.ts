@@ -27,14 +27,14 @@ import {
   xAiSubagentFinishedNotice,
   XAiAskUserQuestionRequest,
 } from "./xaiAcpExtension.ts";
-import * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
+import * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
 import {
   type AcpToolCallState,
   extractMcpToolCallIdentity,
   mergeToolCallState,
   parseSessionUpdateEvent,
-} from "@t3tools/provider-acp/server/runtimeModel";
-import { compactDynamicToolOutput, htmlRenderFromToolItem } from "@t3tools/shared/toolOutput";
+} from "@cod3/provider-acp/server/runtimeModel";
+import { compactDynamicToolOutput, htmlRenderFromToolItem } from "@cod3/shared/toolOutput";
 
 const decodeXAiAskUserQuestionRequest = Schema.decodeUnknownSync(XAiAskUserQuestionRequest);
 
@@ -43,7 +43,7 @@ describe("xAiPromptCompleteFromSessionUpdate", () => {
     expect(
       xAiPromptCompleteFromSessionUpdate({
         sessionId: "root",
-        update: { sessionUpdate: "hook_execution", prompt_id: "t3-xai-prompt-1" },
+        update: { sessionUpdate: "hook_execution", prompt_id: "cod3-xai-prompt-1" },
       }),
     ).toBeNull();
     expect(
@@ -376,25 +376,25 @@ describe("XAiAcpExtension", () => {
 
     const rendered = grokCall(
       "call-85597c6c-6fb8-4c9c-a6a8-12c4a74ebc96-1",
-      "t3-code__html_render",
+      "cod3__html_render",
       { path: "a.html" },
       {
         status: "completed",
         rawOutput: {
           type: "MCP",
           tool_name: "html_render",
-          server_name: "t3-code",
+          server_name: "cod3",
           output: { OkayOutput: JSON.stringify({ htmlRender: page, message: "Shown" }) },
         },
       },
     );
     expect(extractMcpToolCallIdentity(rendered)).toEqual({
-      server: "t3-code",
+      server: "cod3",
       tool: "html_render",
     });
     expect(rendered.data.rawInput).toMatchObject({ arguments: { path: "a.html" } });
     expect(
-      htmlRenderFromToolItem({ toolName: "t3-code.html_render", output: rendered.data.rawOutput }),
+      htmlRenderFromToolItem({ toolName: "cod3.html_render", output: rendered.data.rawOutput }),
     ).toEqual(page);
 
     const failed = grokCall(
@@ -1406,7 +1406,7 @@ describe("XAiAcpExtension", () => {
         sessionId: "root-session",
         update: {
           sessionUpdate: "turn_completed",
-          prompt_id: "t3-xai-prompt-1",
+          prompt_id: "cod3-xai-prompt-1",
           stop_reason: "end_turn",
         },
       });

@@ -1,4 +1,4 @@
-import { EnvironmentId, GuestShareId, ThreadId, type ThreadGuestShare } from "@t3tools/contracts";
+import { EnvironmentId, GuestShareId, ThreadId, type ThreadGuestShare } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import { act, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -132,13 +132,13 @@ it.each(["expired", "stopped", "replaced", "redeemed"] as const)(
     sharing.messages = [];
     const share: ThreadGuestShare = {
       id: GuestShareId.make("created"),
-      host: "env.t3.test",
+      host: "env.cod3.test",
       createdAt: "1970-01-01T00:00:00.100Z",
       expiresAt: "1970-01-01T00:00:01.000Z",
       guestName: null,
       messages: [],
     };
-    const url = "https://env.t3.test/guest#invite";
+    const url = "https://env.cod3.test/guest#invite";
     created.command.mockResolvedValue({ _tag: "Success", value: { url, share } });
     vi.useFakeTimers();
     vi.setSystemTime(0);

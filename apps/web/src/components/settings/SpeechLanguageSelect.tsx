@@ -1,5 +1,5 @@
-import type { EnvironmentSpeechStatus } from "@t3tools/contracts";
-import { effectiveSpeechLanguage } from "@t3tools/shared/speech";
+import type { EnvironmentSpeechStatus } from "@cod3/contracts";
+import { effectiveSpeechLanguage } from "@cod3/shared/speech";
 import { useGT, useLocale } from "gt-react";
 import { updateClientSettings, useClientSettings } from "../../hooks/useSettings";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../ui/select";

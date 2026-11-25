@@ -4,7 +4,7 @@ export function formatAppDisplayName(input: {
   readonly baseName: string;
   readonly stageLabel: string;
 }): string {
-  if (input.stageLabel.trim().toLowerCase() === "latest") {
+  if (["latest", "beta"].includes(input.stageLabel.trim().toLowerCase())) {
     return input.baseName;
   }
 
@@ -13,7 +13,7 @@ export function formatAppDisplayName(input: {
 
 export function resolveHostedAppChannelLabel(channel: string | null | undefined): string | null {
   const normalized = channel?.trim().toLowerCase();
-  // oxlint-disable-next-line t3code/no-untranslated-copy -- release channel name, part of the product name
+  // oxlint-disable-next-line cod3/no-untranslated-copy -- release channel name, part of the product name
   return normalized === "nightly" ? "Nightly" : normalized === "latest" ? "Latest" : null;
 }
 
@@ -23,7 +23,7 @@ export function resolveWebAppStageLabel(input: {
   readonly development: boolean;
 }): string {
   return (
-    // oxlint-disable-next-line t3code/no-untranslated-copy -- release channel name, part of the product name
+    // oxlint-disable-next-line cod3/no-untranslated-copy -- release channel name, part of the product name
     resolveHostedAppChannelLabel(input.hostedAppChannel) ?? (input.development ? "Dev" : "Beta")
   );
 }
@@ -34,7 +34,7 @@ export function resolveServerBackedAppStageLabel(input: {
 }): string {
   return input.primaryServerVersion &&
     NIGHTLY_SERVER_VERSION_PATTERN.test(input.primaryServerVersion)
-    ? // oxlint-disable-next-line t3code/no-untranslated-copy -- release channel name, part of the product name
+    ? // oxlint-disable-next-line cod3/no-untranslated-copy -- release channel name, part of the product name
       "Nightly"
     : input.fallbackStageLabel;
 }

@@ -9,8 +9,8 @@ import type {
   SettingSource,
   ToolCall,
 } from "@cursor/sdk";
-import { formatReadToolLabel, formatSearchToolLabel } from "@t3tools/shared/toolActivity";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import { formatReadToolLabel, formatSearchToolLabel } from "@cod3/shared/toolActivity";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import {
   isOrchestrationV2WorkActive,
   defaultInstanceIdForDriver,
@@ -31,7 +31,7 @@ import {
   type ServerProviderModel,
   type ServerProviderSkill,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -44,12 +44,12 @@ import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 
-import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
-import * as ProviderHost from "@t3tools/provider-core/server/ProviderHost";
-import { backgroundWorkNotification } from "@t3tools/provider-core/server/notification";
-import { mcpToolPresentation } from "@t3tools/provider-core/server/mcpToolPresentation";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as McpProviderSession from "@t3tools/provider-core/server/mcpSession";
+import * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
+import * as ProviderHost from "@cod3/provider-core/server/ProviderHost";
+import { backgroundWorkNotification } from "@cod3/provider-core/server/notification";
+import { mcpToolPresentation } from "@cod3/provider-core/server/mcpToolPresentation";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as McpProviderSession from "@cod3/provider-core/server/mcpSession";
 import { CursorTransportFailure } from "./transportFailure.ts";
 import { cursorContextWindowTokens, cursorSdkModelSelection } from "./sdkModel.ts";
 import {
@@ -60,21 +60,21 @@ import {
   rewriteCursorSkillMentions,
 } from "./skills.ts";
 import { cursorWorkspaceMcpServers } from "./workspaceMcpServers.ts";
-import { t3OrchestrationPrompt } from "@t3tools/provider-core/server/orchestrationInstructions";
-import { buildRuntimeInstructions } from "@t3tools/provider-core/server/runtimeInstructions";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import { makeProviderFailure } from "@t3tools/provider-core/server/failure";
-import { turnScopedSelectionTransition } from "@t3tools/provider-core/server/selectionTransition";
+import { cod3OrchestrationPrompt } from "@cod3/provider-core/server/orchestrationInstructions";
+import { buildRuntimeInstructions } from "@cod3/provider-core/server/runtimeInstructions";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import { makeProviderFailure } from "@cod3/provider-core/server/failure";
+import { turnScopedSelectionTransition } from "@cod3/provider-core/server/selectionTransition";
 import {
   isProviderNativeImageAttachment,
   providerMessageTextWithAttachmentPaths,
-} from "@t3tools/provider-core/server/attachmentPrompt";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+} from "@cod3/provider-core/server/attachmentPrompt";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 import {
   makeSubagentChildThread,
   makeSubagentConversationArtifacts,
   subagentThreadTitle,
-} from "@t3tools/provider-core/server/subagentProjection";
+} from "@cod3/provider-core/server/subagentProjection";
 import * as CursorAgentSdk from "./CursorAgentSdk.ts";
 import { isCursorSdkError } from "./sdk.ts";
 export { cursorSdkModelSelection } from "./sdkModel.ts";
@@ -220,7 +220,7 @@ export function cursorMcpServers(
     return undefined;
   }
   return {
-    "t3-code": {
+    cod3: {
       type: "http",
       url: session.endpoint,
       headers: {
@@ -323,7 +323,7 @@ export function makeCursorAgentOptions(input: {
   const mcpServers = cursorMcpServers(input.mcpSession);
   return {
     model: cursorSdkModelSelection(input.modelSelection, input.models, input.sdkModels),
-    name: `T3 Code ${input.threadId}`,
+    name: `cod3 ${input.threadId}`,
     mode: input.runtimePolicy.interactionMode === "plan" ? "plan" : "agent",
     ...(input.apiKey === undefined ? {} : { apiKey: input.apiKey }),
     local: {
@@ -1002,7 +1002,7 @@ interface ActiveCursorTurn {
 type CursorTurnUsage = NonNullable<Extract<InteractionUpdate, { type: "turn-ended" }>["usage"]>;
 
 const CURSOR_BACKGROUND_WAIT_INSTRUCTIONS =
-  "To wait for a background shell you started (tests, a build), call `t3_background_wait` with its shell ID or pid before you end your turn. It returns at once, and T3 wakes you when the shell exits. Do not mark work you leave running, or PRs.";
+  "To wait for a background shell you started (tests, a build), call `cod3_background_wait` with its shell ID or pid before you end your turn. It returns at once, and cod3 wakes you when the shell exits. Do not mark work you leave running, or PRs.";
 
 const BACKGROUND_SHELL_DETAIL_COMMAND_MAX_LENGTH = 200;
 
@@ -2865,7 +2865,7 @@ export const makeCursorAdapterV2 = Effect.fn("makeCursorAdapterV2")(function* (
           if (rawText.trim() === "/compress" && turnInput.message.attachments.length === 0) {
             return { message: "/compress", prompt: undefined, runtimeInstructions: undefined };
           }
-          const newText = t3OrchestrationPrompt({
+          const newText = cod3OrchestrationPrompt({
             prompt: yield* providerMessageTextWithAttachmentPaths({
               text: yield* resolveCursorSkillText(
                 rawText,
@@ -2875,7 +2875,7 @@ export const makeCursorAdapterV2 = Effect.fn("makeCursorAdapterV2")(function* (
               resolveAttachmentPath: host.resolveAttachmentPath,
               resolveExtractedTextPath: host.resolveExtractedTextPath,
             }),
-            hasT3Mcp: mcpServers !== undefined,
+            hasCod3Mcp: mcpServers !== undefined,
             hasDeviceTools,
             orchestrationDelivered: delivered.orchestration,
             deviceInstructionsDelivered: delivered.device,

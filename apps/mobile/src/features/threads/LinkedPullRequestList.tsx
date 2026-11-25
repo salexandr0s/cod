@@ -1,12 +1,12 @@
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { changeRequestTermKind } from "../../lib/changeRequestTerm";
 import {
   pullRequestListLines,
   resolveThreadPullRequestChains,
   threadPullRequestKeyOf,
   type PullRequestListLine,
-} from "@t3tools/client-runtime/thread-pull-requests";
+} from "@cod3/client-runtime/thread-pull-requests";
 import { useGT, useMessages } from "gt-react-native";
 import { memo, useMemo } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
@@ -203,7 +203,7 @@ export const LinkedPullRequestRow = memo(function LinkedPullRequestRow(props: {
           ) : null}
         </View>
         <Text
-          className="text-base leading-5 font-t3-medium text-foreground"
+          className="text-base leading-5 font-cod3-medium text-foreground"
           numberOfLines={2}
           ellipsizeMode="tail"
         >

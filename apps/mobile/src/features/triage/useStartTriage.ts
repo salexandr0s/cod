@@ -1,10 +1,10 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { pipe } from "effect/Function";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import type { EnvironmentId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/runtime";
+import type { EnvironmentId } from "@cod3/contracts";
 import { useNavigation } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 import { useGT } from "gt-react-native";
@@ -21,10 +21,10 @@ import {
 import { useSelectWorkspaceDetail } from "../layout/workspace/useSelectWorkspaceDetail";
 import { usePrepareTriage } from "./usePrepareTriage";
 
-const CLI_COMMAND = "npx t3 triage";
+const CLI_COMMAND = "npx cod3 triage";
 
 /**
- * In-app `t3 triage`, as on web: the server writes the session files and
+ * In-app `cod3 triage`, as on web: the server writes the session files and
  * clones the matching source, then a No project draft opens with the prompt.
  */
 export function useStartTriage() {

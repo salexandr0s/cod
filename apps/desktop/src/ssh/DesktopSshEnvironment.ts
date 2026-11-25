@@ -2,12 +2,12 @@ import type {
   DesktopDiscoveredSshHost,
   DesktopSshEnvironmentBootstrap,
   DesktopSshEnvironmentTarget,
-} from "@t3tools/contracts";
-import { CLI_RELEASE_BASE_URL_ENV } from "@t3tools/shared/cliRelease";
-import * as NetService from "@t3tools/shared/Net";
-import * as SshAuth from "@t3tools/ssh/auth";
-import { resolveSshTarget } from "@t3tools/ssh/command";
-import { discoverSshHosts } from "@t3tools/ssh/config";
+} from "@cod3/contracts";
+import { CLI_RELEASE_BASE_URL_ENV } from "@cod3/shared/cliRelease";
+import * as NetService from "@cod3/shared/Net";
+import * as SshAuth from "@cod3/ssh/auth";
+import { resolveSshTarget } from "@cod3/ssh/command";
+import { discoverSshHosts } from "@cod3/ssh/config";
 import {
   SshCommandError,
   SshHostDiscoveryError,
@@ -16,8 +16,8 @@ import {
   SshPairingError,
   SshPasswordPromptError,
   SshReadinessError,
-} from "@t3tools/ssh/errors";
-import * as SshTunnel from "@t3tools/ssh/tunnel";
+} from "@cod3/ssh/errors";
+import * as SshTunnel from "@cod3/ssh/tunnel";
 import * as Context from "effect/Context";
 import type * as Digest from "effect/crypto/Digest";
 import * as SecureRandom from "effect/crypto/SecureRandom";
@@ -72,18 +72,18 @@ export class DesktopSshEnvironment extends Context.Service<
     ) => Effect.Effect<void, DesktopSshEnvironmentOperationError>;
     readonly closeAllTunnels: Effect.Effect<void>;
   }
->()("@t3tools/desktop/ssh/DesktopSshEnvironment") {}
+>()("@cod3/desktop/ssh/DesktopSshEnvironment") {}
 
 export interface DesktopSshEnvironmentLayerOptions {
-  readonly resolveCliRunner?: Effect.Effect<SshTunnel.RemoteT3RunnerOptions>;
+  readonly resolveCliRunner?: Effect.Effect<SshTunnel.RemoteCod3RunnerOptions>;
   readonly resolveLauncherId?: Effect.Effect<string | null>;
 }
 
 export const resolveDesktopSshCliRunner = (
   environment: DesktopEnvironment.DesktopEnvironment["Service"],
   env: NodeJS.ProcessEnv,
-): SshTunnel.RemoteT3RunnerOptions => {
-  const devRemoteEntryPath = Option.getOrUndefined(environment.devRemoteT3ServerEntryPath);
+): SshTunnel.RemoteCod3RunnerOptions => {
+  const devRemoteEntryPath = Option.getOrUndefined(environment.devRemoteCod3ServerEntryPath);
   if (environment.isDevelopment && devRemoteEntryPath !== undefined) {
     return {
       nodeScriptPath: devRemoteEntryPath,
@@ -147,7 +147,7 @@ function toSshPasswordPromptError(
       break;
     case "DesktopSshPromptWindowUnavailableError":
     case "DesktopSshPromptPresentationError":
-      message = "T3 Code window is not available for SSH authentication.";
+      message = "cod3 window is not available for SSH authentication.";
       break;
     case "DesktopSshPromptTimedOutError":
       message = `SSH authentication timed out for ${cause.destination}.`;

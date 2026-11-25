@@ -1,4 +1,4 @@
-import { parseGoalCommand } from "@t3tools/contracts";
+import { parseGoalCommand } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as JsonSchema from "effect/JsonSchema";
 import * as Result from "effect/Result";
@@ -49,7 +49,7 @@ export const outputRequestProblem = (
 export const outputInstructions = (schema: OutputSchema): string =>
   [
     "A program reads the result of this turn, not a person.",
-    "When the work is done, call the `t3_submit_output` tool once with `json` set to JSON text matching this JSON Schema:",
+    "When the work is done, call the `cod3_submit_output` tool once with `json` set to JSON text matching this JSON Schema:",
     JSON.stringify(schema),
     "If you could not finish, still submit, with the fields that say so. A rejected submission names what did not fit: correct it and submit again.",
   ].join("\n");

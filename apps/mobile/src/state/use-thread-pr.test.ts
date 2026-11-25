@@ -3,7 +3,7 @@ import {
   type PullRequestSummary,
   SourceControlProviderKind,
   type ThreadPullRequestLink,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -19,9 +19,9 @@ function linkedPr(
 ): ThreadPullRequestLink {
   return {
     host: "github.com",
-    repository: "t3tools/t3code",
+    repository: "cod3tools/cod3",
     number,
-    url: `https://github.com/t3tools/t3code/pull/${number}`,
+    url: `https://github.io/github/salexandr0s/cod3/pull/${number}`,
     source: "manual",
     linkedAt: "2026-09-08T00:00:00.000Z",
     stack: null,
@@ -61,8 +61,8 @@ describe("presentThreadLinkedPullRequests", () => {
       presentThreadLinkedPullRequests([
         linkedPr(7, {
           host: "gitlab.com",
-          repository: "t3tools/t3code",
-          url: "https://gitlab.com/t3tools/t3code/-/merge_requests/7",
+          repository: "cod3tools/cod3",
+          url: "https://gitlab.io/github/salexandr0s/cod3/-/merge_requests/7",
         }),
       ])?.accessibilityLabel,
     ).toBe("#7 merge request open");
@@ -72,11 +72,15 @@ describe("presentThreadLinkedPullRequests", () => {
 describe("resolveThreadPrSource compatibility", () => {
   const legacyRef = {
     projectId: ProjectId.make("project"),
-    repository: "t3tools/t3code",
+    repository: "cod3tools/cod3",
     number: 1,
-    url: "https://github.com/t3tools/t3code/pull/1",
+    url: "https://github.io/github/salexandr0s/cod3/pull/1",
   };
-  const branchRef = { ...legacyRef, number: 2, url: "https://github.com/t3tools/t3code/pull/2" };
+  const branchRef = {
+    ...legacyRef,
+    number: 2,
+    url: "https://github.io/github/salexandr0s/cod3/pull/2",
+  };
 
   it("polls the stored reference before the server config loads", () => {
     expect(
@@ -134,17 +138,17 @@ describe("knownPullRequestSummary", () => {
     const listed: PullRequestSummary = {
       provider: SourceControlProviderKind.make("github"),
       projectId,
-      repository: "t3tools/t3code",
+      repository: "cod3tools/cod3",
       number: 7,
       title: "Listed title",
-      url: "https://github.com/t3tools/t3code/pull/7",
+      url: "https://github.io/github/salexandr0s/cod3/pull/7",
       state: "open",
       headBranch: "change-7",
       baseBranch: "main",
       updatedAt: "2026-09-09T00:00:00.000Z",
     };
     const lookup = (host: string, number: number, summaries = [listed]) =>
-      knownPullRequestSummary({ host, repository: "t3tools/t3code", number }, threads, summaries);
+      knownPullRequestSummary({ host, repository: "cod3tools/cod3", number }, threads, summaries);
 
     expect(lookup("github.com", 7, [])?.title).toBe("Change 7");
     expect(lookup("github.com", 7)?.title).toBe("Listed title");

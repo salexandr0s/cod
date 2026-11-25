@@ -14,10 +14,10 @@ import {
   type OrchestrationV2AppThread,
   type OrchestrationV2DomainEvent,
   type OrchestrationV2ProviderThread,
-} from "@t3tools/contracts";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as AcpRegistryRuntimeCoordinator from "@t3tools/provider-acp-registry/server/AcpRegistryRuntimeCoordinator";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+} from "@cod3/contracts";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as AcpRegistryRuntimeCoordinator from "@cod3/provider-acp-registry/server/AcpRegistryRuntimeCoordinator";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
@@ -559,7 +559,7 @@ it.effect("does not certify new native history after a partial import retry", ()
     continued.source.size = 200;
     continued.source.mtimeMs = 3;
     continued.thread.messages.push(
-      { role: "user", text: "Continue outside T3", createdAt: timestamp },
+      { role: "user", text: "Continue outside cod3", createdAt: timestamp },
       { role: "assistant", text: "Native continuation", createdAt: timestamp },
     );
     // The thread holds only the original messages, so the continued transcript stays unrecorded.
@@ -964,7 +964,7 @@ it.effect("repeated imports reach linked-worktree sessions behind the scan budge
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-import-worktree-budget-" });
+    const root = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-import-worktree-budget-" });
     const repo = path.join(root, "repo");
     const worktree = path.join(root, "feature");
     const worktreeGitDir = path.join(repo, ".git", "worktrees", "feature");
@@ -1008,7 +1008,7 @@ it.effect("repeated imports reach linked-worktree sessions behind the scan budge
       AgentSessionScanner.layer.pipe(
         Layer.provide(
           Layer.mergeAll(
-            ServerConfig.layerTest(claudeHome, { prefix: "t3-import-budget-config-" }),
+            ServerConfig.layerTest(claudeHome, { prefix: "cod3-import-budget-config-" }),
             ServerSettings.layerTest({
               providerInstances: {
                 [ProviderInstanceId.make("claudeAgent")]: {

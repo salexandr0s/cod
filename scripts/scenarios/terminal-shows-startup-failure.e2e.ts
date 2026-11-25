@@ -6,21 +6,21 @@ import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 
-import { APP_DIR, T3_HOME } from "../e2e.config.ts";
+import { APP_DIR, COD3_HOME } from "../e2e.config.ts";
 import { run } from "./shell.ts";
-import { runPromise, test, WEB } from "./t3.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 const decodeRuntime = Schema.decodeUnknownEffect(
   Schema.fromJsonString(Schema.Struct({ pid: Schema.Int })),
 );
 
-/** The scenario's own server: the pid its T3 home records, running from the app checkout. */
+/** The scenario's own server: the pid its cod3 home records, running from the app checkout. */
 const scenarioServerPid = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const runtime = yield* Effect.firstSuccessOf(
     ["userdata", "dev"].map((dir) =>
-      fs.readFileString(path.join(T3_HOME, dir, "server-runtime.json")),
+      fs.readFileString(path.join(COD3_HOME, dir, "server-runtime.json")),
     ),
   );
   const { pid } = yield* decodeRuntime(runtime);
@@ -53,10 +53,10 @@ const exhaustFileDescriptors = Effect.fn("scenario.exhaustFileDescriptors")(func
 test(
   "A terminal whose shell cannot start says why, also after its drawer reopens",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("demo");
-    const thread = await t3.thread({ project, title: "Shell", messages: ["hello"] });
-    await t3.open(thread);
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("demo");
+    const thread = await cod3.thread({ project, title: "Shell", messages: ["hello"] });
+    await cod3.open(thread);
     const pid = await runPromise(scenarioServerPid);
 
     const toggle = screen.getByRole("button", "Toggle terminal drawer");

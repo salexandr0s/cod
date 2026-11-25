@@ -6,7 +6,7 @@ import { assert, describe, it } from "@effect/vitest";
 
 import { openClerkTokenStorage, type ClerkTokenStorage } from "./ClerkTokenStore.ts";
 
-// oxlint-disable-next-line t3code/no-global-process-runtime -- Unix mode bits are the assertion; Windows reports them through ACLs.
+// oxlint-disable-next-line cod3/no-global-process-runtime -- Unix mode bits are the assertion; Windows reports them through ACLs.
 const describePosix = describe.skipIf(process.platform === "win32");
 
 const modeOf = (path: string): number => NodeFS.statSync(path).mode & 0o777;
@@ -17,7 +17,7 @@ function writeLoose(path: string, contents: string): void {
 }
 
 async function withStateDir(run: (stateDir: string) => Promise<void> | void): Promise<void> {
-  const stateDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-clerk-tokens-"));
+  const stateDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-clerk-tokens-"));
   try {
     await run(stateDir);
   } finally {

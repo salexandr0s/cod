@@ -18,10 +18,10 @@ export class DesktopLegacyLocalStorage extends Context.Service<
     readonly take: Effect.Effect<Option.Option<Readonly<Record<string, string>>>>;
     readonly complete: Effect.Effect<void>;
   }
->()("@t3tools/desktop/app/DesktopLegacyLocalStorage") {}
+>()("@cod3/desktop/app/DesktopLegacyLocalStorage") {}
 
 const MARKER_FILE_NAME = "v1-local-storage-imported";
-const V1_PROFILE_NAMES = ["T3 Code (Alpha)", "t3code"];
+const V1_PROFILE_NAMES = ["cod3 (Alpha)", "cod3"];
 
 const make = Effect.gen(function* () {
   const environment = yield* DesktopEnvironment.DesktopEnvironment;

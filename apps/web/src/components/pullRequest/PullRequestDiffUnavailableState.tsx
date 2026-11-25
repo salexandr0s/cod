@@ -1,4 +1,4 @@
-import type { SourceControlProviderKind } from "@t3tools/contracts";
+import type { SourceControlProviderKind } from "@cod3/contracts";
 import { T, useMessages, Var } from "gt-react";
 import { ExternalLinkIcon, TriangleAlertIcon } from "lucide-react";
 

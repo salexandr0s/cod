@@ -1,4 +1,4 @@
-import type { OrchestrationV2ProjectedTurnItem, OrchestrationV2Subagent } from "@t3tools/contracts";
+import type { OrchestrationV2ProjectedTurnItem, OrchestrationV2Subagent } from "@cod3/contracts";
 import { describe, expect, it } from "@effect/vitest";
 import * as DateTime from "effect/DateTime";
 

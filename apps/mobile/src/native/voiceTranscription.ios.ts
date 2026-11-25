@@ -10,7 +10,7 @@ import {
   type PreparedVoiceTranscription,
   type VoiceTranscriber,
   type VoiceTranscriptionOptions,
-} from "@t3tools/client-runtime/voice-input";
+} from "@cod3/client-runtime/voice-input";
 
 interface AppleSpeechModule {
   isAppleSpeechAvailable?: () => boolean;
@@ -18,7 +18,7 @@ interface AppleSpeechModule {
   transcribeWithAppleSpeech: (uri: string, locale: string) => Promise<string>;
 }
 
-const native = requireOptionalNativeModule<AppleSpeechModule>("T3VoiceTranscription");
+const native = requireOptionalNativeModule<AppleSpeechModule>("Cod3VoiceTranscription");
 const isVoiceTranscriptionError = Schema.is(VoiceTranscriptionError);
 
 /** The user's ordered Language & Region list, then the app locale; the app ships in English only. */

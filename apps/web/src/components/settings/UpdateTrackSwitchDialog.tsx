@@ -1,10 +1,10 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m as resolveMessage } from "~/i18n/messages";
 import { useAtomValue } from "@effect/atom-react";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
-import type { DesktopUpdateChannel } from "@t3tools/contracts";
-import { acceptsTrackSwitchRelease, desktopUpdateChannelOf } from "@t3tools/shared/cliRelease";
-import { isMacPlatform } from "@t3tools/shared/keybindings";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
+import type { DesktopUpdateChannel } from "@cod3/contracts";
+import { acceptsTrackSwitchRelease, desktopUpdateChannelOf } from "@cod3/shared/cliRelease";
+import { isMacPlatform } from "@cod3/shared/keybindings";
 import { T, useGT, useMessages, Var } from "gt-react";
 import { useState } from "react";
 import { AsyncResult } from "effect/reactivity";
@@ -214,7 +214,7 @@ function SwitchPlan({
           ? [gt("This app's updates are off here, so reinstall it yourself to switch.")]
           : []),
         ...(switchesLocal && isMacPlatform(navigator.platform)
-          ? [gt("If T3 Code does not reopen after it restarts, open it again.")]
+          ? [gt("If cod3 does not reopen after it restarts, open it again.")]
           : []),
       ]}
       restarts={everything.restarts}

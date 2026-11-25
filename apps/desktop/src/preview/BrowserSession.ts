@@ -1,4 +1,4 @@
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import type { Certificate, Session, WebContents } from "electron";
 import { BrowserWindow, session } from "electron";
 import { msg } from "gt-i18n";
@@ -20,9 +20,9 @@ import * as ElectronApp from "../electron/ElectronApp.ts";
 import * as ElectronDialog from "../electron/ElectronDialog.ts";
 import { m } from "../i18n/messages.ts";
 
-const PREVIEW_PARTITION_PREFIX = "persist:t3code-preview-";
+const PREVIEW_PARTITION_PREFIX = "persist:cod3-preview-";
 /** Ephemeral partitions omit persist: but retain a product prefix so the webview gate recognizes them. */
-const PREVIEW_EPHEMERAL_PARTITION_PREFIX = "t3code-preview-ephemeral-";
+const PREVIEW_EPHEMERAL_PARTITION_PREFIX = "cod3-preview-ephemeral-";
 const PROFILE_PARTITION_MARKER = "profile-";
 
 export type BrowserSessionPartitionNamespace = "profile";
@@ -36,7 +36,7 @@ const ALLOWED_PREVIEW_PERMISSIONS: ReadonlySet<string> = new Set([
   // Loopback requests already succeed in Electron 44; permission-aware sign-in widgets query first.
   "loopback-network",
   // Deny local-fonts to untrusted previews: it exposes installed-font fingerprints and file bytes.
-  // Deny notifications: pages could impersonate T3 Code; app notifications use the default session.
+  // Deny notifications: pages could impersonate cod3; app notifications use the default session.
 ]);
 
 const NEVER_EXTERNAL_PROTOCOLS: ReadonlySet<string> = new Set([
@@ -119,7 +119,7 @@ const certificateApprovalKey = ({ origin, fingerprint, error }: CertificateAppro
   JSON.stringify([origin, fingerprint, error]);
 
 /** Kept beside the profile's cookies, so it lives and dies with them. */
-const CERTIFICATE_APPROVALS_FILE = "t3code-certificate-approvals.json";
+const CERTIFICATE_APPROVALS_FILE = "cod3-certificate-approvals.json";
 
 /** Server-chosen certificate names must not add lines or flood the prompt. */
 const promptCertificateName = (name: string): string => {
@@ -228,7 +228,7 @@ export class BrowserSession extends Context.Service<
       partitions?: ReadonlyArray<string>,
     ) => Effect.Effect<void, BrowserSessionCacheClearError>;
   }
->()("@t3tools/desktop/preview/BrowserSession") {}
+>()("@cod3/desktop/preview/BrowserSession") {}
 
 const selectSessions = (
   sessions: ReadonlyMap<string, Session>,
@@ -502,7 +502,7 @@ export const make = Effect.gen(function* BrowserSessionMake() {
                           m(msg("Could not trust the certificate for {host}"), { host }),
                           m(
                             msg(
-                              "T3 Code could not save this approval, so the page stays blocked. Check that the disk is not full and its data folder is writable, then try again.",
+                              "cod3 could not save this approval, so the page stays blocked. Check that the disk is not full and its data folder is writable, then try again.",
                             ),
                           ),
                         ),

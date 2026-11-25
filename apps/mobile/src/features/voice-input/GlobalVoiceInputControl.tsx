@@ -185,7 +185,7 @@ function EdgeDictationPill(props: {
               <Text
                 className={cn(
                   "text-xs",
-                  isError ? "text-danger-foreground" : "font-t3-medium text-foreground",
+                  isError ? "text-danger-foreground" : "font-cod3-medium text-foreground",
                 )}
                 numberOfLines={1}
               >

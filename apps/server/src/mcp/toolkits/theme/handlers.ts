@@ -1,6 +1,6 @@
-import { OrchestratorMcpFailure } from "@t3tools/contracts";
-import { THEME_GUIDE } from "@t3tools/shared/themeCss";
-import { MOBILE_THEME_IDS } from "@t3tools/shared/themePalettes";
+import { OrchestratorMcpFailure } from "@cod3/contracts";
+import { THEME_GUIDE } from "@cod3/shared/themeCss";
+import { MOBILE_THEME_IDS } from "@cod3/shared/themePalettes";
 import * as Effect from "effect/Effect";
 import * as Struct from "effect/Struct";
 import * as EnvironmentTheme from "../../../environmentTheme.ts";
@@ -11,7 +11,7 @@ import { unavailable } from "../../threadAccess.ts";
 import { ThemeToolkit } from "./tools.ts";
 
 export const layer = McpToolAccess.toLayer(ThemeToolkit, {
-  t3_theme_read: McpToolAccess.reads(({ themeId }) =>
+  cod3_theme_read: McpToolAccess.reads(({ themeId }) =>
     Effect.gen(function* () {
       const themes = yield* EnvironmentTheme.EnvironmentThemeService;
       const {
@@ -43,7 +43,7 @@ export const layer = McpToolAccess.toLayer(ThemeToolkit, {
       };
     }),
   ),
-  t3_theme_set: McpToolAccess.writesEnvironment(({ themeId, theme, appearance }, check) =>
+  cod3_theme_set: McpToolAccess.writesEnvironment(({ themeId, theme, appearance }, check) =>
     Effect.gen(function* () {
       const input =
         themeId !== undefined

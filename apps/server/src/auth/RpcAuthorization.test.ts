@@ -25,7 +25,7 @@ import {
   RunId,
   WS_METHODS,
   WsRpcGroup,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -91,6 +91,9 @@ describe("RPC authorization scopes", () => {
   });
 
   it("lets file readers see a task folder and takes source control to add a repository to it", () => {
+    expect(requiredScopeForRpcMethod(WS_METHODS.workspaceDiscoverProjects)).toBe(
+      AuthFilesystemReadScope,
+    );
     expect(requiredScopeForRpcMethod(WS_METHODS.workspaceTaskFolder)).toBe(AuthFilesystemReadScope);
     expect(requiredScopeForRpcMethod(WS_METHODS.workspaceAddTaskFolderRepository)).toBe(
       AuthSourceControlWriteScope,
@@ -480,7 +483,7 @@ describe("settings mutation authorization", () => {
   );
 
   it.effect(
-    "does not let a settings grant manage providers or turn off T3 Connect device approval",
+    "does not let a settings grant manage providers or turn off cod3 Connect device approval",
     () =>
       Effect.gen(function* () {
         let handled = false;

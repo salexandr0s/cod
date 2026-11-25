@@ -1,6 +1,6 @@
-import type { PullRequestAction } from "@t3tools/contracts";
+import type { PullRequestAction } from "@cod3/contracts";
 import { contextMenuSourceOf } from "../../contextMenuSource";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { T } from "gt-react";
 import { SearchIcon } from "lucide-react";
 import { PullRequestChangeBreakdownStat } from "./PullRequestChangeBreakdownStat";

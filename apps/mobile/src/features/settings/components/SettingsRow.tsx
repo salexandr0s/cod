@@ -29,6 +29,7 @@ export function SettingsRow(props: {
     (props.valuePosition === undefined && Platform.OS === "android");
   const content = {
     icon: props.icon,
+    iconTile: inList,
     label: props.label,
     description: valueBelow ? props.value : undefined,
     detail: valueBelow ? undefined : props.value,
@@ -53,7 +54,7 @@ export function SettingsRow(props: {
         accessibilityState={{ disabled: Boolean(props.disabled), selected }}
         disabled={props.disabled}
         onPress={onPress}
-        className={cn("rounded-2xl", selected && "bg-thread-selected")}
+        className={cn("rounded-xl", selected && "bg-thread-selected")}
       >
         <ListRowLayout {...content} />
       </RowPressable>

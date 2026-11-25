@@ -24,7 +24,7 @@ export function ThreadContextDivider(props: {
           {props.active ? (
             <ShimmeringWorkContent
               className="flex-none"
-              textClassName="font-t3-medium"
+              textClassName="font-cod3-medium"
               compact
               icon="brain"
               iconSubtleColor={props.iconColor}
@@ -35,8 +35,8 @@ export function ThreadContextDivider(props: {
             <Text
               className={
                 props.failed
-                  ? "shrink font-t3-medium text-xs text-danger-foreground"
-                  : "shrink font-t3-medium text-xs text-foreground-muted"
+                  ? "shrink font-cod3-medium text-xs text-danger-foreground"
+                  : "shrink font-cod3-medium text-xs text-foreground-muted"
               }
             >
               {props.label}
@@ -75,7 +75,7 @@ export function ThreadStatusLine(props: {
   const body = (
     <>
       <SymbolView name={line.icon} size={13} tintColor={props.iconColor} type="monochrome" />
-      <Text className="shrink font-t3-medium text-xs text-foreground-muted" numberOfLines={1}>
+      <Text className="shrink font-cod3-medium text-xs text-foreground-muted" numberOfLines={1}>
         {line.label}
       </Text>
     </>
@@ -111,7 +111,7 @@ export function ThreadStatusLine(props: {
         hitSlop={8}
         className={`active:opacity-70 ${action.disabled ? "opacity-50" : ""}`}
       >
-        <Text className="font-t3-medium text-xs text-foreground">{action.label}</Text>
+        <Text className="font-cod3-medium text-xs text-foreground">{action.label}</Text>
       </Pressable>
     </View>
   );

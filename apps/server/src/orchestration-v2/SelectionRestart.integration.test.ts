@@ -17,7 +17,7 @@ import {
   type RunId,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -32,8 +32,8 @@ import * as EventSink from "./EventSink.ts";
 import * as Orchestrator from "./Orchestrator.ts";
 import * as ProviderAdapterRegistry from "./ProviderAdapterRegistry.ts";
 import * as ProviderReplayHarness from "./testkit/ProviderReplayHarness.ts";
-import { checkpointWorkspace } from "@t3tools/provider-testing/replayWorkspace";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+import { checkpointWorkspace } from "@cod3/provider-testing/replayWorkspace";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 
 const driver = ProviderDriverKind.make("codex");
 const providerInstanceId = ProviderInstanceId.make("codex-restart-test");
@@ -498,8 +498,8 @@ it.live.each(["pooled", "exclusive"] as const)(
                             parentItemId: null,
                             ordinal: 1,
                             status: "running",
-                            title: "t3_worktree_handoff",
-                            toolName: "t3-code.t3_worktree_handoff",
+                            title: "cod3_worktree_handoff",
+                            toolName: "cod3.cod3_worktree_handoff",
                             input: {},
                             output: null,
                             startedAt: now,
@@ -597,7 +597,7 @@ it.live.each(["pooled", "exclusive"] as const)(
             Stream.runDrain,
             Effect.forkScoped,
           );
-        // What t3_worktree_handoff dispatches while the calling turn is still running.
+        // What cod3_worktree_handoff dispatches while the calling turn is still running.
         const bound = yield* orchestrator.dispatch({
           type: "thread.metadata.update",
           commandId: CommandId.make("command:workspace-handoff:rebind"),

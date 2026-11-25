@@ -47,13 +47,13 @@ import {
   ThreadId,
   SERVER_BROWSER_AUTOMATION_CLIENT_ID,
   type PreviewAppearancePreference,
-} from "@t3tools/contracts";
-import { AgentScope, agentScopeLauncherScript } from "@t3tools/shared/AgentScope";
-import { writeFileStringAtomically } from "@t3tools/shared/atomicWrite";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { appLinkUrl } from "@t3tools/shared/appLinks";
-import { normalizePreviewUrl } from "@t3tools/shared/preview";
-import { resolvePreviewViewport } from "@t3tools/shared/previewViewport";
+} from "@cod3/contracts";
+import { AgentScope, agentScopeLauncherScript } from "@cod3/shared/AgentScope";
+import { writeFileStringAtomically } from "@cod3/shared/atomicWrite";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { appLinkUrl } from "@cod3/shared/appLinks";
+import { normalizePreviewUrl } from "@cod3/shared/preview";
+import { resolvePreviewViewport } from "@cod3/shared/previewViewport";
 import * as NodeCrypto from "node:crypto";
 import * as NodeFSP from "node:fs/promises";
 import * as NodePath from "node:path";
@@ -304,7 +304,7 @@ export class ServerBrowser extends Context.Service<
 
     readonly profileReporter: Effect.Effect<ProfileReporter, never, Scope.Scope>;
   }
->()("t3/preview/ServerBrowser") {}
+>()("cod3/preview/ServerBrowser") {}
 
 interface ViewerState {
   readonly id: string;
@@ -320,7 +320,7 @@ interface ViewerState {
 }
 
 interface EncoderWindow {
-  __t3Recorder: {
+  __cod3Recorder: {
     cursor(x: number, y: number, click: boolean): void;
     frame(data: string, width: number): Promise<boolean>;
     stop(): Promise<{ mimeType: string | null; count: number; bytes: number }>;
@@ -494,7 +494,7 @@ const editingCommand = (key: string, modifiers: number) => {
 };
 
 const TITLE_LIMIT = 512;
-const TITLE_WORLD = "t3-preview-title";
+const TITLE_WORLD = "cod3-preview-title";
 // Observe root replacement without subscribing to body subtree mutations.
 const titleChange = (reported: string) => `new Promise((resolve) => {
   const changed = () => document.title.slice(0, ${TITLE_LIMIT}) !== ${JSON.stringify(reported)};
@@ -529,7 +529,7 @@ const titleChange = (reported: string) => `new Promise((resolve) => {
 })`;
 
 const CLIPBOARD_TEXT_LIMIT = 1024 * 1024;
-const CLIPBOARD_WORLD = "t3-preview-clipboard";
+const CLIPBOARD_WORLD = "cod3-preview-clipboard";
 // Chromium shares its clipboard across contexts; capture real copy/cut keys in a page-inaccessible world instead.
 const CLIPBOARD_SCRIPT = `(() => {
   let keying = false;
@@ -848,7 +848,7 @@ const make = Effect.gen(function* () {
       const { frameTree } = await tab.cdp.send("Page.getFrameTree");
       const { executionContextId } = await tab.cdp.send("Page.createIsolatedWorld", {
         frameId: frameTree.frame.id,
-        worldName: "t3-preview-viewport",
+        worldName: "cod3-preview-viewport",
       });
       const { result } = await tab.cdp.send("Runtime.evaluate", {
         expression: "({ width: innerWidth, height: innerHeight })",
@@ -964,7 +964,7 @@ const make = Effect.gen(function* () {
   const unloadDesktopPage = async (page: Page) => {
     const unloaded = Promise.withResolvers<void>();
     const timeout = setTimeout(unloaded.resolve, PAGE_CLOSE_GRACE_MS);
-    const binding = `__t3PreviewUnloaded${NodeCrypto.randomUUID().replaceAll("-", "")}`;
+    const binding = `__cod3PreviewUnloaded${NodeCrypto.randomUUID().replaceAll("-", "")}`;
     void (async () => {
       await page.exposeFunction(binding, unloaded.resolve);
       await page.evaluate((name) => {
@@ -1808,7 +1808,7 @@ const make = Effect.gen(function* () {
   const assertTabCapacity = (agentSessionId: string) => {
     if (atTabLimit(agentSessionId))
       throw new BrowserControlInterrupted({
-        message: `Too many server browser tabs are open (${AGENT_TAB_LIMIT} per agent session, ${SERVER_TAB_LIMIT} per server). Close one with t3_preview_close or reuse one from preview_status tabs.`,
+        message: `Too many server browser tabs are open (${AGENT_TAB_LIMIT} per agent session, ${SERVER_TAB_LIMIT} per server). Close one with cod3_preview_close or reuse one from preview_status tabs.`,
         reason: "tabLimit",
       });
   };
@@ -2268,7 +2268,7 @@ const make = Effect.gen(function* () {
         });
         await encoder.evaluate(
           ([data, width]) =>
-            (globalThis as unknown as EncoderWindow).__t3Recorder.frame(data, width),
+            (globalThis as unknown as EncoderWindow).__cod3Recorder.frame(data, width),
           [firstFrame, tab.page.viewportSize()?.width ?? UNATTACHED_FILL_VIEWPORT.width] as const,
         );
         const opened = await tab.page.context().newCDPSession(tab.page);
@@ -2284,7 +2284,7 @@ const make = Effect.gen(function* () {
             const accepted = await encoder
               .evaluate(
                 ([data, width]) =>
-                  (globalThis as unknown as EncoderWindow).__t3Recorder.frame(data, width),
+                  (globalThis as unknown as EncoderWindow).__cod3Recorder.frame(data, width),
                 next,
               )
               .catch(() => true);
@@ -2374,7 +2374,7 @@ const make = Effect.gen(function* () {
             await recording.encoder
               .evaluate(
                 ([data, width]) =>
-                  (globalThis as unknown as EncoderWindow).__t3Recorder.frame(data, width),
+                  (globalThis as unknown as EncoderWindow).__cod3Recorder.frame(data, width),
                 [
                   finalFrame,
                   tab.page.viewportSize()?.width ?? UNATTACHED_FILL_VIEWPORT.width,
@@ -2384,7 +2384,7 @@ const make = Effect.gen(function* () {
           }
         }
         const { mimeType, count, bytes } = await recording.encoder.evaluate(() =>
-          (globalThis as unknown as EncoderWindow).__t3Recorder.stop(),
+          (globalThis as unknown as EncoderWindow).__cod3Recorder.stop(),
         );
         // Checked before the transfer so an oversized video never lands in this process.
         if (bytes > PROVIDER_SEND_TURN_MAX_FILE_BYTES) {
@@ -2411,7 +2411,7 @@ const make = Effect.gen(function* () {
                 timeout: RECORDING_DOWNLOAD_TIMEOUT_MS,
               }),
               recording.encoder.evaluate(() =>
-                (globalThis as unknown as EncoderWindow).__t3Recorder.download(),
+                (globalThis as unknown as EncoderWindow).__cod3Recorder.download(),
               ),
             ]);
             await download.saveAs(stagedPath);
@@ -2427,7 +2427,7 @@ const make = Effect.gen(function* () {
           for (let index = 0; index < count; index += 1) {
             const chunk = await recording.encoder.evaluate(
               (chunkIndex) =>
-                (globalThis as unknown as EncoderWindow).__t3Recorder.chunk(chunkIndex),
+                (globalThis as unknown as EncoderWindow).__cod3Recorder.chunk(chunkIndex),
               index,
             );
             chunks.push(Buffer.from(chunk, "base64"));
@@ -2472,7 +2472,7 @@ const make = Effect.gen(function* () {
         void encoder
           ?.evaluate(
             ([px, py, click]) =>
-              (globalThis as unknown as EncoderWindow).__t3Recorder?.cursor(px, py, click),
+              (globalThis as unknown as EncoderWindow).__cod3Recorder?.cursor(px, py, click),
             [x, y, next === "click"] as const,
           )
           .catch(constVoid);
@@ -2885,7 +2885,7 @@ const make = Effect.gen(function* () {
           throw new ServerBrowserPage.ServerBrowserOperationError({
             tag: "PreviewAutomationExecutionError",
             message:
-              "The desktop did not draw the page at the new size. Show or restore the T3 Code window and try again.",
+              "The desktop did not draw the page at the new size. Show or restore the cod3 window and try again.",
           });
         }
         // Only a read after the draw, with no page resize or load during it, measures this resize.
@@ -3497,7 +3497,7 @@ const make = Effect.gen(function* () {
     (yield* PreviewBrowserHost.sandboxBlocked)
   ) {
     yield* Effect.logWarning(
-      `This host blocks the sandbox T3's browser runs in, so browser tabs and HTML previews will not start. Run \`${setupCommand}\` once to allow it.`,
+      `This host blocks the sandbox cod3's browser runs in, so browser tabs and HTML previews will not start. Run \`${setupCommand}\` once to allow it.`,
     );
   }
 

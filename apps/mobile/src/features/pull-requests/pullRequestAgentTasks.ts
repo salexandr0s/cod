@@ -1,9 +1,9 @@
 import {
   sourceControlClients,
   type ChangeRequestTerminology,
-} from "@t3tools/client-runtime/source-control-clients";
+} from "@cod3/client-runtime/source-control-clients";
 import type { MenuAction } from "@react-native-menu/menu";
-import type { PullRequestDetail, PullRequestLinkedThreadsResult } from "@t3tools/contracts";
+import type { PullRequestDetail, PullRequestLinkedThreadsResult } from "@cod3/contracts";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";
@@ -63,17 +63,17 @@ export function pullRequestAgentPrompt(
     case "ask":
       return "";
     case "explain":
-      // oxlint-disable-next-line t3code/no-untranslated-copy -- prompt sent to the agent
+      // oxlint-disable-next-line cod3/no-untranslated-copy -- prompt sent to the agent
       return `Explain this ${singular}. Read the diff and walk through its purpose, the changes, the risks, and what I should read closely before approving. Do not change any code.`;
     case "feedback":
-      // oxlint-disable-next-line t3code/no-untranslated-copy -- prompt sent to the agent
+      // oxlint-disable-next-line cod3/no-untranslated-copy -- prompt sent to the agent
       return `Address the actionable feedback and failing checks on this ${singular}. Fetch the latest review threads and check results, skip resolved feedback, and verify each finding before changing code. First confirm this thread is on the ${shortLabel}'s branch; if it isn't, prepare the ${shortLabel} in its own worktree. Keep the fixes focused and run the relevant checks.`;
     case "conflicts":
-      // oxlint-disable-next-line t3code/no-untranslated-copy -- prompt sent to the agent
+      // oxlint-disable-next-line cod3/no-untranslated-copy -- prompt sent to the agent
       return `Resolve this ${singular}'s conflicts with its base branch. First confirm this thread is on the ${shortLabel}'s branch; if it isn't, prepare the ${shortLabel} in its own worktree. Bring it up to date using this repository's convention, preserve the intent of both sides, and run the relevant checks before pushing.`;
     case "watch":
-      // oxlint-disable-next-line t3code/no-untranslated-copy -- prompt sent to the agent
-      return `Watch this ${singular} for check results, new feedback, and conflicts using T3's pull request watch. End the turn once the watch is armed. When it wakes you, assess what changed and report what needs attention.`;
+      // oxlint-disable-next-line cod3/no-untranslated-copy -- prompt sent to the agent
+      return `Watch this ${singular} for check results, new feedback, and conflicts using cod3's pull request watch. End the turn once the watch is armed. When it wakes you, assess what changed and report what needs attention.`;
   }
 }
 

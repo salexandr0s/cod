@@ -97,10 +97,10 @@ describe.runIf(NodeProcess.platform === "darwin")("macOS desktop backend recover
   it("cleans up a truncated record only after the writer releases it", async () => {
     await using cleanup = new AsyncDisposableStack();
     const stateDir = await NodeFSP.realpath(
-      await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "t3-record-")),
+      await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "cod3-record-")),
     );
     cleanup.defer(() => NodeFSP.rm(stateDir, { recursive: true, force: true }));
-    const directory = NodePath.join(stateDir, "t3code-backend-recovery");
+    const directory = NodePath.join(stateDir, "cod3-backend-recovery");
     await NodeFSP.mkdir(directory, { mode: 0o700 });
     const scope = NodeCrypto.createHash("sha256")
       .update(JSON.stringify([stateDir, await NodeFSP.realpath(NodeProcess.execPath)]))
@@ -144,7 +144,7 @@ describe.runIf(NodeProcess.platform === "darwin")("macOS desktop backend recover
   it("releases a frozen orphan's port and leaves a backend with a live launcher running", async () => {
     await using cleanup = new AsyncDisposableStack();
     const appDataDirectory = await NodeFSP.mkdtemp(
-      NodePath.join(NodeOS.tmpdir(), "t3-backend-recovery-"),
+      NodePath.join(NodeOS.tmpdir(), "cod3-backend-recovery-"),
     );
     cleanup.defer(() => NodeFSP.rm(appDataDirectory, { recursive: true, force: true }));
     // The first launcher records ownership before the home exists.
@@ -182,7 +182,7 @@ describe.runIf(NodeProcess.platform === "darwin")("macOS desktop backend recover
     await otherHome.recover();
     assert.deepEqual(recovered, []);
 
-    const records = NodePath.join(appDataDirectory, "t3code-backend-recovery");
+    const records = NodePath.join(appDataDirectory, "cod3-backend-recovery");
     for (const name of await NodeFSP.readdir(records))
       await NodeFSP.chmod(NodePath.join(records, name), 0o644);
     await recovery.recover();

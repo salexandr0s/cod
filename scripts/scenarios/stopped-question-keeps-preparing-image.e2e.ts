@@ -1,18 +1,18 @@
 // @effect-diagnostics nodeBuiltinImport:off -- The scenario starts a local ACP fixture.
 import * as NodePath from "node:path";
 
-import { ProviderDriverKind, ProviderInstanceId } from "@t3tools/contracts";
+import { ProviderDriverKind, ProviderInstanceId } from "@cod3/contracts";
 import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import {
   expectHeldImageCompressions,
   finishImageCompression,
   holdImageCompression,
   pasteWideScreenshot,
 } from "./image-compression-hold.ts";
-import { makeState, rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { makeState, rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 const ACP = `
 import { createInterface } from "node:readline";
@@ -57,13 +57,13 @@ for await (const line of createInterface({ input: process.stdin })) {
 test(
   "Stopping an unanswered question keeps a screenshot that is still preparing",
   WEB,
-  async ({ t3, app, browser }) => {
+  async ({ cod3, app, browser }) => {
     await holdImageCompression(browser);
-    const project = await t3.project("demo", { "question-agent.mjs": ACP });
+    const project = await cod3.project("demo", { "question-agent.mjs": ACP });
     const instanceId = ProviderInstanceId.make("scenario-question-agent");
     await runPromise(
       Effect.gen(function* () {
-        const client = yield* rpcClient(T3_HOME, app.baseUrl ?? "");
+        const client = yield* rpcClient(COD3_HOME, app.baseUrl ?? "");
         yield* client["server.updateSettings"]({
           patch: {},
           providerInstanceMutation: {
@@ -83,7 +83,7 @@ test(
         });
       }).pipe(Effect.scoped),
     );
-    const { cli } = makeState(T3_HOME);
+    const { cli } = makeState(COD3_HOME);
     const started = await runPromise(
       cli(
         [
@@ -104,7 +104,7 @@ test(
       ),
     );
     const { threadId } = JSON.parse(started.stdout) as { threadId: string };
-    await t3.open({ threadId });
+    await cod3.open({ threadId });
 
     const composer = browser.locator('[data-chat-composer-form="true"]');
     const question = browser.locator(

@@ -5,7 +5,7 @@ import {
   type ProviderInteractionMode,
   type OrchestrationV2LinkedSender,
   type RuntimeMode,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -21,7 +21,7 @@ import * as HttpClientRequest from "effect/http/HttpClientRequest";
 import * as McpInvocationContext from "../mcp/McpInvocationContext.ts";
 import * as PeerLinks from "./PeerLinks.ts";
 
-/** The only MCP protocol version a T3 Code `/mcp` registers. */
+/** The only MCP protocol version a cod3 `/mcp` registers. */
 const PROTOCOL_VERSION = "2025-06-18";
 
 /** A title can be any length; the header carrying it stays well under HTTP header limits. */
@@ -34,8 +34,8 @@ export interface PeerCallLimits {
 }
 
 /**
- * Calls a linked environment's T3 MCP tools as this environment's outside
- * agent. Each call carries the calling agent's limits in `T3-Mode-Limit`, so
+ * Calls a linked environment's cod3 MCP tools as this environment's outside
+ * agent. Each call carries the calling agent's limits in `cod3-Mode-Limit`, so
  * the peer enforces the narrower of those and the link's own access.
  */
 export class PeerMcpClient extends Context.Service<
@@ -47,12 +47,12 @@ export class PeerMcpClient extends Context.Service<
       readonly tool: string;
       readonly arguments: Record<string, unknown>;
       readonly limits: PeerCallLimits;
-      /** The thread here the call is made for, sent as `T3-Sender-Thread`. */
+      /** The thread here the call is made for, sent as `cod3-Sender-Thread`. */
       readonly sender?: OrchestrationV2LinkedSender;
       readonly success: S;
     }) => Effect.Effect<S["Type"], OrchestratorMcpFailure>;
   }
->()("t3/peer/PeerMcpClient") {}
+>()("cod3/peer/PeerMcpClient") {}
 
 const ToolCallResponse = Schema.Struct({
   result: Schema.optional(
@@ -160,7 +160,7 @@ const make = Effect.gen(function* () {
           params: {
             protocolVersion: PROTOCOL_VERSION,
             capabilities: {},
-            clientInfo: { name: "t3code-peer", version: "1" },
+            clientInfo: { name: "cod3-peer", version: "1" },
           },
         },
         limitHeader,

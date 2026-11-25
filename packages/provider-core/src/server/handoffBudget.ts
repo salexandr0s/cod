@@ -7,14 +7,14 @@ import type {
   OrchestrationV2HistoricalMessage,
   OrchestrationV2ProviderThread,
   OrchestrationV2TurnItem,
-} from "@t3tools/contracts";
-import { withMessageSenderNote } from "@t3tools/contracts";
+} from "@cod3/contracts";
+import { withMessageSenderNote } from "@cod3/contracts";
 
 import * as Config from "effect/Config";
 
 export const DEFAULT_HANDOFF_TOKEN_CAP = 16_000;
 const HANDOFF_BYTE_CAP = 64_000;
-export const handoffTokenCapConfig = Config.Int("T3CODE_CONTEXT_HANDOFF_TOKEN_CAP").pipe(
+export const handoffTokenCapConfig = Config.Int("COD3_CONTEXT_HANDOFF_TOKEN_CAP").pipe(
   Config.withDefault(DEFAULT_HANDOFF_TOKEN_CAP),
   Config.map((value) => Math.max(1_024, Math.min(HANDOFF_BYTE_CAP, value))),
 );
@@ -288,6 +288,6 @@ export function handoffCoverage(input: {
   return [
     `Provider context handoff. Thread: ${input.threadId}. Covered app runs: ${input.coveredRunOrdinals.from}-${input.coveredRunOrdinals.to}.`,
     `Source item range: ${input.items.at(0)?.id ?? "none"} through ${input.items.at(-1)?.id ?? "none"}.`,
-    `Recover an omitted item only when the request needs it, with t3_thread_read({threadId:"${input.threadId}",view:"activity",itemId:"<omitted item ID>",maxCharsPerItem:4000}); continue long text with textOffset=nextTextOffset until null. Items included below need no read. Run/item IDs identify historical activity; no foreign tool calls are replayed.`,
+    `Recover an omitted item only when the request needs it, with cod3_thread_read({threadId:"${input.threadId}",view:"activity",itemId:"<omitted item ID>",maxCharsPerItem:4000}); continue long text with textOffset=nextTextOffset until null. Items included below need no read. Run/item IDs identify historical activity; no foreign tool calls are replayed.`,
   ].join("\n");
 }

@@ -4,8 +4,8 @@ import * as NodePath from "node:path";
 
 import { expect } from "e2e";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 const CHOSEN_MODEL = "anthropic/claude-sonnet-4";
 // A supported Pi whose RPC discovery fails, so its catalog falls back to the "default" alias.
@@ -18,10 +18,10 @@ exit 1
 test(
   "A Pi model chosen in Settings is still the one sent while Pi cannot list its models",
   WEB,
-  async ({ t3, app, screen, browser }) => {
-    const project = await t3.project("demo");
-    const fakePi = NodePath.join(T3_HOME, "bin/fake-pi");
-    const settingsPath = NodePath.join(T3_HOME, "userdata/settings.json");
+  async ({ cod3, app, screen, browser }) => {
+    const project = await cod3.project("demo");
+    const fakePi = NodePath.join(COD3_HOME, "bin/fake-pi");
+    const settingsPath = NodePath.join(COD3_HOME, "userdata/settings.json");
     const originalSettings = await NodeFSP.readFile(settingsPath, "utf8");
     const settings = JSON.parse(originalSettings);
     try {
@@ -34,7 +34,7 @@ test(
       settings.defaultModelSelection = { instanceId: "pi", model: CHOSEN_MODEL };
       await NodeFSP.writeFile(settingsPath, JSON.stringify(settings));
 
-      await t3.open();
+      await cod3.open();
       // The composer shows a Pi model once the settings watcher has enabled Pi.
       await expect(browser.locator("[data-chat-provider-model-picker-label]").first()).toHaveText(
         /sonnet|default/i,
@@ -44,7 +44,7 @@ test(
 
       await screen.getByRole("textbox").fill("Which model is this?");
       await screen.getByRole("textbox").press("Enter");
-      const { cli } = makeState(T3_HOME);
+      const { cli } = makeState(COD3_HOME);
       await expect
         .poll(
           async () => {

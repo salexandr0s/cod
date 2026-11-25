@@ -10,19 +10,20 @@ Object.assign(process.env, repoEnv);
 // Expo's TypeScript setup otherwise installs `typescript` on every start; we typecheck with tsrs.
 process.env.EXPO_NO_TYPESCRIPT_SETUP = "1";
 
+const easProjectId = repoEnv.COD3_EAS_PROJECT_ID?.trim();
 const APP_VARIANT = resolveAppVariant(repoEnv.APP_VARIANT);
-const isIosPersonalTeamBuild = repoEnv.T3CODE_IOS_PERSONAL_TEAM === "1";
+const isIosPersonalTeamBuild = repoEnv.COD3_IOS_PERSONAL_TEAM === "1";
 const runtimeVersionPolicy =
   process.env.MOBILE_VERSION_POLICY ??
   (APP_VARIANT === "development" ? "appVersion" : "fingerprint");
 
-const personalTeamBundleIdentifier = repoEnv.T3CODE_IOS_PERSONAL_TEAM_BUNDLE_ID?.trim();
+const personalTeamBundleIdentifier = repoEnv.COD3_IOS_PERSONAL_TEAM_BUNDLE_ID?.trim();
 const IOS_BUNDLE_IDENTIFIER_PATTERN = /^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
 
 // Compiled into the native project. Without a relay, Observe's native side could dispatch to
 // Expo's own ingest before observe.ts turns it off; `.invalid` never resolves (RFC 6761).
-const observeEndpointUrl = repoEnv.T3CODE_RELAY_URL?.trim()
-  ? new URL("/v1/mobile/observe", repoEnv.T3CODE_RELAY_URL.trim()).toString()
+const observeEndpointUrl = repoEnv.COD3_RELAY_URL?.trim()
+  ? new URL("/v1/mobile/observe", repoEnv.COD3_RELAY_URL.trim()).toString()
   : "https://observe.invalid";
 
 const fromRepoRoot = (relativePath: string) => `../../${relativePath}`;
@@ -34,7 +35,7 @@ if (
     !IOS_BUNDLE_IDENTIFIER_PATTERN.test(personalTeamBundleIdentifier))
 ) {
   throw new Error(
-    "T3CODE_IOS_PERSONAL_TEAM_BUNDLE_ID must be a reverse-DNS identifier such as com.example.t3code when T3CODE_IOS_PERSONAL_TEAM=1.",
+    "COD3_IOS_PERSONAL_TEAM_BUNDLE_ID must be a reverse-DNS identifier such as com.example.cod3 when COD3_IOS_PERSONAL_TEAM=1.",
   );
 }
 
@@ -43,7 +44,7 @@ const DEVELOPMENT_ASSETS = {
   iosIcon: fromRepoRoot(BRAND_ASSET_PATHS.developmentIconComposerProject),
   splashIcon: fromRepoRoot(BRAND_ASSET_PATHS.developmentIosIconPng),
   androidAdaptiveForeground,
-  androidAdaptiveBackgroundColor: "#347FF8",
+  androidAdaptiveBackgroundColor: "#193E60",
   androidAdaptiveBackgroundImage: "./assets/android-icon-background-dev.png",
   androidSplashIcon: "./assets/android-splash-icon-dev.png",
   androidMonochromeIcon: "./assets/android-icon-mark.png",
@@ -56,7 +57,7 @@ const PREVIEW_ASSETS = {
   iosIcon: fromRepoRoot(BRAND_ASSET_PATHS.nightlyIconComposerProject),
   splashIcon: fromRepoRoot(BRAND_ASSET_PATHS.nightlyIosIconPng),
   androidAdaptiveForeground,
-  androidAdaptiveBackgroundColor: "#111533",
+  androidAdaptiveBackgroundColor: "#302744",
   androidAdaptiveBackgroundImage: "./assets/android-icon-background-nightly.png",
   androidSplashIcon: "./assets/android-splash-icon-nightly.png",
   androidMonochromeIcon: "./assets/android-icon-mark.png",
@@ -69,7 +70,7 @@ const RELEASE_ASSETS = {
   iosIcon: fromRepoRoot(BRAND_ASSET_PATHS.productionIconComposerProject),
   splashIcon: fromRepoRoot(BRAND_ASSET_PATHS.productionIosIconPng),
   androidAdaptiveForeground,
-  androidAdaptiveBackgroundColor: "#000000",
+  androidAdaptiveBackgroundColor: "#10272B",
   androidAdaptiveBackgroundImage: undefined,
   androidSplashIcon: "./assets/android-splash-icon-prod.png",
   androidMonochromeIcon: "./assets/android-icon-mark.png",
@@ -79,26 +80,26 @@ const RELEASE_ASSETS = {
 
 const VARIANT_CONFIG = {
   development: {
-    appName: "T3 Code Dev",
-    scheme: "t3code-dev",
-    iosBundleIdentifier: "com.t3tools.t3code.dev",
-    androidPackage: "com.t3tools.t3code.dev",
+    appName: "cod3 Dev",
+    scheme: "cod3-dev",
+    iosBundleIdentifier: "io.github.salexandr0s.cod3.dev",
+    androidPackage: "io.github.salexandr0s.cod3.dev",
     relyingParty: "clerk.t3.codes",
     assets: DEVELOPMENT_ASSETS,
   },
   preview: {
-    appName: "T3 Code Preview",
-    scheme: "t3code-preview",
-    iosBundleIdentifier: "com.t3tools.t3code.preview",
-    androidPackage: "com.t3tools.t3code.preview",
+    appName: "cod3 Preview",
+    scheme: "cod3-preview",
+    iosBundleIdentifier: "io.github.salexandr0s.cod3.preview",
+    androidPackage: "io.github.salexandr0s.cod3.preview",
     relyingParty: "clerk.t3.codes",
     assets: PREVIEW_ASSETS,
   },
   production: {
-    appName: "T3 Code",
-    scheme: "t3code",
-    iosBundleIdentifier: "com.t3tools.t3code",
-    androidPackage: "com.t3tools.t3code",
+    appName: "cod3",
+    scheme: "cod3",
+    iosBundleIdentifier: "io.github.salexandr0s.cod3",
+    androidPackage: "io.github.salexandr0s.cod3",
     relyingParty: "clerk.t3.codes",
     assets: RELEASE_ASSETS,
   },
@@ -143,7 +144,7 @@ const widgetsPlugin: NonNullable<ExpoConfig["plugins"]>[number] = [
       {
         name: "SubscriptionUsage",
         displayName: "Subscription usage",
-        description: "Subscription quotas from your connected T3 Code environments.",
+        description: "Subscription quotas from your connected cod3 environments.",
         ios: {
           configuration: {
             title: "Subscription usage",
@@ -193,7 +194,7 @@ const widgetsPlugin: NonNullable<ExpoConfig["plugins"]>[number] = [
       {
         name: "AgentActivity",
         displayName: "Agent Activity",
-        description: "Shows the current state of active T3 Code agents.",
+        description: "Shows the current state of active cod3 agents.",
         android: null,
         ios: {
           supportedFamilies: ["systemSmall", "systemMedium", "accessoryRectangular"],
@@ -234,10 +235,10 @@ const sharingPlugin: NonNullable<ExpoConfig["plugins"]>[number] = [
 
 const config: ExpoConfig = {
   name: variant.appName,
-  slug: "t3-code",
+  slug: "cod3",
   platforms: ["ios", "android"],
   scheme: variant.scheme,
-  version: repoEnv.T3CODE_MOBILE_VERSION ?? "2.3.0",
+  version: repoEnv.COD3_MOBILE_VERSION ?? "2.3.0",
   runtimeVersion: {
     // Skip costly fingerprinting on dev launches; preview and production OTAs require matching native projects.
     policy: runtimeVersionPolicy,
@@ -246,15 +247,15 @@ const config: ExpoConfig = {
   icon: variant.assets.appIcon,
   userInterfaceStyle: "automatic",
   updates: {
-    enabled: repoEnv.T3CODE_MOBILE_UPDATES_ENABLED !== "0",
-    url: "https://u.expo.dev/d763fcb8-d37c-41ea-a773-b54a0ab4a454",
+    enabled: Boolean(easProjectId) && repoEnv.COD3_MOBILE_UPDATES_ENABLED !== "0",
+    ...(easProjectId ? { url: `https://u.expo.dev/${easProjectId}` } : {}),
     checkAutomatically: "ON_LOAD",
     fallbackToCacheTimeout: 0,
   },
   ios: {
     icon: variant.assets.iosIcon,
     supportsTablet: true,
-    requireFullScreen: process.env.T3_SHOWCASE_CAPTURE_BUILD === "1",
+    requireFullScreen: process.env.COD3_SHOWCASE_CAPTURE_BUILD === "1",
     bundleIdentifier: iosBundleIdentifier,
     // Avoid Personal Team fallback: it cannot sign App Groups, Apple sign-in or push entitlements.
     appleTeamId: "ARK85ZXQ4Z",
@@ -276,15 +277,15 @@ const config: ExpoConfig = {
         NSAllowsArbitraryLoads: true,
       },
       NSLocalNetworkUsageDescription:
-        "Allow T3 Code to connect to T3 Code servers on your local network or tailnet.",
+        "Allow cod3 to connect to cod3 servers on your local network or tailnet.",
       // Built with the iOS 27 SDK, only view controllers can hide or style the status bar.
       UIViewControllerBasedStatusBarAppearance: true,
-      NSPhotoLibraryAddUsageDescription: "Allow T3 Code to save images to your photo library.",
+      NSPhotoLibraryAddUsageDescription: "Allow cod3 to save images to your photo library.",
       // System picture in picture needs background audio to start and survive outside the app.
       UIBackgroundModes: ["audio"],
       ITSAppUsesNonExemptEncryption: false,
       // Capture builds disable multitasking because iPadOS otherwise ignores orientation requests.
-      ...(process.env.T3_SHOWCASE_CAPTURE_BUILD === "1"
+      ...(process.env.COD3_SHOWCASE_CAPTURE_BUILD === "1"
         ? {
             "UISupportedInterfaceOrientations~ipad": [
               "UIInterfaceOrientationPortrait",
@@ -299,8 +300,8 @@ const config: ExpoConfig = {
   android: {
     icon: variant.assets.appIcon,
     package: variant.androidPackage,
-    ...(repoEnv.T3CODE_ANDROID_GOOGLE_SERVICES_FILE
-      ? { googleServicesFile: repoEnv.T3CODE_ANDROID_GOOGLE_SERVICES_FILE }
+    ...(repoEnv.COD3_ANDROID_GOOGLE_SERVICES_FILE
+      ? { googleServicesFile: repoEnv.COD3_ANDROID_GOOGLE_SERVICES_FILE }
       : {}),
     adaptiveIcon: {
       backgroundColor: variant.assets.androidAdaptiveBackgroundColor,
@@ -390,7 +391,7 @@ const config: ExpoConfig = {
     [
       "expo-audio",
       {
-        microphonePermission: "Allow T3 Code to use your microphone for voice input.",
+        microphonePermission: "Allow cod3 to use your microphone for voice input.",
         recordAudioAndroid: true,
         enableBackgroundPlayback: false,
         enableBackgroundRecording: false,
@@ -399,7 +400,7 @@ const config: ExpoConfig = {
     [
       "expo-camera",
       {
-        cameraPermission: "Allow T3 Code to access your camera so you can scan pairing QR codes.",
+        cameraPermission: "Allow cod3 to access your camera so you can scan pairing QR codes.",
         microphonePermission: false,
         barcodeScannerEnabled: true,
         recordAudioAndroid: false,
@@ -410,7 +411,7 @@ const config: ExpoConfig = {
       {
         photosPermission: false,
         // `false` makes this plugin add RECORD_AUDIO to blockedPermissions, breaking Android dictation.
-        microphonePermission: "Allow T3 Code to use your microphone for voice input.",
+        microphonePermission: "Allow cod3 to use your microphone for voice input.",
       },
     ],
     [
@@ -473,7 +474,7 @@ const config: ExpoConfig = {
     appVariant: APP_VARIANT,
     iosPersonalTeamBuild: isIosPersonalTeamBuild,
     relay: {
-      url: repoEnv.T3CODE_RELAY_URL ?? null,
+      url: repoEnv.COD3_RELAY_URL ?? null,
     },
     clerk: {
       publishableKey: repoEnv.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? null,
@@ -490,11 +491,11 @@ const config: ExpoConfig = {
       tracesToken: repoEnv.EXPO_PUBLIC_OTLP_TRACES_TOKEN ?? null,
     },
     eas: {
-      projectId: "d763fcb8-d37c-41ea-a773-b54a0ab4a454",
+      ...(easProjectId ? { projectId: easProjectId } : {}),
       observe: { endpointUrl: observeEndpointUrl },
     },
   },
-  owner: "pingdotgg",
+  ...(repoEnv.COD3_EAS_OWNER ? { owner: repoEnv.COD3_EAS_OWNER } : {}),
   experiments: {
     // Metro only runs babel-plugin-react-compiler when this is set; see src/reactCompilerCoverage.test.ts.
     reactCompiler: true,

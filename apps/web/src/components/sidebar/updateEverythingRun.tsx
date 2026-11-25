@@ -1,10 +1,10 @@
 import { useAtomValue } from "@effect/atom-react";
-import { AVAILABLE_CONNECTION_STATE } from "@t3tools/client-runtime/connection";
+import { AVAILABLE_CONNECTION_STATE } from "@cod3/client-runtime/connection";
 import {
   nudgeReconnectDuringUpdateRestart,
   serverUpdateStateAtom,
-} from "@t3tools/client-runtime/state/server";
-import { EnvironmentId, type ServerConfig } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/server";
+import { EnvironmentId, type ServerConfig } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -185,7 +185,7 @@ export function postponeUpdateRestart(): void {
   decideRestart?.(false);
 }
 
-const SAVED_RESULT_KEY = "t3code:update-everything-result:v1";
+const SAVED_RESULT_KEY = "cod3:update-everything-result:v1";
 const SAVED_RESULT_MAX_AGE_MS = 10 * 60 * 1000;
 // Covers a background service's 30-minute trial start, like the server update itself.
 const HANDOFF_TIMEOUT_MS = 32 * 60 * 1000;
@@ -387,7 +387,7 @@ export function startDesktopUpdateLaunchNotice(): () => void {
           type: "error",
           title: m(msg("Update did not apply")),
           description: m(
-            msg("T3 Code is still on {current}. Install {version} again from the update button.", {
+            msg("cod3 is still on {current}. Install {version} again from the update button.", {
               current: APP_VERSION,
               version: notAppliedVersion,
             }),

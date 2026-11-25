@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest";
-import type { RelayLinkProofRequest } from "@t3tools/contracts/relay";
+import type { RelayLinkProofRequest } from "@cod3/contracts/relay";
 
 import { linkProofScopes, parseManagedEndpointLocalOrigin } from "./linkChecks.ts";
 

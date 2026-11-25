@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
-import { DEFAULT_RESOLVED_KEYBINDINGS } from "@t3tools/shared/keybindings";
-import { DEFAULT_CLIENT_SETTINGS } from "@t3tools/contracts/settings";
-import { AuthOrchestrationOperateScope, AuthSourceControlWriteScope } from "@t3tools/contracts";
+import { DEFAULT_RESOLVED_KEYBINDINGS } from "@cod3/shared/keybindings";
+import { DEFAULT_CLIENT_SETTINGS } from "@cod3/contracts/settings";
+import { AuthOrchestrationOperateScope, AuthSourceControlWriteScope } from "@cod3/contracts";
 import { act, render } from "../../test/render";
 import { CommandPalette } from "./CommandPalette";
 import { openCommandPalette } from "../commandPaletteBus";
@@ -43,7 +43,7 @@ vi.mock("@effect/atom-react", async (original) => ({
 }));
 vi.mock("../hooks/useTheme", () => ({
   useRenderedAppearance: () => "light",
-  useTheme: () => ({ theme: "t3-chat", resolvedTheme: "light", appearanceMode: "light" }),
+  useTheme: () => ({ theme: "cod3-chat", resolvedTheme: "light", appearanceMode: "light" }),
 }));
 vi.mock("../hooks/useCustomThemes", () => ({ useCustomThemes: () => [] }));
 vi.mock("../hooks/useEnvironmentTheme", () => ({ useEnvironmentThemeDefinitions: () => [] }));
@@ -130,6 +130,15 @@ vi.mock("../state/query", async (original) => ({
 vi.mock("./settings/useAvailableSettingsSearchItems", () => ({
   useAvailableSettingsSearchItems: () => [],
 }));
+
+it("opens the folder and repository choices from the Projects heading", async () => {
+  setup();
+  await using _screen = await render(<CommandPalette>{null}</CommandPalette>);
+  await act(() => openCommandPalette({ open: "new-thread-in" }));
+  await userEvent.click(page.getByRole("button", { name: "Add project", exact: true }));
+  await expect.element(page.getByText("Local folder", { exact: true })).toBeVisible();
+  await expect.element(page.getByText("Git URL", { exact: true })).toBeVisible();
+});
 
 // The real palette and Base UI input must agree that confirming composition is typing.
 describe.each(["repository", "folder", "destination"] as const)("add-project %s", (step) => {
@@ -219,7 +228,7 @@ it("keeps the caret in place when an edit briefly makes the folder path not a pa
 });
 
 it.each([
-  { flow: "Git URL", value: "https://github.com/pingdotgg/t3code.git", submit: "Continue (Enter)" },
+  { flow: "Git URL", value: "https://github.com/pingdotgg/cod3.git", submit: "Continue (Enter)" },
   { flow: "New project", value: "demo-tab-order", submit: /^Create \(/ },
 ])("moves focus from the $flow input to its enabled submit button on Tab", async (step) => {
   await using _screen = await render(<CommandPalette>{null}</CommandPalette>);

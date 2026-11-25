@@ -1,14 +1,14 @@
 import { useAtomRefresh, useAtomValue } from "@effect/atom-react";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { Atom, AsyncResult } from "effect/reactivity";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import * as Dialog from "../components/ui/Dialog";
 import { msg, useMessages } from "gt-react-native";
 import { m } from "../i18n/messages";
-import { filePreviewDelimiter, parseDelimitedPreview } from "@t3tools/shared/delimitedPreview";
-import type { AssetResource, EnvironmentId } from "@t3tools/contracts";
-import { readFilePreviewResponse } from "@t3tools/client-runtime/file-preview";
-import { filePreviewKind, FILE_TEXT_PREVIEW_MAX_BYTES } from "@t3tools/shared/filePreview";
+import { filePreviewDelimiter, parseDelimitedPreview } from "@cod3/shared/delimitedPreview";
+import type { AssetResource, EnvironmentId } from "@cod3/contracts";
+import { readFilePreviewResponse } from "@cod3/client-runtime/file-preview";
+import { filePreviewKind, FILE_TEXT_PREVIEW_MAX_BYTES } from "@cod3/shared/filePreview";
 import { fetch } from "expo/fetch";
 import { File } from "expo-file-system";
 import * as Effect from "effect/Effect";
@@ -101,7 +101,7 @@ export function useAttachmentDocument(input: {
   const kind = filePreviewKind(input, { richDocuments: false });
   const delimiter = filePreviewDelimiter(input);
   const shareController = useRef<AbortController | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- aborts the in-flight attachment share download when the component unmounts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- aborts the in-flight attachment share download when the component unmounts
   useEffect(() => () => shareController.current?.abort(), []);
   const resource = {
     _tag: "attachment" as const,

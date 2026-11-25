@@ -2,7 +2,7 @@
 import * as NodeFS from "node:fs";
 
 import { catalog } from "@handy-computer/models";
-import { recommendSpeechModels } from "@t3tools/shared/speech";
+import { recommendSpeechModels } from "@cod3/shared/speech";
 import policy from "../../../packages/shared/src/speechRecommendationPolicy.json" with { type: "json" };
 import { expect, it } from "vite-plus/test";
 
@@ -69,7 +69,7 @@ it("reproduces the bundled registry byte for byte without upstream requests", as
   }
 });
 
-it("preserves Handy's accelerated balanced pick after filtering T3's offered candidates", () => {
+it("preserves Handy's accelerated balanced pick after filtering cod3's offered candidates", () => {
   const offered = generate().models;
   const sources = catalog.models.filter((model) =>
     offered.some(({ id }) => id === model.repository),

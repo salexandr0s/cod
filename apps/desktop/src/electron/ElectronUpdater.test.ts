@@ -5,7 +5,7 @@ import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import { autoUpdater } from "electron-updater";
 import type * as NodeChildProcess from "node:child_process";
 import * as NodeModule from "node:module";
@@ -26,7 +26,7 @@ vi.hoisted(() => {
   electronModule.exports = {
     app: {
       getVersion: () => "1.0.0",
-      getName: () => "T3 Code",
+      getName: () => "cod3",
       isPackaged: true,
       quit: () => undefined,
       once: () => undefined,
@@ -53,9 +53,9 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")(
       Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const dir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-appimage-install-" });
-        const appImagePath = path.join(dir, "T3-Code.AppImage");
-        const stagedPath = path.join(dir, "T3-Code-1.0.1.AppImage");
+        const dir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-appimage-install-" });
+        const appImagePath = path.join(dir, "cod3.AppImage");
+        const stagedPath = path.join(dir, "cod3-1.0.1.AppImage");
         const fdReportPath = path.join(dir, "relaunched-fds.txt");
         yield* fileSystem.writeFileString(appImagePath, "old AppImage");
         yield* fileSystem.writeFileString(

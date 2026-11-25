@@ -1,13 +1,10 @@
-import {
-  getPromptControlledTraits,
-  getTraitSelectChange,
-} from "@t3tools/client-runtime/model-traits";
+import { getPromptControlledTraits, getTraitSelectChange } from "@cod3/client-runtime/model-traits";
 import {
   ProviderInstanceId,
   type ManagedPolicySummary,
   type ProviderOptionDescriptor,
   type RuntimeMode,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {

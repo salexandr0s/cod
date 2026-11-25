@@ -1,8 +1,8 @@
 import {
   nextThreadAnnouncement,
   type ThreadAnnouncementMemory,
-} from "@t3tools/client-runtime/state/thread-activity-announcement";
-import { RunId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/thread-activity-announcement";
+import { RunId } from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {

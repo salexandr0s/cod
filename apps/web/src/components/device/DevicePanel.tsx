@@ -4,8 +4,8 @@ import type {
   DeviceServiceState,
   DeviceSummary,
   ScopedThreadRef,
-} from "@t3tools/contracts";
-import { ArrowUpRight, CircleAlert, Play, Smartphone, X } from "lucide-react";
+} from "@cod3/contracts";
+import { ArrowUpRight, CircleAlert, Play, Monitor, Smartphone, X } from "lucide-react";
 import { useAtomMount } from "@effect/atom-react";
 import { T, useGT, Var } from "gt-react";
 import { type ReactNode, useState } from "react";
@@ -316,11 +316,17 @@ export function DevicePanel(props: {
                     {grouped.map((group) => (
                       <section key={group.platform} className="space-y-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Smartphone className="size-4 shrink-0" />
+                          {group.platform === "macos" ? (
+                            <Monitor className="size-4 shrink-0" />
+                          ) : (
+                            <Smartphone className="size-4 shrink-0" />
+                          )}
                           <h3 className="font-medium">
-                            {group.platform === "ios"
-                              ? gt("iOS Simulators")
-                              : gt("Android Emulators")}
+                            {group.platform === "macos"
+                              ? gt("Mac desktop")
+                              : group.platform === "ios"
+                                ? gt("iOS Simulators")
+                                : gt("Android Emulators")}
                           </h3>
                         </div>
                         <DiscoveryList>
@@ -330,7 +336,11 @@ export function DevicePanel(props: {
                               className="flex items-center gap-3 px-3 py-3"
                             >
                               <span className="grid size-8 shrink-0 place-items-center rounded-md border border-border/60">
-                                <Smartphone className="size-4" />
+                                {device.platform === "macos" ? (
+                                  <Monitor className="size-4" />
+                                ) : (
+                                  <Smartphone className="size-4" />
+                                )}
                               </span>
                               <div className="flex min-w-0 flex-1 flex-col">
                                 <span className="truncate text-sm font-medium text-foreground">
@@ -339,11 +349,24 @@ export function DevicePanel(props: {
                                 <span className="truncate text-xs text-muted-foreground">
                                   {`${state.hosts.find((host) => host.id === device.hostId)?.label} · ${device.version} · ${device.booted ? gt("Running", { $context: "device state" }) : gt("Stopped", { $context: "device state" })}`}
                                 </span>
+                                {device.platform === "macos" &&
+                                unavailablePlatforms.find((p) => p.platform === "macos")?.reason ? (
+                                  <span className="mt-1 text-xs text-muted-foreground">
+                                    {
+                                      unavailablePlatforms.find((p) => p.platform === "macos")
+                                        ?.reason
+                                    }
+                                  </span>
+                                ) : null}
                               </div>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                disabled={pendingDeviceKey !== null}
+                                disabled={
+                                  pendingDeviceKey !== null ||
+                                  (device.platform === "macos" &&
+                                    unavailablePlatforms.some((p) => p.platform === "macos"))
+                                }
                                 aria-label={
                                   device.booted
                                     ? gt("Open {name}", { name: device.name })
@@ -440,7 +463,7 @@ function DeviceDiscoveryWarning(props: {
   if (dismissedCause !== null && dismissedCause !== cause) setDismissedCause(null);
   if (dismissedCause === cause) return null;
   const platforms = props.incompletePlatforms.map((platform) =>
-    platform === "ios" ? "iOS" : "Android",
+    platform === "macos" ? "Mac" : platform === "ios" ? "iOS" : "Android",
   );
   return (
     <div
@@ -510,7 +533,7 @@ function DeviceDiscoveryWarning(props: {
 
 function groupDevices(state: DeviceServiceState) {
   const groups: Array<{ platform: DevicePlatform; devices: DeviceSummary[] }> = [];
-  for (const platform of ["ios", "android"] as const) {
+  for (const platform of ["ios", "android", "macos"] as const) {
     const devices = state.devices
       .filter((device) => device.platform === platform)
       .toSorted((a, b) => Number(b.booted) - Number(a.booted) || a.name.localeCompare(b.name));

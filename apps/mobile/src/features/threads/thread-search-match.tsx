@@ -1,5 +1,5 @@
-import { findSearchTokenRanges, splitSearchText } from "@t3tools/shared/paletteSearch";
-import type { EnvironmentThreadSearchMatch } from "@t3tools/client-runtime/state/thread-search";
+import { findSearchTokenRanges, splitSearchText } from "@cod3/shared/paletteSearch";
+import type { EnvironmentThreadSearchMatch } from "@cod3/client-runtime/state/thread-search";
 
 import { useGT } from "gt-react-native";
 
@@ -33,7 +33,7 @@ export function ThreadSearchMatchExcerpt(props: {
     >
       <Text
         className={cn(
-          props.compact ? "text-sm font-t3-medium" : "text-xs font-t3-medium",
+          props.compact ? "text-sm font-cod3-medium" : "text-xs font-cod3-medium",
           props.selected
             ? "text-thread-selected-foreground"
             : isUser
@@ -51,7 +51,7 @@ export function ThreadSearchMatchExcerpt(props: {
         <Text
           className={cn(
             props.compact ? "text-sm" : "text-xs",
-            part.highlighted && "font-t3-bold",
+            part.highlighted && "font-cod3-bold",
             props.selected
               ? "text-thread-selected-foreground"
               : part.highlighted

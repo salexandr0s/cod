@@ -1,5 +1,5 @@
-import { providerClients } from "@t3tools/client-runtime/provider-clients";
-import type { EnvironmentId, UsageLimitsReport } from "@t3tools/contracts";
+import { providerClients } from "@cod3/client-runtime/provider-clients";
+import type { EnvironmentId, UsageLimitsReport } from "@cod3/contracts";
 import { T, useGT } from "gt-react-native";
 import { Pressable, ScrollView, View } from "react-native";
 

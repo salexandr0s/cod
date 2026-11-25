@@ -1,5 +1,5 @@
-import type { ThreadId } from "@t3tools/contracts";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
+import type { ThreadId } from "@cod3/contracts";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -14,7 +14,7 @@ export class ThreadCommandExecutor extends Context.Service<
      */
     readonly withDeletionLock: <A, E, R>(effect: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>;
   }
->()("t3/orchestration-v2/ThreadCommandExecutor") {}
+>()("cod3/orchestration-v2/ThreadCommandExecutor") {}
 
 export const make = Effect.gen(function* () {
   const deletion = yield* Semaphore.make(1);

@@ -12,7 +12,7 @@ import type {
   WorkflowDefinitionChangeResult,
   WorkflowDefinitionFiles,
   WorkflowDefinitionProblem,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
@@ -38,8 +38,8 @@ import * as WorkflowAgentThreads from "./WorkflowAgentThreads.ts";
 import * as WorkflowForge from "./WorkflowForge.ts";
 import * as Workflows from "./Workflows.ts";
 
-/** A folder of definition files, or one file, in place of the folder in the T3 home. */
-const definitionsOverride = Config.String("T3CODE_WORKFLOWS").pipe(Config.option);
+/** A folder of definition files, or one file, in place of the folder in the cod3 home. */
+const definitionsOverride = Config.String("COD3_WORKFLOWS").pipe(Config.option);
 
 // An editor saves in several writes, and a save from here is followed by its own file event.
 const RELOAD_SETTLE = "300 millis";
@@ -76,7 +76,7 @@ export class WorkflowDefinitions extends Context.Service<
     /** Take a file away, unless runs still need what it defines. */
     readonly remove: (name: string) => Effect.Effect<WorkflowDefinitionChangeResult>;
   }
->()("t3/workflows/WorkflowRuntime/WorkflowDefinitions") {}
+>()("cod3/workflows/WorkflowRuntime/WorkflowDefinitions") {}
 
 const isDefinition = (value: unknown): value is WorkflowDefinition =>
   typeof value === "object" &&
@@ -89,7 +89,7 @@ const isDefinition = (value: unknown): value is WorkflowDefinition =>
   Array.isArray((value as WorkflowDefinition).resumeAfter);
 
 // The API is handed to a file as globals, which the whole process shares, so files load one at
-// a time. A load that was given up on still runs, so `T3.workflow` registers with the load whose
+// a time. A load that was given up on still runs, so `cod3.workflow` registers with the load whose
 // code calls it, and with none once that load is over.
 const loading = Semaphore.makeUnsafe(1);
 // A file whose top-level code never settles would otherwise hold every later load. Real time,
@@ -126,12 +126,12 @@ const within = <A>(work: Promise<A>, ms: number): Promise<A | undefined> => {
 
 const evaluate = async (url: string, evaluation: Evaluation): Promise<ReadonlyArray<unknown>> => {
   const api = await import("./api.ts");
-  const { Duration, Effect: effect, Option: option, Schedule, Schema: schema, ...t3 } = api;
+  const { Duration, Effect: effect, Option: option, Schedule, Schema: schema, ...cod3 } = api;
   const workflow = ((...input: Parameters<typeof api.workflow>) => {
     const current = evaluating.getStore();
     if (current === undefined || !current.open) {
       throw new Error(
-        "T3.workflow was called after its file finished loading. Call it at the top of the file.",
+        "cod3.workflow was called after its file finished loading. Call it at the top of the file.",
       );
     }
     const definition = api.workflow(...input);
@@ -139,7 +139,7 @@ const evaluate = async (url: string, evaluation: Evaluation): Promise<ReadonlyAr
     return definition;
   }) as typeof api.workflow;
   Object.assign(globalThis, {
-    T3: { ...t3, workflow },
+    cod3: { ...cod3, workflow },
     Effect: effect,
     Schema: schema,
     Option: option,
@@ -172,14 +172,14 @@ const evaluate = async (url: string, evaluation: Evaluation): Promise<ReadonlyAr
           : undefined;
   if (listed === undefined) {
     throw new Error(
-      "The default export is not a workflow or a list of them. Call T3.workflow(…), or export what it returned.",
+      "The default export is not a workflow or a list of them. Call cod3.workflow(…), or export what it returned.",
     );
   }
   return [...new Set([...evaluation.registered, ...listed])];
 };
 
 /**
- * The workflows a file defines: every `T3.workflow(…)` it calls, and any list it exports.
+ * The workflows a file defines: every `cod3.workflow(…)` it calls, and any list it exports.
  * `load` tells one loading of a file from the next: Node keeps a module by its address, so the
  * same address would give back the file as it was the first time.
  */
@@ -211,7 +211,7 @@ export const loadDefinitions = Effect.fn("WorkflowRuntime.loadDefinitions")(func
   if (!definitions.every(isDefinition)) {
     return yield* new WorkflowDefinitionsLoadError({
       module,
-      cause: "Something it exports is not a workflow. Export only what `T3.workflow` returned.",
+      cause: "Something it exports is not a workflow. Export only what `cod3.workflow` returned.",
     });
   }
   return definitions;
@@ -934,7 +934,7 @@ export const gate = Effect.fn("WorkflowRuntime.gate")(function* <E, R>(
 
 /**
  * The workflow service for this server, and its definition files: those in the `workflows`
- * folder of the T3 home, or wherever `T3CODE_WORKFLOWS` points instead. A file that does not
+ * folder of the cod3 home, or wherever `COD3_WORKFLOWS` points instead. A file that does not
  * load is reported and never stops the server. Nothing runs until `workflowsEnabled` is on.
  */
 export const layer = Layer.effectContext(

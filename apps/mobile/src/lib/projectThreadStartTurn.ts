@@ -8,11 +8,8 @@ import {
   type ProjectId,
   type ProviderInteractionMode,
   type RuntimeMode,
-} from "@t3tools/contracts";
-import {
-  deriveThreadTitleSeed,
-  threadTitleTextFromPrompt,
-} from "@t3tools/client-runtime/operations";
+} from "@cod3/contracts";
+import { deriveThreadTitleSeed, threadTitleTextFromPrompt } from "@cod3/client-runtime/operations";
 import { msg } from "gt-react-native";
 
 import { m } from "../i18n/messages";

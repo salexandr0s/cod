@@ -6,7 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as SqlError from "effect/sql/SqlError";
-import { DEFAULT_MANAGED_TUNNEL_LIMIT, T3CHAT_PLAN_TUNNEL_LIMITS } from "@t3tools/contracts/relay";
+import { DEFAULT_MANAGED_TUNNEL_LIMIT, COD3CHAT_PLAN_TUNNEL_LIMITS } from "@cod3/contracts/relay";
 
 import * as RelayDb from "../db.ts";
 import {
@@ -14,7 +14,7 @@ import {
   relayManagedEndpointAllocations,
   relayManagedTunnelLimits,
 } from "../persistence/schema.ts";
-import * as T3ChatAccounts from "../t3chat/T3ChatAccounts.ts";
+import * as Cod3ChatAccounts from "../cod3chat/Cod3ChatAccounts.ts";
 
 // Reserve-to-tunnel takes two Cloudflare calls capped at 8 seconds each; a reservation older than this was abandoned.
 const MANAGED_TUNNEL_PENDING_WINDOW_MINUTES = 15;
@@ -111,17 +111,17 @@ export class ManagedTunnelLimits extends Context.Service<
       readonly userId: string;
     }) => Effect.Effect<number | null, ManagedTunnelLimitPersistenceError>;
   }
->()("t3code-relay/environments/ManagedTunnelLimits") {}
+>()("cod3-relay/environments/ManagedTunnelLimits") {}
 
 const make = Effect.gen(function* () {
   const db = yield* RelayDb.RelayDb;
-  const t3Chat = yield* T3ChatAccounts.T3ChatAccounts;
+  const cod3Chat = yield* Cod3ChatAccounts.Cod3ChatAccounts;
 
   // Asked only at the cap, so most links never call T3 Chat. Any failure keeps the lower cap.
-  const t3ChatTunnelLimit = (userId: string) =>
-    t3Chat.getLink({ userId }).pipe(
+  const cod3ChatTunnelLimit = (userId: string) =>
+    cod3Chat.getLink({ userId }).pipe(
       Effect.map((link) =>
-        link && link.plan !== "free" ? T3CHAT_PLAN_TUNNEL_LIMITS[link.plan] : 0,
+        link && link.plan !== "free" ? COD3CHAT_PLAN_TUNNEL_LIMITS[link.plan] : 0,
       ),
       Effect.catch((error) =>
         Effect.logWarning("T3 Chat plan check failed", { userId, error: error.message }).pipe(
@@ -203,8 +203,8 @@ const make = Effect.gen(function* () {
         // A manual override is the exact cap; a T3 Chat plan raises only the default.
         // Runs under the user lock, bounded by the T3 Chat request timeout.
         const maxTunnels =
-          t3Chat.available && override === null
-            ? Math.max(baseMaxTunnels, yield* t3ChatTunnelLimit(input.userId))
+          cod3Chat.available && override === null
+            ? Math.max(baseMaxTunnels, yield* cod3ChatTunnelLimit(input.userId))
             : baseMaxTunnels;
         if (activeTunnels >= maxTunnels) {
           return yield* new ManagedTunnelLimitExceeded({

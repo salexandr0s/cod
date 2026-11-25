@@ -1,21 +1,17 @@
 import { useAtomCommand } from "~/state/use-atom-command";
-import type {
-  EnvironmentId,
-  PullRequestRef,
-  PullRequestReviewerCandidate,
-} from "@t3tools/contracts";
+import type { EnvironmentId, PullRequestRef, PullRequestReviewerCandidate } from "@cod3/contracts";
 import {
   hostReviewerQuery,
   reviewerCandidateView,
   type ReviewerTruncation,
-} from "@t3tools/client-runtime/pull-request-reviewers";
+} from "@cod3/client-runtime/pull-request-reviewers";
 import {
   emptySelection,
   isSelected,
   changeBatches,
   selectionChanges,
   toggleSelection,
-} from "@t3tools/client-runtime/pull-request-selection";
+} from "@cod3/client-runtime/pull-request-selection";
 import { CheckIcon, UserPlusIcon } from "lucide-react";
 import { msg, useGT, useMessages } from "gt-react";
 import { useState } from "react";
@@ -25,7 +21,7 @@ import { m, type MessageResolver } from "~/i18n/messages";
 import { pullRequestEnvironment } from "~/state/pullRequests";
 import { useEnvironmentQuery } from "~/state/query";
 import { useDebouncedValue } from "~/state/queries";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 
 import { toastManager } from "../ui/toast";
 import { PullRequestCandidatePicker } from "./PullRequestCandidatePicker";

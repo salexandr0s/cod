@@ -1,6 +1,6 @@
-import { SourceControlProviderKind, type VcsStatusResult } from "@t3tools/contracts";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
-import { resolveAutoFeatureBranchName } from "@t3tools/shared/git";
+import { SourceControlProviderKind, type VcsStatusResult } from "@cod3/contracts";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
+import { resolveAutoFeatureBranchName } from "@cod3/shared/git";
 import { assert, describe, it } from "vite-plus/test";
 import {
   buildMenuItems,
@@ -274,8 +274,8 @@ describe("resolveLiveThreadBranchUpdate", () => {
 
   it("does not regress a semantic thread ref back to a temporary worktree ref", () => {
     const update = resolveLiveThreadBranchUpdate({
-      threadBranch: "t3code/github-query-rate-limit",
-      gitStatus: status({ refName: "t3code/bda76797" }),
+      threadBranch: "cod3/github-query-rate-limit",
+      gitStatus: status({ refName: "cod3/bda76797" }),
     });
 
     assert.equal(update, null);

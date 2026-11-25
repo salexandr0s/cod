@@ -95,7 +95,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
 
       yield* writeHomeFile(homeDirectory, ".codex/auth.json", `{"tokens":{"account_id":"ws-1"}}`);
       assert.deepEqual(yield* identity(), { distinctId: yield* sha256("ws-1"), installId });
-    }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-install-"))),
+    }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-install-"))),
   );
 
   it.effect("leaves no torn anonymous id behind when its write fails midway", () =>
@@ -133,7 +133,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
 
       assert.deepEqual(identity, { distinctId: null, installId: null });
       assert.isFalse(yield* fileSystem.exists(config.anonymousIdPath));
-    }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-torn-"))),
+    }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-torn-"))),
   );
 
   it.effect("does not overwrite the anonymous id path after a non-NotFound read failure", () => {
@@ -158,7 +158,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
       assert.isUndefined(
         findIdentityLog(logs, "anonymous", "TelemetryAnonymousIdPersistenceError"),
       );
-    }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-read-", logs)));
+    }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-read-", logs)));
   });
 
   it.effect("reads the Connect account and each provider account as owners", () =>
@@ -197,7 +197,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
         { source: "openai", ownerId: yield* sha256("user-openai-person") },
         { source: "claude", ownerId: yield* sha256("claude-person") },
       ]);
-    }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-owners-"))),
+    }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-owners-"))),
   );
 
   it.effect.each([
@@ -230,7 +230,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
 
         assert.deepEqual(yield* Identify.getServerOwnersForHome(homeDirectory), []);
         assert.deepEqual(logs, []);
-      }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-tokenless-", logs)));
+      }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-tokenless-", logs)));
     },
   );
 
@@ -270,7 +270,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))("telemetry identi
             .join("\n"),
           privateAccessToken,
         );
-      }).pipe(Effect.provide(layerIdentity("t3-telemetry-identify-decode-", logs)));
+      }).pipe(Effect.provide(layerIdentity("cod3-telemetry-identify-decode-", logs)));
     },
   );
 });

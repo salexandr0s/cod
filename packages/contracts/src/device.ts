@@ -5,13 +5,14 @@ import * as SchemaTransformation from "effect/SchemaTransformation";
 import { ThreadId, TrimmedNonEmptyString, TrimmedString } from "./baseSchemas.ts";
 import { SettingsSecretValue } from "./settingsSecretValue.ts";
 
-export const DevicePlatform = Schema.Literals(["ios", "android"]);
+export const DevicePlatform = Schema.Literals(["ios", "android", "macos"]);
 export type DevicePlatform = typeof DevicePlatform.Type;
 
 export const DeviceHostId = TrimmedNonEmptyString.check(Schema.isMaxLength(128));
 export type DeviceHostId = typeof DeviceHostId.Type;
 
 export const LOCAL_DEVICE_HOST_ID = "local" as DeviceHostId;
+export const TART_DEVICE_HOST_ID = "tart:local" as DeviceHostId;
 export const LOCAL_DEVICE_HOST_LABEL = "This machine";
 
 const ConfiguredDeviceHostId = DeviceHostId.check(
@@ -71,7 +72,7 @@ export type EasDeviceHostConfig = typeof EasDeviceHostConfig.Type;
 
 /**
  * Alpha: devices leased from a Simlock gateway (https://incubator.callstack.com/simlock).
- * T3 never installs Simlock; the gateway and its workers are the user's own.
+ * cod3 never installs Simlock; the gateway and its workers are the user's own.
  */
 export const SimlockDeviceHostConfig = Schema.Struct({
   kind: Schema.Literal("simlock"),
@@ -224,10 +225,15 @@ const SimlockDeviceHostSummary = Schema.Struct({
   ...deviceHostSummaryFields,
   kind: Schema.Literal("simlock"),
 });
+const TartDeviceHostSummary = Schema.Struct({
+  ...deviceHostSummaryFields,
+  kind: Schema.Literal("tart"),
+});
 export const DeviceHostSummary = Schema.Union([
   MachineDeviceHostSummary,
   EasDeviceHostSummary,
   SimlockDeviceHostSummary,
+  TartDeviceHostSummary,
 ]);
 export type DeviceHostSummary = typeof DeviceHostSummary.Type;
 
@@ -247,6 +253,7 @@ export const DeviceSession = Schema.Struct({
   deviceId: DeviceId,
   platform: DevicePlatform,
   openedAt: Schema.String,
+  macBootId: Schema.optional(Schema.String),
 });
 export type DeviceSession = typeof DeviceSession.Type;
 
@@ -292,6 +299,14 @@ const DeviceServiceStateWire = Schema.Struct({
   hosts: Schema.Array(MachineDeviceHostSummary),
   easHosts: Schema.optional(Schema.Array(EasDeviceHostSummary)),
   simlockHosts: Schema.optional(Schema.Array(SimlockDeviceHostSummary)),
+  mac: Schema.optional(
+    Schema.Struct({
+      hosts: Schema.Array(TartDeviceHostSummary),
+      devices: deviceServiceStateFields.devices,
+      sessions: deviceServiceStateFields.sessions,
+      bootingDevices: deviceServiceStateFields.bootingDevices,
+    }),
+  ),
 });
 const DeviceServiceStateDecoded = Schema.Struct({
   ...deviceServiceStateFields,
@@ -305,12 +320,37 @@ export const DeviceServiceState = DeviceServiceStateWire.pipe(
       typeof DeviceServiceStateDecoded.Type,
       typeof DeviceServiceStateWire.Type
     >({
-      decode: ({ easHosts, simlockHosts, ...state }) => ({
+      decode: ({ easHosts, simlockHosts, mac, ...state }) => ({
         ...state,
-        hosts: [...state.hosts, ...(easHosts ?? []), ...(simlockHosts ?? [])],
+        hosts: [
+          ...state.hosts,
+          ...(easHosts ?? []),
+          ...(simlockHosts ?? []),
+          ...(mac?.hosts ?? []),
+        ],
+        devices: [...state.devices, ...(mac?.devices ?? [])],
+        sessions: [...state.sessions, ...(mac?.sessions ?? [])],
+        ...(mac?.bootingDevices?.length
+          ? { bootingDevices: [...(state.bootingDevices ?? []), ...mac.bootingDevices] }
+          : {}),
       }),
       encode: (state) => ({
         ...state,
+        devices: state.devices.filter((device) => device.platform !== "macos"),
+        sessions: state.sessions.filter((device) => device.platform !== "macos"),
+        bootingDevices: state.bootingDevices?.filter((device) => device.platform !== "macos"),
+        ...(state.hosts.some((host) => host.kind === "tart")
+          ? {
+              mac: {
+                hosts: state.hosts.filter((host) => host.kind === "tart"),
+                devices: state.devices.filter((device) => device.platform === "macos"),
+                sessions: state.sessions.filter((device) => device.platform === "macos"),
+                bootingDevices: state.bootingDevices?.filter(
+                  (device) => device.platform === "macos",
+                ),
+              },
+            }
+          : {}),
         hosts: state.hosts.filter(
           (host): host is typeof MachineDeviceHostSummary.Type =>
             host.kind === "local" || host.kind === "ssh",
@@ -602,7 +642,7 @@ export class DeviceOperationError extends Schema.TaggedError<DeviceOperationErro
       settings_failed: "Could not read or save device settings.",
       hub_rejected: "The device hub could not complete the request.",
       package_manager_missing:
-        "Device support needs npm, which is not on the T3 server's PATH. Install npm (it comes with Node.js from nodejs.org), restart T3 Code, then retry.",
+        "Device support needs npm, which is not on the cod3 server's PATH. Install npm (it comes with Node.js from nodejs.org), restart cod3, then retry.",
     }[this.reason];
     return `Device ${this.operation} failed: ${explanation}`;
   }

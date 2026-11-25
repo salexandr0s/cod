@@ -1,7 +1,7 @@
 import { DeviceHostUpdates } from "./DeviceHostUpdates";
-import type { DevicePlatform, DeviceServiceState, EnvironmentId } from "@t3tools/contracts";
+import type { DevicePlatform, DeviceServiceState, EnvironmentId } from "@cod3/contracts";
 import { Check, CircleAlert } from "lucide-react";
-import { AuthSettingsWriteScope } from "@t3tools/contracts";
+import { AuthSettingsWriteScope } from "@cod3/contracts";
 import { useAtomMount } from "@effect/atom-react";
 import { msg, T, useGT, useMessages, Var } from "gt-react";
 import { useState } from "react";
@@ -17,7 +17,8 @@ import { readEnvironmentScope, useEnvironmentScope } from "~/state/session";
 import { cn } from "~/lib/utils";
 import { m, type MessageResolver } from "~/i18n/messages";
 
-const platformName = (platform: DevicePlatform) => (platform === "ios" ? "iOS" : "Android");
+const platformName = (platform: DevicePlatform) =>
+  platform === "macos" ? "Mac" : platform === "ios" ? "iOS" : "Android";
 
 const deviceHubDescription = msg(
   "Enable this environment to open simulators and emulators, whether they run here or on a remote device host.",
@@ -377,6 +378,18 @@ function DevicePlatformSetup(props: {
   const m = useMessages();
   return (
     <div className="space-y-3">
+      {props.state.hosts
+        .filter((host) => host.kind === "tart")
+        .map((host) => (
+          <PlatformStatus
+            key={host.id}
+            platform="Mac"
+            status={{
+              ready: host.platforms[0]?.available === true,
+              message: host.platforms[0]?.reason ?? gt("The Mac VM is ready to start."),
+            }}
+          />
+        ))}
       <PlatformStatus platform="iOS" status={platformSetupStatus(props.state, "ios", m)} />
       <PlatformStatus platform="Android" status={platformSetupStatus(props.state, "android", m)} />
       <DeviceHostDiagnostics hosts={props.state.hosts} hostStatuses={props.state.hostStatuses} />

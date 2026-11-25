@@ -1,7 +1,7 @@
-import { sanitizeNewRefName } from "@t3tools/shared/git";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+import { sanitizeNewRefName } from "@cod3/shared/git";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { changeRequestTermKind } from "../../lib/changeRequestTerm";
-import { resolveSendEnvMode } from "@t3tools/shared/projectSettings";
+import { resolveSendEnvMode } from "@cod3/shared/projectSettings";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";
@@ -148,7 +148,7 @@ export function filterNewTaskBranches<T extends { readonly name: string }>(
 /**
  * A worktree with no chosen base starts from the default branch, and a local
  * selection the user just switched to follows the current checkout until refs
- * load. Both are derived, never written back, so a late ref list or t3.json
+ * load. Both are derived, never written back, so a late ref list or cod3.json
  * default still wins.
  */
 export function fillNewTaskWorkspaceBranch(input: {

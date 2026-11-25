@@ -7,18 +7,18 @@ import {
 import wordsWasm from "@pierre/words/wasm";
 import { decodeHTML, decodeHTMLAttribute } from "entities";
 import { find, html as htmlSchema, svg as svgSchema } from "property-information";
-import { resolveCodexArtifactTemplate } from "@t3tools/shared/codexArtifactTemplates";
-import { resolveCodexFileCitationLink } from "@t3tools/shared/codexFileCitations";
-import type { ReferenceAutolink } from "@t3tools/client-runtime/source-control-clients";
-import { expandGithubEmojiAliases } from "@t3tools/client-runtime/pull-request-markdown";
-import { resolveChangeRequestMediaUrl } from "@t3tools/client-runtime/pull-request-references";
-import { GITHUB_ALERT_MARKER } from "@t3tools/shared/markdownGithubAlerts";
-import { absoluteFilePathMatches } from "@t3tools/shared/markdownLinks";
+import { resolveCodexArtifactTemplate } from "@cod3/shared/codexArtifactTemplates";
+import { resolveCodexFileCitationLink } from "@cod3/shared/codexFileCitations";
+import type { ReferenceAutolink } from "@cod3/client-runtime/source-control-clients";
+import { expandGithubEmojiAliases } from "@cod3/client-runtime/pull-request-markdown";
+import { resolveChangeRequestMediaUrl } from "@cod3/client-runtime/pull-request-references";
+import { GITHUB_ALERT_MARKER } from "@cod3/shared/markdownGithubAlerts";
+import { absoluteFilePathMatches } from "@cod3/shared/markdownLinks";
 import {
   rehypeNormalizeLocalEditorLinks,
   rehypePreserveImageSourceMeta,
   sanitizeChatHast,
-} from "@t3tools/shared/markdownHast";
+} from "@cod3/shared/markdownHast";
 
 import { rehypeChipPunctuation } from "../components/chat/markdownChipPunctuation";
 import { rehypeHeadingIds } from "../components/chat/markdownFragments";
@@ -464,7 +464,7 @@ function codexDirective(node: Element, walk: Walk, inLink: boolean): ElementCont
   };
 }
 
-const INLINE_PREFIX = "t3-markdown-inline-prefix:";
+const INLINE_PREFIX = "cod3-markdown-inline-prefix:";
 
 function stripPositions(node: ElementContent) {
   delete node.position;
@@ -900,8 +900,8 @@ function insightSource(text: string, options: RenderOptions): InsightSource | nu
   };
   findCode(parse(text, options));
   const nonce = Math.random().toString(36).slice(2);
-  const marker = new RegExp(String.raw`^\[!T3-INSIGHT-${nonce}-(\d+)\](?:\r?\n)?`);
-  const anywhere = new RegExp(String.raw`\[!T3-INSIGHT-${nonce}-(\d+)\]`, "g");
+  const marker = new RegExp(String.raw`^\[!cod3-INSIGHT-${nonce}-(\d+)\](?:\r?\n)?`);
+  const anywhere = new RegExp(String.raw`\[!cod3-INSIGHT-${nonce}-(\d+)\]`, "g");
   const lines = text.split(/(?<=\n)/u);
   const skipped = new Set<number>();
   for (;;) {
@@ -922,7 +922,7 @@ function insightSource(text: string, options: RenderOptions): InsightSource | nu
           if (opening && !skipped.has(lineIndex)) {
             indent = opening[1] ?? "";
             opened++;
-            output = `> [!T3-INSIGHT-${nonce}-${lineIndex}]${ending}`;
+            output = `> [!cod3-INSIGHT-${nonce}-${lineIndex}]${ending}`;
           }
         } else {
           const closing = inCode ? null : INSIGHT_CLOSING.exec(value);
@@ -1134,7 +1134,7 @@ export function wordsHast(text: string, options: WordsHastOptions): Root {
     source,
     options,
     math: new Map(),
-    mathKey: `t3-math-${Math.random().toString(36).slice(2)}`,
+    mathKey: `cod3-math-${Math.random().toString(36).slice(2)}`,
     insightMarker: insights?.marker ?? null,
   };
   transform(tree, walk, false, false);

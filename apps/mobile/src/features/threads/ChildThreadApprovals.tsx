@@ -1,10 +1,10 @@
 import { useAtomValue } from "@effect/atom-react";
-import { AuthOrchestrationOperateScope, type ScopedThreadRef } from "@t3tools/contracts";
-import type { ChildThreadApproval } from "@t3tools/client-runtime/state/thread-requests";
+import { AuthOrchestrationOperateScope, type ScopedThreadRef } from "@cod3/contracts";
+import type { ChildThreadApproval } from "@cod3/client-runtime/state/thread-requests";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { T, useGT, Var } from "gt-react-native";
 import { useState } from "react";
 import { useEnvironmentScope } from "../../state/session";
@@ -23,7 +23,7 @@ function ChildApproval({ entry }: { entry: ChildThreadApproval }) {
   const [error, setError] = useState<string | null>(null);
   return (
     <View className="mx-3.5 my-2 gap-2">
-      <AppText className="font-t3-bold text-sm text-foreground">
+      <AppText className="font-cod3-bold text-sm text-foreground">
         <T>
           Approval from <Var>{entry.title}</Var>
         </T>

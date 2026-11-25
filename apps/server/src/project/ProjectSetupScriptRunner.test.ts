@@ -7,8 +7,8 @@ import {
   type TerminalEvent,
   type TerminalOpenInput,
   type TerminalSessionSnapshot,
-} from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+} from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -31,7 +31,7 @@ const event = { threadId, terminalId, sequence: 1, createdAt: "2026-01-01T00:00:
 const openSnapshot = (history: string): TerminalSessionSnapshot => ({
   threadId,
   terminalId,
-  cwd: "/repo/.t3/worktrees/feature",
+  cwd: "/repo/.cod3/worktrees/feature",
   worktreePath: null,
   status: "running",
   pid: 123,
@@ -90,7 +90,7 @@ const makeHarness = Effect.fn(function* (options: {
   );
   const start = runner.runForThread({
     threadId,
-    worktreePath: "/repo/.t3/worktrees/feature",
+    worktreePath: "/repo/.cod3/worktrees/feature",
     observeCompletion: { onOutputLine: (line) => Queue.offer(outputLines, line) },
     project: {
       id: ProjectId.make("project-1"),
@@ -129,7 +129,7 @@ describe("ProjectSetupScriptRunner", () => {
   it.effect("keeps setup scripts independent of the interactive shell preference", () =>
     Effect.gen(function* () {
       const { opens } = yield* setup();
-      expect(opens[0]?.env?.T3CODE_TERMINAL_SHELL).toBe("");
+      expect(opens[0]?.env?.COD3_TERMINAL_SHELL).toBe("");
     }),
   );
 
@@ -155,16 +155,16 @@ describe("ProjectSetupScriptRunner", () => {
       expect(yield* Queue.size(writes)).toBe(0);
       yield* emit({ ...event, type: "output", data: "> \x1b[?2004h" });
       const written = yield* Queue.take(writes);
-      const sentinel = written.match(/__T3_SETUP_DONE___[0-9a-f]{32}:/)?.[0];
+      const sentinel = written.match(/__COD3_SETUP_DONE___[0-9a-f]{32}:/)?.[0];
       expect(sentinel).toBeDefined();
       expect(written).toBe(
         ` ${[
           "$env.LAST_EXIT_CODE = 0",
-          "let __t3f = try { mktemp --tmpdir-path $env.T3CODE_WORKTREE_PATH --suffix .nu .t3-setup-XXXXXXXX } catch {|e| print -e $e.msg; null }",
-          `if $__t3f == null { $env.LAST_EXIT_CODE = 1 } else { try { [$"rm --permanent ($__t3f | to nuon)" "${escaped}"] | str join (char newline) | save --force --raw $__t3f; ^$nu.current-exe --login --commands $"cd $env.T3CODE_WORKTREE_PATH; source ($__t3f | to nuon)" } catch {|e| if $e != null and $e.exit_code? == null { print -e $e.msg }; if $env.LAST_EXIT_CODE == 0 { $env.LAST_EXIT_CODE = 1 } } }`,
-          "let __t3c = $env.LAST_EXIT_CODE",
-          "try { if $__t3f != null and ($__t3f | path exists) { rm --permanent $__t3f } } catch {|e| print -e $e.msg }",
-          `print $"\\n${sentinel}($__t3c)"`,
+          "let __cod3f = try { mktemp --tmpdir-path $env.COD3_WORKTREE_PATH --suffix .nu .cod3-setup-XXXXXXXX } catch {|e| print -e $e.msg; null }",
+          `if $__cod3f == null { $env.LAST_EXIT_CODE = 1 } else { try { [$"rm --permanent ($__cod3f | to nuon)" "${escaped}"] | str join (char newline) | save --force --raw $__cod3f; ^$nu.current-exe --login --commands $"cd $env.COD3_WORKTREE_PATH; source ($__cod3f | to nuon)" } catch {|e| if $e != null and $e.exit_code? == null { print -e $e.msg }; if $env.LAST_EXIT_CODE == 0 { $env.LAST_EXIT_CODE = 1 } } }`,
+          "let __cod3c = $env.LAST_EXIT_CODE",
+          "try { if $__cod3f != null and ($__cod3f | path exists) { rm --permanent $__cod3f } } catch {|e| print -e $e.msg }",
+          `print $"\\n${sentinel}($__cod3c)"`,
         ].join("; ")}\r`,
       );
     }),

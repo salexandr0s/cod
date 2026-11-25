@@ -132,7 +132,7 @@ export type OrchestrationV2LinkOrigin = typeof OrchestrationV2LinkOrigin.Type;
 /**
  * Work from a link paired below full access may change only work from the same
  * link. A full-access link's agents already run as this environment's user,
- * so fencing T3's own tools would stop nothing they could not do anyway. An
+ * so fencing cod3's own tools would stop nothing they could not do anyway. An
  * origin stamped before access was recorded stays fenced.
  */
 export const linkOriginIsFenced = (origin: OrchestrationV2LinkOrigin) =>
@@ -613,7 +613,7 @@ export const isDelegatedAppThread = (
   // MCP-launched threads store `delegatedFrom: null` at runtime, so check both absent shapes.
   thread.lineage.relationshipToParent === "subagent" || thread.delegatedFrom != null;
 
-/** Provider-native children cannot receive messages; T3 delegate_task children can. */
+/** Provider-native children cannot receive messages; cod3 delegate_task children can. */
 export function isProviderNativeSubagentThread(
   thread: Pick<OrchestrationV2AppThread, "lineage" | "creationSource">,
 ): boolean {
@@ -660,13 +660,13 @@ export function withMessageSenderNote(
   const agent = message.createdBy === "agent";
   const note =
     agent && message.linkedSender !== undefined
-      ? `[T3 Code: the agent in T3 thread ${JSON.stringify(message.linkedSender.threadId)} on linked environment ${JSON.stringify(message.linkedSender.environmentId)} sent this message, not the user.]`
+      ? `[cod3: the agent in cod3 thread ${JSON.stringify(message.linkedSender.threadId)} on linked environment ${JSON.stringify(message.linkedSender.environmentId)} sent this message, not the user.]`
       : agent && message.senderThreadId !== undefined
-        ? `[T3 Code: the agent in T3 thread ${JSON.stringify(message.senderThreadId)} sent this message, not the user.]`
+        ? `[cod3: the agent in cod3 thread ${JSON.stringify(message.senderThreadId)} sent this message, not the user.]`
         : message.scheduledTaskId !== undefined
-          ? `[T3 Code: scheduled task ${JSON.stringify(message.scheduledTaskId)} sent this prompt, not the user typing in this chat.]`
+          ? `[cod3: scheduled task ${JSON.stringify(message.scheduledTaskId)} sent this prompt, not the user typing in this chat.]`
           : agent && message.creationSource === "mcp"
-            ? "[T3 Code: this message came through T3 Code's tools, not from the user typing in this chat.]"
+            ? "[cod3: this message came through cod3's tools, not from the user typing in this chat.]"
             : undefined;
   if (note === undefined || LEADING_COMMAND.test(text)) return text;
   return text === "" ? note : `${note}\n\n${text}`;
@@ -703,7 +703,7 @@ export function parseGoalCommand(message: {
   }
 }
 
-/** Why T3 Code sent this `/compact` on its own, or undefined for one someone asked for. */
+/** Why cod3 sent this `/compact` on its own, or undefined for one someone asked for. */
 export function idleCompactionOf(
   message: CompactionMessageFields,
 ): OrchestrationV2IdleCompaction | undefined {
@@ -993,7 +993,7 @@ export type OrchestrationV2SubagentWorkflow = typeof OrchestrationV2SubagentWork
 /**
  * Wire-only, for clients that opted in with `acceptDedupedBodies` or `dedupeBodies=1`: the field
  * was blanked because an earlier record on the same response or stream holds the same value.
- * Restore with `@t3tools/shared/orchestrationV2DedupedBodies`; never store or forward a marked
+ * Restore with `@cod3/shared/orchestrationV2DedupedBodies`; never store or forward a marked
  * value. Clients restore only these fields, so blanking another field needs a new opt-in.
  */
 const DedupedBodyMarker = Schema.optionalKey(Schema.Literal(true));
@@ -1512,7 +1512,7 @@ export const OrchestrationV2Notification = Schema.Struct({
 });
 export type OrchestrationV2Notification = typeof OrchestrationV2Notification.Type;
 
-/** Why T3 Code compacted a thread on its own, on the `/compact` it sent. */
+/** Why cod3 compacted a thread on its own, on the `/compact` it sent. */
 export const OrchestrationV2IdleCompaction = Schema.Literals(["beforeCacheExpires", "onReturn"]);
 export type OrchestrationV2IdleCompaction = typeof OrchestrationV2IdleCompaction.Type;
 
@@ -1878,7 +1878,7 @@ const OrchestrationV2LinkRequestFields = {
 } as const;
 
 /**
- * A report the user asked the agent to send to the T3 team, shown for approval. Send stores and
+ * A report the user asked the agent to send to the cod3 team, shown for approval. Send stores and
  * sends exactly `preview`, with `conversationTrace` as its trace if the user included the
  * conversation. Once answered, the card keeps only what was sent.
  */
@@ -3834,7 +3834,7 @@ const OrchestrationV2InternalCommand = Schema.Union([
     runId: RunId,
     value: Schema.Json,
   }),
-  // Guest share commands the server issues after checking T3 Connect and the guest token.
+  // Guest share commands the server issues after checking cod3 Connect and the guest token.
   Schema.Struct({
     type: Schema.Literal("thread.guest-share.open"),
     commandId: CommandId,
@@ -4116,7 +4116,7 @@ export type OrchestrationV2SubscribeCommandOutputInput =
   typeof OrchestrationV2SubscribeCommandOutputInput.Type;
 
 /** Unpersisted stream for expanded rows: replace resets the bounded tail, append extends it, and running:false ends it.
- * Feed both through @t3tools/shared/terminalOutput appendTerminalOutput to preserve cursor and style escapes. */
+ * Feed both through @cod3/shared/terminalOutput appendTerminalOutput to preserve cursor and style escapes. */
 export const OrchestrationV2CommandOutputFrame = Schema.Struct({
   kind: Schema.Literals(["replace", "append"]),
   text: Schema.String,

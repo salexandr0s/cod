@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import type { ActiveTurnComposerAction } from "@t3tools/client-runtime/state/composer-dispatch";
+import type { ActiveTurnComposerAction } from "@cod3/client-runtime/state/composer-dispatch";
 
 export function useSubmitAfterNativeImages(props: {
   readonly draftKey: string;
@@ -23,7 +23,7 @@ export function useSubmitAfterNativeImages(props: {
       props.onSubmit(held.followUp);
     }
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- submits from the render where the native images joined the draft
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- submits from the render where the native images joined the draft
   useEffect(() => {
     if (!releasedSend || props.blocked || consumedSend.current === releasedSend) return;
     consumedSend.current = releasedSend;

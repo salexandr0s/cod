@@ -1,8 +1,8 @@
 import { useAtomValue } from "@effect/atom-react";
-import { parseScopedThreadKey, scopedThreadKey } from "@t3tools/client-runtime/environment";
-import { parseThreadKey, threadKey } from "@t3tools/client-runtime/state/entities";
-import { visibilityParentKey } from "@t3tools/client-runtime/state/threads";
-import type { ScopedThreadRef } from "@t3tools/contracts";
+import { parseScopedThreadKey, scopedThreadKey } from "@cod3/client-runtime/environment";
+import { parseThreadKey, threadKey } from "@cod3/client-runtime/state/entities";
+import { visibilityParentKey } from "@cod3/client-runtime/state/threads";
+import type { ScopedThreadRef } from "@cod3/contracts";
 import * as Option from "effect/Option";
 import { Navigate, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -37,7 +37,7 @@ export function useOpenThreadFamily(threadRef: ScopedThreadRef | null, missing: 
   const [mountedKey, setMountedKey] = useState<string | null>(null);
   const nextKey = missing || mountedKey === key ? key : null;
   if (nextKey !== mountedKey) setMountedKey(nextKey);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- holds the open thread's family in the thread family registry until the route leaves it
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- holds the open thread's family in the thread family registry until the route leaves it
   useEffect(() => {
     const ref = mountedKey === null ? null : parseScopedThreadKey(mountedKey);
     if (ref === null) return;
@@ -140,7 +140,7 @@ export function ThreadRouteView({
   });
   const environmentHasAnyThreads = environmentThreadRefs.length > 0 || environmentHasDraftThreads;
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears pending file drops and navigates the router home once a server thread is confirmed missing
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears pending file drops and navigates the router home once a server thread is confirmed missing
   useEffect(() => {
     if (target.kind !== "server" || !bootstrapComplete) {
       return;

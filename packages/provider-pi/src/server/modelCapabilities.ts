@@ -2,8 +2,8 @@ import {
   type ModelCapabilities,
   type ProviderOptionChoice,
   type ProviderOptionDescriptor,
-} from "@t3tools/contracts";
-import { createModelCapabilities } from "@t3tools/shared/model";
+} from "@cod3/contracts";
+import { createModelCapabilities } from "@cod3/shared/model";
 import * as Predicate from "effect/Predicate";
 
 // xhigh/max require per-model thinkingLevelMap opt-in; global advertising makes set_thinking_level fail.
@@ -65,7 +65,7 @@ function thinkingDescriptor(
 }
 
 // Pi has no service tier concept; provider extensions advertise `serviceTiers` on a model,
-// and T3's injected extension sends the chosen id as the request's `service_tier`.
+// and cod3's injected extension sends the chosen id as the request's `service_tier`.
 function serviceTierDescriptor(model: unknown): ProviderOptionDescriptor | undefined {
   const tiers = recordField(model, "serviceTiers");
   if (!Array.isArray(tiers)) return undefined;

@@ -1,7 +1,4 @@
-import type {
-  DesktopPreviewAnnotationTheme,
-  DesktopPreviewRecordingInput,
-} from "@t3tools/contracts";
+import type { DesktopPreviewAnnotationTheme, DesktopPreviewRecordingInput } from "@cod3/contracts";
 
 import {
   DEFAULT_RECORDING_INPUT_OPTIONS,
@@ -25,10 +22,10 @@ export function installRecordingCursor(
 ) {
   const style = document.createElement("style");
   style.textContent =
-    "html, html * { cursor: none !important; } [data-t3code-recording-cursor]::backdrop, [data-t3code-recording-agent-cursor]::backdrop { display: none !important; } @media (prefers-reduced-motion: reduce) { [data-t3code-recording-agent-cursor] { transition: none !important; } }";
+    "html, html * { cursor: none !important; } [data-cod3-recording-cursor]::backdrop, [data-cod3-recording-agent-cursor]::backdrop { display: none !important; } @media (prefers-reduced-motion: reduce) { [data-cod3-recording-agent-cursor] { transition: none !important; } }";
   const cursor = document.createElement("div");
   cursor.setAttribute("aria-hidden", "true");
-  cursor.setAttribute("data-t3code-recording-cursor", "");
+  cursor.setAttribute("data-cod3-recording-cursor", "");
   cursor.popover = "manual";
   cursor.style.cssText =
     POPOVER_RESET +
@@ -37,7 +34,7 @@ export function installRecordingCursor(
     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" viewBox="0 0 16 24"><path d="M1 1v18l4-4 4 8 3-1.5-4-8H15Z" fill="black" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>';
   const agentCursor = document.createElement("div");
   agentCursor.setAttribute("aria-hidden", "true");
-  agentCursor.setAttribute("data-t3code-recording-agent-cursor", "");
+  agentCursor.setAttribute("data-cod3-recording-agent-cursor", "");
   agentCursor.popover = "manual";
   agentCursor.style.cssText =
     POPOVER_RESET +

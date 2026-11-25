@@ -1,5 +1,5 @@
-import type { DesktopSshEnvironmentTarget } from "@t3tools/contracts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import type { DesktopSshEnvironmentTarget } from "@cod3/contracts";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Digest from "effect/crypto/Digest";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -118,7 +118,7 @@ export function baseSshArgs(
     `BatchMode=${input?.batchMode ?? "no"}`,
     "-o",
     "ConnectTimeout=10",
-    // T3 always supplies its own remote command or only forwards ports, so a host
+    // cod3 always supplies its own remote command or only forwards ports, so a host
     // alias's RemoteCommand or RequestTTY must not hijack the session.
     "-o",
     "RemoteCommand=none",
@@ -128,7 +128,7 @@ export function baseSshArgs(
   ];
 }
 
-// `-F none` keeps the user's configured forwards out of T3's requests, and ProxyCommand=false
+// `-F none` keeps the user's configured forwards out of cod3's requests, and ProxyCommand=false
 // fails closed instead of dialing the host directly once the master is gone.
 export function controlMasterArgs(controlPath: string): string[] {
   return ["-F", "none", "-o", `ControlPath=${controlPath}`, "-o", "ProxyCommand=false"];

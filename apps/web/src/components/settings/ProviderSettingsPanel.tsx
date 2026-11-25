@@ -4,20 +4,20 @@ import {
   AuthSettingsWriteScope,
   AuthProvidersManageScope,
   AuthOrchestrationReadScope,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useEnvironmentScope, readEnvironmentScope } from "../../state/session";
 import { useAtomValue } from "@effect/atom-react";
-import { connectionErrorText, connectionStatusTitle } from "@t3tools/client-runtime/connection";
+import { connectionErrorText, connectionStatusTitle } from "@cod3/client-runtime/connection";
 import {
   errorDisplayMessage,
   safeErrorLogAttributes,
   thrownErrorMessage,
-} from "@t3tools/client-runtime/errors";
+} from "@cod3/client-runtime/errors";
 import {
   isAtomCommandInterrupted,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   defaultInstanceIdForDriver,
   type EnvironmentId,
@@ -31,12 +31,12 @@ import {
   resolveEnvironmentMachineKind,
   resolveProjectProviderInstanceEnabled,
   resolveProviderInstanceEnabled,
-} from "@t3tools/contracts";
-import { DEFAULT_UNIFIED_SETTINGS, type UnifiedSettings } from "@t3tools/contracts/settings";
+} from "@cod3/contracts";
+import { DEFAULT_UNIFIED_SETTINGS, type UnifiedSettings } from "@cod3/contracts/settings";
 import {
   getBackgroundActivityPresetSettings,
   resolveServerBackgroundActivitySettings,
-} from "@t3tools/shared/backgroundActivitySettings";
+} from "@cod3/shared/backgroundActivitySettings";
 import * as Arr from "effect/Array";
 import * as Duration from "effect/Duration";
 import * as Result from "effect/Result";
@@ -222,7 +222,7 @@ function ProviderLastChecked({ environmentId }: { environmentId: EnvironmentId }
   );
 }
 
-const T3_CONNECT_NAME = "T3 Connect";
+const COD3_CONNECT_NAME = "cod3 Connect";
 
 function providerEnvironmentDetail(
   environment: EnvironmentPresentation,
@@ -230,7 +230,7 @@ function providerEnvironmentDetail(
 ): string {
   if (environment.entry.target._tag === "PrimaryConnectionTarget")
     return resolve(msg("Primary device"));
-  if (environment.relayManaged) return T3_CONNECT_NAME;
+  if (environment.relayManaged) return COD3_CONNECT_NAME;
   if (environment.entry.target._tag === "SshConnectionTarget") return "SSH";
   if (isDesktopLocalConnectionTarget(environment.entry.target)) return resolve(msg("Local device"));
   return environment.displayUrl ?? resolve(msg("Remote device"));

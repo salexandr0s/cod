@@ -1,0 +1,17 @@
+{
+  "name": "@cod3/mobile-review-diff-native",
+  "version": "0.0.0",
+  "private": true,
+  "expo-module": {
+    "ios": {
+      "modules": [
+        "Cod3ReviewDiffModule"
+      ]
+    },
+    "android": {
+      "modules": [
+        "expo.modules.cod3reviewdiff.Cod3ReviewDiffModule"
+      ]
+    }
+  }
+}

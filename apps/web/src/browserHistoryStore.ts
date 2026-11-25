@@ -2,18 +2,18 @@ import {
   scopedProjectKey,
   scopedThreadKey,
   scopeProjectRef,
-} from "@t3tools/client-runtime/environment";
+} from "@cod3/client-runtime/environment";
 import {
   type EnvironmentId,
   INCOGNITO_BROWSER_PROFILE_ID,
   type PreviewSessionSnapshot,
   type ScopedProjectRef,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
-import { normalizePreviewUrl } from "@t3tools/shared/preview";
+import { normalizePreviewUrl } from "@cod3/shared/preview";
 import {
   previewStateAtom,
   previewThreadRefsAtom,
@@ -44,7 +44,7 @@ import {
   derivePhysicalProjectKey,
   selectProjectGroupingSettings,
   type ProjectGroupingSettings,
-} from "@t3tools/client-runtime/state/project-grouping";
+} from "@cod3/client-runtime/state/project-grouping";
 import { buildPhysicalToLogicalProjectKeyMap } from "./sidebarProjectGrouping";
 import type { Project } from "./types";
 
@@ -176,7 +176,7 @@ export function migratePersistedBrowserHistoryState(persistedState: unknown): {
   return { byProjectKey: evictExcessProjects(byProjectKey) };
 }
 
-const BROWSER_HISTORY_STORAGE_KEY = "t3code:browser-history:v1";
+const BROWSER_HISTORY_STORAGE_KEY = "cod3:browser-history:v1";
 
 const MAX_PERSISTED_THREAD_MAPPINGS = 100;
 const PENDING_MAX_PER_THREAD = 10;

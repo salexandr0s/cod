@@ -1,5 +1,5 @@
 import { useMessages } from "gt-react";
-import type { EnvironmentId, PullRequestRef } from "@t3tools/contracts";
+import type { EnvironmentId, PullRequestRef } from "@cod3/contracts";
 import { useSyncExternalStore } from "react";
 
 import { pullRequestEnvironment } from "~/state/pullRequests";

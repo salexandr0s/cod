@@ -1,5 +1,5 @@
 // @effect-diagnostics nodeBuiltinImport:off globalConsole:off
-// Launches a packaged desktop app against a seeded T3 home, opens a thread, and checks its
+// Launches a packaged desktop app against a seeded cod3 home, opens a thread, and checks its
 // messages render. Release jobs run it so a build whose backend or bundle cannot start fails
 // before it is published.
 import * as NodeFS from "node:fs";
@@ -31,10 +31,12 @@ if (!executable)
   );
 const artifactsDir = NodePath.resolve(values["artifacts-dir"] ?? "desktop-launch-check");
 
-const home = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-desktop-launch-"));
-const t3Home = NodePath.join(home, "t3");
-NodeFS.mkdirSync(NodePath.join(t3Home, "userdata"), { recursive: true });
-NodeFS.copyFileSync(FIXTURE_DB, NodePath.join(t3Home, "userdata/statev2.sqlite"));
+const home = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-desktop-launch-"));
+const cod3Home = NodePath.join(home, "cod3");
+NodeFS.mkdirSync(NodePath.join(cod3Home, "userdata"), { recursive: true });
+NodeFS.copyFileSync(FIXTURE_DB, NodePath.join(cod3Home, "userdata/statev2.sqlite"));
+// The real shell must never receive a launcher pointing into this temporary home.
+NodeFS.writeFileSync(NodePath.join(cod3Home, "userdata/cli-command-first-launch"), "");
 
 let step = "launching the app";
 let app: ElectronApplication | undefined;
@@ -49,9 +51,9 @@ try {
       ...process.env,
       XDG_CONFIG_HOME: NodePath.join(home, ".config"),
       XDG_DATA_HOME: NodePath.join(home, ".local/share"),
-      T3CODE_HOME: t3Home,
-      T3CODE_TELEMETRY_ENABLED: "false",
-      T3CODE_DISABLE_AUTO_UPDATE: "true",
+      COD3_HOME: cod3Home,
+      COD3_TELEMETRY_ENABLED: "false",
+      COD3_DISABLE_AUTO_UPDATE: "true",
     },
     timeout: STEP_TIMEOUT_MS,
   });
@@ -78,7 +80,7 @@ try {
   console.error(`Desktop launch check failed while ${step}.`);
   NodeFS.mkdirSync(artifactsDir, { recursive: true });
   console.error(error instanceof Error ? error.message : error);
-  const logs = NodePath.join(t3Home, "userdata/logs");
+  const logs = NodePath.join(cod3Home, "userdata/logs");
   if (NodeFS.existsSync(logs)) {
     NodeFS.cpSync(logs, NodePath.join(artifactsDir, "logs"), { recursive: true });
     const serverLog = NodePath.join(logs, "server-child.log");

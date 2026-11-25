@@ -1,9 +1,9 @@
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
-import type { AssistantCitation, ResponseContextRecord } from "@t3tools/contracts";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
+import type { AssistantCitation, ResponseContextRecord } from "@cod3/contracts";
 import {
   assistantCitationLabel,
   serializeAssistantCitation,
-} from "@t3tools/shared/assistantCitations";
+} from "@cod3/shared/assistantCitations";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useGT } from "gt-react";
 import { PencilIcon, QuoteIcon } from "lucide-react";
@@ -206,7 +206,7 @@ export function AssistantCitationChip({
   const commentOpen = commentEditor?.open ?? false;
   const sourceAnchor = commentEditor?.sourceAnchor;
   const activeSourceAnchor = sourceAnchor === unavailableSourceAnchor ? undefined : sourceAnchor;
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- drops the uncommitted comment draft held in a ref once the parent closes the comment editor
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- drops the uncommitted comment draft held in a ref once the parent closes the comment editor
   useEffect(() => {
     if (!commentOpen) draftCommentRef.current = null;
   }, [commentOpen]);
@@ -227,7 +227,7 @@ export function AssistantCitationChip({
       setUnavailableSourceAnchor(sourceAnchor);
     }
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- observes the cited DOM source while the comment editor is open and reacts when it disappears
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- observes the cited DOM source while the comment editor is open and reacts when it disappears
   useEffect(() => {
     if (!commentOpen || sourceAnchor === unavailableSourceAnchor) return;
     const anchor = sourceAnchor ?? findAssistantCitationSourceAnchor(document, citation);

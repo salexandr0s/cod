@@ -14,6 +14,8 @@ import {
   ProviderInteractionMode,
   Project,
   ProjectCreatePayload,
+  WorkspaceDiscoverProjectsResult,
+  WorkspaceScanFoldersInput,
   ProjectUpdatePayload,
   ProjectId,
   OrchestratorMcpClientRequestId,
@@ -21,7 +23,7 @@ import {
   OrchestratorMcpFailure,
   SourceControlCloneRepositoryInput,
   SourceControlCloneRepositoryResult,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as FileSystem from "effect/FileSystem";
 import * as DocumentText from "../../../provider/DocumentText.ts";
 import * as ServerConfig from "../../../config.ts";
@@ -52,7 +54,17 @@ const shared = {
     SecureRandom.SecureRandom,
   ],
 };
-const ProjectListTool = Tool.make("t3_project_list", {
+const ProjectDiscoverTool = Tool.make("cod3_project_discover", {
+  ...shared,
+  description:
+    "Find Git checkouts under a folder on the target machine, including linked worktrees. Compare paths with cod3_project_list before registering selected checkouts with cod3_project_create.",
+  parameters: Schema.Struct({
+    environmentId: OrchestratorMcpEnvironmentTarget,
+    ...WorkspaceScanFoldersInput.fields,
+  }),
+  success: WorkspaceDiscoverProjectsResult,
+}).annotate(Tool.Readonly, true);
+const ProjectListTool = Tool.make("cod3_project_list", {
   ...shared,
   description: "List projects. Pages can shift.",
   parameters: Schema.Struct({
@@ -67,7 +79,7 @@ const ProjectListTool = Tool.make("t3_project_list", {
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false);
-const ProjectReadTool = Tool.make("t3_project_read", {
+const ProjectReadTool = Tool.make("cod3_project_read", {
   ...shared,
   description: "Read one project: workspace and saved scripts.",
   parameters: Schema.Struct({
@@ -77,10 +89,10 @@ const ProjectReadTool = Tool.make("t3_project_read", {
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false);
-const ProjectCreateTool = Tool.make("t3_project_create", {
+const ProjectCreateTool = Tool.make("cod3_project_create", {
   ...shared,
   description:
-    "Register a project folder. `createWorkspaceRootIfMissing` creates it; a registered folder is rejected. No `workspaceRoot`: makes a git repo from `title` with README, icon, first commit (`commitError` on failure; project still exists). Clone first with `t3_project_clone` if needed.",
+    "Register a project folder. `createWorkspaceRootIfMissing` creates it; a registered folder is rejected. No `workspaceRoot`: makes a git repo from `title` with README, icon, first commit (`commitError` on failure; project still exists). Clone first with `cod3_project_clone` if needed.",
   parameters: Schema.Struct({
     environmentId: OrchestratorMcpEnvironmentTarget,
     ...ProjectCreatePayload.fields,
@@ -89,7 +101,7 @@ const ProjectCreateTool = Tool.make("t3_project_create", {
   success: Schema.Struct({ ...Project.fields, commitError: Schema.optional(Schema.String) }),
   dependencies: [...shared.dependencies, ManagedProjectFolders.ManagedProjectFolders],
 }).annotate(Tool.Destructive, true);
-const ProjectUpdateTool = Tool.make("t3_project_update", {
+const ProjectUpdateTool = Tool.make("cod3_project_update", {
   ...shared,
   description: "Update one project's settings. Omitted fields are unchanged.",
   parameters: Schema.Struct({
@@ -98,7 +110,7 @@ const ProjectUpdateTool = Tool.make("t3_project_update", {
     ...ProjectUpdatePayload.fields,
   }),
 }).annotate(Tool.Destructive, true);
-const ProjectDeleteTool = Tool.make("t3_project_delete", {
+const ProjectDeleteTool = Tool.make("cod3_project_delete", {
   ...shared,
   description: "Delete one project. Nonempty needs `force: true`. Folder on disk stays.",
   parameters: Schema.Struct({
@@ -112,10 +124,10 @@ const ProjectDeleteTool = Tool.make("t3_project_delete", {
     ManagedProjectFolders.ManagedProjectFolders,
   ],
 }).annotate(Tool.Destructive, true);
-const ProjectCloneTool = Tool.make("t3_project_clone", {
+const ProjectCloneTool = Tool.make("cod3_project_clone", {
   ...shared,
   description:
-    "Clone a repository (`destinationPath` new or empty). Register after with `t3_project_create`, with the same `environmentId`.",
+    "Clone a repository (`destinationPath` new or empty). Register after with `cod3_project_create`, with the same `environmentId`.",
   parameters: Schema.Struct({
     environmentId: OrchestratorMcpEnvironmentTarget,
     ...SourceControlCloneRepositoryInput.fields,
@@ -128,10 +140,10 @@ const ProjectCloneTool = Tool.make("t3_project_clone", {
 })
   .annotate(Tool.Destructive, true)
   .annotate(Tool.OpenWorld, true);
-const ThreadLaunchTool = Tool.make("t3_thread_launch", {
+const ThreadLaunchTool = Tool.make("cod3_thread_launch", {
   ...shared,
   description:
-    "Create a top-level thread in its workspace before starting. Task in `message`. Omit `projectId`, model and modes to inherit yours (outside a thread, pass `projectId` or `scratch`); modes cannot exceed yours. On error or lost reply, reuse `clientRequestId`. Follow it with `t3_thread_read` or `t3_thread_wait`. Mention it with its `link`.",
+    "Create a top-level thread in its workspace before starting. Task in `message`. Omit `projectId`, model and modes to inherit yours (outside a thread, pass `projectId` or `scratch`); modes cannot exceed yours. On error or lost reply, reuse `clientRequestId`. Follow it with `cod3_thread_read` or `cod3_thread_wait`. Mention it with its `link`.",
   parameters: Schema.Struct({
     environmentId: OrchestratorMcpEnvironmentTarget,
     projectId: Schema.optional(ProjectId),
@@ -160,7 +172,7 @@ const ThreadLaunchTool = Tool.make("t3_thread_launch", {
     attachments: Schema.optional(Schema.Array(McpAttachmentInput).check(Schema.isMaxLength(8))),
     outputSchema: Schema.optional(
       Schema.Record(Schema.String, Schema.Json).annotate({
-        description: "As in `t3_thread_send`. Needs `message`.",
+        description: "As in `cod3_thread_send`. Needs `message`.",
       }),
     ),
     clientRequestId: Schema.optional(OrchestratorMcpClientRequestId),
@@ -196,6 +208,7 @@ const ThreadLaunchTool = Tool.make("t3_thread_launch", {
 export const ProjectToolkit = Toolkit.make(
   ThreadLaunchTool,
   ProjectListTool,
+  ProjectDiscoverTool,
   ProjectReadTool,
   ProjectCreateTool,
   ProjectUpdateTool,

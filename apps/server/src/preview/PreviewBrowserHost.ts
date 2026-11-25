@@ -1,4 +1,4 @@
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
@@ -12,21 +12,21 @@ export const NO_SANDBOX_SIGNATURE = "No usable sandbox";
 const ROOT_SANDBOX_SIGNATURE = "Running as root without --no-sandbox";
 
 export const sandboxDisabled = (env: Readonly<Record<string, string | undefined>>) =>
-  env.T3CODE_SERVER_BROWSER_SANDBOX === "0";
+  env.COD3_SERVER_BROWSER_SANDBOX === "0";
 
 /** Set on Ubuntu 23.10+: unprivileged user namespaces need an AppArmor profile. */
 const USERNS_RESTRICTION = "/proc/sys/kernel/apparmor_restrict_unprivileged_userns";
-export const APPARMOR_PROFILE_PATH = "/etc/apparmor.d/t3-chrome-headless-shell";
+export const APPARMOR_PROFILE_PATH = "/etc/apparmor.d/cod3-chrome-headless-shell";
 
 /** Match Ubuntu's Chrome profile; unconfined adds nothing beyond userns. */
-export const APPARMOR_PROFILE = `# Written by \`t3 browser setup\`: lets T3 Code's headless browser use Chrome's sandbox.
+export const APPARMOR_PROFILE = `# Written by \`cod3 browser setup\`: lets cod3's headless browser use Chrome's sandbox.
 abi <abi/4.0>,
 include <tunables/global>
 
-profile t3-chrome-headless-shell /**/tools/chrome-headless-shell/*/*/chrome-headless-shell flags=(unconfined) {
+profile cod3-chrome-headless-shell /**/tools/chrome-headless-shell/*/*/chrome-headless-shell flags=(unconfined) {
   userns,
 
-  include if exists <local/t3-chrome-headless-shell>
+  include if exists <local/cod3-chrome-headless-shell>
 }
 `;
 
@@ -56,7 +56,7 @@ export class PreviewBrowserSandboxError extends Schema.TaggedError<PreviewBrowse
   { setupCommand: Schema.String },
 ) {
   override get message(): string {
-    return `This host blocks the sandbox T3's browser runs in (AppArmor on Ubuntu 23.10+). Run \`${this.setupCommand}\` on the host once to allow it, then try again.`;
+    return `This host blocks the sandbox cod3's browser runs in (AppArmor on Ubuntu 23.10+). Run \`${this.setupCommand}\` on the host once to allow it, then try again.`;
   }
 }
 
@@ -65,7 +65,7 @@ export class PreviewBrowserLibrariesError extends Schema.TaggedError<PreviewBrow
   { setupCommand: Schema.String, libraries: Schema.Array(Schema.String) },
 ) {
   override get message(): string {
-    return `This host is missing libraries T3's browser needs (${this.libraries.join(", ")}). Run \`${this.setupCommand}\` on the host to install them, then try again.`;
+    return `This host is missing libraries cod3's browser needs (${this.libraries.join(", ")}). Run \`${this.setupCommand}\` on the host to install them, then try again.`;
   }
 }
 
@@ -75,7 +75,7 @@ export class PreviewBrowserRootError extends Schema.TaggedError<PreviewBrowserRo
   {},
 ) {
   override get message(): string {
-    return "T3 server is running as root; Chrome's sandbox cannot start. Run T3 as a nonroot user. Otherwise set `T3CODE_SERVER_BROWSER_SANDBOX=0` in the T3 server's environment and restart the server; this disables Chrome's sandbox. Manual: `T3CODE_SERVER_BROWSER_SANDBOX=0 t3 serve`. Systemd: add `Environment=T3CODE_SERVER_BROWSER_SANDBOX=0` under `[Service]`, reload systemd, then restart the service. `t3 browser setup` cannot fix root sandboxing.";
+    return "cod3 server is running as root; Chrome's sandbox cannot start. Run cod3 as a nonroot user. Otherwise set `COD3_SERVER_BROWSER_SANDBOX=0` in the cod3 server's environment and restart the server; this disables Chrome's sandbox. Manual: `COD3_SERVER_BROWSER_SANDBOX=0 cod3 serve`. Systemd: add `Environment=COD3_SERVER_BROWSER_SANDBOX=0` under `[Service]`, reload systemd, then restart the service. `cod3 browser setup` cannot fix root sandboxing.";
   }
 }
 

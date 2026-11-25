@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["Cod3VoiceTranscriptionModule"],
+    "podspecPath": "ios/Cod3VoiceTranscription.podspec"
+  },
+  "android": {
+    "modules": ["expo.modules.cod3voicetranscription.Cod3VoiceTranscriptionModule"]
+  }
+}

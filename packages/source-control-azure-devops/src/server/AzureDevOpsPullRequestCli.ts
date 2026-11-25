@@ -12,9 +12,9 @@ import type {
   PullRequestLabel,
   PullRequestListState,
   PullRequestMergeMethod,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
-import { sortChecks } from "@t3tools/source-control-core/server/pullRequestChecks";
+import { sortChecks } from "@cod3/source-control-core/server/pullRequestChecks";
 
 import * as AzureDevOpsCli from "./AzureDevOpsCli.ts";
 import { blobContent, readBlobZip } from "./azureDevOpsBlobZip.ts";
@@ -34,7 +34,7 @@ import {
   type AzureDevOpsPullRequest,
   type AzureDevOpsRepositoryLocation,
 } from "./azureDevOpsPullRequestJson.ts";
-import type { ProviderListCursor } from "@t3tools/source-control-core/server/PullRequestProvider";
+import type { ProviderListCursor } from "@cod3/source-control-core/server/PullRequestProvider";
 
 export class AzureDevOpsPullRequestReadError extends Schema.TaggedError<AzureDevOpsPullRequestReadError>()(
   "AzureDevOpsPullRequestReadError",
@@ -250,7 +250,7 @@ export class AzureDevOpsPullRequestCli extends Context.Service<
       readonly requested: boolean;
     }) => Effect.Effect<void, AzureDevOpsPullRequestCliError>;
   }
->()("@t3tools/source-control-azure-devops/server/AzureDevOpsPullRequestCli") {}
+>()("@cod3/source-control-azure-devops/server/AzureDevOpsPullRequestCli") {}
 
 function statusArgs(state: PullRequestListState): ReadonlyArray<string> {
   switch (state) {
@@ -704,7 +704,7 @@ export const make = Effect.gen(function* () {
       return yield* Effect.scoped(
         Effect.gen(function* () {
           const directory = yield* fileSystem
-            .makeTempDirectoryScoped({ prefix: "t3-azure-blobs-" })
+            .makeTempDirectoryScoped({ prefix: "cod3-azure-blobs-" })
             .pipe(Effect.mapError(readFailure));
           const request = `${directory}/ids.json`;
           // invoke refuses to overwrite its output, so the archive gets a name nothing holds yet.

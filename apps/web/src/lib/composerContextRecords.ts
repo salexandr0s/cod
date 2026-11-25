@@ -1,13 +1,10 @@
-import {
-  capitalizeTerm,
-  sourceControlClients,
-} from "@t3tools/client-runtime/source-control-clients";
+import { capitalizeTerm, sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import {
   COMPOSER_CONTEXT_PREVIEW_COMMENT_MAX_CHARS,
   COMPOSER_CONTEXT_REVIEW_DIFF_MAX_CHARS,
   COMPOSER_CONTEXT_REVIEW_TEXT_MAX_CHARS,
   COMPOSER_CONTEXT_TERMINAL_TEXT_MAX_CHARS,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type {
   ChatFileAttachment,
   ChatImageAttachment,
@@ -27,15 +24,15 @@ import type {
   TerminalContextRecord,
   ThreadContextRecord,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { decodeMsg, msg } from "gt-react";
-import { upgradeLegacyContextMessage } from "@t3tools/shared/composerContextLegacy";
-import { encodeComposerContextFragment } from "@t3tools/shared/composerContextClipboard";
+import { upgradeLegacyContextMessage } from "@cod3/shared/composerContextLegacy";
+import { encodeComposerContextFragment } from "@cod3/shared/composerContextClipboard";
 import {
   collectComposerContextReferences,
   sanitizeComposerContextLabel,
   toKindScopedComposerContextId,
-} from "@t3tools/shared/composerContextReferences";
+} from "@cod3/shared/composerContextReferences";
 
 import {
   type ComposerContextReference,

@@ -15,7 +15,7 @@ import {
   type OrchestrationV2ProviderSession,
   ProviderDriverKind,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -27,7 +27,7 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 
 import * as CursorSdk from "./CursorSdk.ts";
-import * as ProviderEventLoggers from "@t3tools/provider-core/server/ProviderEventLoggers";
+import * as ProviderEventLoggers from "@cod3/provider-core/server/ProviderEventLoggers";
 
 export const CURSOR_AGENT_SDK_PROTOCOL = "cursor-agent-sdk.local" as const;
 export const CURSOR_PROVIDER = ProviderDriverKind.make("cursor");
@@ -195,7 +195,7 @@ export class CursorAgentSdkRunner extends Context.Service<
       input: CursorAgentSdkTextGenerateInput,
     ) => Effect.Effect<RunResult, CursorAgentSdkRunnerError>;
   }
->()("@t3tools/provider-cursor/server/CursorAgentSdk/CursorAgentSdkRunner") {}
+>()("@cod3/provider-cursor/server/CursorAgentSdk/CursorAgentSdkRunner") {}
 
 export interface CursorAgentSdkLoggedAgentOptions {
   readonly model?: AgentOptions["model"];
@@ -501,7 +501,7 @@ function isDisposableCursorLocalStore(value: unknown): value is DisposableCursor
   );
 }
 
-// T3 persists its own event log and never tails SDK run_events; skipping per-delta SQLite
+// cod3 persists its own event log and never tails SDK run_events; skipping per-delta SQLite
 // run_events writes avoids synchronous BEGIN IMMEDIATE write locks and multi-GB index.db bloat.
 export function withNoopCursorRunEvents(store: CursorLocalStore): CursorLocalStore {
   if (

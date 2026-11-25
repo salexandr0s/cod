@@ -1,4 +1,4 @@
-import type { UsageProviderKind } from "@t3tools/contracts";
+import type { UsageProviderKind } from "@cod3/contracts";
 import { useAppearancePreferences } from "../settings/appearance/AppearancePreferencesProvider";
 import { providerColors } from "./providerColors";
 

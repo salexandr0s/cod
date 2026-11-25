@@ -8,9 +8,9 @@ import {
   threadSearchSubject,
   type EnvironmentThreadSearchMatch,
   type ShownOrder,
-} from "@t3tools/client-runtime/state/thread-search";
-import { isShownUnderParent } from "@t3tools/client-runtime/state/threads";
-import { THREAD_JUMP_KEYBINDING_COMMANDS } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/thread-search";
+import { isShownUnderParent } from "@cod3/client-runtime/state/threads";
+import { THREAD_JUMP_KEYBINDING_COMMANDS } from "@cod3/contracts";
 import {
   foldSearchQuery,
   PALETTE_MESSAGE_LIMIT,
@@ -18,8 +18,8 @@ import {
   splitSearchText,
   pickedQuery,
   threadRecentUse,
-} from "@t3tools/shared/paletteSearch";
-import { searchMatchHintLabel } from "@t3tools/shared/paletteSearchCopy";
+} from "@cod3/shared/paletteSearch";
+import { searchMatchHintLabel } from "@cod3/shared/paletteSearchCopy";
 import { T, useGT, useMessages } from "gt-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -44,7 +44,7 @@ import { cn } from "../../lib/cn";
 import { deriveBottomControlInsets } from "../../lib/reserved-regions";
 import { scopedProjectKey, scopedThreadKey } from "../../lib/scopedEntities";
 import { useNativeLayoutMetrics } from "../../native/native-layout-metrics";
-import { T3KeyboardCommands } from "../../native/T3KeyboardCommands";
+import { Cod3KeyboardCommands } from "../../native/Cod3KeyboardCommands";
 import {
   useDelegatedUnderParent,
   useProjects,
@@ -165,7 +165,7 @@ function PaletteRow(props: {
               ? splitSearchText(props.item.title, props.item.titleRanges).map((part) => (
                   <Text
                     key={part.start}
-                    className={cn("text-base", part.highlighted && "font-t3-bold")}
+                    className={cn("text-base", part.highlighted && "font-cod3-bold")}
                   >
                     {part.text}
                   </Text>
@@ -198,7 +198,10 @@ function PaletteRow(props: {
           <Text numberOfLines={1} className={cn("text-sm", mutedForegroundClassName)}>
             {searchMatchHintLabel(props.item.matchHint.field, m)}:{" "}
             {splitSearchText(props.item.matchHint.text, props.item.matchHint.ranges).map((part) => (
-              <Text key={part.start} className={cn("text-sm", part.highlighted && "font-t3-bold")}>
+              <Text
+                key={part.start}
+                className={cn("text-sm", part.highlighted && "font-cod3-bold")}
+              >
                 {part.text}
               </Text>
             ))}
@@ -581,7 +584,7 @@ export function CommandPalette(props: {
   // The native list follows the highlighted row. Key presses move it, but so do
   // live thread updates and late message matches that reorder or drop the
   // selected row under a kept selection, so no single handler owns the scroll.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- scrolls the native list to the highlighted row, which key presses and live result updates both move
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- scrolls the native list to the highlighted row, which key presses and live result updates both move
   useEffect(() => {
     if (selectedIndex === 0) {
       // Centering before the list measures its height scrolls half the first row out of view.
@@ -602,7 +605,7 @@ export function CommandPalette(props: {
     props.onClose();
     pendingAction.current?.();
   };
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears the dismiss fallback timer on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears the dismiss fallback timer on unmount
   useEffect(
     () => () => {
       if (dismissFallback.current !== null) clearTimeout(dismissFallback.current);
@@ -643,7 +646,7 @@ export function CommandPalette(props: {
       onDismiss={handleDismissed}
     >
       <GestureHandlerRootView className="flex-1">
-        <T3KeyboardCommands enabledCommands={PALETTE_COMMANDS} onCommand={onCommand}>
+        <Cod3KeyboardCommands enabledCommands={PALETTE_COMMANDS} onCommand={onCommand}>
           <KeyboardAvoidingView
             behavior="padding"
             className="flex-1 items-center justify-center py-4"
@@ -699,7 +702,7 @@ export function CommandPalette(props: {
                   />
                 </View>
               </View>
-              {/* oxlint-disable-next-line t3code/require-registered-list-scroll -- The palette is a modal with no navigation header to register with. */}
+              {/* oxlint-disable-next-line cod3/require-registered-list-scroll -- The palette is a modal with no navigation header to register with. */}
               <LegendList
                 ref={listRef}
                 data={results}
@@ -756,7 +759,7 @@ export function CommandPalette(props: {
               />
             </GlassSurface>
           </KeyboardAvoidingView>
-        </T3KeyboardCommands>
+        </Cod3KeyboardCommands>
       </GestureHandlerRootView>
     </Modal>
   );

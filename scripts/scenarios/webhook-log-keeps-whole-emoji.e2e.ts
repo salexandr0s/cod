@@ -1,17 +1,17 @@
-import { ProjectSnapshot, ProviderInstanceId } from "@t3tools/contracts";
+import { ProjectSnapshot, ProviderInstanceId } from "@cod3/contracts";
 import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { makeState, rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { makeState, rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 const PROMPT_LOG_LIMIT = 64 * 1024;
 const FRAME_OPEN = "<webhook-data-000000000000>".length;
 
 const deliverStraddlingEmoji = Effect.fn("scenario.deliverStraddlingEmoji")(
   function* (origin: string) {
-    const issued = yield* makeState(T3_HOME).cli(["auth", "session", "issue", "--token-only"]);
+    const issued = yield* makeState(COD3_HOME).cli(["auth", "session", "issue", "--token-only"]);
     const { projects } = yield* HttpClient.execute(
       HttpClientRequest.get(`${origin}/api/projects`).pipe(
         HttpClientRequest.bearerToken(issued.stdout.trim()),
@@ -20,7 +20,7 @@ const deliverStraddlingEmoji = Effect.fn("scenario.deliverStraddlingEmoji")(
       Effect.flatMap(HttpClientResponse.filterStatusOk),
       Effect.flatMap(HttpClientResponse.schemaBodyJson(ProjectSnapshot)),
     );
-    const client = yield* rpcClient(T3_HOME, origin);
+    const client = yield* rpcClient(COD3_HOME, origin);
     const { task } = yield* client["scheduledTasks.upsert"]({
       title: "Webhook log",
       prompt: "{{body.text}}",
@@ -47,11 +47,11 @@ const deliverStraddlingEmoji = Effect.fn("scenario.deliverStraddlingEmoji")(
 test(
   "A long webhook prompt in the delivery log does not end in a broken character",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    await t3.project("webhook-log");
+  async ({ cod3, app, browser, screen }) => {
+    await cod3.project("webhook-log");
     await runPromise(deliverStraddlingEmoji(app.baseUrl ?? ""));
 
-    await t3.open("/settings/scheduled-tasks");
+    await cod3.open("/settings/scheduled-tasks");
     await screen.getByRole("button", "Actions for Webhook log").tap();
     await screen.getByRole("menuitem", "Deliveries").tap();
     const dialog = screen.getByRole("dialog");

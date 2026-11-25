@@ -14,7 +14,7 @@ import {
   SECRET_REQUEST_UNSAVED_NOTE,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -432,7 +432,7 @@ it("readThread pages cut-off text without splitting an emoji across pages", asyn
   }).pipe(Effect.provide(layer), Effect.runPromise);
 });
 
-it("readThread does not attribute the /compact T3 Code sends before a stale send to the user", async () => {
+it("readThread does not attribute the /compact cod3 sends before a stale send to the user", async () => {
   const compactRunId = RunId.make("run-mcp-compact-on-return");
   const sendRunId = RunId.make("run-mcp-held-send");
   const compactMessageId = MessageId.make("message-mcp-compact-on-return");
@@ -656,7 +656,7 @@ it("readThread returns the newest items that fit the response budget", async () 
         thread: undefined,
         client: {
           sessionId: "laptop",
-          label: "T3 Code · laptop",
+          label: "cod3 · laptop",
           access: "auto",
           linked: true,
         },
@@ -679,7 +679,7 @@ it("readThread returns the newest items that fit the response budget", async () 
     expect(outside.items.at(-1)?.position).toBe(99);
     expect(outside.earlierPosition).toBe(outside.items[0]?.position);
     expect(outside.hasMore).toBe(false);
-    // The t3 thread CLI pages forward from here, following only hasMore.
+    // The cod3 thread CLI pages forward from here, following only hasMore.
     expect(fromStart.items[0]?.position).toBe(0);
     expect(fromStart.hasMore).toBe(true);
     expect(fromStart.nextPosition).toBe(fromStart.items.at(-1)?.position);
@@ -1205,7 +1205,7 @@ it("requestSecret saves a pasted value to a file without opening a card", async 
     readonly requestKey: string;
     readonly value: string;
   }> = [];
-  const file = "/home/user/.t3/userdata/secrets/files/0123456789abcdef0123456789abcdef";
+  const file = "/home/user/.cod3/userdata/secrets/files/0123456789abcdef0123456789abcdef";
 
   const layer = layerOrchestratorService.pipe(
     Layer.provide(
@@ -1250,7 +1250,7 @@ it("requestSecret saves a pasted value to a file without opening a card", async 
     Effect.map((snapshots) => {
       const found = snapshots.find(
         (snapshot) =>
-          snapshot.id === "t3_secret_requests_total" &&
+          snapshot.id === "cod3_secret_requests_total" &&
           snapshot.attributes?.status === "saved_pasted",
       );
       return found?.type === "Counter" ? Number(found.state.count) : 0;
@@ -1461,8 +1461,8 @@ it("requestSecret delivers a fields card as one file per field", async () => {
     readonly secretStatus?: string;
   }> = [];
   const files = {
-    email: "/home/user/.t3/userdata/secrets/files/0123456789abcdef0123456789abcdef",
-    password: "/home/user/.t3/userdata/secrets/files/fedcba9876543210fedcba9876543210",
+    email: "/home/user/.cod3/userdata/secrets/files/0123456789abcdef0123456789abcdef",
+    password: "/home/user/.cod3/userdata/secrets/files/fedcba9876543210fedcba9876543210",
   };
   const projection = () => {
     const card = dispatched.find((command) => command.type === "secret_request.record");

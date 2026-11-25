@@ -1,11 +1,11 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import { AuthOrchestrationOperateScope, type ProjectIconOverride } from "@t3tools/contracts";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import { AuthOrchestrationOperateScope, type ProjectIconOverride } from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   mapAtomCommandResult,
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { AsyncResult } from "effect/reactivity";
 import * as Cause from "effect/Cause";
 import { msg } from "gt-react";

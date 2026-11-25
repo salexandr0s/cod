@@ -9,13 +9,13 @@ import {
   linkedThreadFailure,
   type LinkedThreadFailure,
   type LinkedThreadTarget,
-} from "@t3tools/client-runtime/linked-thread";
+} from "@cod3/client-runtime/linked-thread";
 import {
   toolCallLines,
   turnItemDetailRevision,
   turnItemOutputText,
-} from "@t3tools/client-runtime/work-log/item-detail";
-import { EnvironmentId, ThreadId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/work-log/item-detail";
+import { EnvironmentId, ThreadId } from "@cod3/contracts";
 import { T, useGT, useLocale, useMessages } from "gt-react-native";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type * as React from "react";
@@ -188,7 +188,7 @@ function FailureCard(props: {
       accessibilityLiveRegion="polite"
       className="gap-1 rounded-2xl border border-danger-border bg-danger px-3.5 py-3"
     >
-      <Text className="font-t3-medium text-sm text-danger-foreground">{props.failure.title}</Text>
+      <Text className="font-cod3-medium text-sm text-danger-foreground">{props.failure.title}</Text>
       <Text className="text-sm text-danger-foreground">
         {props.failure.detail}
         {props.stale ? ` ${gt("Showing what was read before.")}` : ""}
@@ -222,7 +222,7 @@ function LinkedThreadComposer(props: {
       {props.notice}
       <ReadOnlyComposerBar>
         <View accessible className="min-w-0 flex-1 gap-0.5">
-          <Text numberOfLines={1} className="font-t3-bold text-sm text-foreground">
+          <Text numberOfLines={1} className="font-cod3-bold text-sm text-foreground">
             <T>Read-only</T>
           </Text>
           <Text numberOfLines={1} className="font-sans text-xs text-foreground-secondary">
@@ -294,7 +294,7 @@ export function LinkedThreadView(props: {
   const connectState = connection.state;
   const openThread = useOpenLinkedThread();
   const shown = useRef(true);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- records unmount, so a connect that resolves after the view is gone navigates nowhere
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- records unmount, so a connect that resolves after the view is gone navigates nowhere
   useEffect(() => {
     shown.current = true;
     return () => {
@@ -420,7 +420,7 @@ export function LinkedThreadView(props: {
                   accessibilityLiveRegion="polite"
                   className="gap-1 rounded-2xl border border-danger-border bg-danger px-3.5 py-3"
                 >
-                  <Text className="font-t3-medium text-sm text-danger-foreground">
+                  <Text className="font-cod3-medium text-sm text-danger-foreground">
                     {gt("{label} is not reachable from this device", {
                       label: connectState.label,
                     })}

@@ -2,7 +2,7 @@
 import type * as api from "../../../apps/server/src/workflows/api.ts";
 
 declare global {
-  const T3: Omit<typeof api, "Duration" | "Effect" | "Option" | "Schedule" | "Schema">;
+  const cod3: Omit<typeof api, "Duration" | "Effect" | "Option" | "Schedule" | "Schema">;
   const Duration: typeof api.Duration;
   const Effect: typeof api.Effect;
   const Option: typeof api.Option;

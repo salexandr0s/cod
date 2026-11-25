@@ -6,9 +6,9 @@ import type {
   RelayAgentActivityPublishProofPayload,
   RelayAgentActivityPublishRequest,
   RelayAgentActivityState,
-} from "@t3tools/contracts/relay";
-import { RELAY_ACTIVITY_PUBLISH_TYP } from "@t3tools/shared/relayJwt";
-import { stableStringify } from "@t3tools/shared/relaySigning";
+} from "@cod3/contracts/relay";
+import { RELAY_ACTIVITY_PUBLISH_TYP } from "@cod3/shared/relayJwt";
+import { stableStringify } from "@cod3/shared/relaySigning";
 import { describe, expect, it } from "@effect/vitest";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -32,12 +32,12 @@ const config = RelayConfiguration.RelayConfiguration.of({
     teamId: "team-id",
     keyId: "key-id",
     privateKey: Redacted.make("private-key"),
-    bundleId: "com.t3tools.t3code.dev",
+    bundleId: "io.github.salexandr0s.cod3.dev",
   },
   apnsDeliveryJobSigningSecret: Redacted.make("job-secret"),
   clerkSecretKey: Redacted.make("clerk-secret"),
   clerkPublishableKey: "pk_test_test",
-  clerkJwtAudience: "t3-code-relay",
+  clerkJwtAudience: "cod3-relay",
   cloudMintPrivateKey: Redacted.make(keyPair.privateKey),
   cloudMintPublicKey: keyPair.publicKey,
   managedEndpointBaseDomain: undefined,
@@ -70,7 +70,7 @@ function signTestJwt(payload: object, privateKey: string): string {
 const freshRequest = Effect.gen(function* () {
   const now = yield* DateTime.now;
   const payload = {
-    iss: "t3-env:env",
+    iss: "cod3-env:env",
     aud: "https://relay.example.test",
     sub: "env",
     jti: "publish-jti",

@@ -2,11 +2,11 @@ import {
   isCompactionCommandMessage,
   type ThreadGuestMessage,
   type ThreadGuestShare,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { LIVE_ACTIVITY_ROW_ID, type ThreadFeedEntry } from "../../lib/threadActivity";
 import { scopedThreadKey } from "../../lib/scopedEntities";
-import { threadHasCaughtUpTo } from "@t3tools/client-runtime/state/threads";
-import { resolveUserMessageGrouping } from "@t3tools/client-runtime/user-message";
+import { threadHasCaughtUpTo } from "@cod3/client-runtime/state/threads";
+import { resolveUserMessageGrouping } from "@cod3/client-runtime/user-message";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";

@@ -6,7 +6,7 @@ import * as Predicate from "effect/Predicate";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as SqlError from "effect/sql/SqlError";
-import * as NodeSqliteClient from "@t3tools/shared/nodeSqliteClient";
+import * as NodeSqliteClient from "@cod3/shared/nodeSqliteClient";
 
 import { hasPendingMigrations, runMigrations } from "./Migrations.ts";
 import { initializeV2Database } from "./initializeV2Database.ts";
@@ -20,7 +20,7 @@ export class ServerOwnsDatabaseError extends Schema.TaggedError<ServerOwnsDataba
   { stateDir: Schema.String },
 ) {
   override get message(): string {
-    return `Another T3 Code process, usually a running server, owns ${this.stateDir}, and this CLI would change its database schema. Use the \`t3\` that matches the running server, or stop that server, then retry. The database was not changed.`;
+    return `Another cod3 process, usually a running server, owns ${this.stateDir}, and this CLI would change its database schema. Use the \`cod3\` that matches the running server, or stop that server, then retry. The database was not changed.`;
   }
 }
 
@@ -46,7 +46,7 @@ const damagedDatabaseError = (dbPath: string, cause: SqlError.SqlError) =>
     reason: new SqlError.UnknownError({
       cause,
       operation: "open",
-      message: `The T3 Code database at ${dbPath} is damaged or is not a SQLite database, so T3 Code cannot start. To recover, quit T3 Code, then move that file and any -wal and -shm files next to it out of the folder, or replace them with a backup. T3 Code creates a new database on the next start.`,
+      message: `The cod3 database at ${dbPath} is damaged or is not a SQLite database, so cod3 cannot start. To recover, quit cod3, then move that file and any -wal and -shm files next to it out of the folder, or replace them with a backup. cod3 creates a new database on the next start.`,
     }),
   });
 
@@ -115,7 +115,7 @@ const makeLayerFromPath = <E, R>(makeSetup: (dbPath: string) => Layer.Layer<neve
         writerWorker: true,
         spanAttributes: {
           "db.name": path.basename(dbPath),
-          "service.name": "t3code-server",
+          "service.name": "cod3-server",
         },
       }),
     ).pipe(
@@ -152,7 +152,7 @@ const makeLayerConfig = <E, R>(
 
 export const layerConfig = makeLayerConfig(layerFromPath);
 
-/** For CLI commands: pending migrations run only while no server owns the T3 home. */
+/** For CLI commands: pending migrations run only while no server owns the cod3 home. */
 export const layerCliConfig = makeLayerConfig(
   makeLayerFromPath(() => makeLayerSetup(runMigrationsAsOwner())),
 );

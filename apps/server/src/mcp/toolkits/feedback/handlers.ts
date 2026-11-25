@@ -1,4 +1,4 @@
-import { OrchestratorMcpFailure } from "@t3tools/contracts";
+import { OrchestratorMcpFailure } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 
 import { FEEDBACK_CLI_CLIENT_LABEL } from "../../../feedback/FeedbackReport.ts";
@@ -8,7 +8,7 @@ import * as McpToolAccess from "../../McpToolAccess.ts";
 import { FeedbackToolkit } from "./tools.ts";
 
 export const layer = McpToolAccess.toLayer(FeedbackToolkit, {
-  t3_feedback: McpToolAccess.writes((input) =>
+  cod3_feedback: McpToolAccess.writes((input) =>
     Effect.gen(function* () {
       const scope = yield* McpInvocationContext.McpInvocationContext;
       const feedback = yield* Feedback.FeedbackService;

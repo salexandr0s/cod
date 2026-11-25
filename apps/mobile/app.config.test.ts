@@ -1,4 +1,4 @@
-import { DEFAULT_HOSTED_APP_URL } from "@t3tools/shared/connectAuth";
+import { DEFAULT_HOSTED_APP_URL } from "@cod3/shared/connectAuth";
 import { afterEach, expect, it, vi } from "vite-plus/test";
 
 import appleAppSiteAssociation from "../web/public/.well-known/apple-app-site-association.json";
@@ -26,10 +26,10 @@ it.each(["prod", ""])("rejects APP_VARIANT=%j before selecting production IDs", 
 });
 
 it.each([
-  [undefined, "com.t3tools.t3code"],
-  ["development", "com.t3tools.t3code.dev"],
-  ["preview", "com.t3tools.t3code.preview"],
-  ["production", "com.t3tools.t3code"],
+  [undefined, "io.github.salexandr0s.cod3"],
+  ["development", "io.github.salexandr0s.cod3.dev"],
+  ["preview", "io.github.salexandr0s.cod3.preview"],
+  ["production", "io.github.salexandr0s.cod3"],
 ])("keeps the iOS and Android identifiers for APP_VARIANT=%j", async (value, identifier) => {
   const config = await loadConfig(value);
   expect(config.ios?.bundleIdentifier).toBe(identifier);

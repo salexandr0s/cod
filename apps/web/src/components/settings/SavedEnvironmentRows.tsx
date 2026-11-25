@@ -1,4 +1,4 @@
-import { managedCapabilityDenial } from "@t3tools/client-runtime/contract-labels";
+import { managedCapabilityDenial } from "@cod3/client-runtime/contract-labels";
 import { SessionPermissions } from "./SessionPermissions";
 import {
   ChevronRightIcon,
@@ -14,14 +14,14 @@ import {
   connectReachabilityHelpUrl,
   formatConnectReachable,
   resolveEnvironmentMachineKind,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   connectionRoutes,
   hasSavedBearerRoute,
   connectionErrorText,
   connectionStatusText,
   environmentMcpUrl,
-} from "@t3tools/client-runtime/connection";
+} from "@cod3/client-runtime/connection";
 import * as Option from "effect/Option";
 import { msg, T, useGT, useMessages } from "gt-react";
 import { m, type MessageResolver } from "../../i18n/messages";
@@ -51,10 +51,10 @@ import {
   supportsDesktopAppUpdate,
 } from "~/versionSkew";
 import { hasCloudPublicConfig } from "~/cloud/publicConfig";
-import { useT3ConnectTurnOn } from "~/cloud/useT3ConnectTurnOn";
+import { useCod3ConnectTurnOn } from "~/cloud/useCod3ConnectTurnOn";
 import { useCloudLinkController } from "~/cloud/useCloudLinkController";
 import { useManagedTunnelUsage } from "~/cloud/managedRelayState";
-import { useT3ConnectAccountPage } from "../clerk/T3ConnectAccountPages";
+import { useCod3ConnectAccountPage } from "../clerk/Cod3ConnectAccountPages";
 import { TunnelLimitAlert, TunnelUsageMeter } from "../cloud/TunnelUsage";
 import { environmentCatalog } from "~/connection/catalog";
 import { readEnvironmentScope } from "~/state/session";
@@ -70,7 +70,7 @@ import {
   ServerUpdateProgress,
 } from "../ServerUpdateAction";
 import { CloudEnvironmentConnectRows } from "../cloud/CloudEnvironmentConnectList";
-import { useT3ConnectAuthPrompt } from "../clerk/useT3ConnectAuthPrompt";
+import { useCod3ConnectAuthPrompt } from "../clerk/useCod3ConnectAuthPrompt";
 
 type SavedBackendListRowProps = {
   environment: EnvironmentPresentation;
@@ -173,7 +173,7 @@ export function SavedBackendListRow({
       toastManager.add({
         type: "success",
         title: gt("MCP URL copied"),
-        description: gt("Add it to an agent, e.g. claude mcp add --transport http t3 {url}", {
+        description: gt("Add it to an agent, e.g. claude mcp add --transport http cod3 {url}", {
           url,
         }),
       });
@@ -389,7 +389,7 @@ export function SavedBackendListRow({
           environmentId={environmentId}
           serverLabel={gt("{label} server", {
             label: environment.label,
-            $context: "names a T3 server inside sentences such as {serverLabel} updated",
+            $context: "names a cod3 server inside sentences such as {serverLabel} updated",
           })}
           fromVersion={lastDescriptor?.serverVersion}
           targetVersion={APP_VERSION}
@@ -401,7 +401,7 @@ export function SavedBackendListRow({
           environmentId={environmentId}
           serverLabel={gt("{label} server", {
             label: environment.label,
-            $context: "names a T3 server inside sentences such as {serverLabel} updated",
+            $context: "names a cod3 server inside sentences such as {serverLabel} updated",
           })}
           selfUpdate={resolveServerSelfUpdateCapability(environment.serverConfig)}
           installation={environment.serverConfig?.environment.capabilities.serverInstallation}
@@ -490,7 +490,7 @@ function CloudLinkSwitch({
   const gt = useGT();
   const control = (
     <Switch
-      aria-label={ariaLabel ?? gt("Enable T3 Connect")}
+      aria-label={ariaLabel ?? gt("Enable cod3 Connect")}
       checked={checked}
       disabled={disabled}
       {...(onCheckedChange ? { onCheckedChange } : {})}
@@ -507,9 +507,9 @@ function CloudLinkSwitch({
 }
 
 /** Tunnel meter, plus the upgrade prompt after the relay refuses a tunnel at the cap. */
-function T3ConnectTunnelUsage({ tunnelLimit }: { readonly tunnelLimit: number | null }) {
+function Cod3ConnectTunnelUsage({ tunnelLimit }: { readonly tunnelLimit: number | null }) {
   const usage = useManagedTunnelUsage();
-  const accountPage = useT3ConnectAccountPage();
+  const accountPage = useCod3ConnectAccountPage();
   const openAccountPage = accountPage.open;
   // Usage when the relay refused. The relay also counts tunnels still being set up, so only
   // a freed tunnel or a higher cap clears the alert, not a meter that merely shows room.
@@ -531,11 +531,11 @@ function T3ConnectTunnelUsage({ tunnelLimit }: { readonly tunnelLimit: number | 
         action={
           // At the cap the alert below carries the same actions.
           !openAccountPage || showLimitAlert ? null : usage.upgrade ? (
-            <InlineButton onClick={() => openAccountPage("t3-chat")}>
+            <InlineButton onClick={() => openAccountPage("cod3-chat")}>
               <T>Get more tunnels</T>
             </InlineButton>
           ) : usage.used >= usage.limit ? (
-            <InlineButton onClick={() => openAccountPage("t3-connect")}>
+            <InlineButton onClick={() => openAccountPage("cod3-connect")}>
               <T>Manage tunnels</T>
             </InlineButton>
           ) : null
@@ -550,8 +550,8 @@ function T3ConnectTunnelUsage({ tunnelLimit }: { readonly tunnelLimit: number | 
           {showLimitAlert ? (
             <TunnelLimitAlert
               upgrade={usage.upgrade}
-              onLinkT3Chat={openAccountPage ? () => openAccountPage("t3-chat") : null}
-              onManageTunnels={openAccountPage ? () => openAccountPage("t3-connect") : null}
+              onLinkCod3Chat={openAccountPage ? () => openAccountPage("cod3-chat") : null}
+              onManageTunnels={openAccountPage ? () => openAccountPage("cod3-connect") : null}
             />
           ) : null}
         </div>
@@ -587,7 +587,7 @@ function ConfiguredCloudLinkRow({
     needsRelayConfiguration,
     reconcileCloudState,
   } = useCloudLinkController(environmentId);
-  const { openAuthPrompt } = useT3ConnectAuthPrompt();
+  const { openAuthPrompt } = useCod3ConnectAuthPrompt();
   // The server unlinks and refuses relay changes under such a policy; unlinking stays possible.
   const messages = useMessages();
   const connectDenial = managedCapabilityDenial(
@@ -595,7 +595,7 @@ function ConfiguredCloudLinkRow({
     "connect",
     messages,
   );
-  const turnOn = useT3ConnectTurnOn(environmentId);
+  const turnOn = useCod3ConnectTurnOn(environmentId);
   // Turning on needs relay configuration permission; turning off works from anywhere.
   const showSwitch = turnOn.kind !== "on-host" || managedTunnelActive;
   const [isUpdating, setIsUpdating] = useState(false);
@@ -603,7 +603,7 @@ function ConfiguredCloudLinkRow({
 
   const disabledReason = canManageRelay
     ? null
-    : gt("Your session does not have permission to manage T3 Connect access.");
+    : gt("Your session does not have permission to manage cod3 Connect access.");
   const isBusy = isUpdating || isUpdatingPreference;
   const switchDisabled =
     !canManageRelay ||
@@ -612,7 +612,7 @@ function ConfiguredCloudLinkRow({
     cloudLinkState.isPending ||
     isBusy;
   const configureReason = gt(
-    "This connection needs the relay configuration permission to configure T3 Connect.",
+    "This connection needs the relay configuration permission to configure cod3 Connect.",
   );
   const tunnelNeedsConfigure = needsRelayConfiguration({
     managedTunnel: !managedTunnelActive,
@@ -634,7 +634,7 @@ function ConfiguredCloudLinkRow({
   const refreshLinkState = useEffectEvent(cloudLinkState.refresh);
   // The server rechecks reachability when the tunnel's 30 s readiness poll changes.
   // Poll while mounted, so a failed read does not stop later ones.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- 30 s interval that refreshes the cloud link reachability while mounted
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- 30 s interval that refreshes the cloud link reachability while mounted
   useEffect(() => {
     const interval = window.setInterval(() => refreshLinkState(), 30_000);
     return () => window.clearInterval(interval);
@@ -667,15 +667,15 @@ function ConfiguredCloudLinkRow({
       toastManager.add({
         type: "success",
         title: enabled
-          ? gt("T3 Connect linked")
+          ? gt("cod3 Connect linked")
           : publishAgentActivity
-            ? gt("T3 Connect tunnel disabled")
-            : gt("T3 Connect unlinked"),
+            ? gt("cod3 Connect tunnel disabled")
+            : gt("cod3 Connect unlinked"),
         description: enabled
-          ? gt("This environment is available through T3 Connect.")
+          ? gt("This environment is available through cod3 Connect.")
           : publishAgentActivity
             ? gt("The managed tunnel was removed. Agent activity publishing stays on.")
-            : gt("This environment is no longer available through T3 Connect."),
+            : gt("This environment is no longer available through cod3 Connect."),
       });
     }
     setIsUpdating(false);
@@ -710,7 +710,7 @@ function ConfiguredCloudLinkRow({
         title: enabled ? gt("Webhooks held while offline") : gt("Webhooks no longer held"),
         description: enabled
           ? gt(
-              "T3 Connect keeps webhook requests for up to 24 hours while this environment is offline.",
+              "cod3 Connect keeps webhook requests for up to 24 hours while this environment is offline.",
             )
           : gt(
               "Requests to an offline environment now fail. Anything already held is still delivered.",
@@ -724,30 +724,32 @@ function ConfiguredCloudLinkRow({
     <>
       {showSwitch ? (
         <SettingsRow
-          title={setting("t3-connect").title}
+          title={setting("cod3-connect").title}
           description={
             connectDenial !== undefined && !managedTunnelActive
               ? connectDenial
               : signedOut
                 ? gt(
-                    "Sign in to make this environment available to your other devices through T3 Connect.",
+                    "Sign in to make this environment available to your other devices through cod3 Connect.",
                   )
                 : linkRevoked
-                  ? gt("This environment was removed from T3 Connect. Turn it on to link it again.")
+                  ? gt(
+                      "This environment was removed from cod3 Connect. Turn it on to link it again.",
+                    )
                   : managedTunnelActive
                     ? reachability?.status === "unreachable"
-                      ? gt("T3 Connect is on, but other devices cannot reach this environment.")
+                      ? gt("cod3 Connect is on, but other devices cannot reach this environment.")
                       : reachability?.status === "reachable"
                         ? gt(
-                            "This environment is available to your other devices through T3 Connect.",
+                            "This environment is available to your other devices through cod3 Connect.",
                           )
-                        : gt("T3 Connect is on. Reachability has not been checked yet.")
+                        : gt("cod3 Connect is on. Reachability has not been checked yet.")
                     : managedTunnelOutOfSync
                       ? gt(
-                          "T3 Connect is out of sync. This environment is linked only to publish agent activity, so other devices cannot connect. Turn T3 Connect on to repair it.",
+                          "cod3 Connect is out of sync. This environment is linked only to publish agent activity, so other devices cannot connect. Turn cod3 Connect on to repair it.",
                         )
                       : gt(
-                          "Make this environment available to your other devices through T3 Connect.",
+                          "Make this environment available to your other devices through cod3 Connect.",
                         )
           }
           status={operationError ?? cloudLinkState.error ?? reachabilityStatus}
@@ -766,20 +768,20 @@ function ConfiguredCloudLinkRow({
           }
         >
           {signedOut || connectDenial !== undefined ? null : (
-            <T3ConnectTunnelUsage tunnelLimit={tunnelLimit} />
+            <Cod3ConnectTunnelUsage tunnelLimit={tunnelLimit} />
           )}
         </SettingsRow>
       ) : linkRevoked ? (
         <SettingsRow
-          title={setting("t3-connect").title}
+          title={setting("cod3-connect").title}
           description={gt(
-            "This environment was removed from T3 Connect. Run `t3 connect link` on the host to link it again.",
+            "This environment was removed from cod3 Connect. Run `cod3 connect link` on the host to link it again.",
           )}
         />
       ) : (
         <SettingsRow
-          title={setting("t3-connect").title}
-          description={gt("Run `t3 connect link` on the host, then restart T3 Code there.")}
+          title={setting("cod3-connect").title}
+          description={gt("Run `cod3 connect link` on the host, then restart cod3 there.")}
         />
       )}
       {signedOut && showSwitch ? null : (
@@ -788,7 +790,9 @@ function ConfiguredCloudLinkRow({
           description={
             signedOut
               ? gt("Sign in to send activity to mobile notifications and Live Activities.")
-              : gt("Send activity to mobile notifications and Live Activities without T3 Connect.")
+              : gt(
+                  "Send activity to mobile notifications and Live Activities without cod3 Connect.",
+                )
           }
           managed={connectDenial}
           control={
@@ -810,7 +814,7 @@ function ConfiguredCloudLinkRow({
         <SettingsRow
           title={setting("hold-webhooks-while-offline").title}
           description={gt(
-            "Keep webhook requests for up to 24 hours while this environment is offline, then deliver them. Off: T3 Connect only forwards requests and stores nothing.",
+            "Keep webhook requests for up to 24 hours while this environment is offline, then deliver them. Off: cod3 Connect only forwards requests and stores nothing.",
           )}
           managed={connectDenial}
           control={
@@ -828,12 +832,12 @@ function ConfiguredCloudLinkRow({
         <SettingsRow
           title={setting("connect-device-approval").title}
           description={gt(
-            "Devices that sign in to your T3 Connect account wait until someone already connected here approves them.",
+            "Devices that sign in to your cod3 Connect account wait until someone already connected here approves them.",
           )}
           managed={connectDenial}
           control={
             <CloudLinkSwitch
-              ariaLabel={gt("Require approval for new T3 Connect devices")}
+              ariaLabel={gt("Require approval for new cod3 Connect devices")}
               checked={connectDeviceApproval.required}
               disabled={!connectDeviceApproval.canManage}
               disabledReason={
@@ -874,7 +878,7 @@ export function CloudLinkRow({
   if (!canReadRelay) {
     return (
       <SettingsRow
-        title={gt("T3 Connect")}
+        title={gt("cod3 Connect")}
         description={gt(
           "To edit these settings, pair this connection with both View relay and Manage relay permissions.",
         )}
@@ -904,7 +908,7 @@ function EmptyRemoteEnvironments({ cloudEnabled = true }: { readonly cloudEnable
         <EmptyDescription>
           {cloudEnabled
             ? gt(
-                "Click “Add environment” to pair another environment, or connect one from T3 Connect.",
+                "Click “Add environment” to pair another environment, or connect one from cod3 Connect.",
               )
             : gt("Click “Add environment” to pair another environment.")}
         </EmptyDescription>

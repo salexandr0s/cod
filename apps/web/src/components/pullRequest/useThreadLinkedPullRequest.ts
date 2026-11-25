@@ -1,16 +1,16 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import {
   type EnvironmentId,
   type ProjectId,
   type ScopedThreadRef,
   type ThreadLinkedPullRequest,
   type VcsStatusResult,
-} from "@t3tools/contracts";
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+} from "@cod3/contracts";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { msg } from "gt-react";
 import { useEffect, useRef } from "react";
 import { m } from "~/i18n/messages";
@@ -53,7 +53,7 @@ export function useThreadLinkedPullRequest(input: {
 
   const relinkKeysRef = useRef(new Map<string, string>());
   const relinkWriteRef = useRef(Promise.resolve());
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- persists the detected PR to the server thread once per change and retargets the open right panel store
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- persists the detected PR to the server thread once per change and retargets the open right panel store
   useEffect(() => {
     if (serverThreadRef === null) return;
     const threadKey = scopedThreadKey(serverThreadRef);

@@ -2,8 +2,8 @@ import { expect, it } from "@effect/vitest";
 import {
   followLinkedThread,
   type LinkedThreadView as LinkedThreadState,
-} from "@t3tools/client-runtime/linked-thread";
-import { EnvironmentId, type OrchestrationV2ThreadHistoryPage } from "@t3tools/contracts";
+} from "@cod3/client-runtime/linked-thread";
+import { EnvironmentId, type OrchestrationV2ThreadHistoryPage } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";

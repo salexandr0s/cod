@@ -43,7 +43,7 @@ export function ListToggleRow(
             className="rounded-full bg-subtle px-3 py-2 active:opacity-70"
             onPress={() => pick(!picked)}
           >
-            <AppText className="text-sm font-t3-medium text-foreground">
+            <AppText className="text-sm font-cod3-medium text-foreground">
               {picked ? <T>Mixed · Set off</T> : <T>Mixed · Set on</T>}
             </AppText>
           </Pressable>

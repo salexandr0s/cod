@@ -41,9 +41,9 @@ describe("check:changed", () => {
   it("runs the server tests for the one guide they read and leaves other docs inert", () => {
     const packages = readWorkspace();
     assert.isTrue(
-      decide(["docs/user/t3-connect-troubleshooting.md"], packages, false).outputs.test_server,
+      decide(["docs/user/cod3-connect-troubleshooting.md"], packages, false).outputs.test_server,
     );
-    assert.deepStrictEqual(docReaderTests(["docs/user/t3-connect-troubleshooting.md"]), [
+    assert.deepStrictEqual(docReaderTests(["docs/user/cod3-connect-troubleshooting.md"]), [
       "apps/server/src/cloud/ConnectReachability.test.ts",
     ]);
     assert.deepStrictEqual(decide(["docs/user/install.md"], packages, false).affected, []);
@@ -239,7 +239,7 @@ describe("check:changed", () => {
 // ~/.config/git/ignore can ignore or sign fixture files.
 // Git for Windows rejects the null device as a config path, so use an empty file.
 const emptyConfigDir = NodeFS.mkdtempSync(
-  NodePath.join(NodeOS.tmpdir(), "t3-check-changed-config-"),
+  NodePath.join(NodeOS.tmpdir(), "cod3-check-changed-config-"),
 );
 const emptyConfig = NodePath.join(emptyConfigDir, "empty.gitconfig");
 NodeFS.writeFileSync(emptyConfig, "");
@@ -265,7 +265,7 @@ const env = {
 // History A -> B -> C, with HEAD at C. Each remote's main points at A or B.
 function fixture(remotes: Record<string, "A" | "B">) {
   const root = NodeFS.realpathSync(
-    NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-check-changed-")),
+    NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-check-changed-")),
   );
   const commits: Record<string, string> = {};
   try {
@@ -369,7 +369,7 @@ it("lists the ignored inputs that main's pathspecs list, without entering node_m
 
 function launcherFixture() {
   const root = NodeFS.realpathSync(
-    NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3 checks & (fixture) ")),
+    NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3 checks & (fixture) ")),
   );
   const write = (file: string, content: string) => {
     const path = NodePath.join(root, file);
@@ -422,7 +422,7 @@ function launcherFixture() {
       'vitePlusCommand(args, "win32")',
     ),
   );
-  for (const name of ["effect", "@effect/platform-node", "@t3tools/shared"]) {
+  for (const name of ["effect", "@effect/platform-node", "@cod3/shared"]) {
     const dest = NodePath.join(root, "node_modules", name);
     NodeFS.mkdirSync(NodePath.dirname(dest), { recursive: true });
     NodeFS.symlinkSync(

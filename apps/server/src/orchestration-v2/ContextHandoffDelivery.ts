@@ -1,16 +1,13 @@
-import type {
-  OrchestrationV2ContextHandoff,
-  OrchestrationV2ProviderThread,
-} from "@t3tools/contracts";
-import type * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
-import { ContextHandoffBudgetError } from "@t3tools/provider-core/server/failure";
+import type { OrchestrationV2ContextHandoff, OrchestrationV2ProviderThread } from "@cod3/contracts";
+import type * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
+import { ContextHandoffBudgetError } from "@cod3/provider-core/server/failure";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import {
   historyCost,
   renderHistory,
   selectHistory,
-} from "@t3tools/provider-core/server/handoffBudget";
+} from "@cod3/provider-core/server/handoffBudget";
 
 // A first word with a second slash is a path, not a command.
 const SLASH_COMMAND = /^\s*\/[^\s/]+(?:\s|$)/u;
@@ -53,13 +50,13 @@ export const deliverContextHandoffs = Effect.fn("orchestrationV2.deliverContextH
         (handoff) =>
           `Context handoff (${handoff.strategy === "fork_delta_summary" ? "merge_back / fork_delta_summary" : handoff.strategy}):\n${
             handoff.history?.coverage ??
-            `From thread ${handoff.threadId}, runs ${handoff.coveredRunOrdinals.from}-${handoff.coveredRunOrdinals.to}. Recover history with t3_thread_read, view=activity, afterPosition=-1; paginate with afterPosition=nextPosition, and use itemId/textOffset for long items.`
+            `From thread ${handoff.threadId}, runs ${handoff.coveredRunOrdinals.from}-${handoff.coveredRunOrdinals.to}. Recover history with cod3_thread_read, view=activity, afterPosition=-1; paginate with afterPosition=nextPosition, and use itemId/textOffset for long items.`
           }`,
       )
       .join("\n");
     if (historyCost([], coverage) > Math.min(4_000, budget / 2)) {
       const strategies = Array.from(new Set(pending.map((handoff) => handoff.strategy)));
-      coverage = `Context handoff (${strategies.join(", ")}). ${pending.length} handoff records; detailed coverage references omitted. Recover an omitted item only when the request needs it, with t3_thread_read({threadId:"${input.providerThread.appThreadId ?? pending[0]!.threadId}",view:"activity",itemId:"<omitted item ID>",maxCharsPerItem:4000}); continue long text with textOffset=nextTextOffset until null. Follow fork/handoff source references in activity. Items included below need no read.`;
+      coverage = `Context handoff (${strategies.join(", ")}). ${pending.length} handoff records; detailed coverage references omitted. Recover an omitted item only when the request needs it, with cod3_thread_read({threadId:"${input.providerThread.appThreadId ?? pending[0]!.threadId}",view:"activity",itemId:"<omitted item ID>",maxCharsPerItem:4000}); continue long text with textOffset=nextTextOffset until null. Follow fork/handoff source references in activity. Items included below need no read.`;
     }
     const seen = new Set(input.alreadyDeliveredItemIds);
     const messages = pending

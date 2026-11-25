@@ -1,8 +1,8 @@
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import {
   readHostCredentialSettings,
   sourceControlClients,
-} from "@t3tools/client-runtime/source-control-clients";
+} from "@cod3/client-runtime/source-control-clients";
 import { ExternalLinkIcon } from "lucide-react";
 import { T, Var } from "gt-react";
 
@@ -10,7 +10,7 @@ import { useEnvironmentSettings } from "../hooks/useSettings";
 import { cn } from "../lib/utils";
 import { useEnvironmentQuery } from "../state/query";
 import { sourceControlEnvironment } from "../state/sourceControl";
-import { T3AppIcon } from "./T3AppIcon";
+import { Cod3AppIcon } from "./Cod3AppIcon";
 import { InlineButton } from "./ui/button";
 
 /**
@@ -52,7 +52,7 @@ export function SourceControlAppAccessNotice(props: {
         props.className,
       )}
     >
-      <T3AppIcon className="size-4 shrink-0" />
+      <Cod3AppIcon className="size-4 shrink-0" />
       <p className="min-w-0 flex-1">
         <T>
           <Var>{appSignIn.appName}</Var> isn't installed on{" "}

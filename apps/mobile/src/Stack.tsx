@@ -214,7 +214,7 @@ const ROUTE_TITLES: Readonly<Record<string, string>> = {
   ThreadFiles: msg("Files"),
   WorkflowRun: msg("Run", { $context: "noun, page title for one workflow run" }),
   SettingsLegal: msg("Legal"),
-  ConnectOnboarding: msg("Set up {product}", { product: "T3 Connect" }),
+  ConnectOnboarding: msg("Set up {product}", { product: "cod3 Connect" }),
   Connections: msg("Environments"),
   ConnectionsNew: msg("Add Environment"),
 };
@@ -541,14 +541,14 @@ function NotFoundScreen() {
       }}
       style={[{ flex: 1 }, screenBgStyle]}
     >
-      <Text className="text-3xl font-t3-bold text-foreground" selectable>
+      <Text className="text-3xl font-cod3-bold text-foreground" selectable>
         <T>Route not found</T>
       </Text>
       <Pressable
         style={returnHomeButtonStyle}
         onPress={() => navigation.dispatch(StackActions.replace("Home"))}
       >
-        <Text className="text-base font-t3-bold text-primary-foreground">
+        <Text className="text-base font-cod3-bold text-primary-foreground">
           <T>Return home</T>
         </Text>
       </Pressable>

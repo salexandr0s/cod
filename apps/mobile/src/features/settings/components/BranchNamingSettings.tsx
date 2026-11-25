@@ -1,5 +1,5 @@
 import { msg, T, useGT, useMessages } from "gt-react-native";
-import { BranchNamingMode, type ServerSettingsPatch } from "@t3tools/contracts";
+import { BranchNamingMode, type ServerSettingsPatch } from "@cod3/contracts";
 import { useEffect, useEffectEvent, useRef } from "react";
 import { View } from "react-native";
 
@@ -59,7 +59,7 @@ export function BranchNamingSettings(props: {
   const saveDrafts = useEffectEvent(() =>
     send({ ...take("branchNamePrefix"), ...take("branchNameInstructions") }),
   );
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- saves unsent branch naming drafts to server settings when the section unmounts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- saves unsent branch naming drafts to server settings when the section unmounts
   useEffect(() => () => saveDrafts(), []);
   return (
     <SettingsSection
@@ -87,9 +87,9 @@ export function BranchNamingSettings(props: {
         <View className="gap-2 px-4 py-3">
           <Text className="text-sm text-foreground-muted">
             {gt("Use {short} or {slash} for {example}. Leave empty for no prefix.", {
-              short: "t3",
-              slash: "t3/",
-              example: "t3/add-search",
+              short: "cod3",
+              slash: "cod3/",
+              example: "cod3/add-search",
             })}
           </Text>
           <AppTextInput

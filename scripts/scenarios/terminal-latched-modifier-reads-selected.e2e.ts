@@ -1,23 +1,23 @@
 import { expect } from "e2e";
 
 import { MOBILE } from "../e2e.config.ts";
-import { environmentId, runPromise } from "./t3.ts";
-import { IOS, test } from "./t3-mobile.ts";
+import { environmentId, runPromise } from "./cod3.ts";
+import { IOS, test } from "./cod3-mobile.ts";
 
 test(
   "A latched terminal ctrl key reads as selected to iOS accessibility",
   IOS,
-  async ({ t3, app, screen, device }) => {
-    const project = await t3.project("demo");
-    const { threadId } = await t3.thread({ project, title: "Latched keys", messages: ["hello"] });
-    await t3.open();
+  async ({ cod3, app, screen, device }) => {
+    const project = await cod3.project("demo");
+    const { threadId } = await cod3.thread({ project, title: "Latched keys", messages: ["hello"] });
+    await cod3.open();
     await screen.getByText("Latched keys", { exact: false }).first().waitFor({ timeout: 120_000 });
 
     const environment = await runPromise(
       environmentId(`http://${MOBILE.host}:${MOBILE.serverPort}`),
     );
-    await device.openLink(`t3code-dev://threads/${environment}/${threadId}/terminal`, {
-      app: "com.t3tools.t3code.dev",
+    await device.openLink(`cod3-dev://threads/${environment}/${threadId}/terminal`, {
+      app: "io.github.salexandr0s.cod3.dev",
     });
     await device.alert("accept").catch(() => {});
 

@@ -1,5 +1,5 @@
-import type { ChangeRequestTerminology } from "@t3tools/client-runtime/source-control-clients";
-import type { PullRequestRef, PullRequestStack, ThreadPullRequestLink } from "@t3tools/contracts";
+import type { ChangeRequestTerminology } from "@cod3/client-runtime/source-control-clients";
+import type { PullRequestRef, PullRequestStack, ThreadPullRequestLink } from "@cod3/contracts";
 import { msg } from "gt-react-native";
 
 import { m, type MessageResolver } from "../../i18n/messages";

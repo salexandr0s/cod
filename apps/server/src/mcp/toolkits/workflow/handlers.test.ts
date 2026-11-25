@@ -1,6 +1,6 @@
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import { expect, it } from "@effect/vitest";
-import { EnvironmentId } from "@t3tools/contracts";
+import { EnvironmentId } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Stream from "effect/Stream";
@@ -22,7 +22,7 @@ const handlersWith = (workflows: Partial<Workflows.Workflows["Service"]>) =>
           environmentId: EnvironmentId.make("environment:workflow"),
           requestNamespace: "client:workflow",
           thread: undefined,
-          client: { sessionId: "session-1", label: "t3 CLI", access: "full-access" },
+          client: { sessionId: "session-1", label: "cod3 CLI", access: "full-access" },
           capabilities: new Set(["orchestration" as const]),
           issuedAt: 0,
         }),
@@ -38,7 +38,7 @@ it.effect("start passes an explicit null payload through and defaults an omitted
       const toolkit = yield* WorkflowToolkit;
       for (const input of [{ input: null }, {}]) {
         yield* toolkit
-          .handle("t3_workflow", {
+          .handle("cod3_workflow", {
             action: "start",
             workflow: "echo",
             idempotencyKey: "trial",
@@ -75,7 +75,7 @@ it.effect("signal refuses a run destination mixed with a channel destination", (
         ],
         (address) =>
           toolkit
-            .handle("t3_workflow", { action: "signal", value: { choice: "yes" }, ...address })
+            .handle("cod3_workflow", { action: "signal", value: { choice: "yes" }, ...address })
             .pipe(
               Stream.unwrap,
               Stream.runCollect,

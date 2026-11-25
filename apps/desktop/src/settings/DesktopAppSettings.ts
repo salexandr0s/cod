@@ -3,9 +3,9 @@ import {
   DesktopUpdateChannelSchema,
   type DesktopServerExposureMode,
   type DesktopUpdateChannel,
-} from "@t3tools/contracts";
-import { fromLenientJson } from "@t3tools/shared/schemaJson";
-import { resolveSymlinkTarget } from "@t3tools/shared/symlink";
+} from "@cod3/contracts";
+import { fromLenientJson } from "@cod3/shared/schemaJson";
+import { resolveSymlinkTarget } from "@cod3/shared/symlink";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
@@ -24,7 +24,7 @@ import {
   normalizeLinuxPasswordStorePreference,
   type LinuxPasswordStorePreference,
 } from "../linuxSecretStorage.ts";
-import { desktopUpdateChannelOf } from "@t3tools/shared/cliRelease";
+import { desktopUpdateChannelOf } from "@cod3/shared/cliRelease";
 import { isValidDistroName } from "../wsl/wslPathParsing.ts";
 
 export interface DesktopSettings {
@@ -185,7 +185,7 @@ export class DesktopAppSettings extends Context.Service<
     >;
     readonly applyWslWindowsFallbackInMemory: Effect.Effect<DesktopSettingsChange>;
   }
->()("@t3tools/desktop/settings/DesktopAppSettings") {}
+>()("@cod3/desktop/settings/DesktopAppSettings") {}
 
 export function resolveDefaultDesktopSettings(appVersion: string): DesktopSettings {
   return {

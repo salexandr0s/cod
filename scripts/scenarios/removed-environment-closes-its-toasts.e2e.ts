@@ -1,20 +1,20 @@
 import { expect } from "e2e";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import { SECOND_HOME, startSecondServer } from "./second-server.ts";
-import { makeState, runPromise, test, WEB } from "./t3.ts";
+import { makeState, runPromise, test, WEB } from "./cod3.ts";
 
 test(
   "Removing an environment closes the in-app notifications it raised",
   WEB,
-  async ({ t3, app, screen, browser }) => {
-    const project = await t3.project("demo");
-    const primaryThread = await t3.thread({
+  async ({ cod3, app, screen, browser }) => {
+    const project = await cod3.project("demo");
+    const primaryThread = await cod3.thread({
       project,
       title: "Finished here",
       messages: ["first"],
     });
-    const primary = makeState(T3_HOME);
+    const primary = makeState(COD3_HOME);
     const second = makeState(SECOND_HOME);
     const server = startSecondServer(app.baseUrl ?? "");
     try {
@@ -26,7 +26,7 @@ test(
         messages: ["first"],
       });
 
-      await t3.open("/settings/general");
+      await cod3.open("/settings/general");
       await screen.getByRole("switch", "In-app notifications").check();
       await app.open("/settings/connections");
       await screen.getByRole("button", "Add environment").tap();

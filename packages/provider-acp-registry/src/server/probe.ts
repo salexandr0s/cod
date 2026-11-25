@@ -1,4 +1,4 @@
-import { resolveProviderProbeTimeoutMs } from "@t3tools/provider-core/server/snapshotProbe";
+import { resolveProviderProbeTimeoutMs } from "@cod3/provider-core/server/snapshotProbe";
 import {
   AcpRegistryListProvidersResult,
   AcpRegistryOperationError,
@@ -10,7 +10,7 @@ import {
   type ProviderInstanceId,
   type ServerProviderSkill,
   type ServerProviderSlashCommand,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AcpRegistrySettings } from "../settings.ts";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Deferred from "effect/Deferred";
@@ -27,19 +27,19 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import type * as EffectAcpErrors from "effect-acp/errors";
 import type * as EffectAcpSchema from "effect-acp/compat";
 
-import * as PtyAdapter from "@t3tools/shared/PtyAdapter";
+import * as PtyAdapter from "@cod3/shared/PtyAdapter";
 import * as AcpRegistrySupport from "./AcpRegistrySupport.ts";
 import {
   findModelConfigOption,
   parseSessionModeState,
-} from "@t3tools/provider-acp/server/runtimeModel";
+} from "@cod3/provider-acp/server/runtimeModel";
 import {
   acpProviderOptionDescriptors,
   flattenSelectChoices,
   isAcpThoughtLevelOption,
-} from "@t3tools/provider-acp/server/sessionConfig";
+} from "@cod3/provider-acp/server/sessionConfig";
 import * as AcpRegistryRuntimeCoordinator from "./AcpRegistryRuntimeCoordinator.ts";
-import * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
+import * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
 
 const MAX_AUTH_METHODS = 32;
 const MAX_MODELS = 256;
@@ -409,7 +409,7 @@ const isolateDeepSeekProbeHistory = Effect.fn("AcpRegistryProbe.isolateDeepSeekP
     // DeepSeek persists session/new before any prompt and does not advertise session/delete.
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-dsh-acp-probe-" });
+    const directory = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-dsh-acp-probe-" });
     const patchPath = path.join(directory, "probe.json");
     const patch = yield* encodeJson([
       { id: "session-persistence-jsonl", config: { root: path.join(directory, "sessions") } },
@@ -478,7 +478,7 @@ export const probeAcpRegistryConfiguration = Effect.fn("AcpRegistryProbe.probeCo
             fs: { readTextFile: false, writeTextFile: false },
             terminal: false,
           },
-          clientInfo: { name: "t3-code-provider-test", version: "0.0.0" },
+          clientInfo: { name: "cod3-provider-test", version: "0.0.0" },
           authenticateOnAuthRequired: false,
           onInitialized: (initializeResult) =>
             Ref.set(
@@ -662,7 +662,7 @@ const makeAcpRegistryManagementRuntime = Effect.fn("AcpRegistryProbe.makeManagem
           fs: { readTextFile: false, writeTextFile: false },
           terminal: false,
         },
-        clientInfo: { name: "t3-code-session-manager", version: "0.0.0" },
+        clientInfo: { name: "cod3-session-manager", version: "0.0.0" },
         authenticateOnAuthRequired: false,
         ...(input.settings.authMethodId ? { authMethodId: input.settings.authMethodId } : {}),
       }).pipe(

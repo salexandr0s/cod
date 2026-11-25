@@ -9,13 +9,13 @@ import {
   type ThreadId,
   type VcsCreateWorktreeInput,
   type VcsCreateWorktreeResult,
-  T3_PROJECT_FILE_NAME,
-} from "@t3tools/contracts";
-import { resolveProjectSettings } from "@t3tools/shared/projectSettings";
-import { flattenTemporaryWorktreeBranchName, isTemporaryWorktreeBranch } from "@t3tools/shared/git";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
-import { parseT3ProjectFile } from "@t3tools/shared/t3ProjectFile";
+  COD3_PROJECT_FILE_NAME,
+} from "@cod3/contracts";
+import { resolveProjectSettings } from "@cod3/shared/projectSettings";
+import { flattenTemporaryWorktreeBranchName, isTemporaryWorktreeBranch } from "@cod3/shared/git";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
+import { parseCod3ProjectFile } from "@cod3/shared/cod3ProjectFile";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Digest from "effect/crypto/Digest";
@@ -179,7 +179,7 @@ export class TaskFolders extends Context.Service<
       readonly recreate: (checkout: TaskFolderCheckout) => Effect.Effect<void, E>;
     }) => Effect.Effect<void, TaskFolderError | E>;
   }
->()("t3/workspace/TaskFolders") {}
+>()("cod3/workspace/TaskFolders") {}
 
 const isTaskFolderError = Schema.is(TaskFolderError);
 
@@ -288,10 +288,10 @@ const make = Effect.gen(function* () {
     (cause: unknown): TaskFolderError =>
       new TaskFolderError({ operation, detail: `${prefix}: ${failureDetail(cause)}`, cause });
 
-  // A project that lays its own thread folder out says so in its `t3.json`.
+  // A project that lays its own thread folder out says so in its `cod3.json`.
   const worktreeLayout = (projectRoot: string) =>
-    fileSystem.readFileString(path.join(projectRoot, T3_PROJECT_FILE_NAME)).pipe(
-      Effect.map((contents) => parseT3ProjectFile(contents)?.worktreeLayout ?? null),
+    fileSystem.readFileString(path.join(projectRoot, COD3_PROJECT_FILE_NAME)).pipe(
+      Effect.map((contents) => parseCod3ProjectFile(contents)?.worktreeLayout ?? null),
       Effect.orElseSucceed(() => null),
     );
   // One at a time per project: the commands share the project folder, and its workspace files.
@@ -316,12 +316,12 @@ const make = Effect.gen(function* () {
             ...hostEnvironment,
             // A `GIT_DIR` the server inherited would point the command's Git at another repository.
             ...VcsProcess.unsetInheritedRepositoryEnv(hostEnvironment, hostPlatform),
-            T3_PROJECT_ROOT: taskFolder.projectRoot,
-            T3_WORKTREE_ROOT: taskFolder.root,
-            T3_WORKTREE_PROJECT_PATH: taskFolder.projectPath,
-            T3_WORKTREE_BRANCH: branch,
-            T3_WORKTREE_BASE: baseBranch ?? "",
-            T3_WORKTREE_REPOSITORIES: repositories.join("\n"),
+            COD3_PROJECT_ROOT: taskFolder.projectRoot,
+            COD3_WORKTREE_ROOT: taskFolder.root,
+            COD3_WORKTREE_PROJECT_PATH: taskFolder.projectPath,
+            COD3_WORKTREE_BRANCH: branch,
+            COD3_WORKTREE_BASE: baseBranch ?? "",
+            COD3_WORKTREE_REPOSITORIES: repositories.join("\n"),
           },
           timeoutMs: LAYOUT_COMMAND_TIMEOUT_MS,
         })

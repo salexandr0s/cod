@@ -4,8 +4,8 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 
-import * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -39,7 +39,7 @@ const readRecord = (recordPath: string) => {
 export const ProviderProcesses = Context.Reference<{
   readonly register?: (pid: number) => () => void;
   readonly hasOtherLiveOwner: boolean;
-}>("t3/process/ProviderProcesses", { defaultValue: () => ({ hasOtherLiveOwner: false }) });
+}>("cod3/process/ProviderProcesses", { defaultValue: () => ({ hasOtherLiveOwner: false }) });
 
 const make = Effect.gen(function* () {
   const platform = yield* HostProcess.Platform;

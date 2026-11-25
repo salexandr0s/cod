@@ -1,4 +1,4 @@
-import { T3CHAT_PLAN_TUNNEL_LIMITS } from "@t3tools/contracts/relay";
+import { COD3CHAT_PLAN_TUNNEL_LIMITS } from "@cod3/contracts/relay";
 import { TriangleAlertIcon } from "lucide-react";
 import { msg, T, useGT } from "gt-react";
 import type { ReactNode } from "react";
@@ -12,14 +12,14 @@ import { Button } from "../ui/button";
 // Above this, one slot per tunnel is too thin to read, so the bar fills instead.
 const MAX_SEGMENTS = 10;
 
-export const T3CHAT_SUBSCRIPTION_URL = "https://t3.chat/settings/subscription";
+export const COD3CHAT_SUBSCRIPTION_URL = "https://t3.chat/settings/subscription";
 
 /** Components pass `useMessages()` so the copy follows a language switch. */
 export function tunnelUpgradeCopy(
   upgrade: Exclude<ManagedTunnelUpgrade, null>,
   resolve: MessageResolver = m,
 ): string {
-  const { pro, premier } = T3CHAT_PLAN_TUNNEL_LIMITS;
+  const { pro, premier } = COD3CHAT_PLAN_TUNNEL_LIMITS;
   switch (upgrade) {
     case "link":
       return resolve(
@@ -65,7 +65,7 @@ export function TunnelUsageMeter({
       </div>
       <div
         role="meter"
-        aria-label={gt("T3 Connect tunnels in use")}
+        aria-label={gt("cod3 Connect tunnels in use")}
         aria-valuemin={0}
         aria-valuemax={limit}
         aria-valuenow={used}
@@ -94,23 +94,23 @@ export function TunnelUsageMeter({
 /** Shown when the relay refuses a new tunnel because the account is at its cap. */
 export function TunnelLimitAlert({
   upgrade,
-  onLinkT3Chat,
+  onLinkCod3Chat,
   onManageTunnels,
 }: {
   readonly upgrade: ManagedTunnelUpgrade;
-  readonly onLinkT3Chat: (() => void) | null;
+  readonly onLinkCod3Chat: (() => void) | null;
   readonly onManageTunnels: (() => void) | null;
 }) {
   const gt = useGT();
   const action =
-    upgrade === "link" && onLinkT3Chat ? (
-      <Button size="sm" onClick={onLinkT3Chat}>
+    upgrade === "link" && onLinkCod3Chat ? (
+      <Button size="sm" onClick={onLinkCod3Chat}>
         <T>Link T3 Chat</T>
       </Button>
     ) : upgrade === "pro" || upgrade === "premier" ? (
       <Button
         size="sm"
-        render={<a href={T3CHAT_SUBSCRIPTION_URL} target="_blank" rel="noopener noreferrer" />}
+        render={<a href={COD3CHAT_SUBSCRIPTION_URL} target="_blank" rel="noopener noreferrer" />}
       >
         <T>Upgrade on T3 Chat</T>
       </Button>

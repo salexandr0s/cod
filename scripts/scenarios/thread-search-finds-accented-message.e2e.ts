@@ -1,14 +1,15 @@
 import { expect } from "e2e";
 
-import { test, WEB } from "./t3.ts";
+import { test, WEB } from "./cod3.ts";
 
 test(
   "Thread search finds an accented message by a short unaccented word",
   WEB,
-  async ({ t3, app, screen }) => {
-    const project = await t3.project("demo");
-    const thread = await t3.thread({ project, title: "Weekly notes", messages: ["Start"] });
-    await t3.open(thread);
+  async ({ cod3, app, screen }) => {
+    const project = await cod3.project("demo");
+    const thread = await cod3.thread({ project, title: "Weekly notes", messages: ["Start"] });
+    await cod3.thread({ project, title: "École fermée", messages: ["Schedule"] });
+    await cod3.open(thread);
 
     // Search reads what the user wrote; messages the CLI sends count as an agent's.
     const composer = screen.getByRole("textbox");
@@ -16,10 +17,16 @@ test(
     await composer.press("Enter");
     await expect(screen.getByText("second fixture turn complete", { exact: false })).toBeVisible();
 
-    await screen.getByRole("combobox", "Search threads").fill("fermée ec");
-    await expect(screen.getByRole("listbox", "Thread search results")).toContainText(
-      "École fermée",
-    );
+    const search = screen.getByRole("combobox", "Search threads");
+    await search.fill("fermée ec");
+    const results = screen.getByRole("listbox", "Thread search results");
+    await expect(results.getByRole("group", "In messages")).toContainText("École fermée");
+    await search.press("ArrowDown");
+    await expect(
+      results.getByRole("group", "In messages").getByRole("option", /Weekly notes/),
+    ).toHaveAttribute("aria-selected", "true");
     await app.screenshot("search");
+    await search.press("Enter");
+    await expect(screen.getByRole("searchbox", "Find in thread")).toBeVisible();
   },
 );

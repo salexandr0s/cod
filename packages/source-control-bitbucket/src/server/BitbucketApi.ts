@@ -18,11 +18,11 @@ import {
   type SourceControlProviderInfo,
   type SourceControlRepositoryCloneUrls,
   type SourceControlRepositoryVisibility,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
-import { sanitizeBranchFragment } from "@t3tools/shared/git";
-import { isSshRemoteUrl } from "@t3tools/shared/sourceControl";
-import { recognizeRemoteWith } from "@t3tools/source-control-core/shared/definition";
+import { sanitizeBranchFragment } from "@cod3/shared/git";
+import { isSshRemoteUrl } from "@cod3/shared/sourceControl";
+import { recognizeRemoteWith } from "@cod3/source-control-core/shared/definition";
 import { definition } from "../shared/definition.ts";
 
 import {
@@ -31,13 +31,13 @@ import {
   normalizeBitbucketPullRequestRecord,
   type NormalizedBitbucketPullRequestRecord,
 } from "./bitbucketPullRequests.ts";
-import { collectUint8StreamText } from "@t3tools/provider-core/server/collectStreamText";
-import * as SourceControlProvider from "@t3tools/source-control-core/server/SourceControlProvider";
-import * as SourceControlHost from "@t3tools/source-control-core/server/SourceControlHost";
-import { readSourceControlHostSettings } from "@t3tools/source-control-core/shared/definition";
+import { collectUint8StreamText } from "@cod3/provider-core/server/collectStreamText";
+import * as SourceControlProvider from "@cod3/source-control-core/server/SourceControlProvider";
+import * as SourceControlHost from "@cod3/source-control-core/server/SourceControlHost";
+import { readSourceControlHostSettings } from "@cod3/source-control-core/shared/definition";
 
 import * as BitbucketClient from "../shared/definition.ts";
-import * as SourceControlRateLimit from "@t3tools/source-control-core/server/SourceControlRateLimit";
+import * as SourceControlRateLimit from "@cod3/source-control-core/server/SourceControlRateLimit";
 
 const DEFAULT_API_BASE_URL = "https://api.bitbucket.org/2.0";
 const DEFAULT_MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
@@ -47,16 +47,16 @@ const BITBUCKET_API_REQUEST_TIMEOUT = "30 seconds";
 const CONCURRENCY = 4;
 
 const BitbucketApiEnvConfig = Config.all({
-  baseUrl: Config.String("T3CODE_BITBUCKET_API_BASE_URL").pipe(
+  baseUrl: Config.String("COD3_BITBUCKET_API_BASE_URL").pipe(
     Config.withDefault(DEFAULT_API_BASE_URL),
   ),
-  accessToken: Config.String("T3CODE_BITBUCKET_ACCESS_TOKEN").pipe(Config.option),
-  email: Config.String("T3CODE_BITBUCKET_EMAIL").pipe(Config.option),
-  apiToken: Config.String("T3CODE_BITBUCKET_API_TOKEN").pipe(Config.option),
+  accessToken: Config.String("COD3_BITBUCKET_ACCESS_TOKEN").pipe(Config.option),
+  email: Config.String("COD3_BITBUCKET_EMAIL").pipe(Config.option),
+  apiToken: Config.String("COD3_BITBUCKET_API_TOKEN").pipe(Config.option),
 });
 
 // Server and Data Center use a different API; a custom Cloud endpoint must be explicit.
-export const BitbucketServesHost = Config.String("T3CODE_BITBUCKET_API_BASE_URL").pipe(
+export const BitbucketServesHost = Config.String("COD3_BITBUCKET_API_BASE_URL").pipe(
   Config.option,
   Config.map(
     (baseUrl) => (host: string) =>
@@ -394,7 +394,7 @@ export class BitbucketApi extends Context.Service<
       readonly force?: boolean;
     }) => Effect.Effect<void, BitbucketApiError>;
   }
->()("@t3tools/source-control-bitbucket/server/BitbucketApi") {}
+>()("@cod3/source-control-bitbucket/server/BitbucketApi") {}
 
 function nonEmpty(value: string | undefined): Option.Option<string> {
   const trimmed = value?.trim();
@@ -532,7 +532,7 @@ function checkoutBranchName(input: {
     return input.headBranch;
   }
 
-  return `t3code/pr-${input.pullRequestId}/${sanitizeBranchFragment(input.headBranch)}`;
+  return `cod3/pr-${input.pullRequestId}/${sanitizeBranchFragment(input.headBranch)}`;
 }
 
 function repositoryNameWithOwner(
@@ -610,7 +610,7 @@ function authFromCredential(credential: BitbucketCredential | null): SourceContr
     account: Option.none(),
     host: Option.some("bitbucket.org"),
     detail: Option.some(
-      "Add a Bitbucket token in Settings → Source control & issues, or set the T3CODE_BITBUCKET_* environment variables on the server.",
+      "Add a Bitbucket token in Settings → Source control & issues, or set the COD3_BITBUCKET_* environment variables on the server.",
     ),
   };
 }

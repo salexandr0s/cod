@@ -1,6 +1,6 @@
-import type { RuntimeSubagent } from "@t3tools/client-runtime/state/subagentRuntime";
-import { isOrchestrationV2WorkActive } from "@t3tools/contracts";
-import { deriveSubagentElapsedMs } from "@t3tools/shared/orchestrationTiming";
+import type { RuntimeSubagent } from "@cod3/client-runtime/state/subagentRuntime";
+import { isOrchestrationV2WorkActive } from "@cod3/contracts";
+import { deriveSubagentElapsedMs } from "@cod3/shared/orchestrationTiming";
 import { msg, useMessages } from "gt-react";
 import type { MessageResolver } from "~/i18n/messages";
 import { tickTextContent } from "~/lib/tickTextContent";

@@ -1,9 +1,9 @@
 import { m } from "../i18n/messages";
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { msg, T, useGT, useMessages } from "gt-react";
-import { resolvePathLinkTarget } from "@t3tools/shared/fileLinks";
+import { resolvePathLinkTarget } from "@cod3/shared/fileLinks";
 import { clientHostEnvironmentAtom } from "../state/clientHostEnvironment";
-import { buildFileLinkParentSuffixByPath, fileLinkLabel } from "@t3tools/shared/fileLinks";
+import { buildFileLinkParentSuffixByPath, fileLinkLabel } from "@cod3/shared/fileLinks";
 import {
   isMarkdownFileLinkLabel,
   isWindowsDrivePathHref,
@@ -12,21 +12,21 @@ import {
   extractInlineCodeSpans,
   extractMarkdownLinkHrefs,
   inlineCodeFilePathCandidate,
-} from "@t3tools/shared/markdownLinks";
-import { taskListMarkerOffset } from "@t3tools/shared/markdownTaskEdits";
-import { isHostPath, resolveWorkspaceFilePath } from "@t3tools/shared/path";
+} from "@cod3/shared/markdownLinks";
+import { taskListMarkerOffset } from "@cod3/shared/markdownTaskEdits";
+import { isHostPath, resolveWorkspaceFilePath } from "@cod3/shared/path";
 import { usePullRequestLinking } from "~/hooks/usePullRequestLinking";
 import {
   AuthFilesystemReadScope,
   AuthOrchestrationOperateScope,
   SOURCE_CONTROL_MEDIA_ASSET,
-} from "@t3tools/contracts";
-import { chatMarkdownImageSource } from "@t3tools/shared/markdownHast";
+} from "@cod3/contracts";
+import { chatMarkdownImageSource } from "@cod3/shared/markdownHast";
 import { useAtomValue } from "@effect/atom-react";
 import {
   COMPOSER_CONTEXT_CLIPBOARD_MIME,
   encodeComposerContextClipboardHtml,
-} from "@t3tools/shared/composerContextClipboard";
+} from "@cod3/shared/composerContextClipboard";
 import {
   FileSpreadsheetIcon,
   FileTextIcon,
@@ -52,23 +52,23 @@ import {
   type ScopedThreadRef,
   type ServerProviderSkill,
   type ThreadPullRequestKey,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+} from "@cod3/client-runtime/state/runtime";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
 import type {
   CodexArtifactTemplate,
   CodexArtifactTemplateKind,
-} from "@t3tools/shared/codexArtifactTemplates";
-import { codexArtifactTemplatePresentationLabel } from "@t3tools/shared/codexArtifactTemplatesCopy";
+} from "@cod3/shared/codexArtifactTemplates";
+import { codexArtifactTemplatePresentationLabel } from "@cod3/shared/codexArtifactTemplatesCopy";
 import {
   classifyMarkdownImageSource,
   markdownImageSourceFragment,
-} from "@t3tools/client-runtime/markdown-images";
-import { mediaUrlReference } from "@t3tools/client-runtime/media-reference";
-import { mediaKindFromPath, mediaMimeTypeFromExtension } from "@t3tools/shared/mediaPreview";
+} from "@cod3/client-runtime/markdown-images";
+import { mediaUrlReference } from "@cod3/client-runtime/media-reference";
+import { mediaKindFromPath, mediaMimeTypeFromExtension } from "@cod3/shared/mediaPreview";
 import { InlineAudioPreview } from "./files/InlineAudioPreview";
 import { HostImageUrlContext } from "./chat/hostImageUrl";
 import * as Cause from "effect/Cause";
@@ -87,12 +87,12 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { parseAssistantCitationHref } from "@t3tools/shared/assistantCitations";
-import { parseComposerContextHref } from "@t3tools/shared/composerContextReferences";
-import { parseThreadLinkHref } from "@t3tools/shared/threadLinks";
+import { parseAssistantCitationHref } from "@cod3/shared/assistantCitations";
+import { parseComposerContextHref } from "@cod3/shared/composerContextReferences";
+import { parseThreadLinkHref } from "@cod3/shared/threadLinks";
 import { AssistantCitationEmbed } from "./chat/AssistantCitationChip";
 import { MarkdownThreadLink } from "./chat/MarkdownThreadLink";
-import { artifactTemplateFromHastProperties } from "@t3tools/shared/codexArtifactTemplates";
+import { artifactTemplateFromHastProperties } from "@cod3/shared/codexArtifactTemplates";
 import {
   decodeMarkdownLinkEscapes,
   renderCodexInlineDirectivesAsMarkdown,
@@ -173,13 +173,13 @@ import {
   pickWorkspaceLinkMatch,
   WORKSPACE_BASENAME_LOOKUP_LIMIT,
   workspaceLinkLookupQuery,
-} from "@t3tools/client-runtime/workspace-basename-lookup";
-import { resolvePullRequestPreviewTarget } from "@t3tools/client-runtime/change-request-links";
+} from "@cod3/client-runtime/workspace-basename-lookup";
+import { resolvePullRequestPreviewTarget } from "@cod3/client-runtime/change-request-links";
 import {
   mayContainStandaloneIssueLink,
   resolveIssueLinkTarget,
-} from "@t3tools/client-runtime/issue-links";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+} from "@cod3/client-runtime/issue-links";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { useOpenChangeRequestLink } from "~/lib/openPullRequestLink";
 import { textDirection } from "~/textDirection";
 import { useOpenLink } from "../browser/useOpenLink";
@@ -204,8 +204,8 @@ import {
   withProperties,
 } from "./chat/markdownIslands";
 import type { Element as HastElement } from "hast";
-import { matchInlineSkills } from "@t3tools/shared/inlineSkills";
-import { collectComposerModelMentions } from "@t3tools/client-runtime/composer-model-mentions";
+import { matchInlineSkills } from "@cod3/shared/inlineSkills";
+import { collectComposerModelMentions } from "@cod3/client-runtime/composer-model-mentions";
 import { splitMarkdownBlocks } from "./chat/markdownStreamBlocks";
 import { MarkdownMermaidCodeBlock } from "./chat/MarkdownMermaidCodeBlock";
 import { MarkdownTable } from "./chat/MarkdownTable";
@@ -260,6 +260,7 @@ interface ChatMarkdownProps {
   onImageExpand?: ((preview: ExpandedImagePreview) => void) | undefined;
   /** Keep one object per configuration (a module constant): it keys the shared parse cache. */
   extensions?: MarkdownExtensions | undefined;
+  renderDocumentLink?: ((href: string, children: ReactNode) => ReactNode) | undefined;
   renderContextReference?: ((reference: ChatMarkdownContextReference) => ReactNode) | undefined;
   /** Loads media a source control host keeps behind a credential through the server, which holds
       `cwd`'s; without it a private repository's uploads load unauthenticated and 404. */
@@ -587,6 +588,7 @@ function useChatMarkdownState(
     imageBaseDir,
     workspaceMutationId,
     onImageExpand,
+    renderDocumentLink,
     renderContextReference,
     headingLevelOffset = 0,
     sourceControlMedia = false,
@@ -622,7 +624,7 @@ function useChatMarkdownState(
     setLocalMedia(null);
   }
   // Layout cleanup blocks stale requests from reaching onImageExpand before paint.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- layout cleanup invalidates media requests still loading for the old scope before paint
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- layout cleanup invalidates media requests still loading for the old scope before paint
   useLayoutEffect(
     () => () => {
       mediaRequestId.current += 1;
@@ -1090,6 +1092,7 @@ function useChatMarkdownState(
     fileLinkChip,
     sourceControlMedia,
     sourceControlMediaRepository,
+    renderDocumentLink,
     renderContextReference,
     headingLevelOffset,
     imageBaseDir,
@@ -1289,6 +1292,7 @@ const CHAT_MARKDOWN_COMPONENTS = {
       issuesEnabled,
       updateThreadPullRequestLink,
       fileLinkChip,
+      renderDocumentLink,
       renderContextReference,
     } = use(ChatMarkdownRendererContext);
     const text = use(ChatMarkdownTextContext);
@@ -1325,6 +1329,8 @@ const CHAT_MARKDOWN_COMPONENTS = {
         <span>{label}</span>
       );
     }
+    const documentLink = href && renderDocumentLink?.(href, children);
+    if (documentLink) return documentLink;
     const normalizedHref = href ? normalizeMarkdownLinkHrefKey(href) : "";
     const fileLinkMeta = normalizedHref
       ? (markdownFileLinkMetaByHref.get(normalizedHref) ??
@@ -2043,7 +2049,7 @@ const MarkdownSource = memo(function MarkdownSource({
 }) {
   const render = markdownRenderer(markdown);
   const entry = render.parse(text);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Caching during render would make React Compiler rebuild the element when `cache` flips.
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- Caching during render would make React Compiler rebuild the element when `cache` flips.
   useEffect(() => {
     if (cache) render.remember(text, entry);
   }, [render, text, entry, cache]);

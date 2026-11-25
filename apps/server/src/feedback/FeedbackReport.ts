@@ -1,5 +1,5 @@
-import { AgentFeedbackKind, AgentFeedbackTrace } from "@t3tools/contracts";
-import { resolveT3McpToolId } from "@t3tools/shared/t3McpToolPresentation";
+import { AgentFeedbackKind, AgentFeedbackTrace } from "@cod3/contracts";
+import { resolveCod3McpToolId } from "@cod3/shared/cod3McpToolPresentation";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Struct from "effect/Struct";
@@ -12,7 +12,7 @@ export const FEEDBACK_TRACE_TURNS = 5;
 
 const reportFields = {
   kind: AgentFeedbackKind,
-  subject: Schema.String.annotate({ description: "T3 tool name, `t3` command, or `general`." }),
+  subject: Schema.String.annotate({ description: "cod3 tool name, `cod3` command, or `general`." }),
   expected: FeedbackText,
   actual: FeedbackText,
   workaround: FeedbackText.annotate({ description: "What you did instead, or empty." }),
@@ -48,7 +48,7 @@ export const FeedbackReport = Schema.Struct({
   trace: Schema.NullOr(FeedbackTrace),
 });
 
-/** What `t3_feedback` answers: the report, with only the size of what its trace attached. */
+/** What `cod3_feedback` answers: the report, with only the size of what its trace attached. */
 export const FeedbackSubmitResult = Schema.Struct({
   ...reportFields,
   ...storedFields,
@@ -58,7 +58,7 @@ export const FeedbackSubmitResult = Schema.Struct({
 export const FEEDBACK_AWAITING_APPROVAL_NOTE =
   "The user sees this report in a card and chooses there whether to send it and whether to include the conversation. Nothing is sent until they do, and you will not learn their choice. Do not wait for it or send it another way. Call again only if the user asks to change it; that shows a new card.";
 
-/** What `t3_feedback` answers for a requested report: shown to the user, not yet sent. */
+/** What `cod3_feedback` answers for a requested report: shown to the user, not yet sent. */
 export const FeedbackAwaitingApproval = Schema.Struct({
   status: Schema.Literal("awaiting_approval"),
   note: Schema.String,
@@ -66,7 +66,7 @@ export const FeedbackAwaitingApproval = Schema.Struct({
 export type FeedbackAwaitingApproval = typeof FeedbackAwaitingApproval.Type;
 
 export const FEEDBACK_OFF_MESSAGE =
-  "Agent feedback is off. Turn it on in T3 Code under Settings > Labs, then try again.";
+  "Agent feedback is off. Turn it on in cod3 under Settings > Labs, then try again.";
 
 export class FeedbackOffError extends Schema.TaggedError<FeedbackOffError>()(
   "FeedbackOffError",
@@ -81,7 +81,7 @@ export type FeedbackSource = "mcp" | "cli";
 
 // Requested reports count when their card is shown, unprompted ones when stored.
 export const MAX_REPORTS_PER_TURN = 3;
-// Reports from no turn, such as `t3 feedback`, have no turn to count in.
+// Reports from no turn, such as `cod3 feedback`, have no turn to count in.
 export const MAX_REPORTS_OUTSIDE_TURNS_PER_HOUR = 10;
 
 export class FeedbackLimitError extends Schema.TaggedError<FeedbackLimitError>()(
@@ -120,116 +120,117 @@ export class FeedbackStorageError extends Schema.TaggedError<FeedbackStorageErro
   }
 }
 
-/** The MCP client label `t3 feedback` signs in with, so its reports count as `cli`. */
-export const FEEDBACK_CLI_CLIENT_LABEL = "t3 feedback cli";
+/** The MCP client label `cod3 feedback` signs in with, so its reports count as `cli`. */
+export const FEEDBACK_CLI_CLIENT_LABEL = "cod3 feedback cli";
 
-/** Listed `t3` command paths a report may name. A CLI test keeps this in step with binCli. */
-export const T3_CLI_COMMANDS: ReadonlyArray<string> = [
-  "t3",
-  "t3 help",
-  "t3 serve",
-  "t3 app",
-  "t3 pair",
-  "t3 auth",
-  "t3 auth connect-device",
-  "t3 auth connect-device approve",
-  "t3 auth connect-device list",
-  "t3 auth connect-device revoke",
-  "t3 auth pairing",
-  "t3 auth pairing create",
-  "t3 auth pairing list",
-  "t3 auth pairing revoke",
-  "t3 auth session",
-  "t3 auth session issue",
-  "t3 auth session list",
-  "t3 auth session revoke",
-  "t3 environment",
-  "t3 environment link",
-  "t3 environment list",
-  "t3 environment unlink",
-  "t3 browser",
-  "t3 browser setup",
-  "t3 project",
-  "t3 project add",
-  "t3 project remove",
-  "t3 project rename",
-  "t3 thread",
-  "t3 thread list",
-  "t3 thread start",
-  "t3 thread send",
-  "t3 thread show",
-  "t3 feedback",
-  "t3 feedback list",
-  "t3 workflow",
-  "t3 workflow start",
-  "t3 workflow list",
-  "t3 workflow show",
-  "t3 workflow resume",
-  "t3 workflow cancel",
-  "t3 workflow signal",
-  "t3 workflow questions",
-  "t3 workflow hooks",
-  "t3 workflow store",
-  "t3 workflow store list",
-  "t3 workflow store set",
-  "t3 workflow store delete",
-  "t3 up",
-  "t3 status",
-  "t3 service",
-  "t3 service install",
-  "t3 service restart",
-  "t3 service uninstall",
-  "t3 service status",
-  "t3 service protect",
-  "t3 update",
-  "t3 install",
-  "t3 uninstall",
-  "t3 theme",
-  "t3 theme set",
-  "t3 theme clear",
-  "t3 theme show",
-  "t3 trace",
-  "t3 trace summary",
-  "t3 doctor",
-  "t3 policy",
-  "t3 policy show",
-  "t3 policy check",
-  "t3 policy templates",
-  "t3 policy settings",
-  "t3 triage",
-  "t3 connect",
-  "t3 connect link",
-  "t3 connect login",
-  "t3 connect logout",
-  "t3 connect publish",
-  "t3 connect status",
-  "t3 connect unlink",
+/** Listed `cod3` command paths a report may name. A CLI test keeps this in step with binCli. */
+export const COD3_CLI_COMMANDS: ReadonlyArray<string> = [
+  "cod3",
+  "cod3 help",
+  "cod3 serve",
+  "cod3 app",
+  "cod3 pair",
+  "cod3 auth",
+  "cod3 auth connect-device",
+  "cod3 auth connect-device approve",
+  "cod3 auth connect-device list",
+  "cod3 auth connect-device revoke",
+  "cod3 auth pairing",
+  "cod3 auth pairing create",
+  "cod3 auth pairing list",
+  "cod3 auth pairing revoke",
+  "cod3 auth session",
+  "cod3 auth session issue",
+  "cod3 auth session list",
+  "cod3 auth session revoke",
+  "cod3 environment",
+  "cod3 environment link",
+  "cod3 environment list",
+  "cod3 environment unlink",
+  "cod3 browser",
+  "cod3 browser setup",
+  "cod3 project",
+  "cod3 project add",
+  "cod3 project remove",
+  "cod3 project rename",
+  "cod3 thread",
+  "cod3 thread list",
+  "cod3 thread start",
+  "cod3 thread send",
+  "cod3 thread show",
+  "cod3 feedback",
+  "cod3 feedback list",
+  "cod3 workflow",
+  "cod3 workflow start",
+  "cod3 workflow list",
+  "cod3 workflow show",
+  "cod3 workflow resume",
+  "cod3 workflow cancel",
+  "cod3 workflow signal",
+  "cod3 workflow questions",
+  "cod3 workflow hooks",
+  "cod3 workflow store",
+  "cod3 workflow store list",
+  "cod3 workflow store set",
+  "cod3 workflow store delete",
+  "cod3 up",
+  "cod3 status",
+  "cod3 service",
+  "cod3 service install",
+  "cod3 service restart",
+  "cod3 service uninstall",
+  "cod3 service status",
+  "cod3 service protect",
+  "cod3 update",
+  "cod3 install",
+  "cod3 uninstall",
+  "cod3 theme",
+  "cod3 theme set",
+  "cod3 theme clear",
+  "cod3 theme show",
+  "cod3 trace",
+  "cod3 trace summary",
+  "cod3 doctor",
+  "cod3 policy",
+  "cod3 policy show",
+  "cod3 policy check",
+  "cod3 policy templates",
+  "cod3 policy settings",
+  "cod3 triage",
+  "cod3 connect",
+  "cod3 connect link",
+  "cod3 connect login",
+  "cod3 connect logout",
+  "cod3 connect publish",
+  "cod3 connect status",
+  "cod3 connect unlink",
 ];
 
 export type FeedbackInput = typeof FeedbackInput.Type;
 export type FeedbackReport = typeof FeedbackReport.Type;
 
 export const FEEDBACK_SUBJECT_MESSAGE =
-  "Set subject to the exact T3 tool name, the t3 command, or `general`.";
+  "Set subject to the exact cod3 tool name, the cod3 command, or `general`.";
 
 // The shared resolver knows the presented tools; the prefix covers the rest, such as these.
-// Codex also registers `t3-code-direct` for T3 tools it keeps out of Code Mode.
-const T3_PREFIX = /^(?:mcp__t3[-_]?code(?:[-_]direct)?__|t3[-_]?code(?:[-_]direct)?[.:/])/iu;
+// Codex also registers `cod3-direct` for cod3 tools it keeps out of Code Mode.
+const COD3_PREFIX =
+  /^(?:mcp__cod3(?:[-_]?code)?(?:[-_]direct)?__|cod3(?:[-_]?code)?(?:[-_]direct)?[.:/])/iu;
 
-/** The bare name of a registered T3 tool however a provider prefixed it, else undefined. */
-export const resolveT3ToolName = (name: string, toolNames: ReadonlyArray<string>) => {
-  const tool = resolveT3McpToolId(name) ?? name.replace(T3_PREFIX, "");
+/** The bare name of a registered cod3 tool however a provider prefixed it, else undefined. */
+export const resolveCod3ToolName = (name: string, toolNames: ReadonlyArray<string>) => {
+  const tool = resolveCod3McpToolId(name) ?? name.replace(COD3_PREFIX, "");
   if (toolNames.includes(tool)) return tool;
-  // OpenCode 2 prefixes tools with `t3-code-<thread>_`, underscores and all: the longest name wins.
-  if (!/^t3-code-/iu.test(name)) return undefined;
+  // OpenCode 2 prefixes tools with `cod3-<thread>_`, underscores and all: the longest name wins.
+  if (!/^cod3-/iu.test(name)) return undefined;
   return toolNames
     .filter((candidate) => name.endsWith(`_${candidate}`))
     .toSorted((a, b) => b.length - a.length)[0];
 };
 
-/** The stored subject, or undefined when the value names no T3 tool, `t3` command, or `general`. */
+/** The stored subject, or undefined when the value names no cod3 tool, `cod3` command, or `general`. */
 export const resolveFeedbackSubject = (value: string, toolNames: ReadonlyArray<string>) => {
   const subject = value.trim();
-  if (subject === "general" || T3_CLI_COMMANDS.includes(subject)) return subject;
-  return resolveT3ToolName(subject, toolNames);
+  if (subject === "general" || COD3_CLI_COMMANDS.includes(subject)) return subject;
+  return resolveCod3ToolName(subject, toolNames);
 };

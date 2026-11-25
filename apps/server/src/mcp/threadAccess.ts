@@ -12,14 +12,14 @@ import {
   type RuntimeMode,
   ThreadId,
   type OrchestrationV2ThreadShell,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   hasThreadLinks,
   parseThreadLinkHref,
   threadLinkCandidates,
   threadLinkRefs,
-} from "@t3tools/shared/threadLinks";
-import { hasPendingBackgroundSubagent } from "@t3tools/shared/orchestrationV2PendingBackgroundWork";
+} from "@cod3/shared/threadLinks";
+import { hasPendingBackgroundSubagent } from "@cod3/shared/orchestrationV2PendingBackgroundWork";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
 
@@ -91,7 +91,7 @@ export const threadNotFound = Effect.fn("OrchestratorMcpService.threadNotFound")
     scope.client?.linked === true ||
     fencingLinkOrigin({ scope, caller: caller ?? undefined }) !== undefined
       ? ""
-      : " Thread ids belong to one environment: for a thread on a linked one, find it with `t3_environment_links` and pass its `environmentId` to a tool that takes one.";
+      : " Thread ids belong to one environment: for a thread on a linked one, find it with `cod3_environment_links` and pass its `environmentId` to a tool that takes one.";
   return yield* new OrchestratorMcpFailure({
     code: "thread_not_found",
     message: `${message}${mcpHint}${linksHint}`,
@@ -228,7 +228,7 @@ export const resolveProjectId = (context: Caller, projectId: ProjectId | undefin
       : Effect.fail(
           new OrchestratorMcpFailure({
             code: "target_required",
-            message: "Pass projectId: this MCP client is not running inside a T3 thread.",
+            message: "Pass projectId: this MCP client is not running inside a cod3 thread.",
           }),
         );
 
@@ -240,7 +240,7 @@ const resolveThreadId = (context: Caller, threadId: ThreadId | undefined) =>
       : Effect.fail(
           new OrchestratorMcpFailure({
             code: "target_required",
-            message: "Pass threadId: this MCP client is not running inside a T3 thread.",
+            message: "Pass threadId: this MCP client is not running inside a cod3 thread.",
           }),
         );
 

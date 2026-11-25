@@ -5,7 +5,7 @@ import {
   ProviderInstanceId,
   ThreadId,
   type OrchestrationV2ThreadShell,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -77,7 +77,7 @@ it.effect("refuses a preferences update when the caller's turn ends while it wai
         .pipe(Effect.forkChild);
       yield* Deferred.await(held);
       const update = yield* toolkit
-        .handle("t3_environment_preferences_update", { newWorktreesStartFromOrigin: true })
+        .handle("cod3_environment_preferences_update", { newWorktreesStartFromOrigin: true })
         .pipe(Stream.unwrap, Stream.runCollect, Effect.forkChild);
       yield* Deferred.await(checked);
       yield* Ref.update(caller, (shell) => ({ ...shell, activeRunId: null }));
@@ -104,6 +104,8 @@ it("keeps agent feedback out of the preferences agents read and write", () => {
     }),
   ).not.toHaveProperty("agentFeedback");
   expect(
-    Object.keys(EnvironmentToolkit.tools.t3_environment_preferences_update.parametersSchema.fields),
+    Object.keys(
+      EnvironmentToolkit.tools.cod3_environment_preferences_update.parametersSchema.fields,
+    ),
   ).not.toContain("agentFeedback");
 });

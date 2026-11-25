@@ -8,7 +8,7 @@ import {
   type EnvironmentId,
   DEFAULT_SPEECH_TRANSCRIPTION_OPTIONS,
   type VoiceTranscriptionDestination,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   getEnvironmentSpeechModels,
   getCloudSpeechKeys,
@@ -18,10 +18,10 @@ import {
   getEnvironmentSpeechStatus,
   transcribeEnvironmentPcm,
   VoiceTranscriptionError,
-} from "@t3tools/client-runtime/voice-input";
+} from "@cod3/client-runtime/voice-input";
 import { FetchHttpClient, type HttpClient } from "effect/http";
-import type { PreparedConnection } from "@t3tools/client-runtime/connection";
-import { effectiveSpeechLanguage } from "@t3tools/shared/speech";
+import type { PreparedConnection } from "@cod3/client-runtime/connection";
+import { effectiveSpeechLanguage } from "@cod3/shared/speech";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import { Atom, AsyncResult, AtomRegistry } from "effect/reactivity";
@@ -90,7 +90,7 @@ export function pendingCloudVoiceChoice(
 
 const native = requireOptionalNativeModule<{
   decodeRecording?: (uri: string) => Promise<Uint8Array>;
-}>("T3VoiceTranscription");
+}>("Cod3VoiceTranscription");
 export const hasEnvironmentVoiceCapture = typeof native?.decodeRecording === "function";
 
 const voiceConnections = (capability: "voiceTranscription" | "cloudVoiceTranscription") =>
@@ -178,7 +178,7 @@ function environmentTranscriber(
       if (!native?.decodeRecording)
         throw new VoiceTranscriptionError({
           code: "unavailable",
-          message: m(msg("Update T3 Code to transcribe on an environment.")),
+          message: m(msg("Update cod3 to transcribe on an environment.")),
         });
       return native.decodeRecording(uri);
     },

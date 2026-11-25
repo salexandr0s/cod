@@ -4,12 +4,12 @@ import {
   AcpRegistryOperationError,
   ProviderInstanceId,
   type ServerProvider,
-} from "@t3tools/contracts";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as ProviderEventLoggers from "@t3tools/provider-core/server/ProviderEventLoggers";
-import * as TestProviderHost from "@t3tools/provider-testing/TestProviderHost";
-import { toCustomModelSetting } from "@t3tools/shared/model";
+} from "@cod3/contracts";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as ProviderEventLoggers from "@cod3/provider-core/server/ProviderEventLoggers";
+import * as TestProviderHost from "@cod3/provider-testing/TestProviderHost";
+import { toCustomModelSetting } from "@cod3/shared/model";
 import { AcpRegistrySettings } from "../settings.ts";
 import { describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";

@@ -1,12 +1,12 @@
 import { msg, T, useGT, useMessages } from "gt-react";
 import { contextMenuSourceOf } from "../contextMenuSource";
 import { m, type MessageResolver } from "../i18n/messages";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
 import {
   threadRuntimeIsActive,
   type EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
+} from "@cod3/client-runtime/state/shell";
 import {
   useProjects,
   useQuietThreadShell,
@@ -16,7 +16,7 @@ import {
 import {
   threadPullRequestKeysEqual,
   visibleThreadPullRequests,
-} from "@t3tools/client-runtime/thread-pull-requests";
+} from "@cod3/client-runtime/thread-pull-requests";
 import type {
   ContextMenuItem,
   EnvironmentId,
@@ -26,9 +26,9 @@ import type {
   PullRequestState,
   ResolvedKeybindingsConfig,
   ThreadId,
-} from "@t3tools/contracts";
-import { getTerminalLabel } from "@t3tools/shared/terminalLabelsCopy";
-import { formatSubagentDisplayTitle } from "@t3tools/client-runtime/state/subagent-display";
+} from "@cod3/contracts";
+import { getTerminalLabel } from "@cod3/shared/terminalLabelsCopy";
+import { formatSubagentDisplayTitle } from "@cod3/client-runtime/state/subagent-display";
 import {
   closestCenter,
   DndContext,
@@ -94,7 +94,7 @@ import {
 import { useBrowserDefaults } from "~/browser/browserDefaults";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { PanelTabCloseButton } from "~/components/ui/panel-tab-close-button";
-import { faviconUrlForOrigin } from "@t3tools/shared/favicon";
+import { faviconUrlForOrigin } from "@cod3/shared/favicon";
 import { useTheme } from "~/hooks/useTheme";
 import { useDeviceState } from "~/state/device";
 import type { PreviewPanelInlineSize } from "~/hooks/usePreviewPanelInlineSize";
@@ -127,6 +127,7 @@ export interface RightPanelTabsProps {
   defaultWidth?: number;
   inlineSize?: PreviewPanelInlineSize;
   layoutControls?: ReactNode;
+  projectDocuments?: ReactNode;
   surfaces: readonly RightPanelSurface[];
   environmentId: EnvironmentId | null;
   activeSurfaceId: string | null;
@@ -189,7 +190,7 @@ function shouldOpenDefaultBrowserProfileFromMenuClick(pointerType: string | unde
 }
 
 const SURFACE_DISABLED_REASONS = {
-  browser: msg("Browser previews are only available in the T3 Code desktop app."),
+  browser: msg("Browser previews are only available in the cod3 desktop app."),
   terminal: msg("Terminal surfaces are only available from a project thread."),
   files: msg("Files are only available when a project is open."),
   diff: msg("Diff is only available for server threads in Git repositories."),
@@ -335,6 +336,7 @@ function SurfaceMenuItem(props: {
 }
 
 function RightPanelEmptyState(props: {
+  projectDocuments?: ReactNode;
   onAddBrowser: () => void;
   onAddBrowserInProfile: (profileId: string) => void;
   browserProfiles: ReadonlyArray<{ readonly id: string; readonly name: string }>;
@@ -411,7 +413,7 @@ function RightPanelEmptyState(props: {
     },
     {
       label: msg("Device"),
-      description: msg("Watch an iOS Simulator or Android Emulator."),
+      description: msg("Watch an iOS simulator, Android emulator, or isolated Mac."),
       icon: Smartphone,
       shortcut: "M",
       available: props.deviceAvailable,
@@ -450,7 +452,7 @@ function RightPanelEmptyState(props: {
     event.stopPropagation();
     action.onClick();
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes a capture-phase window keydown listener for surface shortcuts while the menu is mounted
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes a capture-phase window keydown listener for surface shortcuts while the menu is mounted
   useEffect(() => {
     const handler = (event: KeyboardEvent) => handleShortcut(event);
     window.addEventListener("keydown", handler, true);
@@ -503,11 +505,12 @@ function RightPanelEmptyState(props: {
       aria-label={gt("Open a surface")}
       data-surface-launcher-keys={availableActions.map((action) => action.shortcut).join("")}
       className={cn(
-        "scrollbar-gutter-both flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-6 outline-none",
+        "scrollbar-gutter-both flex min-h-0 flex-1 justify-center overflow-y-auto px-6 outline-none",
         "pb-(--workspace-topbar-height)",
       )}
     >
-      <div className="w-full max-w-xs py-6">
+      <div className="my-auto w-full max-w-xs py-6">
+        <div className="mb-4 empty:hidden">{props.projectDocuments}</div>
         <h3 className="mb-3 text-center font-medium text-foreground text-sm">
           <T>Open a surface</T>
         </h3>
@@ -726,7 +729,7 @@ function SurfaceIcon({
     case "linked-thread":
       return <MessagesSquare className="size-3 shrink-0" />;
     case "device":
-      return surface.target?.platform === "ios" ? (
+      return surface.target?.platform === "ios" || surface.target?.platform === "macos" ? (
         <AppleIcon className="size-3 shrink-0" />
       ) : surface.target?.platform === "android" ? (
         <AndroidIcon className="size-3 shrink-0" />
@@ -1164,7 +1167,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
   const onMenuAction = useEffectEvent((action: string) => {
     if (action === "rightPanel.new" && !addSurfaceMenuBlocked()) setAddSurfaceMenuOpen(true);
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes document keydown and the desktop menu action (forwarded from a focused browser page) for the new surface shortcut while the panel is open
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes document keydown and the desktop menu action (forwarded from a focused browser page) for the new surface shortcut while the panel is open
   useEffect(() => {
     if (props.open === false) return;
     document.addEventListener("keydown", onNewSurfaceKeyDown, true);
@@ -1411,7 +1414,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
   });
 
   // A newly active tab, or tabs that start overflowing, can sit outside the scrolled strip.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- scrolls the active tab DOM node into view after it changes or the tab strip starts overflowing
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- scrolls the active tab DOM node into view after it changes or the tab strip starts overflowing
   useEffect(() => {
     if (!props.activeSurfaceId || !tabScrollState.hasOverflow) return;
     const activeTab = tabListRef.current?.querySelector<HTMLElement>("[data-active-tab='true']");
@@ -1688,6 +1691,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
       <div className="flex min-h-0 flex-1 flex-col" data-right-panel-surface-content>
         {props.activeSurfaceId === null ? (
           <RightPanelEmptyState
+            projectDocuments={props.projectDocuments}
             onAddBrowser={props.onAddBrowser}
             onAddBrowserInProfile={props.onAddBrowserInProfile}
             browserProfiles={browserProfiles}
@@ -1734,7 +1738,12 @@ function DeviceTabTooltip(props: {
       {target ? (
         <span className="text-muted-foreground">
           {host?.label ?? gt("Device host")} ·{" "}
-          {device?.version ?? (target.platform === "ios" ? "iOS" : "Android")}
+          {device?.version ??
+            (target.platform === "macos"
+              ? gt("Mac")
+              : target.platform === "ios"
+                ? "iOS"
+                : "Android")}
         </span>
       ) : null}
     </div>

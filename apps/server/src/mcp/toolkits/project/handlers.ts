@@ -8,8 +8,8 @@ import {
   type TaskFolderError,
   type Project as ProjectRecord,
   type ServerProvider,
-  T3_PROJECT_FILE_NAME,
-} from "@t3tools/contracts";
+  COD3_PROJECT_FILE_NAME,
+} from "@cod3/contracts";
 import * as Digest from "effect/crypto/Digest";
 import * as Effect from "effect/Effect";
 import * as Hex from "effect/encoding/Hex";
@@ -30,13 +30,13 @@ import * as GitVcsDriver from "../../../vcs/GitVcsDriver.ts";
 import * as ServerSettings from "../../../serverSettings.ts";
 import * as ProviderRegistry from "../../../provider/ProviderRegistry.ts";
 import * as DateTime from "effect/DateTime";
-import { resolveNewThreadModelSelection } from "@t3tools/shared/usageLimits";
+import { resolveNewThreadModelSelection } from "@cod3/shared/usageLimits";
 import {
   resolveProjectFileBackedSetting,
   resolveProjectSettings,
-} from "@t3tools/shared/projectSettings";
-import { resolveProjectScripts } from "@t3tools/shared/projectScripts";
-import { parseT3ProjectFile } from "@t3tools/shared/t3ProjectFile";
+} from "@cod3/shared/projectSettings";
+import { resolveProjectScripts } from "@cod3/shared/projectScripts";
+import { parseCod3ProjectFile } from "@cod3/shared/cod3ProjectFile";
 import { resolveRuntimeMode } from "../../delegatedTaskModes.ts";
 import * as McpInvocationContext from "../../McpInvocationContext.ts";
 import * as McpToolAccess from "../../McpToolAccess.ts";
@@ -103,22 +103,22 @@ const assertProjectWorktree = Effect.fn("mcp.assertProjectWorktree")(function* (
     return yield* new OrchestratorMcpFailure({
       code: "invalid_request",
       message:
-        "worktreePath must be one of the project's git worktrees. t3_worktree_list shows them.",
+        "worktreePath must be one of the project's git worktrees. cod3_worktree_list shows them.",
     });
 });
 
-/** The composer falls back to the project's t3.json when no setting picks the mode. */
+/** The composer falls back to the project's cod3.json when no setting picks the mode. */
 const projectFileThreadEnvMode = Effect.fn("mcp.projectFileThreadEnvMode")(function* (
   workspaceRoot: string,
 ) {
   const fileSystem = yield* FileSystem.FileSystem;
   const contents = yield* fileSystem
-    .readFileString(`${workspaceRoot}/${T3_PROJECT_FILE_NAME}`)
+    .readFileString(`${workspaceRoot}/${COD3_PROJECT_FILE_NAME}`)
     .pipe(Effect.orElseSucceed(() => null));
   return resolveProjectFileBackedSetting(
     "defaultThreadEnvMode",
     null,
-    contents === null ? null : parseT3ProjectFile(contents),
+    contents === null ? null : parseCod3ProjectFile(contents),
   ).value;
 });
 
@@ -212,7 +212,7 @@ const withSavedProjectSettingsAfterCreate = withSavedProjectSettings.pipe(
 );
 
 export const layer = McpToolAccess.toLayer(ProjectToolkit, {
-  t3_thread_launch: McpToolAccess.startsThreads(
+  cod3_thread_launch: McpToolAccess.startsThreads(
     (input) => input,
     (input, { runtimeMode, interactionMode, linkOrigin }) =>
       Effect.gen(function* () {
@@ -366,7 +366,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
             ? yield* defaultWorktreeStrategy(project.workspaceRoot)
             : input.workspaceStrategy;
         // An omitted startFromOrigin follows the new-worktree setting, as the composer and
-        // t3_worktree_handoff do. Otherwise a stale local branch silently becomes the base.
+        // cod3_worktree_handoff do. Otherwise a stale local branch silently becomes the base.
         const strategy =
           projectSettings !== undefined &&
           requestedStrategy?.type === "worktree" &&
@@ -501,7 +501,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
     // The launched thread carries the caller's link, if it has one.
     "stamped",
   ),
-  t3_project_list: McpToolAccess.reads((input) =>
+  cod3_project_list: McpToolAccess.reads((input) =>
     Effect.gen(function* () {
       const projects = yield* access;
       // Identities are resolved: linked environments find this side's project by repository.
@@ -511,7 +511,17 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
       return { ...page, projects: page.projects.map(yield* withSavedProjectSettings) };
     }),
   ),
-  t3_project_read: McpToolAccess.reads((input) =>
+  // Listing arbitrary host folders needs the same caller access as opening one as a project.
+  cod3_project_discover: McpToolAccess.writesEnvironment(
+    (input) =>
+      Effect.flatMap(Project.ProjectService, (projects) => projects.discoverProjects(input)).pipe(
+        Effect.mapError(
+          (error) => new OrchestratorMcpFailure({ code: "invalid_request", message: error.detail }),
+        ),
+      ),
+    { linkedCallers: "allowed" },
+  ),
+  cod3_project_read: McpToolAccess.reads((input) =>
     Effect.gen(function* () {
       const projects = yield* access;
       const result = yield* projects.getById(input.projectId).pipe(Effect.mapError(unavailable));
@@ -523,7 +533,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
       return (yield* withSavedProjectSettings)(result.value);
     }),
   ),
-  t3_project_create: McpToolAccess.writesEnvironment(
+  cod3_project_create: McpToolAccess.writesEnvironment(
     ({ workspaceRoot, ...input }) =>
       Effect.gen(function* () {
         const projects = yield* Project.ProjectService;
@@ -538,7 +548,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
             return yield* new OrchestratorMcpFailure({
               code: "invalid_request",
               message:
-                "A project started from its title takes only a title; set scripts or defaultModelSelection afterwards with t3_project_update.",
+                "A project started from its title takes only a title; set scripts or defaultModelSelection afterwards with cod3_project_update.",
             });
           const folders = yield* ManagedProjectFolders.ManagedProjectFolders;
           const created = yield* folders.createNamedProject({ name: input.title }).pipe(
@@ -567,7 +577,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
           return yield* new OrchestratorMcpFailure({
             code: "invalid_request",
             message:
-              "Creating a project does not set its default model; set defaultModelSelection afterwards with t3_project_update.",
+              "Creating a project does not set its default model; set defaultModelSelection afterwards with cod3_project_update.",
           });
         const commandId = yield* newCommandId();
         const created = yield* projects
@@ -579,7 +589,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
     // registered workspace is still refused.
     { linkedCallers: "allowed" },
   ),
-  t3_project_update: McpToolAccess.writesEnvironment((input) =>
+  cod3_project_update: McpToolAccess.writesEnvironment((input) =>
     Effect.gen(function* () {
       const projects = yield* Project.ProjectService;
       const updated = yield* projects
@@ -588,7 +598,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
       return (yield* withSavedProjectSettings)(updated);
     }),
   ),
-  t3_project_delete: McpToolAccess.writesEnvironment((input) =>
+  cod3_project_delete: McpToolAccess.writesEnvironment((input) =>
     Effect.gen(function* () {
       const folders = yield* ManagedProjectFolders.ManagedProjectFolders;
       if (yield* folders.isScratchProject(input.projectId))
@@ -606,7 +616,7 @@ export const layer = McpToolAccess.toLayer(ProjectToolkit, {
       }).pipe(Effect.mapError(projectFailure));
     }),
   ),
-  t3_project_clone: McpToolAccess.writesEnvironment(
+  cod3_project_clone: McpToolAccess.writesEnvironment(
     (input) =>
       Effect.gen(function* () {
         const repositories = yield* Repositories.SourceControlRepositoryService;

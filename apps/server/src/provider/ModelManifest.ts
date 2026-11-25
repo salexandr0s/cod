@@ -1,8 +1,4 @@
-import {
-  ModelCapabilities,
-  TrimmedNonEmptyString,
-  type ProviderDriverKind,
-} from "@t3tools/contracts";
+import { ModelCapabilities, TrimmedNonEmptyString, type ProviderDriverKind } from "@cod3/contracts";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -14,7 +10,7 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import { HttpClient, HttpClientResponse } from "effect/http";
 
-import { writeFileStringAtomically } from "@t3tools/shared/atomicWrite";
+import { writeFileStringAtomically } from "@cod3/shared/atomicWrite";
 import { ServerConfig } from "../config.ts";
 import * as ServerSettings from "../serverSettings.ts";
 import { hasValidClaudeManifestAdapters } from "./ClaudeModelManifest.ts";
@@ -23,10 +19,10 @@ import {
   ProviderCompatibilityPolicy,
   resolveProviderCompatibility,
 } from "./providerCompatibility.ts";
-import * as ModelCatalog from "@t3tools/provider-core/server/ModelCatalog";
+import * as ModelCatalog from "@cod3/provider-core/server/ModelCatalog";
 
 const MODEL_MANIFEST_URL =
-  "https://raw.githubusercontent.com/pingdotgg/t3code/main/apps/server/src/provider/model-manifest.json";
+  "https://raw.githubusercontent.com/salexandr0s/cod/main/apps/server/src/provider/model-manifest.json";
 
 const MANIFEST_TTL_MS = 60 * 60 * 1000;
 
@@ -194,7 +190,7 @@ export class ModelManifest extends Context.Service<
     /** Process-shared fetches must survive the triggering instance's teardown. */
     readonly refreshInBackground: Effect.Effect<void>;
   }
->()("t3/provider/ModelManifest") {}
+>()("cod3/provider/ModelManifest") {}
 
 const BundledOnlyModelManifest: ModelManifest["Service"] = {
   current: Effect.succeed(BUNDLED_MODEL_MANIFEST),

@@ -1,15 +1,15 @@
 /// <reference lib="dom" />
-import type { IssueDetail, IssueRef } from "@t3tools/contracts";
+import type { IssueDetail, IssueRef } from "@cod3/contracts";
 import { expect } from "e2e";
 
-import { test, WEB } from "./t3.ts";
+import { test, WEB } from "./cod3.ts";
 
 test(
   "The issue link picker finds a thread title without its accent",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("demo");
-    await t3.thread({ project, title: "Café planning", messages: ["first"] });
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("demo");
+    await cod3.thread({ project, title: "Café planning", messages: ["first"] });
     await browser.addInitScript(() => {
       const send = WebSocket.prototype.send;
       WebSocket.prototype.send = function (data) {
@@ -74,7 +74,7 @@ test(
       };
     });
 
-    await t3.open("/issues?selectedProjectId=demo&tracker=github&scope=example/demo&key=42");
+    await cod3.open("/issues?selectedProjectId=demo&tracker=github&scope=example/demo&key=42");
     await screen.getByText("Publish the release notes", { exact: true }).waitFor();
     await screen.getByRole("button", "Link to thread", { exact: true }).tap();
     const dialog = screen.getByRole("dialog", "Link issue to a thread");

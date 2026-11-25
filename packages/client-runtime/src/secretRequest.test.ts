@@ -4,7 +4,7 @@ import {
   SecretRequestError,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -137,6 +137,11 @@ describe("secretRequestSources", () => {
       label: "1Password",
       config: { account: "my" },
     },
+    [SecretProviderId.make("proton")]: {
+      kind: SecretProviderKind.make("proton_pass"),
+      label: "Team vault",
+      config: {},
+    },
     [SecretProviderId.make("later")]: {
       kind: SecretProviderKind.make("from_a_newer_build"),
       label: "Later",
@@ -148,13 +153,32 @@ describe("secretRequestSources", () => {
     expect(secretRequestSources({ secretRequestReferences: true }, providers)).toMatchObject([
       { id: onePassword, label: "1Password" },
     ]);
+    const sources = secretRequestSources(
+      {
+        secretRequestReferences: true,
+        secretProviderKinds: [SecretProviderKind.make("proton_pass")],
+      },
+      providers,
+    );
+    expect(sources).toMatchObject([
+      { id: "proton", label: "Team vault", referencePlaceholder: "pass://vault/item/field" },
+    ]);
     expect(secretRequestSources({}, providers)).toEqual([]);
     expect(secretRequestSources({ secretRequestReferences: true }, {})).toEqual([]);
   });
 
   it("answers with a reference only in the provider's syntax", () => {
-    const [source] = secretRequestSources({ secretRequestReferences: true }, providers);
-    if (source === undefined) throw new Error("expected a source");
+    const [source, proton] = secretRequestSources(
+      {
+        secretRequestReferences: true,
+        secretProviderKinds: [
+          SecretProviderKind.make("one_password"),
+          SecretProviderKind.make("proton_pass"),
+        ],
+      },
+      providers,
+    );
+    if (!source || !proton) throw new Error("expected both sources");
     const item = {
       id: TurnItemId.make("item-1"),
       threadId: ThreadId.make("thread-1"),
@@ -172,6 +196,23 @@ describe("secretRequestSources", () => {
     });
     expect(
       secretRequestAnswerInput(item, { type: "reference", source, reference: "vault/item" }),
+    ).toBeNull();
+    expect(
+      secretRequestAnswerInput(item, {
+        type: "reference",
+        source: proton,
+        reference: "pass://Team/Deploy/token",
+      })?.answer,
+    ).toEqual({
+      type: "reference",
+      reference: { provider: "proton", reference: "pass://Team/Deploy/token" },
+    });
+    expect(
+      secretRequestAnswerInput(item, {
+        type: "reference",
+        source: proton,
+        reference: "op://Team/Deploy/token",
+      }),
     ).toBeNull();
     // A reference answers one value, never a card with fields.
     const fields = [{ name: "password", label: "Password" }];

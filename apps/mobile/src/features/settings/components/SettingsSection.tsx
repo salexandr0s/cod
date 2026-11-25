@@ -12,15 +12,19 @@ export const SettingsSidebarContext = createContext<{ readonly selected: string 
   null,
 );
 
-export function SettingsSection(props: ComponentProps<typeof ListSection>) {
-  if (!use(SettingsSidebarContext)) return <ListSection {...props} />;
+export function SettingsSection(props: Omit<ComponentProps<typeof ListSection>, "prominentTitle">) {
+  if (!use(SettingsSidebarContext)) return <ListSection {...props} prominentTitle />;
   return (
     <View className="gap-1">
       {props.title ? (
         <View className="flex-row items-center justify-between gap-3 px-2">
           <View className="min-w-0 flex-1 flex-row items-center gap-2">
             {props.titleIcon}
-            <Text textRole="footnote" className="shrink font-t3-medium text-foreground-muted">
+            <Text
+              accessibilityRole="header"
+              textRole="footnote"
+              className="shrink font-cod3-semibold text-foreground"
+            >
               {props.title}
             </Text>
           </View>

@@ -1,4 +1,4 @@
-import { ThreadId, type WorktreeSetupSnapshot } from "@t3tools/contracts";
+import { ThreadId, type WorktreeSetupSnapshot } from "@cod3/contracts";
 import { expect, it, vi } from "vite-plus/test";
 
 import { act, fakeTimers, render } from "../../../test/render";
@@ -12,9 +12,9 @@ function snapshot(overrides: Partial<WorktreeSetupSnapshot>): WorktreeSetupSnaps
     phase: "running",
     startedAt: "2026-10-26T12:00:00.000Z",
     endedAt: null,
-    branch: "t3/feature",
+    branch: "cod3/feature",
     baseRef: "main",
-    worktreePath: "/repo/.t3/worktrees/feature",
+    worktreePath: "/repo/.cod3/worktrees/feature",
     setupScript: null,
     stages: [
       {

@@ -6,8 +6,8 @@ import {
   type ServerProvider,
   type ServerProviderUpdatedPayload,
   type ServerProviderUpdateState,
-} from "@t3tools/contracts";
-import { resolveSpawnCommand } from "@t3tools/shared/shell";
+} from "@cod3/contracts";
+import { resolveSpawnCommand } from "@cod3/shared/shell";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -35,10 +35,10 @@ import {
   resolveLatestProviderUpdateAction,
   resolveLatestProviderVersion,
   type ProviderMaintenanceCommandAction,
-} from "@t3tools/provider-core/server/maintenanceResolver";
-import * as ProviderLatestVersions from "@t3tools/provider-core/server/ProviderLatestVersions";
-import type { ProviderMaintenanceCapabilities } from "@t3tools/provider-core/server/maintenanceResolver";
-import { collectUint8StreamText } from "@t3tools/provider-core/server/collectStreamText";
+} from "@cod3/provider-core/server/maintenanceResolver";
+import * as ProviderLatestVersions from "@cod3/provider-core/server/ProviderLatestVersions";
+import type { ProviderMaintenanceCapabilities } from "@cod3/provider-core/server/maintenanceResolver";
+import { collectUint8StreamText } from "@cod3/provider-core/server/collectStreamText";
 const isServerProviderUpdateError = Schema.is(ServerProviderUpdateError);
 
 // Native updaters (`claude update`) download a ~300 MB binary without printing
@@ -77,7 +77,7 @@ export interface ProviderMaintenanceRunnerShape {
 export class ProviderMaintenanceRunner extends Context.Service<
   ProviderMaintenanceRunner,
   ProviderMaintenanceRunnerShape
->()("t3/provider/providerMaintenanceRunner") {}
+>()("cod3/provider/providerMaintenanceRunner") {}
 
 class ProviderMaintenanceCommandError extends Schema.TaggedError<ProviderMaintenanceCommandError>()(
   "ProviderMaintenanceCommandError",
@@ -540,7 +540,7 @@ export const make = Effect.fn("ProviderMaintenanceRunner.make")(function* () {
                   message:
                     targetVersion !== undefined
                       ? "This version is no longer recommended or this installer cannot install a specific version. Refresh provider settings."
-                      : "The latest provider version is incompatible with this T3 Code release. Review provider settings.",
+                      : "The latest provider version is incompatible with this cod3 release. Review provider settings.",
                 }),
               );
             }
@@ -655,9 +655,9 @@ export const make = Effect.fn("ProviderMaintenanceRunner.make")(function* () {
                 startedAt,
                 finishedAt,
                 message: couldNotVerify
-                  ? "Update command completed, but T3 Code could not verify the provider version."
+                  ? "Update command completed, but cod3 could not verify the provider version."
                   : stillOutdated
-                    ? "Update command completed, but T3 Code still detects an outdated provider version."
+                    ? "Update command completed, but cod3 still detects an outdated provider version."
                     : needsOpenCodeServerRestart(verifiedProviders)
                       ? OPENCODE_SERVER_RESTART_MESSAGE
                       : "Provider updated.",

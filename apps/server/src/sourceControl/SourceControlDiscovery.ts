@@ -2,7 +2,7 @@ import {
   type SourceControlDiscoveryResult,
   type VcsDiscoveryItem,
   type VcsDriverKind,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -17,7 +17,7 @@ import {
   detailFromCause,
   failedProbeHint,
   firstNonEmptyLine,
-} from "@t3tools/source-control-core/server/discovery";
+} from "@cod3/source-control-core/server/discovery";
 import * as SourceControlProviderRegistry from "./SourceControlProviderRegistry.ts";
 
 interface DiscoveryProbe {
@@ -69,7 +69,7 @@ export class SourceControlDiscovery extends Context.Service<
   {
     readonly discover: Effect.Effect<SourceControlDiscoveryResult>;
   }
->()("t3/sourceControl/SourceControlDiscovery") {}
+>()("cod3/sourceControl/SourceControlDiscovery") {}
 
 /** @public */
 export const make = Effect.gen(function* () {

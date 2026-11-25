@@ -22,19 +22,19 @@ import {
   RelayMobileRegistrationScope,
   type RelayOkResponse,
   type RelayPublicClientId,
-  type RelayT3ChatLinkRequestResponse,
-  type RelayT3ChatLinkResponse,
+  type RelayCod3ChatLinkRequestResponse,
+  type RelayCod3ChatLinkResponse,
   RelayRegisterDeviceEndpoint,
   RelayAgentActivitySnapshotEndpoint,
   RelayRegisterLiveActivityEndpoint,
   RelayProtectedError,
   type RelayProtectedError as RelayProtectedErrorType,
   RelayUnregisterDeviceEndpoint,
-} from "@t3tools/contracts/relay";
-import { encodeOAuthScope, oauthScopeSetEquals } from "@t3tools/shared/oauthScope";
-import { decodeRelayJwt } from "@t3tools/shared/relayJwt";
-import { withRelayClientTracing } from "@t3tools/shared/relayTracing";
-import { normalizeSecureRelayUrl } from "@t3tools/shared/relayUrl";
+} from "@cod3/contracts/relay";
+import { encodeOAuthScope, oauthScopeSetEquals } from "@cod3/shared/oauthScope";
+import { decodeRelayJwt } from "@cod3/shared/relayJwt";
+import { withRelayClientTracing } from "@cod3/shared/relayTracing";
+import { normalizeSecureRelayUrl } from "@cod3/shared/relayUrl";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
@@ -343,7 +343,7 @@ export class ManagedRelayDpopSigner extends Context.Service<
       input: ManagedRelayDpopProofInput,
     ) => Effect.Effect<string, ManagedRelayDpopProofCreationError>;
   }
->()("@t3tools/client-runtime/relay/managedRelay/ManagedRelayDpopSigner") {}
+>()("@cod3/client-runtime/relay/managedRelay/ManagedRelayDpopSigner") {}
 
 export const MANAGED_RELAY_REQUEST_TIMEOUT_MS = 10_000;
 
@@ -397,13 +397,13 @@ export class ManagedRelayClient extends Context.Service<
       readonly clerkToken: string;
       readonly environmentId: RelayClientEnvironmentRecord["environmentId"];
     }) => Effect.Effect<RelayOkResponse, ManagedRelayClientError>;
-    readonly getT3ChatLink: (input: {
+    readonly getCod3ChatLink: (input: {
       readonly clerkToken: string;
-    }) => Effect.Effect<RelayT3ChatLinkResponse, ManagedRelayClientError>;
-    readonly createT3ChatLinkRequest: (input: {
+    }) => Effect.Effect<RelayCod3ChatLinkResponse, ManagedRelayClientError>;
+    readonly createCod3ChatLinkRequest: (input: {
       readonly clerkToken: string;
-    }) => Effect.Effect<RelayT3ChatLinkRequestResponse, ManagedRelayClientError>;
-    readonly unlinkT3Chat: (input: {
+    }) => Effect.Effect<RelayCod3ChatLinkRequestResponse, ManagedRelayClientError>;
+    readonly unlinkCod3Chat: (input: {
       readonly clerkToken: string;
     }) => Effect.Effect<RelayOkResponse, ManagedRelayClientError>;
     readonly getEnvironmentStatus: (input: {
@@ -434,7 +434,7 @@ export class ManagedRelayClient extends Context.Service<
     }) => Effect.Effect<RelayAgentActivitySnapshotResponse, ManagedRelayClientError>;
     readonly resetTokenCache: Effect.Effect<void>;
   }
->()("@t3tools/client-runtime/relay/managedRelay/ManagedRelayClient") {}
+>()("@cod3/client-runtime/relay/managedRelay/ManagedRelayClient") {}
 
 const isRelayProtectedError = Schema.is(RelayProtectedError);
 
@@ -558,9 +558,9 @@ function disabledManagedRelayClient(relayUrl: string): ManagedRelayClient["Servi
     ),
     linkEnvironment: unavailable("clientRuntime.managedRelay.linkEnvironment"),
     unlinkEnvironment: unavailable("clientRuntime.managedRelay.unlinkEnvironment"),
-    getT3ChatLink: unavailable("clientRuntime.managedRelay.getT3ChatLink"),
-    createT3ChatLinkRequest: unavailable("clientRuntime.managedRelay.createT3ChatLinkRequest"),
-    unlinkT3Chat: unavailable("clientRuntime.managedRelay.unlinkT3Chat"),
+    getCod3ChatLink: unavailable("clientRuntime.managedRelay.getCod3ChatLink"),
+    createCod3ChatLinkRequest: unavailable("clientRuntime.managedRelay.createCod3ChatLinkRequest"),
+    unlinkCod3Chat: unavailable("clientRuntime.managedRelay.unlinkCod3Chat"),
     getEnvironmentStatus: unavailable("clientRuntime.managedRelay.getEnvironmentStatus"),
     connectEnvironment: unavailable("clientRuntime.managedRelay.connectEnvironment"),
     registerDevice: unavailable("clientRuntime.managedRelay.registerDevice"),
@@ -926,40 +926,40 @@ export const make = Effect.fn("ManagedRelayClient.make")(function* (
       Effect.withSpan("clientRuntime.managedRelay.unlinkEnvironment"),
       withRelayClientTracing,
     ),
-    getT3ChatLink: Effect.fnUntraced(
+    getCod3ChatLink: Effect.fnUntraced(
       function* (input) {
         return yield* client.client
-          .getT3ChatLink({ headers: bearerHeaders(input.clerkToken) })
+          .getCod3ChatLink({ headers: bearerHeaders(input.clerkToken) })
           .pipe(
             Effect.mapError(relayRequestError("read linked T3 Chat account")),
             timeoutRelayRequest("Relay T3 Chat link lookup"),
           );
       },
-      Effect.withSpan("clientRuntime.managedRelay.getT3ChatLink"),
+      Effect.withSpan("clientRuntime.managedRelay.getCod3ChatLink"),
       withRelayClientTracing,
     ),
-    createT3ChatLinkRequest: Effect.fnUntraced(
+    createCod3ChatLinkRequest: Effect.fnUntraced(
       function* (input) {
         return yield* client.client
-          .createT3ChatLinkRequest({ headers: bearerHeaders(input.clerkToken) })
+          .createCod3ChatLinkRequest({ headers: bearerHeaders(input.clerkToken) })
           .pipe(
             Effect.mapError(relayRequestError("start T3 Chat linking")),
             timeoutRelayRequest("Relay T3 Chat link request"),
           );
       },
-      Effect.withSpan("clientRuntime.managedRelay.createT3ChatLinkRequest"),
+      Effect.withSpan("clientRuntime.managedRelay.createCod3ChatLinkRequest"),
       withRelayClientTracing,
     ),
-    unlinkT3Chat: Effect.fnUntraced(
+    unlinkCod3Chat: Effect.fnUntraced(
       function* (input) {
         return yield* client.client
-          .unlinkT3Chat({ headers: bearerHeaders(input.clerkToken) })
+          .unlinkCod3Chat({ headers: bearerHeaders(input.clerkToken) })
           .pipe(
             Effect.mapError(relayRequestError("unlink T3 Chat account")),
             timeoutRelayRequest("Relay T3 Chat unlinking"),
           );
       },
-      Effect.withSpan("clientRuntime.managedRelay.unlinkT3Chat"),
+      Effect.withSpan("clientRuntime.managedRelay.unlinkCod3Chat"),
       withRelayClientTracing,
     ),
     getEnvironmentStatus: Effect.fnUntraced(

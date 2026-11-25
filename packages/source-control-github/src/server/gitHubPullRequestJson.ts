@@ -1,4 +1,4 @@
-import { trimOptionalString as trimmed } from "@t3tools/source-control-core/server/pullRequestUtils";
+import { trimOptionalString as trimmed } from "@cod3/source-control-core/server/pullRequestUtils";
 import * as Cause from "effect/Cause";
 import * as Exit from "effect/Exit";
 import * as Result from "effect/Result";
@@ -35,14 +35,14 @@ import type {
   PullRequestLabelCandidateList,
   PullRequestState,
   PullRequestThreadComment,
-} from "@t3tools/contracts";
-import { quoteGitPatchPath } from "@t3tools/shared/gitPatchPath";
-import { decodeJsonResult } from "@t3tools/shared/schemaJson";
+} from "@cod3/contracts";
+import { quoteGitPatchPath } from "@cod3/shared/gitPatchPath";
+import { decodeJsonResult } from "@cod3/shared/schemaJson";
 import {
   dedupeChecks,
   rollupCheckStatuses,
-} from "@t3tools/source-control-core/server/pullRequestChecks";
-import type { ProviderChangeRequestSummary } from "@t3tools/source-control-core/server/PullRequestProvider";
+} from "@cod3/source-control-core/server/pullRequestChecks";
+import type { ProviderChangeRequestSummary } from "@cod3/source-control-core/server/PullRequestProvider";
 
 import type * as GitHubSchema from "../../schema/github.graphql.ts";
 import type {

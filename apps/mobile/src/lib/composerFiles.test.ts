@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
-import { PROVIDER_SEND_TURN_MAX_IMAGE_BYTES } from "@t3tools/contracts";
+import { PROVIDER_SEND_TURN_MAX_IMAGE_BYTES } from "@cod3/contracts";
 import type { ImagePickerAsset } from "expo-image-picker";
 
 // Bytes of image files the tests create, so stored attachments can be read back and measured.
@@ -104,7 +104,7 @@ import {
 import { isForegroundHandoffActive } from "./foreground-handoff";
 import { retainComposerAttachmentFile } from "./composerAttachmentFiles";
 
-const STORED = "file:///documents/t3-composer-attachments/attachment-id";
+const STORED = "file:///documents/cod3-composer-attachments/attachment-id";
 
 function sizeOtherFilesAs(bytes: number): void {
   mocks.size.mockImplementation((uri: string) => {
@@ -402,14 +402,14 @@ describe("composer file attachments", () => {
             name: "clip.mov",
             mimeType: "video/quicktime",
             sizeBytes: video.fileSize,
-            fileUri: "file:///documents/t3-composer-attachments/attachment-id-clip.mov",
+            fileUri: "file:///documents/cod3-composer-attachments/attachment-id-clip.mov",
           },
         ],
         error: null,
       });
       expect(mocks.copy).toHaveBeenCalledWith(
         video.uri,
-        "file:///documents/t3-composer-attachments/attachment-id-clip.mov",
+        "file:///documents/cod3-composer-attachments/attachment-id-clip.mov",
       );
       expect(mocks.delete).not.toHaveBeenCalled();
     });
@@ -482,7 +482,7 @@ describe("composer file attachments", () => {
         });
         if (stored === 0) {
           expect(mocks.delete).toHaveBeenCalledWith(
-            "file:///documents/t3-composer-attachments/attachment-id-clip.mov",
+            "file:///documents/cod3-composer-attachments/attachment-id-clip.mov",
           );
         }
       },
@@ -669,7 +669,7 @@ describe("composer file attachments", () => {
         error: "unreadable image",
       });
       expect(mocks.delete).toHaveBeenCalledWith(
-        "file:///documents/t3-composer-attachments/attachment-id-photo.png",
+        "file:///documents/cod3-composer-attachments/attachment-id-photo.png",
       );
     });
   });
@@ -695,14 +695,14 @@ describe("composer file attachments", () => {
           name: "report.pdf",
           mimeType: "application/pdf",
           sizeBytes: 42,
-          fileUri: "file:///documents/t3-composer-attachments/attachment-id-report.pdf",
+          fileUri: "file:///documents/cod3-composer-attachments/attachment-id-report.pdf",
         },
       ],
       error: null,
     });
     expect(mocks.copy).toHaveBeenCalledWith(
       "file:///downloads/report.pdf",
-      "file:///documents/t3-composer-attachments/attachment-id-report.pdf",
+      "file:///documents/cod3-composer-attachments/attachment-id-report.pdf",
     );
   });
 
@@ -747,7 +747,7 @@ describe("composer file attachments", () => {
           name: "preview-h264.mp4",
           mimeType: "video/mp4",
           sizeBytes: 620_992,
-          fileUri: "file:///documents/t3-composer-attachments/attachment-id-preview-h264.mp4",
+          fileUri: "file:///documents/cod3-composer-attachments/attachment-id-preview-h264.mp4",
         },
       ],
       error: null,
@@ -755,7 +755,7 @@ describe("composer file attachments", () => {
     expect(mocks.pickFile).toHaveBeenCalledWith({ multiple: true, copyToCacheDirectory: true });
     expect(mocks.copy).toHaveBeenCalledWith(
       uri,
-      "file:///documents/t3-composer-attachments/attachment-id-preview-h264.mp4",
+      "file:///documents/cod3-composer-attachments/attachment-id-preview-h264.mp4",
     );
     expect(mocks.delete).not.toHaveBeenCalled();
   });
@@ -785,7 +785,7 @@ describe("composer file attachments", () => {
     expect(result.files).toEqual([
       expect.objectContaining({
         name: "Cloud recording.mp4",
-        fileUri: "file:///documents/t3-composer-attachments/attachment-id-Cloud recording.mp4",
+        fileUri: "file:///documents/cod3-composer-attachments/attachment-id-Cloud recording.mp4",
       }),
     ]);
     expect(mocks.copy).toHaveBeenCalledWith(cachedUri, result.files[0]!.fileUri);
@@ -881,7 +881,7 @@ describe("composer file attachments", () => {
     expect(source.close).toHaveBeenCalledOnce();
     expect(destination.close).toHaveBeenCalledOnce();
     expect(mocks.delete).toHaveBeenCalledWith(
-      "file:///documents/t3-composer-attachments/attachment-id-large.bin",
+      "file:///documents/cod3-composer-attachments/attachment-id-large.bin",
     );
     expect(mocks.copy).not.toHaveBeenCalled();
   });
@@ -898,7 +898,7 @@ describe("composer file attachments", () => {
 
     expect(mocks.copy).toHaveBeenCalledOnce();
     expect(mocks.delete).toHaveBeenCalledWith(
-      "file:///documents/t3-composer-attachments/attachment-id-liar.bin",
+      "file:///documents/cod3-composer-attachments/attachment-id-liar.bin",
     );
   });
 
@@ -933,7 +933,7 @@ describe("composer file attachments", () => {
           name: "report.pdf",
           mimeType: "application/pdf",
           sizeBytes: 42,
-          fileUri: "file:///documents/t3-composer-attachments/attachment-id-report.pdf",
+          fileUri: "file:///documents/cod3-composer-attachments/attachment-id-report.pdf",
         },
       ],
       error: null,
@@ -974,47 +974,47 @@ describe("composer file attachments", () => {
     ).rejects.toThrow("disk full");
 
     expect(mocks.delete).toHaveBeenCalledWith(
-      "file:///documents/t3-composer-attachments/attachment-id-report.pdf",
+      "file:///documents/cod3-composer-attachments/attachment-id-report.pdf",
     );
   });
 
   it("deletes app-owned attachments without touching user-owned files", async () => {
     await removePersistedComposerAttachmentFile(
-      "file:///documents/t3-composer-attachments/report.pdf",
+      "file:///documents/cod3-composer-attachments/report.pdf",
     );
     await removePersistedComposerAttachmentFile("file:///downloads/report.pdf");
 
     expect(mocks.delete).toHaveBeenCalledOnce();
     expect(mocks.delete).toHaveBeenCalledWith(
-      "file:///documents/t3-composer-attachments/report.pdf",
+      "file:///documents/cod3-composer-attachments/report.pdf",
     );
   });
 
   it("removes a restored attachment from the current iOS document container", async () => {
     const fileName = "33333333-3333-4333-8333-333333333333-report%20%23.pdf";
-    const oldUri = `file:///private/var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/t3-composer-attachments/${fileName}`;
+    const oldUri = `file:///private/var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/cod3-composer-attachments/${fileName}`;
     mocks.documentUri =
       "file:///var/mobile/Containers/Data/Application/22222222-2222-4222-8222-222222222222/Documents";
 
     await removePersistedComposerAttachmentFile(oldUri);
     await removePersistedComposerAttachmentFile(
-      `file:///var/mobile/Containers/Shared/FileProvider/other/Documents/t3-composer-attachments/${fileName}`,
+      `file:///var/mobile/Containers/Shared/FileProvider/other/Documents/cod3-composer-attachments/${fileName}`,
     );
     await removePersistedComposerAttachmentFile(
-      `${mocks.documentUri}/t3-composer-attachments/..%2F..%2Fsender.pdf`,
+      `${mocks.documentUri}/cod3-composer-attachments/..%2F..%2Fsender.pdf`,
     );
 
     expect(mocks.delete.mock.calls).toEqual([
-      [`${mocks.documentUri}/t3-composer-attachments/${fileName}`],
+      [`${mocks.documentUri}/cod3-composer-attachments/${fileName}`],
     ]);
   });
 
   it("rechecks preview ownership after loading the native filesystem", async () => {
     const fileName = "33333333-3333-4333-8333-333333333333-recording.mp4";
-    const oldUri = `file:///private/var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/t3-composer-attachments/${fileName}`;
+    const oldUri = `file:///private/var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/cod3-composer-attachments/${fileName}`;
     mocks.documentUri =
       "file:///var/mobile/Containers/Data/Application/22222222-2222-4222-8222-222222222222/Documents";
-    const currentUri = `${mocks.documentUri}/t3-composer-attachments/${fileName}`;
+    const currentUri = `${mocks.documentUri}/cod3-composer-attachments/${fileName}`;
 
     const deleting = removePersistedComposerAttachmentFile(oldUri);
     const release = retainComposerAttachmentFile(currentUri, () => {});
@@ -1031,7 +1031,7 @@ describe("composer file attachments", () => {
 
   it("copies an open-in-place source from its actual container without rebasing it", async () => {
     const sourceUri =
-      "file:///var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/t3-composer-attachments/33333333-3333-4333-8333-333333333333-report.pdf";
+      "file:///var/mobile/Containers/Data/Application/11111111-1111-4111-8111-111111111111/Documents/cod3-composer-attachments/33333333-3333-4333-8333-333333333333-report.pdf";
     mocks.documentUri =
       "file:///var/mobile/Containers/Data/Application/22222222-2222-4222-8222-222222222222/Documents";
 
@@ -1039,7 +1039,7 @@ describe("composer file attachments", () => {
 
     expect(mocks.copy).toHaveBeenCalledWith(
       sourceUri,
-      `${mocks.documentUri}/t3-composer-attachments/attachment-id-report.pdf`,
+      `${mocks.documentUri}/cod3-composer-attachments/attachment-id-report.pdf`,
     );
     expect(mocks.delete).not.toHaveBeenCalled();
   });

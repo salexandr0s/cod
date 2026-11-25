@@ -6,7 +6,7 @@ import {
   type WorkflowRunReference,
   WorkflowRunStatus,
   WorkflowStep,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
@@ -367,7 +367,7 @@ export class WorkflowStore extends Context.Service<
     /** What the run touched, in the order it first did. */
     readonly references: (runId: string) => Effect.Effect<ReadonlyArray<WorkflowRunReference>>;
   }
->()("t3/workflows/WorkflowStore") {}
+>()("cod3/workflows/WorkflowStore") {}
 
 export const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;

@@ -1,4 +1,4 @@
-import type { DeviceServiceState, ThreadId } from "@t3tools/contracts";
+import type { DeviceServiceState, ThreadId } from "@cod3/contracts";
 
 /** Host identity is part of the selection because Android serials repeat across hosts. */
 export function threadDevicePreviews(state: DeviceServiceState | null, threadId: ThreadId) {
@@ -12,7 +12,13 @@ export function threadDevicePreviews(state: DeviceServiceState | null, threadId:
       return {
         key: JSON.stringify([session.hostId, session.deviceId]),
         session,
-        name: device?.name ?? (session.platform === "ios" ? "iOS Simulator" : "Android Emulator"),
+        name:
+          device?.name ??
+          (session.platform === "macos"
+            ? "Mac"
+            : session.platform === "ios"
+              ? "iOS Simulator"
+              : "Android Emulator"),
         description: [device?.version, host?.label].filter(Boolean).join(" · "),
         serveSimOnly: host?.kind === "simlock",
       };

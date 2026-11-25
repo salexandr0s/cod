@@ -1,8 +1,8 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useNavigation, type StaticScreenProps } from "@react-navigation/native";
-import { EnvironmentId } from "@t3tools/contracts";
-import { providerClients } from "@t3tools/client-runtime/provider-clients";
-import { normalizeProviderAccentColor } from "@t3tools/client-runtime/state/provider-instance-display";
+import { EnvironmentId } from "@cod3/contracts";
+import { providerClients } from "@cod3/client-runtime/provider-clients";
+import { normalizeProviderAccentColor } from "@cod3/client-runtime/state/provider-instance-display";
 import {
   collectLimitAccounts,
   collectLimitPools,
@@ -11,12 +11,12 @@ import {
   remainingPercent,
   type LimitAccount,
   type LimitPoolWindow,
-} from "@t3tools/shared/usageLimits";
+} from "@cod3/shared/usageLimits";
 import {
   collectExternalUsageLinks,
   collectLimitNotices,
   cursorUsageWindowDetails,
-} from "@t3tools/shared/usageLimitsCopy";
+} from "@cod3/shared/usageLimitsCopy";
 import { msg, T, useGT, useMessages, Var } from "gt-react-native";
 import { Fragment, type ReactNode, useId, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -70,7 +70,7 @@ function AccountChip({ email }: { readonly email: string }) {
       className="size-5 items-center justify-center rounded-full"
       style={{ backgroundColor: `hsl(${hue}, 45%, 82%)` }}
     >
-      <Text className="text-[9px] font-t3-bold" style={{ color: `hsl(${hue}, 45%, 28%)` }}>
+      <Text className="text-[9px] font-cod3-bold" style={{ color: `hsl(${hue}, 45%, 28%)` }}>
         {emailInitials(email)}
       </Text>
     </View>
@@ -208,12 +208,12 @@ function PoolWindowCard({
       <View className={wide ? "gap-1" : "flex-row items-start justify-between gap-3"}>
         <View className="gap-1">
           {label !== null ? (
-            <Text className="text-sm font-t3-medium text-foreground">{label ?? pool.label}</Text>
+            <Text className="text-sm font-cod3-medium text-foreground">{label ?? pool.label}</Text>
           ) : null}
           <View className="flex-row items-baseline gap-1.5">
             <Text className="text-sm leading-(--text-3xl--line-height) text-foreground-muted">
               <T>
-                <Text className="text-3xl font-t3-bold tabular-nums text-foreground">
+                <Text className="text-3xl font-cod3-bold tabular-nums text-foreground">
                   <Var>{pool.remainingPercent}</Var>%
                 </Text>{" "}
                 left
@@ -295,12 +295,12 @@ function PoolWindowCard({
                   {account.email && !(account.displayName && inlineName) ? null : (
                     <Text
                       numberOfLines={1}
-                      className="min-w-0 shrink text-xs font-t3-medium text-foreground"
+                      className="min-w-0 shrink text-xs font-cod3-medium text-foreground"
                     >
                       {accountName(account, m)}
                     </Text>
                   )}
-                  <Text className="text-sm font-t3-bold tabular-nums text-foreground">
+                  <Text className="text-sm font-cod3-bold tabular-nums text-foreground">
                     {remainingPercent(window)}%
                   </Text>
                 </View>
@@ -321,7 +321,7 @@ function PoolWindowCard({
                     {credits ? (
                       <>
                         <SymbolView name="ticket" size={12} tintColorClassName="accent-icon" />
-                        <Text className="text-xs font-t3-medium tabular-nums text-foreground">
+                        <Text className="text-xs font-cod3-medium tabular-nums text-foreground">
                           {credits}
                         </Text>
                       </>
@@ -336,7 +336,7 @@ function PoolWindowCard({
               >
                 <Text
                   numberOfLines={1}
-                  className="max-w-full shrink text-xs font-t3-medium tabular-nums text-foreground"
+                  className="max-w-full shrink text-xs font-cod3-medium tabular-nums text-foreground"
                 >
                   {index + 1}
                 </Text>
@@ -404,17 +404,17 @@ function PoolWindowCard({
                 className="absolute inset-0"
                 style={{ backgroundColor: segmentColor, opacity: 0.35 }}
               />
-              <Text className="text-xs font-t3-medium tabular-nums text-foreground">
+              <Text className="text-xs font-cod3-medium tabular-nums text-foreground">
                 {index + 1}
               </Text>
             </View>
             <Text
               numberOfLines={1}
-              className="min-w-0 flex-1 text-sm font-t3-medium text-foreground"
+              className="min-w-0 flex-1 text-sm font-cod3-medium text-foreground"
             >
               {accountName(account, m)}
             </Text>
-            <Text className="text-sm font-t3-medium tabular-nums text-foreground">
+            <Text className="text-sm font-cod3-medium tabular-nums text-foreground">
               {remainingPercent(window)}%
             </Text>
             <View className="flex-row items-center gap-1">
@@ -434,7 +434,7 @@ function PoolWindowCard({
                 <>
                   {resetsIn ? <Text className="text-xs text-foreground-tertiary">·</Text> : null}
                   <SymbolView name="ticket" size={13} tintColorClassName="accent-icon" />
-                  <Text className="text-xs font-t3-medium tabular-nums text-foreground">
+                  <Text className="text-xs font-cod3-medium tabular-nums text-foreground">
                     {credits}
                   </Text>
                 </>
@@ -506,7 +506,7 @@ export function UsageLimitsSection({
             <View className="gap-3">
               <View className="flex-row items-center gap-2 px-1">
                 <ProviderIcon provider={pool.driver} size={18} />
-                <Text className="text-base font-t3-medium text-foreground">
+                <Text className="text-base font-cod3-medium text-foreground">
                   {providerClients.get(pool.driver)?.label ?? pool.driver}
                 </Text>
               </View>
@@ -536,7 +536,7 @@ export function UsageLimitsSection({
       })}
       {externalLinks.map((link) => (
         <View key={link.url} className="gap-3 rounded-xl border border-border-subtle p-4">
-          <Text className="text-base font-t3-medium text-foreground">{link.label}</Text>
+          <Text className="text-base font-cod3-medium text-foreground">{link.label}</Text>
           <Text className="text-xs text-foreground-muted">{link.accounts.join(", ")}</Text>
           {link.message ? (
             <Text className="text-sm text-foreground-muted">{link.message}</Text>
@@ -546,7 +546,7 @@ export function UsageLimitsSection({
             className="min-h-11 justify-center"
             onPress={() => void tryOpenExternalUrl(link.url)}
           >
-            <Text className="text-sm font-t3-medium text-primary">
+            <Text className="text-sm font-cod3-medium text-primary">
               <T>Manage usage</T>
             </Text>
           </Pressable>
@@ -566,12 +566,12 @@ export function UsageLimitsSection({
           />
           <View className="min-w-0 flex-1 gap-0.5">
             {notices.map((notice) => (
-              <Text key={notice} className="text-sm font-t3-medium text-warning-foreground">
+              <Text key={notice} className="text-sm font-cod3-medium text-warning-foreground">
                 {notice}
               </Text>
             ))}
             {failedLabels.length > 0 ? (
-              <Text className="text-sm font-t3-medium text-warning-foreground">
+              <Text className="text-sm font-cod3-medium text-warning-foreground">
                 <T>
                   <Var>{failedLabels.join(", ")}</Var> could not refresh limits. Showing the last
                   known values.
@@ -629,7 +629,7 @@ export function UsageLimitAccountScreen({ route }: AccountScreenProps) {
             <View className="gap-2">
               <View className="flex-row items-center gap-2">
                 <ProviderIcon provider={account.driver} size={24} />
-                <Text className="flex-1 text-xl font-t3-bold text-foreground">
+                <Text className="flex-1 text-xl font-cod3-bold text-foreground">
                   {account.displayName ??
                     providerClients.get(account.driver)?.label ??
                     account.driver}
@@ -656,8 +656,8 @@ export function UsageLimitAccountScreen({ route }: AccountScreenProps) {
               ) : null}
             </View>
             <View className="gap-3 rounded-[24px] border-continuous bg-grouped-card p-4">
-              <Text className="text-sm font-t3-medium text-foreground">{window.label}</Text>
-              <Text className="text-3xl font-t3-bold tabular-nums text-foreground">
+              <Text className="text-sm font-cod3-medium text-foreground">{window.label}</Text>
+              <Text className="text-3xl font-cod3-bold tabular-nums text-foreground">
                 <T>
                   <Var>{remainingPercent(window)}</Var>% left
                 </T>
@@ -691,7 +691,7 @@ export function UsageLimitAccountScreen({ route }: AccountScreenProps) {
               ) : null}
             </View>
             <View className="gap-2 rounded-[24px] border-continuous bg-grouped-card p-4">
-              <Text className="text-sm font-t3-medium text-foreground">
+              <Text className="text-sm font-cod3-medium text-foreground">
                 {account.environments.length
                   ? gt("Signed in", {
                       $context: "heading for environments signed in to the account",
@@ -710,7 +710,7 @@ export function UsageLimitAccountScreen({ route }: AccountScreenProps) {
             </View>
             {account.redeem && account.limits.resetCredits ? (
               <View className="gap-3 rounded-[24px] border-continuous bg-grouped-card p-4">
-                <Text className="text-sm font-t3-medium text-foreground">
+                <Text className="text-sm font-cod3-medium text-foreground">
                   <T>Reset credits</T>
                 </Text>
                 <ResetCredits

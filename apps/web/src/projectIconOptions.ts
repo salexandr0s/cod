@@ -1,4 +1,4 @@
-import { ProjectMonogramText } from "@t3tools/contracts";
+import { ProjectMonogramText } from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import { msg } from "gt-react";
 import { lucideIconNames } from "./lib/lucideIconByName";

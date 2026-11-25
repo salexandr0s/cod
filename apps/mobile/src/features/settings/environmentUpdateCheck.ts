@@ -1,5 +1,5 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import type { EnvironmentId } from "@t3tools/contracts";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import type { EnvironmentId } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -32,7 +32,7 @@ const asError = (cause: unknown) =>
   });
 
 /**
- * Looks up the newest T3 Code release for one environment. The atom is not
+ * Looks up the newest cod3 release for one environment. The atom is not
  * kept alive, so leaving the screen interrupts the lookup and aborts its fetch.
  * The argument reads the server version, which an outdated server only
  * reports through a separate description request.

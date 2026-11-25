@@ -1,11 +1,11 @@
 import * as Dialog from "../../components/ui/Dialog";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { useRememberThreadProject } from "./useRememberThreadProject";
 import { useOpenPullRequest } from "../../native/useOpenPullRequest";
 import { makeTurnCommandMetadata } from "../../lib/commandMetadata";
 import { buildProjectThreadStartTurnInput } from "../../lib/projectThreadStartTurn";
 import { useWorktreeSetup } from "./use-worktree-setup";
-import { worktreeSetupAgentStarted } from "@t3tools/client-runtime/worktree-setup";
+import { worktreeSetupAgentStarted } from "@cod3/client-runtime/worktree-setup";
 import { AppBar } from "../../components/ui/AppBar";
 import {
   StackActions,
@@ -34,13 +34,13 @@ import {
   MessageId,
   ThreadId,
   type ProjectScript,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   projectScriptCwd,
   projectScriptRuntimeEnv,
   projectScriptTerminalInput,
   resolveProjectScripts,
-} from "@t3tools/shared/projectScripts";
+} from "@cod3/shared/projectScripts";
 import { ScreenScrollView as ScrollView } from "../../components/ui/ScreenScrollView";
 import { useConnectionsReady } from "../../state/workspace";
 import { useEnvironmentShellReadiness } from "../../state/shell";
@@ -55,7 +55,7 @@ import { LoadingScreen } from "../../components/LoadingScreen";
 import { scopedThreadKey } from "../../lib/scopedEntities";
 import { useDelayedStatus } from "../../lib/useDelayedStatus";
 import { connectionRetryLabel } from "./floating-working-status";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
 import { useThreadShell } from "../../state/entities";
 import { NATIVE_LIQUID_GLASS_SUPPORTED } from "../../native/native-glass";
 import { connectionTone } from "../connection/connectionTone";
@@ -70,7 +70,7 @@ import { uuidv4 } from "../../lib/uuid";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { readEnvironmentScope, useEnvironmentScope } from "../../state/session";
 import { useSelectedThreadDetailState } from "../../state/use-thread-detail";
 import { useThreadSelection } from "../../state/use-thread-selection";
@@ -95,13 +95,13 @@ import { useSelectedThreadGitState } from "../../state/use-selected-thread-git-s
 import { useSelectedThreadRequests } from "../../state/use-selected-thread-requests";
 import { useSelectedThreadWorktree } from "../../state/use-selected-thread-worktree";
 import { useThreadComposerState } from "../../state/use-thread-composer-state";
-import { resolveMergeBackTargetThreadId } from "@t3tools/client-runtime/state/thread-relationships";
-import { resolveLatestMergeBackRun } from "@t3tools/client-runtime/state/thread-workflows";
+import { resolveMergeBackTargetThreadId } from "@cod3/client-runtime/state/thread-relationships";
+import { resolveLatestMergeBackRun } from "@cod3/client-runtime/state/thread-workflows";
 import { threadEnvironment } from "../../state/threads";
 import {
   EMPTY_ENVIRONMENT_THREAD_STATE,
   threadErrorText,
-} from "@t3tools/client-runtime/state/threads";
+} from "@cod3/client-runtime/state/threads";
 import { useProjects } from "../../state/entities";
 import {
   projectThreadContentPresentation,
@@ -230,7 +230,7 @@ function UnavailableThreadDraftRedirect(props: { readonly environmentId: Environ
       }),
     );
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- replaces this route with a new draft thread route for the environment's project on mount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- replaces this route with a new draft thread route for the environment's project on mount
   useEffect(() => {
     openDraft();
   }, []);
@@ -519,7 +519,7 @@ function ThreadRouteContent(
     return mode === "files" && selectedThreadCwd === null ? null : mode;
   })();
   const revealPreview = useEffectEvent(() => showInspector());
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- opens the workspace navigator's inspector pane when route params bring a preview target
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- opens the workspace navigator's inspector pane when route params bring a preview target
   useEffect(() => {
     if (previewTarget) revealPreview();
   }, [previewTarget]);

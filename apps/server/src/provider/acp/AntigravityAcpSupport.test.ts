@@ -4,7 +4,7 @@ import {
   ANTIGRAVITY_DEFAULT_MODEL,
   PROVIDER_SEND_TURN_MAX_IMAGE_BYTES,
   type ChatAttachment,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
@@ -84,7 +84,7 @@ describe("Antigravity release gates", () => {
           ? { antigravity: { systemPrompt: { append: "<pull_request_linking/>" } } }
           : undefined,
       );
-      expect(antigravityClientInfo(version).name).toBe(ownName ? "t3-code" : "zed");
+      expect(antigravityClientInfo(version).name).toBe(ownName ? "cod3" : "zed");
     },
   );
 });
@@ -135,7 +135,7 @@ describe("Antigravity Auto", () => {
   );
 
   it.each(["auto", "auto-accept-edits"] as const)(
-    "runs only server-qualified T3 MCP calls unasked in %s",
+    "runs only server-qualified cod3 MCP calls unasked in %s",
     (runtimeMode) => {
       const policy = { runtimeMode, cwd: "/workspace" };
       const request = (
@@ -146,18 +146,18 @@ describe("Antigravity Auto", () => {
         toolCall: { toolCallId: "call-1", title, kind: "execute", rawInput },
         options: [{ optionId: "allow", name: "Allow", kind: "allow_once" }],
       });
-      for (const t3Call of [
-        request("Run mcp_t3-code_t3_thread_list?"),
-        request("MCP Tool delegate_task", { ServerName: "t3-code", ToolName: "delegate_task" }),
+      for (const cod3Call of [
+        request("Run mcp_cod3_cod3_thread_list?"),
+        request("MCP Tool delegate_task", { ServerName: "cod3", ToolName: "delegate_task" }),
       ]) {
-        expect(antigravityPermissionDisposition(policy, t3Call)).toBe("allow");
+        expect(antigravityPermissionDisposition(policy, cod3Call)).toBe("allow");
         expect(
-          antigravityPermissionDisposition({ ...policy, approvalPolicy: "on-request" }, t3Call),
+          antigravityPermissionDisposition({ ...policy, approvalPolicy: "on-request" }, cod3Call),
         ).toBe("ask");
         expect(
           antigravityPermissionDisposition(
             { ...policy, sandboxPolicy: { type: "readOnly" } },
-            t3Call,
+            cod3Call,
           ),
         ).toBe("deny");
       }
@@ -166,8 +166,8 @@ describe("Antigravity Auto", () => {
         request("Running preview_status"),
         request("Run mcp_github_create_issue"),
         request("MCP Tool preview_status", { ServerName: "other", ToolName: "preview_status" }),
-        request("Run mcp_t3-code_preview_status", {
-          CommandLine: "Run mcp_t3-code_preview_status",
+        request("Run mcp_cod3_preview_status", {
+          CommandLine: "Run mcp_cod3_preview_status",
         }),
       ]) {
         expect(antigravityPermissionDisposition(policy, otherCall)).toBe("ask");
@@ -324,7 +324,7 @@ const makeAttachmentFixture = Effect.fn("AntigravityAcpSupportTest.makeAttachmen
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
     const attachmentsDir = yield* fs.makeTempDirectoryScoped({
-      prefix: "t3-antigravity-attachments-",
+      prefix: "cod3-antigravity-attachments-",
     });
     const write = Effect.fn("AntigravityAcpSupportTest.writeAttachment")(function* (
       attachment: ChatAttachment,

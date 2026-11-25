@@ -1,4 +1,4 @@
-import { CLOUD_SPEECH_PROVIDER_NAMES, type CloudSpeechProvider } from "@t3tools/contracts";
+import { CLOUD_SPEECH_PROVIDER_NAMES, type CloudSpeechProvider } from "@cod3/contracts";
 import { mFallback, msg } from "gt-i18n";
 import type { MFunctionType } from "gt-i18n/types";
 
@@ -11,7 +11,7 @@ export function cloudSpeechDisclosure(
   return provider === "openrouter"
     ? resolve(
         msg(
-          "After you stop, {environment} sends the recording to OpenRouter. OpenRouter chooses who runs your model. T3 requests zero data retention; your OpenRouter account may allow safety retention.",
+          "After you stop, {environment} sends the recording to OpenRouter. OpenRouter chooses who runs your model. cod3 requests zero data retention; your OpenRouter account may allow safety retention.",
           { environment },
         ),
       )

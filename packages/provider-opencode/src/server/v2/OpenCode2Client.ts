@@ -1,5 +1,5 @@
 import * as Path from "effect/Path";
-import { PROVIDER_SEND_TURN_MAX_IMAGE_BYTES } from "@t3tools/contracts";
+import { PROVIDER_SEND_TURN_MAX_IMAGE_BYTES } from "@cod3/contracts";
 import { OpenCode, type OpenCodeClient } from "@opencode/client/effect";
 import { OpenCodeEvent } from "@opencode/protocol/groups/event";
 import * as Context from "effect/Context";
@@ -98,7 +98,7 @@ export interface OpenCode2Api {
   readonly client: OpenCodeClient;
   readonly usageLimits: (
     directory: string,
-  ) => Effect.Effect<import("@t3tools/contracts").ServerProviderUsageLimits | undefined>;
+  ) => Effect.Effect<import("@cod3/contracts").ServerProviderUsageLimits | undefined>;
   readonly shellJobs?: (
     sessionID: string,
   ) => Effect.Effect<typeof ShellJobs.Type, HttpClientError.HttpClientError | Schema.SchemaError>;
@@ -127,7 +127,7 @@ export class OpenCode2Client extends Context.Service<
       readonly password: string | Redacted.Redacted;
     }) => Effect.Effect<OpenCode2Api>;
   }
->()("@t3tools/provider-opencode/server/v2/OpenCode2Client") {}
+>()("@cod3/provider-opencode/server/v2/OpenCode2Client") {}
 
 // Heartbeats arrive every 10-15 seconds; longer silence means stuck, not idle.
 const SILENT_STREAM_TIMEOUT = "45 seconds";
@@ -231,7 +231,7 @@ const fillCompactionRecent = (message: unknown) =>
 /**
  * OpenCode 2.1 dropped a compaction's `recent`, which the bundled 2.0.28 schema requires.
  * Migrated pre-2.1 compactions keep it under `metadata.recent`; native 2.1 ones have none.
- * T3 never reads it, so fill the gap; every other field still validates downstream.
+ * cod3 never reads it, so fill the gap; every other field still validates downstream.
  */
 const fillCompactionRecents = HttpClient.transformResponse(
   Effect.fnUntraced(function* (

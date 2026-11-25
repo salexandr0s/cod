@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { AppText as Text } from "../../components/ui/AppText";
 import { GlassSurface } from "../../components/ui/GlassSurface";
 import { PullRequestAvatar } from "./PullRequestPresentation";
-import type { PullRequestCompletion } from "@t3tools/shared/pullRequestComposerTrigger";
+import type { PullRequestCompletion } from "@cod3/shared/pullRequestComposerTrigger";
 import type { usePullRequestCompletions } from "./usePullRequestCompletions";
 
 const COPY = {
@@ -35,7 +35,7 @@ function CompletionRow({ completion }: { readonly completion: PullRequestComplet
     return (
       <>
         <PullRequestAvatar actor={actor} size={20} />
-        <Text className="shrink-0 text-base font-t3-medium text-foreground" numberOfLines={1}>
+        <Text className="shrink-0 text-base font-cod3-medium text-foreground" numberOfLines={1}>
           {actor.login}
         </Text>
         {actor.name && actor.name !== actor.login ? (
@@ -49,7 +49,7 @@ function CompletionRow({ completion }: { readonly completion: PullRequestComplet
   const { candidate } = completion;
   return (
     <>
-      <Text className="shrink-0 text-base font-t3-medium text-foreground" numberOfLines={1}>
+      <Text className="shrink-0 text-base font-cod3-medium text-foreground" numberOfLines={1}>
         {candidate.reference}
       </Text>
       <Text className="min-w-0 flex-1 text-sm text-foreground-muted" numberOfLines={1}>

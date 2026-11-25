@@ -1,6 +1,6 @@
-import { formatAttachmentSize } from "@t3tools/client-runtime/state/attachments";
-import { imageMimeType } from "@t3tools/shared/image";
-import { videoMimeType } from "@t3tools/shared/video";
+import { formatAttachmentSize } from "@cod3/client-runtime/state/attachments";
+import { imageMimeType } from "@cod3/shared/image";
+import { videoMimeType } from "@cod3/shared/video";
 
 import type { CONTEXT_CHIP_ICON_SOURCES } from "./contextChipIcons.generated";
 import { resolveMarkdownFileIcon, type MarkdownFileIcon } from "./markdownLinks";

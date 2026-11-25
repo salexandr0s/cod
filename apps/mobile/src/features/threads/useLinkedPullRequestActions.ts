@@ -1,24 +1,21 @@
 import {
   pullRequestLinkProject,
   resolveLinkPullRequestInput,
-} from "@t3tools/client-runtime/pull-request-link-input";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import type {
-  EnvironmentProject,
-  EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
+} from "@cod3/client-runtime/pull-request-link-input";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import type { EnvironmentProject, EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import {
   canStartThreadPullRequestWatch,
   planThreadPullRequestMutation,
-} from "@t3tools/client-runtime/thread-pull-request-compatibility";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
+} from "@cod3/client-runtime/thread-pull-request-compatibility";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
 import { changeRequestTermKind } from "../../lib/changeRequestTerm";
-import { AuthOrchestrationOperateScope, type ThreadPullRequestLink } from "@t3tools/contracts";
+import { AuthOrchestrationOperateScope, type ThreadPullRequestLink } from "@cod3/contracts";
 import * as Clipboard from "expo-clipboard";
 import { useGT } from "gt-react-native";
 

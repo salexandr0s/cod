@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { ThreadId, TurnItemId, type OrchestrationV2TurnItem } from "@t3tools/contracts";
+import { ThreadId, TurnItemId, type OrchestrationV2TurnItem } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 
 import { isJsonToolText, turnItemOutputImages, turnItemOutputText } from "./itemDetail.ts";
@@ -138,7 +138,7 @@ describe("MCP app tool output", () => {
   it("shows the tool result, not the app wrapper", () => {
     const text = "Notice\nview\tcount\n/home\t42";
     const item = toolItem({
-      t3McpApp: {
+      cod3McpApp: {
         attachmentId: "app-html",
         server: "repro",
         tool: "aggregate_rum_events",
@@ -151,7 +151,7 @@ describe("MCP app tool output", () => {
 
   it("reads a result with metadata and marks images it cannot preview", () => {
     const item = toolItem({
-      t3McpApp: {
+      cod3McpApp: {
         attachmentId: "app-html",
         server: "repro",
         tool: "chart",
@@ -168,7 +168,7 @@ describe("MCP app tool output", () => {
     expect(turnItemOutputText(item)).toBe("chart\n[image]");
 
     const bounded = toolItem({
-      t3McpApp: {
+      cod3McpApp: {
         attachmentId: "app-html",
         server: "repro",
         tool: "chart",

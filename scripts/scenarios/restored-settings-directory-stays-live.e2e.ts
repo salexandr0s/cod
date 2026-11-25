@@ -3,8 +3,8 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 const decodeSettings = Schema.decodeSync(
   Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)),
@@ -13,12 +13,12 @@ const decodeSettings = Schema.decodeSync(
 test(
   "Maintenance reflects edits to a symlinked settings file after restoring its directory",
   WEB,
-  async ({ t3, app, screen }) => {
-    await t3.project("settings-restore");
-    const settingsPath = `${T3_HOME}/userdata/settings.json`;
-    const active = `${T3_HOME}/active-settings`;
-    const previous = `${T3_HOME}/old-settings`;
-    const restored = `${T3_HOME}/restored-settings`;
+  async ({ cod3, app, screen }) => {
+    await cod3.project("settings-restore");
+    const settingsPath = `${COD3_HOME}/userdata/settings.json`;
+    const active = `${COD3_HOME}/active-settings`;
+    const previous = `${COD3_HOME}/old-settings`;
+    const restored = `${COD3_HOME}/restored-settings`;
     const original = await runPromise(
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
@@ -44,7 +44,7 @@ test(
       }),
     );
     try {
-      await t3.open("/settings/maintenance");
+      await cod3.open("/settings/maintenance");
       const days = screen.getByLabel("Delete old rotated logs in days");
       await days.scrollIntoView();
       await expect(days).toHaveValue("5");

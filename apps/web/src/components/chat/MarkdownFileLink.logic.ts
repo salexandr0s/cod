@@ -1,5 +1,5 @@
-import type { EnvironmentId } from "@t3tools/contracts";
-import { splitFilePathPosition } from "@t3tools/shared/fileLinks";
+import type { EnvironmentId } from "@cod3/contracts";
+import { splitFilePathPosition } from "@cod3/shared/fileLinks";
 import { msg } from "gt-react";
 
 import { m } from "../../i18n/messages";

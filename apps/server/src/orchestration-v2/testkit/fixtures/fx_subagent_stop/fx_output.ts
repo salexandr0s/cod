@@ -1,5 +1,5 @@
 import { assert } from "@effect/vitest";
-import type { ProviderReplayTranscript } from "@t3tools/contracts";
+import type { ProviderReplayTranscript } from "@cod3/contracts";
 
 import type { OrchestratorV2ScenarioResult } from "../../OrchestratorScenario.ts";
 import {
@@ -10,7 +10,7 @@ import {
   projectionFor,
 } from "../shared.ts";
 
-/** fx 0.0.15 fails a sub-agent that Stop cut off; T3 shows it, and its child thread, as interrupted. */
+/** fx 0.0.15 fails a sub-agent that Stop cut off; cod3 shows it, and its child thread, as interrupted. */
 export function assertFxSubagentStopOutput(
   result: OrchestratorV2ScenarioResult,
   transcript: ProviderReplayTranscript,

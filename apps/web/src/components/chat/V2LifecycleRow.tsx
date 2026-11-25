@@ -1,15 +1,15 @@
 import { T, Var, msg, useGT, useMessages } from "gt-react";
 import { ThreadHoverCardPopup } from "../ThreadHoverCard";
 import { AgentElapsed } from "./AgentElapsed";
-import { projectedSubagentsToRuntime } from "@t3tools/client-runtime/state/subagentRuntime";
+import { projectedSubagentsToRuntime } from "@cod3/client-runtime/state/subagentRuntime";
 import { use, type ReactNode } from "react";
 import { useThreadShell, useProject } from "../../state/entities";
-import type { SideThreadOpenIntent } from "@t3tools/client-runtime/side-thread";
+import type { SideThreadOpenIntent } from "@cod3/client-runtime/side-thread";
 import { SideThreadsOpenContext, useSideThreadTrigger } from "../../hooks/useSideThreadTrigger";
 import { useLinkedThreadOpener } from "../../state/linkedThreadView";
 import { SubagentTooltipContent } from "./SubagentTooltipContent";
 import { useAtomValue } from "@effect/atom-react";
-import { scopeThreadRef, scopeProjectRef } from "@t3tools/client-runtime/environment";
+import { scopeThreadRef, scopeProjectRef } from "@cod3/client-runtime/environment";
 import { environmentThreadDetails } from "../../state/threads";
 import { EMPTY_SERVER_PROVIDERS, serverEnvironment } from "../../state/server";
 import { MiddleTruncate } from "../ui/middle-truncate";
@@ -20,11 +20,11 @@ import {
   type HandoffEndpoints,
   type HandoffTimelineRun,
   resolveModelSwitchChange,
-} from "@t3tools/client-runtime/handoff";
+} from "@cod3/client-runtime/handoff";
 import {
   formatSubagentDisplayTitle,
   subagentCardDetail,
-} from "@t3tools/client-runtime/state/subagent-display";
+} from "@cod3/client-runtime/state/subagent-display";
 import {
   ProviderDriverKind,
   type ModelSelection,
@@ -39,8 +39,8 @@ import {
   type EnvironmentId,
   type NodeId,
   type ScopedThreadRef,
-} from "@t3tools/contracts";
-import type { TimestampFormat } from "@t3tools/contracts/settings";
+} from "@cod3/contracts";
+import type { TimestampFormat } from "@cod3/contracts/settings";
 import {
   BotIcon,
   ChevronRightIcon,
@@ -68,9 +68,9 @@ import { cn } from "~/lib/utils";
 import { TimelineSystemDivider } from "./TimelineSystemDivider";
 import { subagentResumedSince } from "./V2LifecycleRow.logic";
 import { Button, InlineButton } from "../ui/button";
-import { T3Wordmark } from "../T3Wordmark";
+import { Cod3Wordmark } from "../Cod3Wordmark";
 
-export type { HandoffTimelineRun } from "@t3tools/client-runtime/handoff";
+export type { HandoffTimelineRun } from "@cod3/client-runtime/handoff";
 
 export function V2LifecycleRow(props: {
   readonly item: OrchestrationV2TurnItem;
@@ -148,7 +148,7 @@ export function V2LifecycleRow(props: {
     return (
       <WorkLogRow
         data-v2-item-type={item.type}
-        icon={<T3Wordmark className="size-4 text-icon-muted" aria-hidden />}
+        icon={<Cod3Wordmark className="size-4 text-icon-muted" aria-hidden />}
         label={
           item.title ? (
             <T>

@@ -1,4 +1,4 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { contextMenuSourceOf } from "../../contextMenuSource";
 import { m } from "~/i18n/messages";
 import { RefreshIcon } from "~/components/ui/refresh-icon";
@@ -6,10 +6,10 @@ import type {
   ContextMenuItem as TreeContextMenuItem,
   ContextMenuOpenContext as TreeContextMenuOpenContext,
 } from "@pierre/trees";
-import type { ContextMenuSource, EnvironmentId, ProjectEntry } from "@t3tools/contracts";
+import type { ContextMenuSource, EnvironmentId, ProjectEntry } from "@cod3/contracts";
 import { FileTree, useFileTree, useFileTreeSearch, useFileTreeSelector } from "@pierre/trees/react";
-import { settlePromise } from "@t3tools/client-runtime/state/runtime";
-import { serializeComposerFileLink } from "@t3tools/shared/composerTrigger";
+import { settlePromise } from "@cod3/client-runtime/state/runtime";
+import { serializeComposerFileLink } from "@cod3/shared/composerTrigger";
 import * as AsyncResult from "effect/reactivity/AsyncResult";
 import * as Cause from "effect/Cause";
 import { T, useGT, useMessages } from "gt-react";
@@ -27,7 +27,7 @@ import { useTheme } from "~/hooks/useTheme";
 import { useWorkspaceMutationRefresh } from "~/hooks/useWorkspaceMutationRefresh";
 import { useFileContextMenu, type FileContextMenuAction } from "~/fileContextMenu";
 import { readLocalApi } from "~/localApi";
-import { T3_PIERRE_ICONS } from "~/pierre-icons";
+import { COD3_PIERRE_ICONS } from "~/pierre-icons";
 import {
   PIERRE_TREE_UNSAFE_CSS,
   pierreTreeStyle,
@@ -45,6 +45,8 @@ import {
 } from "./fileTreeExpansion";
 import { buildFileTreePathUpdates, shouldRebuildFileTree } from "./fileTreePathReconciliation";
 import { loadFileAncestors } from "./loadFileAncestors";
+import { ProjectDocumentLinks } from "./ProjectDocuments";
+import { projectDocsDirectory } from "./projectDocuments.logic";
 import { useDirectoryEntries } from "./useDirectoryEntries";
 import { useProjectPathSearch } from "~/state/queries";
 import { isMacPlatform } from "~/lib/utils";
@@ -188,6 +190,11 @@ export default function FileBrowserPanel({
     isPending,
     loadingDirectories,
   } = useDirectoryEntries(environmentId, cwd);
+  const docsDirectory = hostFolder ? undefined : projectDocsDirectory(directoryEntries);
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribe to the docs directory alongside the root so its shortcuts follow file-tree refreshes
+  useEffect(() => {
+    if (docsDirectory !== undefined) void load(docsDirectory);
+  }, [docsDirectory, load]);
   const [query, setQuery] = useState("");
   const [expandAll, setExpandAll] = useState(false);
   const pathSearch = useProjectPathSearch(
@@ -307,7 +314,7 @@ export default function FileBrowserPanel({
     fileTreeSearchMode: "hide-non-matches",
     flattenEmptyDirectories: true,
     initialExpansion: "closed",
-    icons: T3_PIERRE_ICONS,
+    icons: COD3_PIERRE_ICONS,
     onSelectionChange: (selectedPaths) => {
       // Update drag selection even for reveals so subsequent drags cannot use stale paths.
       dragMention.handleSelectionChange(selectedPaths);
@@ -326,13 +333,13 @@ export default function FileBrowserPanel({
       row.kind === "directory" &&
       row.isExpanded &&
       loadingDirectoriesRef.current.has(item.path.replace(/\/$/, ""))
-        ? { icon: "t3-tree-icon-loading", title: gt("Loading…") }
+        ? { icon: "cod3-tree-icon-loading", title: gt("Loading…") }
         : null,
     search: false,
     onSearchChange: (value) => setQuery(value ?? ""),
     unsafeCSS: PIERRE_TREE_UNSAFE_CSS,
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- makes the Pierre tree model re-render row decorations when loading directories change
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- makes the Pierre tree model re-render row decorations when loading directories change
   useEffect(() => {
     if (loadingDirectoriesRef.current === loadingDirectories) return;
     loadingDirectoriesRef.current = loadingDirectories;
@@ -366,7 +373,7 @@ export default function FileBrowserPanel({
     // Hidden panel tabs stay mounted; only the visible Files tab answers.
     if (action === "find" && searchInputRef.current?.getClientRects().length) focusSearch();
   });
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes to the panel find command, which fires while focus is anywhere in the right panel
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes to the panel find command, which fires while focus is anywhere in the right panel
   useEffect(() => {
     if (!answersPanelFind) return;
     return subscribePreviewAction(onPanelAction);
@@ -375,7 +382,7 @@ export default function FileBrowserPanel({
   const expansionRoot = `${environmentId}:${cwd}`;
   // Folders expanded when the panel last unmounted; each reopens once lazy loading lists it.
   const [pendingExpandedPaths] = useState(() => new Set(readExpandedDirectories(expansionRoot)));
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes to the Pierre tree model to load directories as they are expanded
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- subscribes to the Pierre tree model to load directories as they are expanded
   useEffect(() => {
     const currentPaths = new Set(directoryPaths);
     for (const path of expandedPathsRef.current) {
@@ -411,7 +418,7 @@ export default function FileBrowserPanel({
     loadExpanded();
     return model.subscribe(loadExpanded);
   }, [directoryPaths, expansionRoot, load, model, pendingExpandedPaths]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- pushes ignored-file status into the imperative Pierre tree model
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- pushes ignored-file status into the imperative Pierre tree model
   useEffect(() => {
     model.setGitStatus(
       entries
@@ -422,7 +429,7 @@ export default function FileBrowserPanel({
         })),
     );
   }, [entries, model]);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- loads the selected file's ancestor directories and aborts on cleanup
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- loads the selected file's ancestor directories and aborts on cleanup
   useEffect(() => {
     if (!selectedPath) return;
     const controller = new AbortController();
@@ -456,7 +463,7 @@ export default function FileBrowserPanel({
     resourceKey: `files:${environmentId}:${cwd}`,
   });
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- applies tree path changes to the imperative Pierre tree model as a reset or batch update
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- applies tree path changes to the imperative Pierre tree model as a reset or batch update
   useEffect(() => {
     if (!ready) return;
     if (previousTreePathsRef.current === treePaths) return;
@@ -484,13 +491,13 @@ export default function FileBrowserPanel({
     }
   }, [ready, entryKinds, model, treePaths]);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- expands every directory in the Pierre tree model while expand-all is on and no search is active
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- expands every directory in the Pierre tree model while expand-all is on and no search is active
   useEffect(() => {
     if (expandAll && !query.trim())
       setAllDirectoriesExpanded(model, expandableDirectoryPaths, true);
   }, [expandableDirectoryPaths, expandAll, model, query]);
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- reveals an externally selected path in the Pierre tree model by expanding, selecting and scrolling
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- reveals an externally selected path in the Pierre tree model by expanding, selecting and scrolling
   useEffect(() => {
     if (!selectedPath) {
       handledRevealRef.current = null;
@@ -558,7 +565,7 @@ export default function FileBrowserPanel({
 
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col bg-background"
+      className="flex min-h-0 min-w-0 flex-1 flex-col bg-background"
       data-file-browser-panel={`${environmentId}:${cwd}`}
       // Capture runs before the tree's shadow-internal row handler opens the menu.
       onContextMenuCapture={(event) => {
@@ -628,6 +635,13 @@ export default function FileBrowserPanel({
           </Tooltip>
         ) : null}
       </div>
+      {!hostFolder && !query.trim() ? (
+        <ProjectDocumentLinks
+          entries={directoryEntries}
+          selectedPath={selectedPath}
+          onOpenFile={onOpenFile}
+        />
+      ) : null}
       {error || pathSearch.error ? (
         <button
           type="button"

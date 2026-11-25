@@ -2,7 +2,7 @@ import {
   normalizeProviderAccentColor,
   resolveProviderInstanceDisplayName,
   shouldShowInstanceBadge,
-} from "@t3tools/client-runtime/state/provider-instance-display";
+} from "@cod3/client-runtime/state/provider-instance-display";
 import { msg } from "gt-react-native";
 import { m } from "../i18n/messages";
 
@@ -11,19 +11,19 @@ import type {
   ModelSelection,
   ProjectId,
   RuntimeMode,
-  ServerConfig as T3ServerConfig,
-} from "@t3tools/contracts";
+  ServerConfig as Cod3ServerConfig,
+} from "@cod3/contracts";
 import {
   isManagedDriverAllowed,
   isProviderDriverKind,
   resolveProjectProviderInstanceEnabled,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   buildExplicitProviderOptionSelectionsFromDescriptors,
   getProviderOptionDescriptors,
-} from "@t3tools/shared/model";
-import { resolveModelShortName } from "@t3tools/client-runtime/provider-clients";
-import { resolveProvidersForCwd } from "@t3tools/client-runtime/providerSkills";
+} from "@cod3/shared/model";
+import { resolveModelShortName } from "@cod3/client-runtime/provider-clients";
+import { resolveProvidersForCwd } from "@cod3/client-runtime/providerSkills";
 
 /** The contracts `disallowedProviderMessage` English, as translatable sentences. */
 function disallowedProviderText(organization: string | undefined, label: string): string {
@@ -59,11 +59,11 @@ export type ModelOption = {
   readonly capabilities: ModelCapabilities | null;
   readonly selection: ModelSelection;
   readonly providerUpdateRequired?: ProviderUpdateRequired;
-  readonly providerSubProviders?: T3ServerConfig["providers"][number]["subProviders"];
+  readonly providerSubProviders?: Cod3ServerConfig["providers"][number]["subProviders"];
 };
 
 type ProviderUpdateRequired = Pick<
-  T3ServerConfig["providers"][number],
+  Cod3ServerConfig["providers"][number],
   "driver" | "updateRequiredModels" | "versionAdvisory"
 >;
 
@@ -88,7 +88,7 @@ function providerDisplayLabel(provider: {
 }
 
 function isProviderEnabledForProject(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   provider:
     | { readonly instanceId: ModelSelection["instanceId"]; readonly enabled: boolean }
     | undefined,
@@ -103,7 +103,7 @@ function isProviderEnabledForProject(
 }
 
 function isProjectDisabledOverride(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   instanceId: ModelSelection["instanceId"],
   projectId: ProjectId | null,
 ): boolean {
@@ -117,7 +117,7 @@ function isProjectDisabledOverride(
 }
 
 function isDisabledForProject(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   provider:
     | { readonly instanceId: ModelSelection["instanceId"]; readonly enabled: boolean }
     | undefined,
@@ -131,7 +131,7 @@ function isDisabledForProject(
 }
 
 function selectionDriver(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   instanceId: ModelSelection["instanceId"],
 ): string | undefined {
   return (
@@ -141,7 +141,10 @@ function selectionDriver(
 }
 
 /** Whether the environment's managed policy leaves this driver out; the server refuses its turns. */
-function isDriverDisallowed(config: T3ServerConfig | null | undefined, driver: string | undefined) {
+function isDriverDisallowed(
+  config: Cod3ServerConfig | null | undefined,
+  driver: string | undefined,
+) {
   return (
     driver !== undefined &&
     isProviderDriverKind(driver) &&
@@ -175,7 +178,7 @@ function normalizeSelectionOptions(
 }
 
 /** The config as a project at `cwd` sees it, with that project's own provider models. */
-export function serverConfigForCwd<C extends T3ServerConfig | null | undefined>(
+export function serverConfigForCwd<C extends Cod3ServerConfig | null | undefined>(
   config: C,
   cwd: string | null,
 ): C {
@@ -186,7 +189,7 @@ export function serverConfigForCwd<C extends T3ServerConfig | null | undefined>(
 
 /** Require explicit projectId or null so omissions cannot bypass project provider disablement. */
 export function isModelSelectionUnavailable(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   selection: ModelSelection | null | undefined,
   projectId: ProjectId | null,
 ): boolean {
@@ -215,7 +218,7 @@ export function isModelSelectionUnavailable(
 }
 
 export function describeUnavailableModelSelection(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   selection: ModelSelection,
   projectId: ProjectId | null,
 ): { readonly title: string; readonly detail: string } {
@@ -256,7 +259,7 @@ export function describeUnavailableModelSelection(
 }
 
 export function resolveSelectableModelSelection(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   selection: ModelSelection | null,
   projectId: ProjectId | null,
 ): ModelSelection | null {
@@ -280,7 +283,7 @@ export function resolveSelectableModelSelection(
 }
 
 export function resolveDefaultableModelSelection(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   selection: ModelSelection | null,
   projectId: ProjectId | null,
 ): ModelSelection | null {
@@ -326,7 +329,7 @@ export function withStoredThreadModelOptions(
 }
 
 export function buildModelOptions(
-  config: T3ServerConfig | null | undefined,
+  config: Cod3ServerConfig | null | undefined,
   fallbackModelSelection: ModelSelection | null,
   providerInstanceId: ModelSelection["instanceId"] | undefined,
   projectId: ProjectId | null,
@@ -336,7 +339,7 @@ export function buildModelOptions(
   const lockedProvider = config?.providers.find(
     (provider) => provider.instanceId === providerInstanceId,
   );
-  const matchesLockedProvider = (provider: T3ServerConfig["providers"][number]) => {
+  const matchesLockedProvider = (provider: Cod3ServerConfig["providers"][number]) => {
     if (providerInstanceId === undefined || provider.instanceId === providerInstanceId) return true;
     if (!lockedProvider || provider.driver !== lockedProvider.driver) return false;
     const groupKey = lockedProvider.continuation?.groupKey;

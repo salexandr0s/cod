@@ -41,7 +41,7 @@ export function SharedSlotTitle(props: { readonly tab: SharedSlotTab }) {
           allowFontScaling={Platform.OS === "ios"}
           maxFontSizeMultiplier={1.4}
           numberOfLines={1}
-          className="font-t3-bold text-foreground"
+          className="font-cod3-bold text-foreground"
           style={{ fontSize: 20 * scale, letterSpacing: -0.4 * scale }}
         >
           {messages(TITLES[props.tab])}

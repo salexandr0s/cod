@@ -1,19 +1,15 @@
-import {
-  AuthFilesystemReadScope,
-  type EnvironmentId,
-  type ScopedThreadRef,
-} from "@t3tools/contracts";
+import { AuthFilesystemReadScope, type EnvironmentId, type ScopedThreadRef } from "@cod3/contracts";
 import {
   parseFileUrlHref,
   resolvePathLinkTarget,
   splitFilePathPosition,
-} from "@t3tools/shared/fileLinks";
+} from "@cod3/shared/fileLinks";
 import {
   isAbsolutePath,
   isNetworkPath,
   normalizeProjectPathForComparison,
-} from "@t3tools/shared/path";
-import { safeDecodeURIComponent } from "@t3tools/shared/markdownLinks";
+} from "@cod3/shared/path";
+import { safeDecodeURIComponent } from "@cod3/shared/markdownLinks";
 import { useContext } from "react";
 
 import { useEnvironmentScope } from "../state/session";

@@ -1,6 +1,6 @@
-import { EnvironmentId, RunId, ThreadId, TurnItemId } from "@t3tools/contracts";
+import { EnvironmentId, RunId, ThreadId, TurnItemId } from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
-import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+import { scopedThreadKey } from "@cod3/client-runtime/environment";
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 
 import {

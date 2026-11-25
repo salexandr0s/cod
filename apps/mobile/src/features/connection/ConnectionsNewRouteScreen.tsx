@@ -1,4 +1,4 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { T, useGT } from "gt-react-native";
 import { ListRow } from "../../components/ui/ListRow";
 import * as Dialog from "../../components/ui/Dialog";
@@ -12,7 +12,7 @@ import {
   useNavigation,
   type StaticScreenProps,
 } from "@react-navigation/native";
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentId } from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import { useState } from "react";
 import { Linking, Pressable, StyleSheet, View } from "react-native";
@@ -238,7 +238,7 @@ function PairingForm({
           />
 
           <View collapsable={false} className="gap-2">
-            <Text className="px-4 text-sm font-t3-medium text-foreground-muted">
+            <Text className="px-4 text-sm font-cod3-medium text-foreground-muted">
               <T>Or enter it</T>
             </Text>
             <View
@@ -277,7 +277,7 @@ function PairingForm({
               {pairingConnectionError ??
                 (linked
                   ? gt(
-                      "Create a pairing code on {environment}, in its Settings → Sharing & access or with `t3 auth pairing create`, and enter it here.",
+                      "Create a pairing code on {environment}, in its Settings → Sharing & access or with `cod3 auth pairing create`, and enter it here.",
                       { environment: linked.label },
                     )
                   : gt(
@@ -286,7 +286,7 @@ function PairingForm({
             </Text>
           </View>
 
-          {hasCloudPublicConfig() ? <T3ConnectSection /> : null}
+          {hasCloudPublicConfig() ? <Cod3ConnectSection /> : null}
         </View>
       </ScrollView>
     </SettingsScreen>
@@ -371,7 +371,10 @@ function PairingScanCard(props: {
                 weight="light"
               />
               <Text
-                className={cn("font-t3-medium text-sm", light ? "text-black/70" : "text-white/80")}
+                className={cn(
+                  "font-cod3-medium text-sm",
+                  light ? "text-black/70" : "text-white/80",
+                )}
               >
                 <T>Tap to scan</T>
               </Text>
@@ -380,7 +383,7 @@ function PairingScanCard(props: {
         </View>
         <Text className={cn("text-center text-sm", light ? "text-black/70" : "text-white/80")}>
           {gt("Scan the code from {command} or desktop Connections settings", {
-            command: "t3 pair",
+            command: "cod3 pair",
           })}
         </Text>
       </View>
@@ -388,7 +391,7 @@ function PairingScanCard(props: {
   );
 }
 
-function T3ConnectSection() {
+function Cod3ConnectSection() {
   const gt = useGT();
   const { isLoaded, isSignedIn } = useAuth({ treatPendingAsSignedOut: false });
   const navigation = useNavigation();
@@ -401,7 +404,7 @@ function T3ConnectSection() {
 
   return (
     <View collapsable={false} className="gap-2">
-      <Text className="px-4 text-sm font-t3-medium text-foreground-muted">
+      <Text className="px-4 text-sm font-cod3-medium text-foreground-muted">
         <T>Or use the managed relay</T>
       </Text>
       {isSignedIn ? (
@@ -413,7 +416,7 @@ function T3ConnectSection() {
         />
       ) : (
         <ListRow
-          label={gt("Sign in to {product}", { product: "T3 Connect" })}
+          label={gt("Sign in to {product}", { product: "cod3 Connect" })}
           description={gt("Reach your machines from anywhere, no network setup.")}
           disabled={!isLoaded}
           onPress={() => navigation.navigate("SettingsAuth")}

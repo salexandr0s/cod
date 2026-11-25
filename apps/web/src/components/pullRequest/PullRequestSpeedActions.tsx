@@ -1,8 +1,8 @@
 import { useAtomValue } from "@effect/atom-react";
-import type { PullRequestAction, PullRequestSummary } from "@t3tools/contracts";
+import type { PullRequestAction, PullRequestSummary } from "@cod3/contracts";
 import { msg, useGT, useMessages } from "gt-react";
 import { createContext, use, type ReactNode } from "react";
-import type { ChangeRequestTerminology } from "@t3tools/client-runtime/source-control-clients";
+import type { ChangeRequestTerminology } from "@cod3/client-runtime/source-control-clients";
 
 import { m } from "~/i18n/messages";
 import { useShortcutModifierState } from "~/shortcutModifierState";

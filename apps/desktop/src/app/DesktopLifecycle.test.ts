@@ -6,7 +6,7 @@ import * as Option from "effect/Option";
 import * as Ref from "effect/Ref";
 import * as TestClock from "effect/testing/TestClock";
 
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import type * as Electron from "electron";
 
@@ -38,7 +38,7 @@ function layerElectronApp(
 
   return Layer.succeed(ElectronApp.ElectronApp, {
     metadata: Effect.die("unexpected metadata read"),
-    name: Effect.succeed("T3 Code"),
+    name: Effect.succeed("cod3"),
     systemLocale: Effect.succeed("en-US"),
     preferredSystemLanguages: Effect.succeed(["en-US"]),
     whenReady: Effect.void,
@@ -260,16 +260,16 @@ describe("DesktopLifecycle", () => {
         return yield* Deferred.await(relaunched);
       }).pipe(
         Effect.provide(layer),
-        Effect.provideService(HostProcess.ExecutablePath, "/opt/T3 Code/t3code"),
+        Effect.provideService(HostProcess.ExecutablePath, "/opt/cod3/cod3"),
         Effect.provideService(HostProcess.Arguments, [
-          "/opt/T3 Code/t3code",
+          "/opt/cod3/cod3",
           "--no-sandbox",
-          "T3CODE://pair?token=spent",
-          "t3code://new?prompt=hello",
+          "COD3://pair?token=spent",
+          "cod3://new?prompt=hello",
         ]),
       );
 
-      assert.deepEqual(options, { execPath: "/opt/T3 Code/t3code", args: ["--no-sandbox"] });
+      assert.deepEqual(options, { execPath: "/opt/cod3/cod3", args: ["--no-sandbox"] });
     }),
   );
 

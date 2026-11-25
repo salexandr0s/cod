@@ -21,23 +21,12 @@ function normalizeSanitizedFragmentId(id: string): string {
   return normalizedId;
 }
 
-function findMarkdownFragmentTarget(anchor: HTMLAnchorElement, href: string): HTMLElement | null {
+export function findLocalMarkdownFragment(root: ParentNode, href: string): HTMLElement | null {
   const decodedId = decodeMarkdownFragmentId(href);
   const normalizedId = normalizeSanitizedFragmentId(decodedId);
   const matchesFragment = (element: HTMLElement) =>
     element.id === decodedId || normalizeSanitizedFragmentId(element.id) === normalizedId;
-  const markdownRoot = anchor.closest<HTMLElement>(".chat-markdown");
-  if (markdownRoot) {
-    const localTargets = Array.from(markdownRoot.querySelectorAll<HTMLElement>("[id]"));
-    const localTarget = localTargets.find(matchesFragment);
-    if (localTarget) return localTarget;
-  }
-
-  return (
-    document.getElementById(decodedId) ??
-    Array.from(document.querySelectorAll<HTMLElement>("[id]")).find(matchesFragment) ??
-    null
-  );
+  return Array.from(root.querySelectorAll<HTMLElement>("[id]")).find(matchesFragment) ?? null;
 }
 
 export function handleMarkdownFragmentClick(
@@ -58,7 +47,13 @@ export function handleMarkdownFragmentClick(
   // Never let the browser follow the fragment or write it to the URL: desktop keeps
   // its route in the hash, so replacing the hash navigates away from the thread.
   event.preventDefault();
-  findMarkdownFragmentTarget(event.currentTarget, href)?.scrollIntoView({ block: "start" });
+  const root = event.currentTarget.closest(".chat-markdown");
+  const target = root && findLocalMarkdownFragment(root, href);
+  (
+    target ??
+    document.getElementById(decodeMarkdownFragmentId(href)) ??
+    findLocalMarkdownFragment(document, href)
+  )?.scrollIntoView({ block: "start" });
 }
 
 type HeadingHastNode = {

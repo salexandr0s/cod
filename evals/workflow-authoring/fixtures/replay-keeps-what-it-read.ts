@@ -1,6 +1,6 @@
 // Written the way an agent with only the skill would write it.
 // @effect-diagnostics globalDateInEffect:off globalJsonInEffect:off
-const { workflow, step, wait, stop } = T3;
+const { workflow, step, wait, stop } = cod3;
 
 export default [
   workflow(

@@ -3,8 +3,8 @@ import type {
   OrchestrationV2ThreadLaunchWorkspaceStrategy,
   ProviderInteractionMode,
   RuntimeMode,
-} from "@t3tools/contracts";
-import { isWindowsDrivePath } from "@t3tools/shared/path";
+} from "@cod3/contracts";
+import { isWindowsDrivePath } from "@cod3/shared/path";
 import * as Context from "effect/Context";
 import type * as Duration from "effect/Duration";
 import type * as Effect from "effect/Effect";
@@ -28,7 +28,7 @@ export interface AgentModel {
   readonly options?: ModelSelection["options"];
 }
 
-/** How a new thread starts, as `t3_thread_launch` takes it. Unset fields follow the project. */
+/** How a new thread starts, as `cod3_thread_launch` takes it. Unset fields follow the project. */
 export interface AgentLaunch {
   /** Where its files are: the project's checkout by default, or a worktree of its own. */
   readonly workspace?: OrchestrationV2ThreadLaunchWorkspaceStrategy | undefined;
@@ -116,4 +116,4 @@ export class WorkflowAgents extends Context.Service<
       readonly turnId?: string | undefined;
     }) => Effect.Effect<"stopped" | "ended", WorkflowAgentError>;
   }
->()("t3/workflows/WorkflowAgents") {}
+>()("cod3/workflows/WorkflowAgents") {}

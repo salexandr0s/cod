@@ -7,7 +7,7 @@ index 0f90eedca20655ccd30b8f28e433b2094341fbdf..c2ef86927d6e3ab0e8584330fa0ac3fd
      /** Matched file items */
      items: FileItem[];
 -    /** Corresponding scores for each item */
-+    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in T3 Code to skip per-item score FFI calls). */
++    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in cod3 to skip per-item score FFI calls). */
      scores: Score[];
      /** Total number of files that matched */
      totalMatched: number;
@@ -16,7 +16,7 @@ index 0f90eedca20655ccd30b8f28e433b2094341fbdf..c2ef86927d6e3ab0e8584330fa0ac3fd
      /** Matched directory items */
      items: DirItem[];
 -    /** Corresponding scores for each item */
-+    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in T3 Code to skip per-item score FFI calls). */
++    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in cod3 to skip per-item score FFI calls). */
      scores: Score[];
      /** Total number of directories that matched */
      totalMatched: number;
@@ -25,7 +25,7 @@ index 0f90eedca20655ccd30b8f28e433b2094341fbdf..c2ef86927d6e3ab0e8584330fa0ac3fd
      /** Matched items (files and directories interleaved by score) */
      items: MixedItem[];
 -    /** Corresponding scores for each item */
-+    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in T3 Code to skip per-item score FFI calls). */
++    /** Corresponding scores for each item. Empty when the page has more than 200 items (patched in cod3 to skip per-item score FFI calls). */
      scores: Score[];
      /** Total number of items (files + dirs) that matched */
      totalMatched: number;
@@ -38,16 +38,16 @@ index 452102d720cc19b0560cfc9e2f1a320687047c92..704b52c3d076c50c3bf15e96a574385c
       */
      scanFiles(): Result<void>;
 +    /**
-+     * Trigger a rescan without blocking the JS thread. Patched in T3 Code.
++     * Trigger a rescan without blocking the JS thread. Patched in cod3.
 +     */
 +    scanFilesAsync(): Promise<Result<void>>;
-+    /** `fileSearch` without blocking the JS thread. Patched in T3 Code. */
++    /** `fileSearch` without blocking the JS thread. Patched in cod3. */
 +    fileSearchAsync(query: string, options?: SearchOptions): Promise<Result<SearchResult>>;
-+    /** `directorySearch` without blocking the JS thread. Patched in T3 Code. */
++    /** `directorySearch` without blocking the JS thread. Patched in cod3. */
 +    directorySearchAsync(query: string, options?: DirSearchOptions): Promise<Result<DirSearchResult>>;
-+    /** `mixedSearch` without blocking the JS thread. Patched in T3 Code. */
++    /** `mixedSearch` without blocking the JS thread. Patched in cod3. */
 +    mixedSearchAsync(query: string, options?: SearchOptions): Promise<Result<MixedSearchResult>>;
-+    /** `grep` without blocking the JS thread. Patched in T3 Code. */
++    /** `grep` without blocking the JS thread. Patched in cod3. */
 +    grepAsync(query: string, options?: GrepOptions): Promise<Result<GrepResult>>;
      /**
       * Check if a scan is currently in progress.
@@ -57,7 +57,7 @@ index 452102d720cc19b0560cfc9e2f1a320687047c92..704b52c3d076c50c3bf15e96a574385c
       */
      getScanProgress(): Result<ScanProgress>;
 +    /**
-+     * Read scan progress without blocking the JS thread. Patched in T3 Code.
++     * Read scan progress without blocking the JS thread. Patched in cod3.
 +     */
 +    getScanProgressAsync(): Promise<Result<ScanProgress>>;
      /**
@@ -67,7 +67,7 @@ index 452102d720cc19b0560cfc9e2f1a320687047c92..704b52c3d076c50c3bf15e96a574385c
       */
      watch(callback: WatchBatchCallback, options?: WatchOptions): Result<WatchUnsubscribe>;
      watch(pattern: string, callback: WatchBatchCallback, options?: WatchOptions): Result<WatchUnsubscribe>;
-+    /** `watch(callback)` without blocking the JS thread. Patched in T3 Code. */
++    /** `watch(callback)` without blocking the JS thread. Patched in cod3. */
 +    watchAsync(callback: WatchBatchCallback, options?: WatchOptions): Promise<Result<WatchUnsubscribe>>;
      /**
       * Get health check information.
@@ -449,9 +449,9 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
    handle;
    /** Native ids of this instance's active watch subscriptions. */
    watchers = /* @__PURE__ */ new Set();
-+  /** Patched in T3 Code: in-flight native-thread calls by function name. */
++  /** Patched in cod3: in-flight native-thread calls by function name. */
 +  nativeThreadCalls = /* @__PURE__ */ new Map();
-+  /** Patched in T3 Code: the last search queued on a native thread. */
++  /** Patched in cod3: the last search queued on a native thread. */
 +  nativeSearchTail = null;
    constructor(handle) {
      this.handle = handle;
@@ -466,7 +466,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 -      ffiWatchCleanupAfterDestroy(handle, this.watchers);
 -      this.watchers.clear();
 +      this.watchers = /* @__PURE__ */ new Set();
-+      // Patched in T3 Code: freeing the handle waits on the picker lock, so it runs on a
++      // Patched in cod3: freeing the handle waits on the picker lock, so it runs on a
 +      // native thread, after any native-thread call still using the handle.
 +      const release = () => ffiDestroy(handle).finally(() => {
 +        ffiWatchCleanupAfterDestroy(handle, watchers);
@@ -481,7 +481,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +    }
 +  }
 +  /**
-+   * Patched in T3 Code: runs a handle-only call on a libuv pool thread so waiting on fff's
++   * Patched in cod3: runs a handle-only call on a libuv pool thread so waiting on fff's
 +   * picker lock never blocks the JS thread. Concurrent callers share one call, so one finder
 +   * holds at most one pool thread per function.
 +   */
@@ -497,7 +497,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +    return call;
 +  }
 +  /**
-+   * Patched in T3 Code: runs a search or subscription on a libuv pool thread. They run one at a
++   * Patched in cod3: runs a search or subscription on a libuv pool thread. They run one at a
 +   * time per finder, so while fff's watcher holds the picker lock a finder holds at most one pool
 +   * thread.
 +   */
@@ -514,7 +514,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +    });
 +    return call;
 +  }
-+  /** Patched in T3 Code: `fileSearch` without blocking the JS thread. */
++  /** Patched in cod3: `fileSearch` without blocking the JS thread. */
 +  fileSearchAsync(query, options) {
 +    return this.searchOnNativeThread((handle) => ffiSearch(
 +      handle,
@@ -528,7 +528,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +      true
 +    ));
 +  }
-+  /** Patched in T3 Code: `directorySearch` without blocking the JS thread. */
++  /** Patched in cod3: `directorySearch` without blocking the JS thread. */
 +  directorySearchAsync(query, options) {
 +    return this.searchOnNativeThread((handle) => ffiSearchDirectories(
 +      handle,
@@ -540,7 +540,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +      true
 +    ));
 +  }
-+  /** Patched in T3 Code: `mixedSearch` without blocking the JS thread. */
++  /** Patched in cod3: `mixedSearch` without blocking the JS thread. */
 +  mixedSearchAsync(query, options) {
 +    return this.searchOnNativeThread((handle) => ffiSearchMixed(
 +      handle,
@@ -555,7 +555,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +    ));
 +  }
 +  /**
-+   * Patched in T3 Code: `watch` without blocking the JS thread. Subscribing takes the picker lock,
++   * Patched in cod3: `watch` without blocking the JS thread. Subscribing takes the picker lock,
 +   * which fff's watcher holds while it indexes a new directory.
 +   */
 +  watchAsync(callback, options) {
@@ -586,7 +586,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
 +      };
 +    });
 +  }
-+  /** Patched in T3 Code: `grep` without blocking the JS thread. */
++  /** Patched in cod3: `grep` without blocking the JS thread. */
 +  grepAsync(query, options) {
 +    return this.searchOnNativeThread((handle) => ffiLiveGrep(
 +      handle,
@@ -612,13 +612,13 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
      return ffiScanFiles(guard.value);
    }
 +  /**
-+   * Trigger a rescan without blocking the JS thread. Patched in T3 Code.
++   * Trigger a rescan without blocking the JS thread. Patched in cod3.
 +   */
 +  scanFilesAsync() {
 +    return this.callOnNativeThread("fff_scan_files", voidResultFromEnvelope);
 +  }
 +  /**
-+   * Read scan progress without blocking the JS thread. Patched in T3 Code.
++   * Read scan progress without blocking the JS thread. Patched in cod3.
 +   */
 +  getScanProgressAsync() {
 +    return this.callOnNativeThread("fff_get_scan_progress", scanProgressFromEnvelope);
@@ -631,7 +631,7 @@ index 7c1d722eabc8d8eb98998eb48c5fe9d70b749d10..69bfa2cc9023103f52cc469bbec917ea
      const deadline = Date.now() + timeoutMs;
      while (true) {
 -      const progress = this.getScanProgress();
-+      // Patched in T3 Code: the progress read takes the picker lock.
++      // Patched in cod3: the progress read takes the picker lock.
 +      const progress = await this.getScanProgressAsync();
        if (!progress.ok) return progress;
        if (!progress.value.isScanning && progress.value.isWarmupComplete) {

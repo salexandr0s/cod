@@ -3,11 +3,11 @@ import {
   AuthOrchestrationOperateScope,
   AuthOrchestrationReadScope,
   EnvironmentHttpApi,
-} from "@t3tools/contracts";
-import { isDevProxiedPath } from "@t3tools/shared/devProxy";
-import { injectMcpAppCookieBootstrap, injectMcpAppThemeBootstrap } from "@t3tools/shared/mcpApp";
-import { FILE_PREVIEW_SCROLL_SCRIPT } from "@t3tools/shared/htmlRender";
-import { decodeOtlpTraceRecords } from "@t3tools/shared/observability";
+} from "@cod3/contracts";
+import { isDevProxiedPath } from "@cod3/shared/devProxy";
+import { injectMcpAppCookieBootstrap, injectMcpAppThemeBootstrap } from "@cod3/shared/mcpApp";
+import { FILE_PREVIEW_SCROLL_SCRIPT } from "@cod3/shared/htmlRender";
+import { decodeOtlpTraceRecords } from "@cod3/shared/observability";
 import * as ByteSize from "effect/ByteSize";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";

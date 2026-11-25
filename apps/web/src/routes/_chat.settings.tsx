@@ -1,9 +1,11 @@
 import { workspaceAreaProps } from "../lib/workspaceFocus";
 import { Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { T, useGT, useMessages, Var } from "gt-react";
-import { RotateCcwIcon } from "lucide-react";
+import { ChevronDownIcon, RotateCcwIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { cn } from "../lib/utils";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useSettingsRestore } from "../components/settings/SettingsPanels";
 
 import { AppRouteModal, AppRouteModalClose } from "../components/AppRouteModal";
@@ -151,22 +153,80 @@ function SettingsContentLayout() {
       : JSON.stringify(search);
   const [restoreSignal, setRestoreSignal] = useState(0);
 
+  const compact = useMediaQuery("max-md");
+  const [browsing, setBrowsing] = useState(false);
+  const sectionsButton = useRef<HTMLButtonElement>(null);
+  if (browsing && !compact) setBrowsing(false);
+
+  function closeSections() {
+    if (browsing) {
+      setBrowsing(false);
+      sectionsButton.current?.focus({ preventScroll: true });
+    }
+  }
+
   return (
     <AppRouteModal label={gt("Settings")}>
-      <div className="relative flex min-h-0 flex-1">
-        <SettingsSidebarNav pathname={location.pathname} />
-        <div {...contentArea} className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <header className="flex h-12 shrink-0 items-center gap-3 border-b ps-5 pe-2">
-            <SettingsBreadcrumb pathname={location.pathname} />
-            <div className="ms-auto flex shrink-0 items-center gap-1">
-              {location.pathname === "/settings/general" ? (
-                <RestoreDeviceDefaultsButton
-                  onRestored={() => setRestoreSignal((value) => value + 1)}
-                />
-              ) : null}
-              <AppRouteModalClose />
-            </div>
-          </header>
+      <div
+        className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]"
+        onKeyDown={(event) => {
+          if (
+            browsing &&
+            event.key === "Escape" &&
+            !event.nativeEvent.isComposing &&
+            event.keyCode !== 229 &&
+            !event.defaultPrevented
+          ) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeSections();
+          }
+        }}
+      >
+        <header className="col-start-1 row-start-1 flex h-14 min-w-0 items-center gap-2 border-b px-3 md:col-start-2 md:h-16 md:gap-4 md:px-6">
+          <div
+            {...(compact && !browsing
+              ? workspaceAreaProps("settings-nav", 0, gt("Settings sections"))
+              : {})}
+            className="md:hidden"
+          >
+            <Button
+              ref={sectionsButton}
+              data-workspace-focus-default
+              size="sm"
+              variant="outline"
+              aria-label={gt("Settings sections")}
+              aria-expanded={browsing}
+              aria-controls="settings-sections"
+              onClick={() => setBrowsing(!browsing)}
+            >
+              <T>Settings</T>
+              <ChevronDownIcon className={cn("size-3.5", browsing && "rotate-180")} />
+            </Button>
+          </div>
+          <SettingsBreadcrumb pathname={location.pathname} />
+          <div className="ms-auto flex shrink-0 items-center gap-1">
+            {location.pathname === "/settings/general" && !browsing ? (
+              <RestoreDeviceDefaultsButton
+                onRestored={() => setRestoreSignal((value) => value + 1)}
+              />
+            ) : null}
+            <AppRouteModalClose />
+          </div>
+        </header>
+        <SettingsSidebarNav
+          pathname={location.pathname}
+          compactOpen={browsing}
+          onRequestSearch={() => setBrowsing(compact)}
+          onChoose={closeSections}
+        />
+        <div
+          {...contentArea}
+          className={cn(
+            "col-start-1 row-start-2 flex min-h-0 min-w-0 flex-col md:col-start-2",
+            browsing && "max-md:hidden",
+          )}
+        >
           <div key={`${contentScopeKey}:${restoreSignal}`} className="min-h-0 flex flex-1 flex-col">
             <SettingsScopeBoundary pathname={location.pathname}>
               <Outlet />

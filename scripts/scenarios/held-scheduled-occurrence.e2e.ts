@@ -4,8 +4,8 @@ import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 const SettingsJson = Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown));
 const decodeSettings = Schema.decodeEffect(SettingsJson);
@@ -13,7 +13,7 @@ const encodeSettings = Schema.encodeEffect(SettingsJson);
 
 const threadRuntimeSettings = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
-  const settingsPath = (yield* Path.Path).join(T3_HOME, "userdata/settings.json");
+  const settingsPath = (yield* Path.Path).join(COD3_HOME, "userdata/settings.json");
   const original = yield* fs.readFileString(settingsPath);
   const settings = yield* decodeSettings(original);
   return {
@@ -28,21 +28,21 @@ const threadRuntimeSettings = Effect.gen(function* () {
 test(
   "A recurring task reports when its queued occurrence is held",
   WEB,
-  async ({ t3, app, screen }) => {
+  async ({ cod3, app, screen }) => {
     const settings = await runPromise(threadRuntimeSettings);
     try {
       // Supervised mode makes the approval recording wait for an answer, which holds its turn open.
       await runPromise(settings.supervise);
-      const project = await t3.project("scheduled-hold");
-      await t3.thread({ project, title: "Earlier work", messages: ["Start"] });
-      const thread = await t3.thread({
+      const project = await cod3.project("scheduled-hold");
+      await cod3.thread({ project, title: "Earlier work", messages: ["Start"] });
+      const thread = await cod3.thread({
         project,
         title: "Waiting scheduled thread",
         messages: ["Ask a question"],
         model: "approval",
       });
 
-      await t3.open("/settings/scheduled-tasks");
+      await cod3.open("/settings/scheduled-tasks");
       await screen.getByRole("button", "New task").tap();
       await screen.getByRole("textbox", "Name").fill("Held recurring task");
       await screen.getByRole("combobox", "Destination").tap();
@@ -54,7 +54,7 @@ test(
       await screen.getByRole("spinbutton", "Run every").fill("1");
       await screen.getByRole("button", "Create task").tap();
 
-      await t3.open(thread);
+      await cod3.open(thread);
       await screen.getByRole("button", "Approve", { exact: true }).waitFor();
       await screen
         .getByRole("button", "Automation Held recurring task")

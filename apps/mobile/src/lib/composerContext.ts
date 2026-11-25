@@ -1,18 +1,18 @@
 import {
   collectComposerModelMentions,
   type ComposerModelMentionOccurrence,
-} from "@t3tools/client-runtime/composer-model-mentions";
-import { isProviderSkillUserInvocable } from "@t3tools/client-runtime/providerSkills";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
-import { filePreviewKind } from "@t3tools/shared/filePreview";
-import { videoMimeType } from "@t3tools/shared/video";
+} from "@cod3/client-runtime/composer-model-mentions";
+import { isProviderSkillUserInvocable } from "@cod3/client-runtime/providerSkills";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
+import { filePreviewKind } from "@cod3/shared/filePreview";
+import { videoMimeType } from "@cod3/shared/video";
 import { msg } from "gt-react-native";
 import { m } from "../i18n/messages";
 import {
   assistantCitationLabel,
   collectAssistantCitations,
   expandAssistantCitationsForProvider,
-} from "@t3tools/shared/assistantCitations";
+} from "@cod3/shared/assistantCitations";
 import {
   PROVIDER_SEND_TURN_MAX_INPUT_CHARS,
   COMPOSER_CONTEXT_MAX_RECORDS,
@@ -25,7 +25,7 @@ import {
   type ServerProviderSkill,
   type EnvironmentContextRecord,
   type EnvironmentId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import {
   ATTACHMENT_ONLY_BOOTSTRAP_PROMPT,
@@ -34,13 +34,13 @@ import {
   isImageReferencesOnly,
   replaceComposerContextReferences,
   sanitizeComposerContextLabel,
-} from "@t3tools/shared/composerContextReferences";
+} from "@cod3/shared/composerContextReferences";
 import {
   collectComposerInlineTokens,
   composerMathRanges,
   type ComposerInlineToken,
-} from "@t3tools/shared/composerInlineTokens";
-import { markdownMathRanges } from "@t3tools/shared/markdownMath";
+} from "@cod3/shared/composerInlineTokens";
+import { markdownMathRanges } from "@cod3/shared/markdownMath";
 
 const isMessageContext = Schema.is(OrchestrationMessageContext);
 const decodeMessageContext = Schema.decodeUnknownOption(OrchestrationMessageContext);
@@ -162,7 +162,7 @@ export function pullRequestComposerContext(
       ? sanitizeComposerContextLabel(path.split("/").at(-1) ?? path, "file")
       : `#${metadata.number}`,
     sectionId: `pull-request:${metadata.number}`,
-    // oxlint-disable-next-line t3code/no-untranslated-copy -- context record sent to the agent
+    // oxlint-disable-next-line cod3/no-untranslated-copy -- context record sent to the agent
     sectionTitle: `PR #${metadata.number}`,
     filePath: path || `PR #${metadata.number}`,
     startIndex: 0,

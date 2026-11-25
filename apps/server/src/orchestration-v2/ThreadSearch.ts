@@ -13,7 +13,7 @@ import {
   type OrchestrationV2ThreadShellSnapshot,
   ProjectId,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as DateTime from "effect/DateTime";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -22,7 +22,7 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as SqlSchema from "effect/sql/SqlSchema";
-import * as NodeSqliteClient from "@t3tools/shared/nodeSqliteClient";
+import * as NodeSqliteClient from "@cod3/shared/nodeSqliteClient";
 import {
   messageSearchTokens,
   foldSearchQuery,
@@ -31,8 +31,8 @@ import {
   messageMatcher,
   scoreThreadSearch,
   type ThreadSearchSubject,
-} from "@t3tools/shared/paletteSearch";
-import { threadSearchPullRequests } from "@t3tools/shared/threadPullRequests";
+} from "@cod3/shared/paletteSearch";
+import { threadSearchPullRequests } from "@cod3/shared/threadPullRequests";
 import {
   foldedMessageSearchText,
   indexedMessageCondition,
@@ -372,7 +372,7 @@ export class ThreadSearch extends Context.Service<
       readonly messageThreadIds: ReadonlyArray<ThreadId>;
     }) => Effect.Effect<ReadonlyArray<ThreadId>, ThreadSearchError>;
   }
->()("t3/orchestration-v2/ThreadSearch") {}
+>()("cod3/orchestration-v2/ThreadSearch") {}
 
 // Rows a client gets per search: enough for the shown results without sending every match.
 const OLDER_SETTLED_TITLE_ROWS = 15;

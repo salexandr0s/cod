@@ -1,15 +1,9 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { contextMenuSourceOf } from "../../contextMenuSource";
-import {
-  formatFilePathForClipboard,
-  type MediaActionId,
-} from "@t3tools/client-runtime/media-actions";
-import {
-  mediaReferenceFileName,
-  type MediaReference,
-} from "@t3tools/client-runtime/media-reference";
-import { resolveAssetUrl } from "@t3tools/client-runtime/state/assets";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { formatFilePathForClipboard, type MediaActionId } from "@cod3/client-runtime/media-actions";
+import { mediaReferenceFileName, type MediaReference } from "@cod3/client-runtime/media-reference";
+import { resolveAssetUrl } from "@cod3/client-runtime/state/assets";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import {
   AuthFilesystemReadScope,
   type AssetResource,
@@ -18,7 +12,7 @@ import {
   sessionGrantsScope,
   type SessionGrantInput,
   type ContextMenuSource,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { msg } from "gt-react";
 import { useRef, useState, type ReactElement } from "react";

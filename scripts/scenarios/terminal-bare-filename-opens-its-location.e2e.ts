@@ -4,12 +4,12 @@ import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 
-import { T3_HOME } from "../e2e.config.ts";
-import { runPromise, test, WEB } from "./t3.ts";
+import { COD3_HOME } from "../e2e.config.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 // gcc prints a file compiled from its own folder by bare name.
 const DIAGNOSTIC = "main.c:1:25: error: 'missing' undeclared";
-const EDITOR_ARGS = `${T3_HOME}/editor-args.txt`;
+const EDITOR_ARGS = `${COD3_HOME}/editor-args.txt`;
 
 /** The file's lines, or none while it does not exist. */
 const readLines = (file: string) =>
@@ -24,17 +24,17 @@ const readLines = (file: string) =>
 test(
   "Ctrl+click on a bare compiler filename in the terminal opens that file at its line and column",
   WEB,
-  async ({ t3, app, browser, screen }) => {
+  async ({ cod3, app, browser, screen }) => {
     await runPromise(
       Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(EDITOR_ARGS, { force: true })),
     );
-    const project = await t3.project("demo", {
+    const project = await cod3.project("demo", {
       "main.c": "int main(void) { return missing; }\n",
       // Enough rows that the middle of the terminal shows the diagnostic, whatever its height.
       "build.log": `${DIAGNOSTIC}\n`.repeat(200),
     });
-    const thread = await t3.thread({ project, title: "Build", messages: ["Build it"] });
-    await t3.open(thread);
+    const thread = await cod3.thread({ project, title: "Build", messages: ["Build it"] });
+    await cod3.open(thread);
 
     await screen.getByRole("button", "Toggle terminal drawer").tap();
     const input = screen.getByRole("textbox", "Terminal input");

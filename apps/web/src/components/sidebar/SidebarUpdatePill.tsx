@@ -1,11 +1,11 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import { managedUpdatesDenial } from "@t3tools/client-runtime/contract-labels";
-import { type DesktopBridge, type DesktopUpdateState } from "@t3tools/contracts";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import { managedUpdatesDenial } from "@cod3/client-runtime/contract-labels";
+import { type DesktopBridge, type DesktopUpdateState } from "@cod3/contracts";
 import { TriangleAlertIcon } from "lucide-react";
 import { msg, T, useGT, useMessages } from "gt-react";
 import { type ComponentProps, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { settlePromise, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+import { settlePromise, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import { isElectron } from "../../env";
 import { m } from "../../i18n/messages";
 import { useMediaQuery } from "../../hooks/useMediaQuery";

@@ -7,8 +7,8 @@ import {
   UsageLimitSourceId,
   type ServerProviderUsageWindow,
   type UsageLimitSourceSnapshot,
-} from "@t3tools/contracts";
-import * as SecretResolver from "@t3tools/secret-provider-core/server/SecretResolver";
+} from "@cod3/contracts";
+import * as SecretResolver from "@cod3/secret-provider-core/server/SecretResolver";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";

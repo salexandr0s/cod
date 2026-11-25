@@ -1,4 +1,4 @@
-import { resolveProviderProbeTimeoutMs } from "@t3tools/provider-core/server/snapshotProbe";
+import { resolveProviderProbeTimeoutMs } from "@cod3/provider-core/server/snapshotProbe";
 import { pipe } from "effect/Function";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
@@ -30,15 +30,15 @@ import type {
   ProviderOptionDescriptor,
   ServerProviderModel,
   ServerProviderSkill,
-} from "@t3tools/contracts";
-import { PREFERRED_DEFAULT_CODEX_MODELS, ServerSettingsError } from "@t3tools/contracts";
+} from "@cod3/contracts";
+import { PREFERRED_DEFAULT_CODEX_MODELS, ServerSettingsError } from "@cod3/contracts";
 
 import {
   codexModelFamily,
   createModelCapabilities,
   formatCodexModelName,
-} from "@t3tools/shared/model";
-import { resolveSpawnCommand } from "@t3tools/shared/shell";
+} from "@cod3/shared/model";
+import { resolveSpawnCommand } from "@cod3/shared/shell";
 import { codexAppServerArgs, resolveCodexLaunchArgs } from "./codexLaunchArgs.ts";
 import {
   buildServerProvider,
@@ -48,16 +48,16 @@ import {
   providerProbeEnvironment,
   spawnAndCollect,
   type ServerProviderDraft,
-} from "@t3tools/provider-core/server/snapshotProbe";
-import { expandHomePath } from "@t3tools/provider-core/server/pathExpansion";
-import { makeUnavailableUsageLimits } from "@t3tools/provider-core/server/usageLimits";
+} from "@cod3/provider-core/server/snapshotProbe";
+import { expandHomePath } from "@cod3/provider-core/server/pathExpansion";
+import { makeUnavailableUsageLimits } from "@cod3/provider-core/server/usageLimits";
 import {
   codexRateLimitsFailureMessage,
   codexRateLimitsToLimits,
   type CodexRateLimitSnapshot,
   type CodexResetCreditsSummary,
 } from "./codexUsageLimits.ts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import packageJson from "../../package.json" with { type: "json" };
 const isCodexAppServerSpawnError = Schema.is(CodexErrors.CodexAppServerSpawnError);
 
@@ -140,7 +140,7 @@ const CODEX_APP_SERVER_PROBE_FORCE_KILL_AFTER = "2 seconds" as const;
 const CODEX_CATALOG_REFRESH_TIMEOUT_MS = 3_000;
 const CODEX_CONFIG_PROBE_TIMEOUT_MS = 3_000;
 const CODEX_CATALOG_REFRESH_POLL = "100 millis" as const;
-const CODEX_CLIENT_NAME = "T3 Code";
+const CODEX_CLIENT_NAME = "cod3";
 // Handshake plus account/models/skills requests can exceed the shared 10s probe budget.
 const CODEX_AUTH_PROBE_TIMEOUT_MS = 20_000;
 const CODEX_DISCOVERY_MARGIN_MS = 250;
@@ -162,7 +162,7 @@ export interface CodexAppServerProviderSnapshot {
   readonly version: string | undefined;
   readonly models: ReadonlyArray<ServerProviderModel> | undefined;
   readonly serviceTier?: string | undefined;
-  /** Undefined when `config/read` failed, so T3 cannot know Codex's default program. */
+  /** Undefined when `config/read` failed, so cod3 cannot know Codex's default program. */
   readonly daybreakEnabled?: boolean | undefined;
   readonly cyberAccessProgramsUnavailable?: boolean | undefined;
   readonly skills: ReadonlyArray<ServerProviderSkill>;
@@ -946,7 +946,7 @@ const makePendingCodexProvider = Effect.fn("CodexProvider.makePendingCodexProvid
         version: null,
         status: "warning",
         auth: { status: "unknown" },
-        message: "Codex is disabled in T3 Code settings.",
+        message: "Codex is disabled in cod3 settings.",
       },
     });
   }
@@ -1047,7 +1047,7 @@ export const checkCodexProviderStatus = Effect.fn("checkCodexProviderStatus")(fu
         version: null,
         status: "warning",
         auth: { status: "unknown" },
-        message: "Codex is disabled in T3 Code settings.",
+        message: "Codex is disabled in cod3 settings.",
       },
     });
   }

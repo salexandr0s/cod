@@ -1,15 +1,10 @@
 const ROW = "[data-sidebar-row]";
 
-/** Ref callback for a sidebar list; installs its keyboard navigation and returns its cleanup. */
-export function attachSidebarTree(element: HTMLElement | null) {
-  return element ? installSidebarTree(element) : undefined;
-}
-
 /**
  * Arrow keys move focus between rows without opening them, as in VS Code's list commands.
  * Rows stay ordinary buttons in the Tab order so screen readers can browse the list.
  */
-export function installSidebarTree(root: HTMLElement) {
+export function installSidebarTree(root: HTMLElement, focusSearch?: (rowKey: string) => void) {
   let focusedId: string | undefined;
   let focusedParent: string | undefined;
   let focusedIndex = -1;
@@ -101,10 +96,16 @@ export function installSidebarTree(root: HTMLElement) {
       event.altKey ||
       event.ctrlKey ||
       event.metaKey ||
-      event.shiftKey
+      (event.shiftKey && event.key !== "/")
     )
       return;
     if (!(row instanceof HTMLElement) || !row.matches(ROW)) return;
+    if (event.key === "/" && focusSearch && row.dataset.sidebarRow) {
+      event.preventDefault();
+      event.stopPropagation();
+      focusSearch(row.dataset.sidebarRow);
+      return;
+    }
     const rows = visibleRows();
     const index = rows.indexOf(row);
     if (index < 0) return;

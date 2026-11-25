@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import {
   PROVIDER_SEND_TURN_MAX_ATTACHMENTS,
   PROVIDER_SEND_TURN_MAX_IMAGE_BYTES,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import type { ResolvedSharePayload, SharePayload } from "expo-sharing";
 
 import {
@@ -62,7 +62,7 @@ describe("incoming native shares", () => {
     };
     const removeOwnedFile = vi.fn(() => Promise.resolve());
     const readBase64 = vi.fn(async () => "YWJj");
-    const persistedUri = "file:///documents/t3-composer-attachments/Screenshot.png";
+    const persistedUri = "file:///documents/cod3-composer-attachments/Screenshot.png";
     const persistFile = vi.fn(async () => persistedUri);
 
     const result = await buildIncomingShareDraft({
@@ -107,7 +107,7 @@ describe("incoming native shares", () => {
     header.set([0x49, 0x48, 0x44, 0x52], 12);
     header.writeUInt32BE(3000, 16);
     header.writeUInt32BE(1500, 20);
-    const persistedUri = "file:///documents/t3-composer-attachments/screenshot.png";
+    const persistedUri = "file:///documents/cod3-composer-attachments/screenshot.png";
     const persistFile = vi.fn(async () => persistedUri);
     const removeOwnedFile = vi.fn(async (_uri: string) => undefined);
 
@@ -149,7 +149,7 @@ describe("incoming native shares", () => {
       value: "file:///shared/photo.png",
       mimeType: "image/png",
     };
-    const persistedUri = "file:///documents/t3-composer-attachments/photo.png";
+    const persistedUri = "file:///documents/cod3-composer-attachments/photo.png";
     const removeOwnedFile = vi.fn(async (_uri: string) => undefined);
     const result = await buildIncomingShareDraft({
       id: "share-unmeasured",
@@ -593,7 +593,7 @@ describe("incoming native shares", () => {
       value: "content://shared/report",
       mimeType: "application/pdf",
     };
-    const persistedUri = "file:///documents/t3-composer-attachments/report.pdf";
+    const persistedUri = "file:///documents/cod3-composer-attachments/report.pdf";
     const removeOwnedFile = vi.fn(async (_uri: string) => undefined);
 
     const result = await buildIncomingShareDraft({
@@ -635,7 +635,7 @@ describe("share cleanup ownership", () => {
     ).toBe(true);
     expect(
       isShareFileUriUnderOwnedRoots(
-        "file:///var/mobile/Containers/Data/Application/APP/Documents/t3-composer-attachments/a.pdf",
+        "file:///var/mobile/Containers/Data/Application/APP/Documents/cod3-composer-attachments/a.pdf",
         ["file:///private/var/mobile/Containers/Data/Application/APP/Documents/"],
       ),
     ).toBe(true);

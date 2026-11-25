@@ -1,9 +1,9 @@
 import { discardComposerDraft } from "../../lib/discardComposerDraft";
-import type { ContextMenuSource } from "@t3tools/contracts";
+import type { ContextMenuSource } from "@cod3/contracts";
 import { contextMenuSourceOf } from "../../contextMenuSource";
-import { assistantCitationsToPlainText } from "@t3tools/shared/assistantCitations";
-import { replaceComposerContextReferences } from "@t3tools/shared/composerContextReferences";
-import { composerFileLinksToPlainText } from "@t3tools/shared/composerInlineTokens";
+import { assistantCitationsToPlainText } from "@cod3/shared/assistantCitations";
+import { replaceComposerContextReferences } from "@cod3/shared/composerContextReferences";
+import { composerFileLinksToPlainText } from "@cod3/shared/composerInlineTokens";
 import { T, useGT } from "gt-react";
 import { SquarePenIcon, XIcon } from "lucide-react";
 import {
@@ -12,8 +12,8 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
 } from "react";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
-import type { EnvironmentId } from "@t3tools/contracts";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
+import type { EnvironmentId } from "@cod3/contracts";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "~/lib/utils";
 import { useTerminalLabelsByThreadKey } from "~/state/terminalSessions";
@@ -67,6 +67,7 @@ export function draftTerminalLabel(
 
 const SidebarDraftRow = memo(function SidebarDraftRow(props: {
   draftId: DraftId;
+  revealRef?: React.RefCallback<HTMLElement> | undefined;
   composer: ComposerThreadDraftState | null;
   terminalLabel: string | null;
   project: ProjectFaviconProject | null;
@@ -81,7 +82,7 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
     source: ContextMenuSource,
   ) => void;
 }) {
-  const { draftId, onContextMenu, onDiscard, onNavigate } = props;
+  const { draftId, onContextMenu, onDiscard, onNavigate, revealRef } = props;
   const composer = props.composer ?? EMPTY_COMPOSER_PARTS;
   const gt = useGT();
   const promptPreview =
@@ -142,6 +143,7 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
     <li className="list-none py-0.5">
       <div
         role="button"
+        ref={revealRef}
         tabIndex={0}
         data-sidebar-row={`draft:${draftId}`}
         aria-label={accessibility.label}
@@ -155,14 +157,22 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
         onContextMenu={handleContextMenu}
         onKeyDown={handleKeyDown}
       >
-        <div className="relative z-10 h-[4.875rem] px-(--sidebar-row-content-inset) py-(--sidebar-content-inset)">
+        <div className="relative z-10 px-(--sidebar-row-content-inset) py-(--sidebar-content-inset)">
+          <div
+            className={cn(
+              "mb-1 truncate text-sm text-foreground",
+              props.isActive ? "font-semibold" : "font-medium",
+            )}
+          >
+            {preview}
+          </div>
           <div className="flex h-5 min-w-0 items-center gap-1.5">
             <SquarePenIcon aria-hidden className={draftPenClassName} />
             {props.project ? (
               <ProjectFavicon project={props.project} className="size-4 shrink-0" />
             ) : null}
             <span className="min-w-0 flex-1 truncate text-xs font-medium text-secondary-label">
-              {props.projectDisplayName}
+              {props.projectDisplayName ?? gt("Unsent draft")}
             </span>
             <span
               className={cn(
@@ -190,7 +200,6 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
               {props.jumpLabel ? <JumpHintBadge label={props.jumpLabel} /> : null}
             </span>
           </div>
-          <div className="mt-0.5 truncate text-sm font-medium text-foreground/90">{preview}</div>
         </div>
       </div>
     </li>
@@ -253,6 +262,7 @@ export function useSidebarDrafts(
 
 export const SidebarDraftBlock = memo(function SidebarDraftBlock(props: {
   draftIds: readonly DraftId[];
+  revealRef?: React.RefCallback<HTMLElement> | undefined;
   routeDraftComposer: ComposerThreadDraftState | null;
   terminalLabels: ReadonlyMap<string, string>;
   jumpLabelByDraftId: ReadonlyMap<DraftId, string> | null;
@@ -293,6 +303,7 @@ export const SidebarDraftBlock = memo(function SidebarDraftBlock(props: {
           <SidebarDraftRow
             key={draftId}
             draftId={draftId}
+            revealRef={draftId === props.routeDraftId ? props.revealRef : undefined}
             composer={composer}
             terminalLabel={draftTerminalLabel(session, props.terminalLabels)}
             project={props.projectByKey.get(projectKey) ?? null}

@@ -1,5 +1,5 @@
 {
-  "name": "@t3tools/provider-fx",
+  "name": "@cod3/provider-fx",
   "private": true,
   "type": "module",
   "exports": {
@@ -25,16 +25,16 @@
     "test": "vp test run --config ../../vite.config.ts --dir ."
   },
   "dependencies": {
-    "@t3tools/contracts": "workspace:*",
-    "@t3tools/provider-acp": "workspace:*",
-    "@t3tools/provider-core": "workspace:*",
-    "@t3tools/shared": "workspace:*",
+    "@cod3/contracts": "workspace:*",
+    "@cod3/provider-acp": "workspace:*",
+    "@cod3/provider-core": "workspace:*",
+    "@cod3/shared": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
+    "@cod3/provider-testing": "workspace:*",
     "@effect/platform-node": "catalog:",
     "@effect/vitest": "catalog:",
-    "@t3tools/provider-testing": "workspace:*",
     "@types/node": "catalog:",
     "effect-acp": "workspace:*",
     "vite-plus": "catalog:"

@@ -1,9 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off -- Pure synchronous hashing keeps page matching bounded without a runtime dependency.
 import * as NodeCrypto from "node:crypto";
-import type { ThreadId } from "@t3tools/contracts";
-import type { HtmlRenderReference } from "@t3tools/shared/htmlRender";
-import { stableStringify } from "@t3tools/shared/relaySigning";
-import { resolveT3McpToolId } from "@t3tools/shared/t3McpToolPresentation";
+import type { ThreadId } from "@cod3/contracts";
+import type { HtmlRenderReference } from "@cod3/shared/htmlRender";
+import { stableStringify } from "@cod3/shared/relaySigning";
+import { resolveCod3McpToolId } from "@cod3/shared/cod3McpToolPresentation";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -93,7 +93,7 @@ export class McpProviderSessions extends Context.Service<
     ) => Effect.Effect<Record<string, unknown> | undefined>;
     readonly clearToolResults: (threadId: ThreadId) => Effect.Effect<void>;
   }
->()("@t3tools/provider-core/server/McpProviderSessions") {}
+>()("@cod3/provider-core/server/McpProviderSessions") {}
 
 interface PageInput {
   readonly html?: unknown;
@@ -284,7 +284,7 @@ const make = Effect.gen(function* () {
             return;
           }
         }
-        const canonicalTool = resolveT3McpToolId(toolName) ?? toolName;
+        const canonicalTool = resolveCod3McpToolId(toolName) ?? toolName;
         const entry: KeptToolResult = {
           toolName: canonicalTool,
           inputHash: hashToolInput(input),
@@ -308,7 +308,7 @@ const make = Effect.gen(function* () {
     ),
     takeToolResult: Effect.fn("McpProviderSessions.takeToolResult")(
       function (threadId, toolName, input, reported) {
-        const canonicalTool = resolveT3McpToolId(toolName) ?? toolName;
+        const canonicalTool = resolveCod3McpToolId(toolName) ?? toolName;
         return Ref.modify(toolResultState, (state) => {
           const kept = state.entries.get(threadId) ?? [];
           const index = matchingToolResultIndex(kept, canonicalTool, input, reported);

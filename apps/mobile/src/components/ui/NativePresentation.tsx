@@ -8,7 +8,7 @@ export interface PresentationSourceProps extends ViewProps {
 }
 
 const NativeSource: ComponentType<PresentationSourceProps> = requireNativeView(
-  "T3NativeControls",
+  "Cod3NativeControls",
   "PresentationSource",
 );
 

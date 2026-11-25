@@ -1,13 +1,13 @@
-import type { ArchivedSnapshotEntry } from "@t3tools/client-runtime/state/threads";
+import type { ArchivedSnapshotEntry } from "@cod3/client-runtime/state/threads";
 import {
   scopeProject,
   scopeThreadShell,
   type EnvironmentProject,
   type EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
-import { threadSearchSubject } from "@t3tools/client-runtime/state/thread-search";
-import type { EnvironmentId } from "@t3tools/contracts";
-import { foldSearchQuery, rankSearchItems, scoreThreadSearch } from "@t3tools/shared/paletteSearch";
+} from "@cod3/client-runtime/state/shell";
+import { threadSearchSubject } from "@cod3/client-runtime/state/thread-search";
+import type { EnvironmentId } from "@cod3/contracts";
+import { foldSearchQuery, rankSearchItems, scoreThreadSearch } from "@cod3/shared/paletteSearch";
 import * as Arr from "effect/Array";
 import * as Order from "effect/Order";
 

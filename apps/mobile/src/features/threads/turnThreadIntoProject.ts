@@ -2,10 +2,10 @@ import {
   isAtomCommandInterrupted,
   runAtomCommand,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
-import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
-import { AuthOrchestrationOperateScope } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/runtime";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
+import type { EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { AuthOrchestrationOperateScope } from "@cod3/contracts";
 import * as Haptics from "expo-haptics";
 import { msg } from "gt-react-native";
 

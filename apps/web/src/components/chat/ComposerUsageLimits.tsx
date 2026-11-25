@@ -1,6 +1,6 @@
-import type { EnvironmentId, UsageLimitsReport } from "@t3tools/contracts";
-import type { TimestampFormat } from "@t3tools/contracts/settings";
-import { limitsNotice } from "@t3tools/shared/usageLimitsCopy";
+import type { EnvironmentId, UsageLimitsReport } from "@cod3/contracts";
+import type { TimestampFormat } from "@cod3/contracts/settings";
+import { limitsNotice } from "@cod3/shared/usageLimitsCopy";
 import { msg, T, useGT, useMessages } from "gt-react";
 import { GaugeIcon } from "lucide-react";
 

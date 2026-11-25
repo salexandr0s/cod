@@ -1,22 +1,22 @@
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { GrokSettings } from "@t3tools/provider-grok/settings";
+import { GrokSettings } from "@cod3/provider-grok/settings";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { resolveSelfInvocation } from "@t3tools/shared/nodeRuntime";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { resolveSelfInvocation } from "@cod3/shared/nodeRuntime";
 
-import * as TestProviderHost from "@t3tools/provider-testing/TestProviderHost";
-import { GROK_ACP_CANCEL_META, GROK_ACP_INITIALIZE_META } from "@t3tools/provider-grok/testing";
-import { makeXAiPromptCompletionRuntime } from "@t3tools/provider-grok/testing";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+import * as TestProviderHost from "@cod3/provider-testing/TestProviderHost";
+import { GROK_ACP_CANCEL_META, GROK_ACP_INITIALIZE_META } from "@cod3/provider-grok/testing";
+import { makeXAiPromptCompletionRuntime } from "@cod3/provider-grok/testing";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
 import * as ProviderAdapterRegistry from "../ProviderAdapterRegistry.ts";
-import type { ProviderReplayGate } from "@t3tools/provider-testing/replayGate";
+import type { ProviderReplayGate } from "@cod3/provider-testing/replayGate";
 import type { OrchestratorV2ProviderReplayHarness } from "../testkit/ProviderReplayHarness.ts";
 import {
   type AcpReplayTranscript,
@@ -29,7 +29,7 @@ import {
   GROK_DEFAULT_INSTANCE_ID,
   GROK_PROVIDER,
   makeGrokAdapterV2,
-} from "@t3tools/provider-grok/testing";
+} from "@cod3/provider-grok/testing";
 
 const DEFAULT_GROK_SETTINGS = Schema.decodeSync(GrokSettings)({});
 
@@ -51,7 +51,7 @@ function layerGrokProviderAdapterRegistryReplay(
       const replayGate = options.replayGate;
       const replayDir = yield* fileSystem
         .makeTempDirectoryScoped({
-          prefix: `t3-orchestration-v2-grok-replay-${transcript.scenario}-`,
+          prefix: `cod3-orchestration-v2-grok-replay-${transcript.scenario}-`,
         })
         .pipe(Effect.orDie);
       const statusPath = path.join(replayDir, "status.json");

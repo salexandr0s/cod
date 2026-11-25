@@ -3,18 +3,18 @@ import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
-import { T3_HOME } from "../e2e.config.ts";
+import { COD3_HOME } from "../e2e.config.ts";
 import { SECOND_HOME, startSecondServer } from "./second-server.ts";
-import { environmentId, makeState, rpcClient, runPromise, test, WEB } from "./t3.ts";
+import { environmentId, makeState, rpcClient, runPromise, test, WEB } from "./cod3.ts";
 
 const decodeCredential = Schema.decodeUnknownSync(Schema.Struct({ credential: Schema.String }));
 
 test(
   "A closed linked-thread tab does not take over the conversation when pairing finishes",
   WEB,
-  async ({ t3, app, browser, screen }) => {
-    const project = await t3.project("primary");
-    const parent = await t3.thread({
+  async ({ cod3, app, browser, screen }) => {
+    const project = await cod3.project("primary");
+    const parent = await cod3.thread({
       project,
       title: "Current work",
       messages: ["Keep this conversation open"],
@@ -38,7 +38,7 @@ test(
       const { credential } = decodeCredential(await pairing.json());
       await runPromise(
         Effect.gen(function* () {
-          const primary = yield* rpcClient(T3_HOME, origin);
+          const primary = yield* rpcClient(COD3_HOME, origin);
           const remote = yield* rpcClient(SECOND_HOME, host);
           for (const client of [primary, remote]) {
             yield* client["server.updateSettings"]({ patch: { linkedEnvironmentsEnabled: true } });
@@ -69,7 +69,7 @@ test(
           if (location.pathname !== `/${via}/${parentId}`) return;
           const id = `linked-thread:${encodeURIComponent(via)}:${encodeURIComponent(linked)}:${encodeURIComponent(childId)}`;
           localStorage.setItem(
-            "t3code:right-panel-state:v2",
+            "cod3:right-panel-state:v2",
             JSON.stringify({
               version: 16,
               state: {
@@ -114,7 +114,7 @@ test(
         await route.continue();
       });
       try {
-        await t3.open(parent);
+        await cod3.open(parent);
         await screen.getByText(linkedPrompt, { exact: true }).waitFor();
         const originalUrl = await browser.url();
         await screen.getByRole("button", "Connect to interact", { exact: true }).tap();

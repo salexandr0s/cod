@@ -1,5 +1,5 @@
 import { isDraftThreadRoute } from "./thread-route-state";
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { msg, T, useGT, useMessages } from "gt-react-native";
 import * as Dialog from "../../components/ui/Dialog";
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
@@ -13,13 +13,13 @@ import {
   type StaticScreenProps,
 } from "@react-navigation/native";
 import { SymbolView } from "../../components/ui/AppSymbol";
-import { pickableProjectGroups } from "@t3tools/client-runtime/state/project-grouping";
-import { isScratchProject } from "@t3tools/client-runtime/state/projects";
+import { pickableProjectGroups } from "@cod3/client-runtime/state/project-grouping";
+import { isScratchProject } from "@cod3/client-runtime/state/projects";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
-import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
+} from "@cod3/client-runtime/state/runtime";
+import type { EnvironmentProject } from "@cod3/client-runtime/state/shell";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -330,7 +330,7 @@ export function NewTaskRouteScreen({ route }: StaticScreenProps<NewTaskRoutePara
     if (pendingScratchRef.current === request) pendingScratchRef.current = null;
   }
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- navigates to the incoming share's reserved destination draft once its project loads and the screen is focused
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- navigates to the incoming share's reserved destination draft once its project loads and the screen is focused
   useEffect(() => {
     const destination = incomingShare?.destination;
     if (!destination) {
@@ -430,7 +430,7 @@ export function NewTaskRouteScreen({ route }: StaticScreenProps<NewTaskRoutePara
                     />
                   </View>
                   <View className="min-w-0 flex-1">
-                    <Text className="text-base font-t3-bold leading-snug">
+                    <Text className="text-base font-cod3-bold leading-snug">
                       <T>No project</T>
                     </Text>
                     <Text className="text-xs leading-snug text-foreground-muted" numberOfLines={1}>
@@ -458,7 +458,7 @@ export function NewTaskRouteScreen({ route }: StaticScreenProps<NewTaskRoutePara
               {projectEmptyState.loading ? (
                 <AppActivityIndicator colorClassName="accent-icon-muted" />
               ) : null}
-              <Text className="text-center text-lg font-t3-bold text-foreground">
+              <Text className="text-center text-lg font-cod3-bold text-foreground">
                 {projectEmptyState.title}
               </Text>
               <Text className="text-center text-sm leading-normal text-foreground-muted">
@@ -522,7 +522,7 @@ export function NewTaskRouteScreen({ route }: StaticScreenProps<NewTaskRoutePara
             </View>
           ) : visibleScopes.length === 0 ? (
             <View className="items-center gap-2 px-6 py-8">
-              <Text className="text-center text-lg font-t3-bold text-foreground">
+              <Text className="text-center text-lg font-cod3-bold text-foreground">
                 <T>No matching projects</T>
               </Text>
               <Text className="text-center text-sm leading-normal text-foreground-muted">
@@ -598,7 +598,7 @@ export function NewTaskRouteScreen({ route }: StaticScreenProps<NewTaskRoutePara
                         />
                       </View>
                       <View className="min-w-0 flex-1">
-                        <Text className={cn("text-base leading-snug", "font-t3-bold")}>
+                        <Text className={cn("text-base leading-snug", "font-cod3-bold")}>
                           {scope.title}
                         </Text>
                         <Text

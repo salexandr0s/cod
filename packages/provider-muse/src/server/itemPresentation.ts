@@ -1,4 +1,4 @@
-import type { OrchestrationV2TurnItem, OrchestrationV2TurnItemStatus } from "@t3tools/contracts";
+import type { OrchestrationV2TurnItem, OrchestrationV2TurnItemStatus } from "@cod3/contracts";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 

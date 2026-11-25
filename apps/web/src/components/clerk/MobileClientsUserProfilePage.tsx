@@ -1,4 +1,4 @@
-import type { RelayClientDeviceRecord } from "@t3tools/contracts/relay";
+import type { RelayClientDeviceRecord } from "@cod3/contracts/relay";
 import { T, useGT, useMessages } from "gt-react";
 import { SmartphoneIcon } from "lucide-react";
 
@@ -107,7 +107,7 @@ function EmptyMobileClients() {
         </EmptyTitle>
         <EmptyDescription>
           <T>
-            Install T3 Code on your phone and sign in to T3 Connect to get push notifications and
+            Install cod3 on your phone and sign in to cod3 Connect to get push notifications and
             Live Activities.
           </T>
         </EmptyDescription>

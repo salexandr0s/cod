@@ -1,0 +1,28 @@
+import type { ColorValue } from "react-native";
+import Svg, { Path } from "react-native-svg";
+import { withUniwind } from "uniwind";
+
+const ThemedPath = withUniwind(Path);
+
+export function Cod3Wordmark(props: {
+  readonly height: number;
+  readonly color?: ColorValue;
+  readonly colorClassName?: string;
+}) {
+  const aspectRatio = 93 / 33.5;
+  return (
+    <Svg
+      accessibilityLabel="cod3"
+      height={props.height}
+      width={props.height * aspectRatio}
+      viewBox="17.5 25.5 93 33.5"
+    >
+      <ThemedPath
+        d="M36 35H23a5.5 5.5 0 0 0-5.5 5.5v13A5.5 5.5 0 0 0 23 59h13a1.5 1.5 0 0 0 1.5-1.5v-4a1.5 1.5 0 0 0-1.5-1.5H25a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h11a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 36 35ZM46 35h11a5.5 5.5 0 0 1 5.5 5.5v13A5.5 5.5 0 0 1 57 59H46a5.5 5.5 0 0 1-5.5-5.5v-13A5.5 5.5 0 0 1 46 35Zm2.5 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1ZM81 25.5h4a1.5 1.5 0 0 1 1.5 1.5v26.5A5.5 5.5 0 0 1 81 59H70a5.5 5.5 0 0 1-5.5-5.5v-13A5.5 5.5 0 0 1 70 35h9.5v-8a1.5 1.5 0 0 1 1.5-1.5ZM72.5 42a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1ZM91 28h13a6.5 6.5 0 0 1 6.5 6.5V39a5 5 0 0 1-2.5 4.5 5 5 0 0 1 2.5 4.5v4.5A6.5 6.5 0 0 1 104 59H91a1.5 1.5 0 0 1-1.5-1.5v-4A1.5 1.5 0 0 1 91 52h11a1.5 1.5 0 0 0 1.5-1.5v-3A1.5 1.5 0 0 0 102 46h-6a1.5 1.5 0 0 1-1.5-1.5v-3A1.5 1.5 0 0 1 96 40h6a1.5 1.5 0 0 0 1.5-1.5v-2A1.5 1.5 0 0 0 102 35H91a1.5 1.5 0 0 1-1.5-1.5v-4A1.5 1.5 0 0 1 91 28Z"
+        color={props.color}
+        colorClassName={props.colorClassName}
+        fill="currentColor"
+      />
+    </Svg>
+  );
+}

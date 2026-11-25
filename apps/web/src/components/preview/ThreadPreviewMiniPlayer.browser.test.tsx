@@ -1,13 +1,13 @@
 import "~/index.css";
 
 import { RegistryContext } from "@effect/atom-react";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
 import {
   type DeviceServiceState,
   type EnvironmentId,
   type ScopedThreadRef,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult, Atom } from "effect/reactivity";
 import { useState } from "react";
 import { expect, it, vi } from "vite-plus/test";

@@ -1,6 +1,6 @@
 import { T, useGT } from "gt-react-native";
-import type { EnvironmentId, ThreadId, TurnItemId } from "@t3tools/contracts";
-import { TERMINAL_PALETTES, terminalOutputSpans } from "@t3tools/shared/terminalOutput";
+import type { EnvironmentId, ThreadId, TurnItemId } from "@cod3/contracts";
+import { TERMINAL_PALETTES, terminalOutputSpans } from "@cod3/shared/terminalOutput";
 import type React from "react";
 import { useMemo, useRef } from "react";
 import { ScrollView, View } from "react-native";

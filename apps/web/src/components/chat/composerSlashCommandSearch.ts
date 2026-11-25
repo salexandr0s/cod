@@ -2,7 +2,7 @@ import {
   insertRankedSearchResult,
   normalizeSearchQuery,
   scoreQueryMatch,
-} from "@t3tools/shared/searchRanking";
+} from "@cod3/shared/searchRanking";
 
 import type { ComposerCommandItem } from "./ComposerCommandMenu";
 import { scoreProviderSkill } from "../../providerSkillSearch";

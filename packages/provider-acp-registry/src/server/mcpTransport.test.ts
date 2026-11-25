@@ -13,8 +13,8 @@ describe("prefersHttpMcpTransport", () => {
   it("uses HTTP for the vendored Command Code launcher", () => {
     expect(
       prefersHttpMcpTransport(
-        local("C:\\Users\\me\\.t3\\bin\\cmdcode\\node.exe", [
-          "C:\\Users\\me\\.t3\\bin\\cmdcode\\node_modules\\command-code\\dist\\index.mjs",
+        local("C:\\Users\\me\\.cod3\\bin\\cmdcode\\node.exe", [
+          "C:\\Users\\me\\.cod3\\bin\\cmdcode\\node_modules\\command-code\\dist\\index.mjs",
           "acp",
         ]),
       ),
@@ -31,7 +31,7 @@ describe("prefersHttpMcpTransport", () => {
     expect(prefersHttpMcpTransport(local("/usr/local/bin/cmdc"))).toBe(true);
   });
 
-  it("keeps the stdio bridge for a batch shim T3 refuses to launch", () => {
+  it("keeps the stdio bridge for a batch shim cod3 refuses to launch", () => {
     expect(prefersHttpMcpTransport(local("C:\\tools\\cmdc.cmd", ["acp"]))).toBe(false);
   });
 

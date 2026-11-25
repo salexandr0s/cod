@@ -8,7 +8,8 @@ import {
   type DeviceSummary,
   DeviceToolUnavailableError,
   LOCAL_DEVICE_HOST_ID,
-} from "@t3tools/contracts";
+  TART_DEVICE_HOST_ID,
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as DeviceService from "../../../device/DeviceService.ts";
@@ -36,12 +37,20 @@ export function agentDeviceQuickStart(
     | { readonly kind: "simlock"; readonly installDirectory?: string },
 ): string {
   const executable = shellWord(command);
+  if (device.platform === "macos")
+    return [
+      `The user is watching the isolated Mac VM in the Device panel. Run the returned command ${executable} for all Mac automation.`,
+      `${executable} launch "/local/path/App.app" transfers the selected bundle and launches it inside the guest.`,
+      `Call device_screenshot to inspect the guest or run snapshot for native accessibility labels and coordinates. Use ${executable} click X Y for guest pixels, type "text", and key Cmd a or key Enter for shortcuts and native dialogs.`,
+      `Use ${executable} verify-file "/absolute/guest/path" to check a file and read its SHA-256. Use screenshot "/local/path/image.png" to save evidence.`,
+      "On disconnect stop and report the error. Never switch to host input, screenshots, or a different device.",
+    ].join("\n");
   const target = targetArgs.map(shellWord).join(" ");
   const run = (args: string) => [executable, args, target].filter(Boolean).join(" ");
   const platformNotes =
     host?.kind === "simlock"
       ? [
-          "This device is leased from a Simlock pool (alpha in T3 Code). The lease returns it to the pool, wiped, when it ends, so call device_close with shutdown: true when you are done. It starts with no apps installed.",
+          "This device is leased from a Simlock pool (alpha in cod3). The lease returns it to the pool, wiped, when it ends, so call device_close with shutdown: true when you are done. It starts with no apps installed.",
           host.installDirectory
             ? `agent-device accepts install for this lease only when run from ${host.installDirectory}.`
             : "",
@@ -77,7 +86,7 @@ export function agentDeviceQuickStart(
     "Each device_open returns its own command; opening another device does not retarget this one.",
     ...(target === ""
       ? [
-          "The command is removed when the device closes or T3 Code restarts. If it is missing, call device_open again.",
+          "The command is removed when the device closes or cod3 restarts. If it is missing, call device_open again.",
         ]
       : []),
     platformNotes,
@@ -169,7 +178,13 @@ const pickDevice = Effect.fn("handlers.pickDevice")(function* (
     const { deviceId, hostId } = input;
     const devices = yield* DeviceService.DeviceService;
     const located = yield* devices.locateDevice({ deviceId, hostId }).pipe(mapLocateErrors);
-    if (Option.isSome(located)) return located.value;
+    if (Option.isSome(located)) {
+      if (input.platform && located.value.platform !== input.platform)
+        return yield* new DeviceToolUnavailableError({
+          reason: "Device platform does not match the requested platform.",
+        });
+      return located.value;
+    }
     const target =
       hostId === undefined
         ? undefined
@@ -185,7 +200,8 @@ const pickDevice = Effect.fn("handlers.pickDevice")(function* (
       ].join(" "),
     });
   }
-  const hostId = input.hostId ?? LOCAL_DEVICE_HOST_ID;
+  const hostId =
+    input.hostId ?? (input.platform === "macos" ? TART_DEVICE_HOST_ID : LOCAL_DEVICE_HOST_ID);
   const candidates = state.devices.filter(
     (device) =>
       device.hostId === hostId &&

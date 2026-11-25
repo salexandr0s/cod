@@ -1,5 +1,5 @@
-import { threadKey } from "@t3tools/client-runtime/state/entities";
-import { EnvironmentId, ProjectId, ThreadId } from "@t3tools/contracts";
+import { threadKey } from "@cod3/client-runtime/state/entities";
+import { EnvironmentId, ProjectId, ThreadId } from "@cod3/contracts";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
@@ -14,6 +14,7 @@ import { CommandPalette } from "./CommandPalette";
 
 const entities = vi.hoisted(() => ({
   projects: [] as ReadonlyArray<Project>,
+  projectListeners: new Set<() => void>(),
   threads: [] as ReadonlyArray<Thread>,
   activeThread: undefined as Thread | undefined,
   delegatedUnderParent: new Set<string>() as ReadonlySet<string>,
@@ -22,8 +23,8 @@ const entities = vi.hoisted(() => ({
 vi.mock("../state/server", async (original) => {
   const actual = await original<typeof import("../state/server")>();
   const { Atom } = await import("effect/reactivity");
-  const { compileResolvedKeybindingsConfig } = await import("@t3tools/shared/keybindings");
-  const { THREAD_JUMP_KEYBINDING_COMMANDS } = await import("@t3tools/contracts");
+  const { compileResolvedKeybindingsConfig } = await import("@cod3/shared/keybindings");
+  const { THREAD_JUMP_KEYBINDING_COMMANDS } = await import("@cod3/contracts");
   // The default jump bindings are desktop-only; these hold in the browser too.
   const jumpBindings = compileResolvedKeybindingsConfig(
     THREAD_JUMP_KEYBINDING_COMMANDS.map((command, index) => ({
@@ -44,12 +45,21 @@ vi.mock("../hooks/useHandleNewThread", async (original) => {
     }),
   };
 });
-vi.mock("../state/entities", async (original) => ({
-  ...(await original<typeof import("../state/entities")>()),
-  useProjects: () => entities.projects,
-  useVisibleThreadShells: () => entities.threads,
-  useDelegatedUnderParent: () => entities.delegatedUnderParent,
-}));
+vi.mock("../state/entities", async (original) => {
+  const { useSyncExternalStore } = await import("react");
+  const subscribe = (notify: () => void) => {
+    entities.projectListeners.add(notify);
+    return () => {
+      entities.projectListeners.delete(notify);
+    };
+  };
+  return {
+    ...(await original<typeof import("../state/entities")>()),
+    useProjects: () => useSyncExternalStore(subscribe, () => entities.projects),
+    useVisibleThreadShells: () => entities.threads,
+    useDelegatedUnderParent: () => entities.delegatedUnderParent,
+  };
+});
 
 function setup(state: Partial<typeof entities> = {}) {
   // Earlier browser test files share this origin's localStorage; a remembered project
@@ -90,7 +100,7 @@ describe("CommandPalette open intents", () => {
         <div
           data-thread-context-drop="true"
           ref={(node) => {
-            node?.addEventListener("t3-thread-context-drop", onDrop);
+            node?.addEventListener("cod3-thread-context-drop", onDrop);
           }}
           style={{ position: "fixed", bottom: 0, width: 300, height: 100 }}
         >
@@ -137,6 +147,18 @@ describe("CommandPalette open intents", () => {
     openCommandPalette({ open: "new-thread-in" });
 
     await expect.element(page.getByPlaceholder("Search...")).toHaveFocus();
+  });
+
+  it("lists newly added empty projects while the picker is open", async () => {
+    setup({ projects: [makeProject("Original")] });
+    await using _screen = await render(<CommandPalette>{null}</CommandPalette>);
+    openCommandPalette({ open: "new-thread-in" });
+    await expect.element(page.getByRole("option", { name: /Original/ })).toBeVisible();
+    await act(() => {
+      entities.projects = [...entities.projects, makeProject("New empty project")];
+      for (const notify of entities.projectListeners) notify();
+    });
+    await expect.element(page.getByRole("option", { name: /New empty project/ })).toBeVisible();
   });
 
   it("highlights the first project when New thread in... opens from the root list", async () => {

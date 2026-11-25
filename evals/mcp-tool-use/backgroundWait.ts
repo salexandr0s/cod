@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off
 /**
- * T3's real `t3_background_wait` handler and ThreadManagementService over a Claude session.
+ * cod3's real `cod3_background_wait` handler and ThreadManagementService over a Claude session.
  * Only the adapter is the eval's: like Claude's, it matches task IDs against the session's
  * running background work, which the case lists in `world.backgroundTasks`.
  */
@@ -13,14 +13,14 @@ import {
   ProviderSessionId,
   ProviderThreadId,
   ThreadId,
-} from "@t3tools/contracts";
-import type * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+} from "@cod3/contracts";
+import type * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as References from "effect/References";
-// oxlint-disable-next-line t3code/no-raw-mcp-registration -- the eval calls the tool McpHttpServer registered and registers none.
+// oxlint-disable-next-line cod3/no-raw-mcp-registration -- the eval calls the tool McpHttpServer registered and registers none.
 import { McpSchema, McpServer } from "effect/ai";
 
 import * as McpHttpServer from "../../apps/server/src/mcp/McpHttpServer.ts";
@@ -47,7 +47,7 @@ const providerSessionId = ProviderSessionId.make("provider-session:mcp-tool-use-
 const providerInstanceId = ProviderInstanceId.make("claudeAgent");
 const driver = ProviderDriverKind.make("claudeAgent");
 
-/** Calls T3's `t3_background_wait` with `running` as the session's running background task IDs. */
+/** Calls cod3's `cod3_background_wait` with `running` as the session's running background task IDs. */
 export const makeBackgroundWait = Effect.fn("evaluateMcpToolUse.makeBackgroundWait")(function* (
   running: ReadonlyArray<string>,
 ) {
@@ -111,8 +111,8 @@ export const makeBackgroundWait = Effect.fn("evaluateMcpToolUse.makeBackgroundWa
   type Entry = Parameters<McpServer.McpServer["Service"]["addTool"]>[0];
   // The registry keeps each tool's handler; its public type lists only definitions.
   const tools = Context.get(context, McpServer.McpServer).tools as ReadonlyArray<Entry>;
-  const entry = tools.find((tool) => tool.tool.name === "t3_background_wait");
-  if (entry === undefined) return yield* Effect.die(new Error("T3 has no t3_background_wait."));
+  const entry = tools.find((tool) => tool.tool.name === "cod3_background_wait");
+  if (entry === undefined) return yield* Effect.die(new Error("cod3 has no cod3_background_wait."));
   const scope: McpInvocationContext.McpThreadInvocationScope = {
     environmentId: EnvironmentId.make("00000000-0000-4000-8000-0000000000e0"),
     requestNamespace: "mcp-tool-use-eval",
@@ -146,7 +146,7 @@ export const makeBackgroundWait = Effect.fn("evaluateMcpToolUse.makeBackgroundWa
       .flatMap((part) => (part.type === "text" ? [part.text] : []))
       .join("\n");
     if (text === "Tool execution failed due to an internal server error.") {
-      return yield* Effect.die(new Error("t3_background_wait hit a defect in T3 or the eval."));
+      return yield* Effect.die(new Error("cod3_background_wait hit a defect in cod3 or the eval."));
     }
     return { text, isError: result.isError === true };
   });

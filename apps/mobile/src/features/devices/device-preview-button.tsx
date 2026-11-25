@@ -32,7 +32,7 @@ export function DevicePreviewButton(props: {
         type="monochrome"
       />
       {!compact ? (
-        <AppText className="font-t3-medium text-xs text-foreground">
+        <AppText className="font-cod3-medium text-xs text-foreground">
           <T>
             <Plural
               n={props.count}
@@ -47,7 +47,9 @@ export function DevicePreviewButton(props: {
         </AppText>
       ) : props.count > 1 ? (
         <View className="absolute right-1.5 top-1.5 min-w-4 items-center rounded-full bg-primary px-1">
-          <AppText className="text-2xs font-t3-bold text-primary-foreground">{props.count}</AppText>
+          <AppText className="text-2xs font-cod3-bold text-primary-foreground">
+            {props.count}
+          </AppText>
         </View>
       ) : null}
     </Pressable>

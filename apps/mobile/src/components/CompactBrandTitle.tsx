@@ -5,13 +5,12 @@ import { useState } from "react";
 import { Platform, View } from "react-native";
 
 import { AppText as Text } from "./ui/AppText";
-import { T3Wordmark } from "./T3Wordmark";
+import { Cod3Wordmark } from "./Cod3Wordmark";
 import { IPAD_HOME_TITLE_OFFSET } from "../lib/layoutMetrics";
 import { resolveMobileStageLabel } from "../lib/mobileBranding";
 import { useAndroidControlSizing } from "./ui/useAndroidControlSizing";
 
 const BRAND_MAX_FONT_SCALE = 1.4;
-const WORDMARK_SUFFIX = "Code";
 
 export function brandTitleOffset(): number {
   if (Platform.OS !== "ios") return 0;
@@ -42,7 +41,7 @@ export function CompactBrandTitle(
         props.fit && showStage ? (event) => setFullWidth(event.nativeEvent.layout.width) : undefined
       }
       aria-level={1}
-      accessibilityLabel={props.accessibilityLabel ?? gt("T3 Code, Threads")}
+      accessibilityLabel={props.accessibilityLabel ?? gt("cod3, Threads")}
       accessible
       role="heading"
       className="flex-row items-center gap-1.5"
@@ -52,16 +51,7 @@ export function CompactBrandTitle(
         props.fit && { flexShrink: 0 },
       ]}
     >
-      <T3Wordmark colorClassName="accent-icon" height={Math.round(15 * scale)} />
-      {/* A logo beside a fixed-size wordmark: it may grow with Dynamic Type, not crowd the bar. */}
-      <Text
-        allowFontScaling={props.allowFontScaling}
-        maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}
-        className="font-t3-medium text-foreground-muted"
-        style={{ fontSize: 21 * scale, letterSpacing: -0.5 * scale }}
-      >
-        {WORDMARK_SUFFIX}
-      </Text>
+      <Cod3Wordmark colorClassName="accent-icon" height={Math.round(15 * scale)} />
       {showStage ? (
         <View
           className="rounded-full bg-subtle px-1.5 py-0.5"
@@ -74,7 +64,7 @@ export function CompactBrandTitle(
           <Text
             allowFontScaling={props.allowFontScaling}
             maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}
-            className="font-t3-bold text-foreground-muted uppercase"
+            className="font-cod3-bold text-foreground-muted uppercase"
             style={{ fontSize: 9 * scale, letterSpacing: 0.9 * scale }}
           >
             {stageLabel}

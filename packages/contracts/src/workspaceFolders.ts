@@ -51,6 +51,20 @@ export const WorkspaceScanFoldersResult = Schema.Struct({
 });
 export type WorkspaceScanFoldersResult = typeof WorkspaceScanFoldersResult.Type;
 
+export const WorkspaceDiscoverProjectsResult = Schema.Struct({
+  workspaceRoot: TrimmedNonEmptyString,
+  repositories: Schema.Array(
+    Schema.Struct({
+      path: TrimmedNonEmptyString,
+      name: TrimmedNonEmptyString,
+      linkedWorktree: Schema.Boolean,
+    }),
+  ),
+  truncated: Schema.Boolean,
+  skipped: Schema.Number,
+});
+export type WorkspaceDiscoverProjectsResult = typeof WorkspaceDiscoverProjectsResult.Type;
+
 /** A new worktree thread isolates every tracked repository by default only up to this many. */
 export const TASK_FOLDER_DEFAULT_REPOSITORIES_MAX = 8;
 

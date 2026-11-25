@@ -14,11 +14,11 @@ import {
   SystemSettingsPaneSchema,
   type DesktopEnvironmentBootstrap,
   type PickedThemeFile,
-} from "@t3tools/contracts";
-import { PROJECT_FAVICON_EXTENSIONS } from "@t3tools/shared/projectFavicon";
-import { resolveEditorCommand } from "@t3tools/shared/editor";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { isRelayTracingEnabled } from "@t3tools/shared/otelEnvironment";
+} from "@cod3/contracts";
+import { PROJECT_FAVICON_EXTENSIONS } from "@cod3/shared/projectFavicon";
+import { resolveEditorCommand } from "@cod3/shared/editor";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { isRelayTracingEnabled } from "@cod3/shared/otelEnvironment";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Effect from "effect/Effect";

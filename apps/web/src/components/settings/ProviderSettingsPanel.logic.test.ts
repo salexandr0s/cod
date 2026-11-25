@@ -3,7 +3,7 @@ import {
   ProjectId,
   ProviderInstanceId,
   type ServerSettings,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {

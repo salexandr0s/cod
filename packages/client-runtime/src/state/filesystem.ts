@@ -4,8 +4,8 @@ import {
   WS_METHODS,
   sessionGrantsScope,
   type SessionGrantInput,
-} from "@t3tools/contracts";
-import { scoreQueryMatch } from "@t3tools/shared/searchRanking";
+} from "@cod3/contracts";
+import { scoreQueryMatch } from "@cod3/shared/searchRanking";
 import { Atom } from "effect/reactivity";
 
 import { mFallback, msg } from "gt-i18n";
@@ -220,6 +220,11 @@ export function createFilesystemEnvironmentAtoms<R, E>(
       // A listing mirrors a directory that can change outside the app, so reopening a picker
       // lists it again. The short TTL only keeps the old listing on screen while it refreshes.
       idleTtlMs: BROWSE_IDLE_TTL_MS,
+      staleTimeMs: 0,
+    }),
+    discoverProjects: createEnvironmentRpcQueryAtomFamily(runtime, {
+      label: "environment-data:workspace:discover-projects",
+      tag: WS_METHODS.workspaceDiscoverProjects,
       staleTimeMs: 0,
     }),
     /** Repositories under a folder and in its `.code-workspace` file, read from disk each time. */

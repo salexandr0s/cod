@@ -1,4 +1,4 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { useAtomRefresh, useAtomValue } from "@effect/atom-react";
 import { msg } from "gt-react";
 import {
@@ -6,8 +6,8 @@ import {
   type ProjectListEntriesResult,
   ProjectReadFileError,
   type ProjectReadFileResult,
-  T3_PROJECT_FILE_NAME,
-} from "@t3tools/contracts";
+  COD3_PROJECT_FILE_NAME,
+} from "@cod3/contracts";
 import * as Cause from "effect/Cause";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -78,7 +78,7 @@ export function getProjectFileQueryAtom(
     input: {
       cwd,
       relativePath: relativePath ?? EMPTY_PROJECT_FILE_PATH,
-      ...(relativePath === T3_PROJECT_FILE_NAME ? { allowMissing: true } : {}),
+      ...(relativePath === COD3_PROJECT_FILE_NAME ? { allowMissing: true } : {}),
     },
   });
 }
@@ -185,20 +185,21 @@ function errorMessage(cause: unknown, resolve: MessageResolver): string | null {
 
 const isProjectReadFileError = Schema.is(ProjectReadFileError);
 
-/** `revision` is the workspace mutation id; a new one refetches the listing. */
+/** A null directory disables listing. An empty path lists the root and an omitted path queries the workspace index. */
 export function useProjectEntriesQuery(
   environmentId: EnvironmentId,
   cwd: string,
-  directoryPath?: string,
+  directoryPath?: string | null,
   revision?: string | null,
   resolve: MessageResolver = m,
 ): ProjectQueryState<ProjectListEntriesResult> {
   const fileAccess = useFilesystemReadAccess(environmentId, resolve);
   const { canReadFiles } = fileAccess;
-  const atom = canReadFiles
+  const enabled = canReadFiles && directoryPath !== null;
+  const atom = enabled
     ? getProjectEntriesQueryAtom(environmentId, cwd, directoryPath)
     : EMPTY_PROJECT_ENTRIES_QUERY_ATOM;
-  const result = useAtomValue(revisionedQuery(atom, canReadFiles ? revision : undefined));
+  const result = useAtomValue(revisionedQuery(atom, enabled ? revision : undefined));
   const refreshAtom = useAtomRefresh(atom);
   const refresh = () => refreshAtom();
   return {

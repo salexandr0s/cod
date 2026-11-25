@@ -1,4 +1,4 @@
-import type { DevicePlatform, EnvironmentId } from "@t3tools/contracts";
+import type { DevicePlatform, EnvironmentId } from "@cod3/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import { AsyncResult, Atom } from "effect/reactivity";
 import { T, useGT } from "gt-react";
@@ -7,7 +7,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { renewDeviceHubAccess, useDeviceHubAccess } from "~/state/device";
-import { resolveDeviceShape } from "@t3tools/client-runtime/device/shape-profile";
+import { resolveDeviceShape } from "@cod3/client-runtime/device/shape-profile";
 import { deviceKeyboard, deviceModel } from "./deviceModels";
 import { fitDeviceFrame } from "./deviceFrameLayout";
 import { DeviceDuoViewport } from "./DeviceDuoViewport";
@@ -23,7 +23,7 @@ import {
   type DeviceStreamSession,
   IDLE_DEVICE_STREAM_STATE,
 } from "./deviceStreamSession";
-import type { DeviceHardwareButton, DeviceScreenSize } from "@t3tools/client-runtime/device/stream";
+import type { DeviceHardwareButton, DeviceScreenSize } from "@cod3/client-runtime/device/stream";
 import { observeResize } from "~/lib/observeResize";
 
 const NO_SESSION_ATOM = Atom.make<DeviceStreamSession | null>(null).pipe(
@@ -36,7 +36,7 @@ const NO_AX_ATOM = Atom.make(AsyncResult.initial<ReadonlyArray<DeviceAxElement>,
 const CONTROLS_RAIL_WIDTH = 56;
 
 function screenAspect(platform: DevicePlatform, screen: DeviceScreenSize | null): number {
-  if (!screen) return platform === "ios" ? 9 / 19.5 : 9 / 20;
+  if (!screen) return platform === "macos" ? 16 / 10 : platform === "ios" ? 9 / 19.5 : 9 / 20;
   const landscape =
     screen.orientation === "landscape_left" || screen.orientation === "landscape_right";
   const w = landscape
@@ -152,6 +152,7 @@ export function DeviceStreamView(props: {
   const retainingFrame =
     status === "connecting" && hasFrame && inputState.connected && screen !== null;
   const showPhone =
+    props.platform !== "macos" &&
     props.allowPhoneView &&
     (status === "streaming" || retainingFrame) &&
     props.visible &&
@@ -204,7 +205,7 @@ export function DeviceStreamView(props: {
   const axElements = AsyncResult.getOrElse(axResult, () => NO_AX_ELEMENTS);
 
   const activePointer = useRef<{ id: number; x: number; y: number } | null>(null);
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- clears pointer ownership when its device input connection disconnects or is replaced
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- clears pointer ownership when its device input connection disconnects or is replaced
   useEffect(() => {
     if (!client || !inputState.connected) return;
     return () => {
@@ -322,13 +323,17 @@ export function DeviceStreamView(props: {
           "after:pointer-events-none after:absolute after:inset-0 after:z-10 focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring",
           controlsInset && "pr-14",
         )}
-        tabIndex={0}
-        role="application"
+        tabIndex={props.platform === "macos" ? undefined : 0}
+        role={props.platform === "macos" ? "img" : "application"}
         aria-label={
-          props.platform === "ios" ? gt("iOS Simulator screen") : gt("Android Emulator screen")
+          props.platform === "macos"
+            ? gt("Mac guest desktop")
+            : props.platform === "ios"
+              ? gt("iOS Simulator screen")
+              : gt("Android Emulator screen")
         }
         onKeyDown={(event) => {
-          if (event.target !== event.currentTarget) return;
+          if (props.platform === "macos" || event.target !== event.currentTarget) return;
           if (event.metaKey && !["r", "R"].includes(event.key)) return;
           // Let browser paste chords fire the paste event.
           if (
@@ -341,12 +346,12 @@ export function DeviceStreamView(props: {
           client?.sendKey(event.nativeEvent, "down");
         }}
         onPaste={(event) => {
-          if (event.target !== event.currentTarget) return;
+          if (props.platform === "macos" || event.target !== event.currentTarget) return;
           event.preventDefault();
           client?.sendText(event.clipboardData.getData("text/plain"));
         }}
         onKeyUp={(event) => {
-          if (event.target !== event.currentTarget) return;
+          if (props.platform === "macos" || event.target !== event.currentTarget) return;
           client?.sendKey(event.nativeEvent, "up");
         }}
       >
@@ -440,7 +445,10 @@ export function DeviceStreamView(props: {
             onUnavailable={session.markPhoneUnavailable}
           />
         ) : null}
-        {props.allowPhoneView && !props.renderControls && status === "streaming" ? (
+        {props.platform !== "macos" &&
+        props.allowPhoneView &&
+        !props.renderControls &&
+        status === "streaming" ? (
           <div className="absolute top-3 left-3 flex gap-1 rounded-lg border border-border/50 bg-background/90 p-1 shadow-sm">
             <Button
               variant={showPhone ? "secondary" : "ghost"}
@@ -462,7 +470,7 @@ export function DeviceStreamView(props: {
             </Button>
           </div>
         ) : null}
-        {status === "streaming" && !inputState.connected ? (
+        {props.platform !== "macos" && status === "streaming" && !inputState.connected ? (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-2">
             <span className="rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground">
               {inputState.detail

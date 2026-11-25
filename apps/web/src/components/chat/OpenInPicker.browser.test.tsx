@@ -1,5 +1,5 @@
-import { AuthOrchestrationOperateScope, EnvironmentId, type EditorId } from "@t3tools/contracts";
-import { DEFAULT_RESOLVED_KEYBINDINGS } from "@t3tools/shared/keybindings";
+import { AuthOrchestrationOperateScope, EnvironmentId, type EditorId } from "@cod3/contracts";
+import { DEFAULT_RESOLVED_KEYBINDINGS } from "@cod3/shared/keybindings";
 import { Cause } from "effect";
 import { AsyncResult } from "effect/reactivity";
 import { describe, expect, it, vi } from "vite-plus/test";

@@ -1,4 +1,4 @@
-import type { ProviderApprovalDecision, ProviderApprovalOption } from "@t3tools/contracts";
+import type { ProviderApprovalDecision, ProviderApprovalOption } from "@cod3/contracts";
 import * as Schema from "effect/Schema";
 import type * as EffectCodexSchema from "effect-codex-app-server/schema";
 
@@ -185,7 +185,7 @@ export function toMcpElicitationResponse(
     return { action: decision };
   }
 
-  // T3 cannot answer these itself. `decline` reads as the user's refusal, and Codex's browser
+  // cod3 cannot answer these itself. `decline` reads as the user's refusal, and Codex's browser
   // plugin saves it as a thread-wide site denial; `cancel` leaves no saved decision.
   if (payload.mode === "url") {
     return { action: "cancel" };

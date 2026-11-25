@@ -5,7 +5,7 @@ import {
   ProjectId,
   ProviderInstanceId,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -54,7 +54,7 @@ describe("resolvePendingDraftBranch", () => {
     expect(resolve({ draft: untouched, defaults: worktreeDefault, branches, projectCwd })).toBe(
       "origin/main",
     );
-    // Until t3.json settles, the environment default may still be replaced.
+    // Until cod3.json settles, the environment default may still be replaced.
     expect(
       resolve({
         draft: untouched,

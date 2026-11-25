@@ -8,7 +8,7 @@ import {
   DEFAULT_SERVER_SETTINGS,
   type ManagedPolicySummary,
   type ServerSettings,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as NodeNet from "node:net";
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
@@ -94,7 +94,7 @@ const serveTunnel = (
         Layer.provide(PreviewTunnel.layer.pipe(Layer.provide(settingsLayer))),
         Layer.provide(
           Layer.mock(SessionStore.SessionStore, {
-            cookieName: "t3_session",
+            cookieName: "cod3_session",
             legacyCookieName: undefined,
             awaitInvalidation: () => sessionInvalidated,
           }),

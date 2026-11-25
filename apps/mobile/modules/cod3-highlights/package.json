@@ -1,0 +1,9 @@
+{
+  "name": "@cod3/mobile-highlights-native",
+  "version": "0.0.0",
+  "private": true,
+  "types": "./src/Cod3Highlights.nitro.ts",
+  "peerDependencies": {
+    "react-native-nitro-modules": "*"
+  }
+}

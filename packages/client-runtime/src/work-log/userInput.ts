@@ -1,5 +1,5 @@
-import { type UserInputAttachmentAnswerPayload } from "@t3tools/contracts";
-import { composerContextProviderTextForDisplay } from "@t3tools/shared/composerContextReferences";
+import { type UserInputAttachmentAnswerPayload } from "@cod3/contracts";
+import { composerContextProviderTextForDisplay } from "@cod3/shared/composerContextReferences";
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return value !== null && typeof value === "object" && !Array.isArray(value)

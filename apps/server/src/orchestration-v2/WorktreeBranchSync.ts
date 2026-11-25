@@ -1,6 +1,6 @@
-import { CommandId } from "@t3tools/contracts";
-import { randomUuidV4 } from "@t3tools/provider-core/server/randomUuid";
-import * as KeyedLock from "@t3tools/shared/KeyedLock";
+import { CommandId } from "@cod3/contracts";
+import { randomUuidV4 } from "@cod3/provider-core/server/randomUuid";
+import * as KeyedLock from "@cod3/shared/KeyedLock";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";

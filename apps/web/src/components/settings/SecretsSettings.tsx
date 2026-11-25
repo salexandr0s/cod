@@ -1,12 +1,13 @@
-import type { EnvironmentId, SecretProviderConfig, SecretProviderId } from "@t3tools/contracts";
-import { PlusIcon } from "lucide-react";
+import type { EnvironmentId, SecretProviderConfig, SecretProviderId } from "@cod3/contracts";
+import { supportedSecretProviderKinds } from "@cod3/client-runtime/secret-request";
+import { KeyRoundIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { T, useGT, useMessages, Var } from "gt-react";
 
 import { useEnvironmentSettings, useUpdateEnvironmentSettings } from "../../hooks/useSettings";
 import type { EnvironmentPresentation } from "../../state/environments";
 import { useEnvironmentSessionState } from "../../state/session";
-import { OnePasswordIcon, type Icon } from "../Icons";
+import { OnePasswordIcon } from "../Icons";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -18,7 +19,7 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { SecretProviderDialog } from "./SecretProviderDialog";
-import { classifySecretProvider } from "./SecretProviderDialog.logic";
+import { classifySecretProvider, secretProviderChoices } from "./SecretProviderDialog.logic";
 import { secretProviderUses } from "./SecretsSettings.logic";
 import {
   classifyProviderEnvironmentAccess,
@@ -28,12 +29,6 @@ import { useSettingsScope } from "./SettingsScopeContext";
 import { RedactedSensitiveText } from "./RedactedSensitiveText";
 import { useSearchableSetting } from "./settingsSearch";
 import { SettingsPageContainer, SettingsRow, SettingsSection } from "./settingsLayout";
-
-const SECRET_PROVIDER_KINDS: Readonly<
-  Record<string, { readonly name: string; readonly icon: Icon }>
-> = {
-  one_password: { name: "1Password", icon: OnePasswordIcon },
-};
 
 export function SecretsSettingsPanel() {
   const setting = useSearchableSetting();
@@ -47,7 +42,7 @@ export function SecretsSettingsPanel() {
         <SettingsSection {...setting("secret-providers")}>
           <p className="px-4 py-3 text-sm text-muted-foreground">
             <T>
-              Update T3 Code on <Var>{environment.label}</Var> to manage its secret providers.
+              Update cod3 on <Var>{environment.label}</Var> to manage its secret providers.
             </T>
           </p>
         </SettingsSection>
@@ -92,6 +87,8 @@ function EnvironmentSecretProviders({
       hasError: sessionState.hasError,
     }),
   });
+  const availableKinds = supportedSecretProviderKinds(environment.serverConfig);
+  const choices = secretProviderChoices.filter(({ value }) => availableKinds.includes(value));
   const readOnly = access.kind !== "editable" || projectScoped;
   const providers = useEnvironmentSettings(environmentId, (settings) => settings.secretProviders);
   const updateSettings = useUpdateEnvironmentSettings(environmentId);
@@ -109,7 +106,7 @@ function EnvironmentSecretProviders({
       <SettingsSection
         {...setting("secret-providers")}
         headerAction={
-          !readOnly ? (
+          !readOnly && choices.length > 0 ? (
             <Button size="xs" variant="outline" onClick={() => setDialog({ mode: "add" })}>
               <PlusIcon className="size-3" aria-hidden />
               <T>Add provider</T>
@@ -125,24 +122,20 @@ function EnvironmentSecretProviders({
         {entries.length === 0 ? (
           <SettingsRow
             title={gt("No secret providers configured.")}
-            description={gt(
-              "Add a 1Password account, then pick it as the source of a provider variable.",
-            )}
+            description={gt("Add a password manager to use its credentials in this environment.")}
           />
         ) : (
           entries.map(([id, config]) => {
             const classified = classifySecretProvider(config);
-            const kind =
-              classified.kind === "unsupported"
-                ? undefined
-                : SECRET_PROVIDER_KINDS[classified.kind];
+            const kind = choices.find(({ value }) => value === classified.kind);
+            const KindIcon = kind?.value === "one_password" ? OnePasswordIcon : KeyRoundIcon;
             return (
               <SettingsRow
                 key={id}
                 title={
                   <span className="flex min-w-0 items-center gap-2">
                     {kind ? (
-                      <kind.icon className="size-4.5 shrink-0 text-foreground/80" aria-hidden />
+                      <KindIcon className="size-4.5 shrink-0 text-foreground/80" aria-hidden />
                     ) : null}
                     <span className="min-w-0 wrap-anywhere">{config.label}</span>
                   </span>
@@ -150,7 +143,7 @@ function EnvironmentSecretProviders({
                 description={
                   classified.kind === "one_password" && kind ? (
                     <span className="flex min-w-0 items-center gap-1">
-                      <span className="shrink-0">{kind.name} ·</span>
+                      <span className="shrink-0">{kind.label} ·</span>
                       <RedactedSensitiveText
                         value={classified.account}
                         ariaLabel={gt("Toggle account visibility")}
@@ -160,7 +153,7 @@ function EnvironmentSecretProviders({
                       />
                     </span>
                   ) : (
-                    gt("Unsupported provider ({kind})", { kind: config.kind })
+                    (kind?.label ?? gt("Unsupported provider ({kind})", { kind: config.kind }))
                   )
                 }
                 control={
@@ -194,6 +187,7 @@ function EnvironmentSecretProviders({
           onClose={() => setDialog(null)}
           environmentId={environmentId}
           environmentLabel={environment.label}
+          choices={choices}
           existingIds={new Set(Object.keys(providers))}
           {...(editing === undefined ? {} : { existing: editing })}
         />

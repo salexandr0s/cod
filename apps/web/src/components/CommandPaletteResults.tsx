@@ -1,10 +1,11 @@
 import { startPaletteThreadDrag } from "./CommandPalette.drag";
 import { useLegendListRef } from "~/hooks/useLegendListRef";
-import { type ResolvedKeybindingsConfig } from "@t3tools/contracts";
+import { type ResolvedKeybindingsConfig } from "@cod3/contracts";
 import { LegendList, type LegendListRef } from "@legendapp/list/react";
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, PlusIcon } from "lucide-react";
 import { type ReactNode, type RefObject, useState } from "react";
-import { T } from "gt-react";
+import { T, useGT } from "gt-react";
+import { Button } from "./ui/button";
 import { cn } from "~/lib/utils";
 import { textDirection } from "~/textDirection";
 import { shortcutLabelForCommand } from "../keybindings";
@@ -99,6 +100,7 @@ export function scrollCommandPaletteRowIntoView(
 
 interface CommandPaletteVirtualizedResultsProps extends Omit<CommandPaletteResultsProps, "groups"> {
   rows: ReadonlyArray<CommandPaletteRow>;
+  onAddProject: () => void;
   listRef: RefObject<LegendListRef | null>;
 }
 
@@ -106,6 +108,7 @@ interface CommandPaletteVirtualizedResultsProps extends Omit<CommandPaletteResul
  * unmounted rows. */
 export function CommandPaletteVirtualizedResults(props: CommandPaletteVirtualizedResultsProps) {
   const { listRef } = props;
+  const gt = useGT();
   const [scrollFade, setScrollFade] = useState({ top: false, bottom: false });
   const updateScrollFade = () => {
     const metrics = listRef.current?.getState();
@@ -133,8 +136,20 @@ export function CommandPaletteVirtualizedResults(props: CommandPaletteVirtualize
         extraData={props.highlightedItemValue}
         renderItem={({ item: row }) =>
           row.kind === "label" ? (
-            <div className={row.first ? undefined : "pt-1.5"}>
+            <div className={cn("flex items-center justify-between pe-2", !row.first && "pt-1.5")}>
               <CommandListHeading>{row.label}</CommandListHeading>
+              {(row.key === "group:projects" || row.key === "group:projects-search") && (
+                <Button
+                  variant="ghost-muted"
+                  size="icon-xs"
+                  aria-label={gt("Add project")}
+                  title={gt("Add project")}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={props.onAddProject}
+                >
+                  <PlusIcon aria-hidden />
+                </Button>
+              )}
             </div>
           ) : row.itemIndex === null ? (
             <DisabledCommandPaletteResultRow item={row.item} />

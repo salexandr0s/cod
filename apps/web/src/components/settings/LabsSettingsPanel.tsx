@@ -1,12 +1,12 @@
 import { msg } from "gt-react";
-import { managedCapabilityDenial } from "@t3tools/client-runtime/contract-labels";
+import { managedCapabilityDenial } from "@cod3/client-runtime/contract-labels";
 import { useAuth } from "@clerk/react";
 import { Link } from "@tanstack/react-router";
-import { AgentFeedbackMode } from "@t3tools/contracts";
+import { AgentFeedbackMode } from "@cod3/contracts";
 import { T, useGT, useMessages } from "gt-react";
 
 import { hasCloudPublicConfig } from "~/cloud/publicConfig";
-import { useT3ConnectAuthPrompt } from "../clerk/useT3ConnectAuthPrompt";
+import { useCod3ConnectAuthPrompt } from "../clerk/useCod3ConnectAuthPrompt";
 import { Button } from "../ui/button";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
@@ -28,7 +28,7 @@ export function LabsSettingsPanel() {
     <SettingsPageContainer>
       <SettingsSection id="beta" title={gt("Beta")}>
         <BoringSidebarRow />
-        {/* Clerk is only mounted when this build has T3 Connect. */}
+        {/* Clerk is only mounted when this build has cod3 Connect. */}
         {hasCloudPublicConfig() ? <GuestLinksRowWithSignIn /> : <GuestLinksRow />}
         <LinkedEnvironmentsRow />
         <WorkflowsRow />
@@ -94,19 +94,19 @@ function BoringSidebarMultilineRow() {
   );
 }
 
-/** Signed out of T3 Connect, the row offers to sign in instead of its switch. */
+/** Signed out of cod3 Connect, the row offers to sign in instead of its switch. */
 function GuestLinksRowWithSignIn() {
   const searchableSetting = useSearchableSetting();
   const gt = useGT();
   const { isSignedIn } = useAuth();
-  const { openAuthPrompt } = useT3ConnectAuthPrompt();
+  const { openAuthPrompt } = useCod3ConnectAuthPrompt();
   // `isSignedIn` is undefined until Clerk loads.
   if (isSignedIn !== false) return <GuestLinksRow />;
   return (
     <SettingsRow
       {...searchableSetting("guest-links")}
       description={gt(
-        "Share a thread with a guest who watches it live in a browser and sends messages you approve. Sign in to T3 Connect to use guest links.",
+        "Guests can watch a thread live in a browser and send messages you approve. Sign in to cod3 Connect to use guest links.",
       )}
       control={
         <Button size="sm" variant="outline" onClick={openAuthPrompt}>
@@ -125,7 +125,7 @@ function GuestLinksRow() {
   const messages = useMessages();
   const scope = useOptionalSettingsScope();
   const primaryPolicy = usePrimaryManagedPolicy();
-  // Guests arrive through T3 Connect, so a policy that turns Connect off turns this off too.
+  // Guests arrive through cod3 Connect, so a policy that turns Connect off turns this off too.
   const connectDenial = firstManagedDenial(
     scope
       ? scope.connectedEnvironments.map((environment) => environment.serverConfig?.managedPolicy)
@@ -137,12 +137,12 @@ function GuestLinksRow() {
       serverScoped
       {...searchableSetting("guest-links")}
       settingKeys={["guestSharingEnabled"]}
-      // Turning guest links off still works without T3 Connect.
+      // Turning guest links off still works without cod3 Connect.
       managed={settings.guestSharingEnabled ? undefined : connectDenial}
       description={
         <T>
-          Share a thread with a guest who watches it live in a browser and sends messages you
-          approve. Needs T3 Connect: sign in and link this machine in{" "}
+          Guests can watch a thread live in a browser and send messages you approve. Needs cod3
+          Connect: sign in and link this machine in{" "}
           <Link to="/settings/access" className="underline underline-offset-2">
             Sharing & access
           </Link>
@@ -206,7 +206,7 @@ function WorkflowsRow() {
       {...searchableSetting("workflows-beta")}
       settingKeys={["workflowsEnabled"]}
       description={gt(
-        "Run multi-step workflows from files in the workflows folder of this server's T3 home. Open them from the command palette. While off, nothing in that folder runs; runs wait until it is on again.",
+        "Run multi-step workflows from files in the workflows folder of this server's cod3 home. Open them from the command palette. While off, nothing in that folder runs; runs wait until it is on again.",
       )}
       control={
         <ScopedSwitch
@@ -272,7 +272,7 @@ function SimlockHostsRow() {
           <Link to="/settings/devices" className="underline underline-offset-2">
             Devices
           </Link>
-          . An alpha that may change or break. T3 Code never installs Simlock.
+          . An alpha that may change or break. cod3 never installs Simlock.
         </T>
       }
       control={
@@ -312,7 +312,7 @@ function FastWorktreeCheckoutRow() {
       {...searchableSetting("worktree-fast-checkout")}
       settingKeys={["fastWorktreeCheckout"]}
       description={gt(
-        "On a Mac, clone new worktrees from a checkout cached in the T3 home folder instead of writing every file. Uses Git’s normal checkout when it can’t. Turning it off deletes the cache.",
+        "On a Mac, clone new worktrees from a checkout cached in the cod3 home folder instead of writing every file. Uses Git’s normal checkout when it can’t. Turning it off deletes the cache.",
       )}
       control={
         <ScopedSwitch
@@ -334,12 +334,12 @@ const AGENT_FEEDBACK_MODE_LABELS: Record<AgentFeedbackMode, string> = {
   auto: msg("Automatic"),
 };
 const AGENT_FEEDBACK_MODE_DESCRIPTIONS: Record<AgentFeedbackMode, string> = {
-  off: msg("Agents send no feedback to the T3 team."),
+  off: msg("Agents send no feedback to the cod3 team."),
   "on-request": msg(
-    "When you ask, agents show you a short report about T3 Code and send it to the T3 team if you approve.",
+    "When you ask, agents show you a short report about cod3 and send it to the cod3 team if you approve.",
   ),
   auto: msg(
-    "Agents also report T3 Code problems they hit on their own, such as a T3 tool that failed.",
+    "Agents also report cod3 problems they hit on their own, such as a cod3 tool that failed.",
   ),
 };
 

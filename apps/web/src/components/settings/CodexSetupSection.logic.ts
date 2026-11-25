@@ -1,8 +1,4 @@
-import type {
-  ChatGptHandoffState,
-  ProviderAuthState,
-  ProviderInstallState,
-} from "@t3tools/contracts";
+import type { ChatGptHandoffState, ProviderAuthState, ProviderInstallState } from "@cod3/contracts";
 
 export function readCodexSetupMode(config: unknown): "managed" | "existing" {
   return config !== null &&

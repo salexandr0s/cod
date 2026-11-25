@@ -20,7 +20,7 @@ import {
   type SnapShotShortcut,
   type DesktopSnapShotEvent,
   type DesktopSnapShotId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
@@ -91,8 +91,8 @@ import {
   snapShotShortcutRegistrationFailureMessage,
   snapShotShortcutSystemConflict,
 } from "./snapShot.ts";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { readImageDimensions } from "@t3tools/shared/imageDimensions";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { readImageDimensions } from "@cod3/shared/imageDimensions";
 
 const isCaptureSetupRequiredError = Schema.is(CaptureSetupRequiredError);
 
@@ -107,11 +107,11 @@ const FLASH_FRAME_INTERVAL_MS = 16;
 const FLASH_PEAK_OPACITY = 0.08;
 const MAC_SCREEN_CAPTURE_SETTINGS_URL = MAC_PERMISSION_SETTINGS_URLS["screen-recording"];
 const MAC_SCREEN_CAPTURE_PERMISSION_MESSAGE =
-  "Allow Screen Recording in System Settings, then restart T3 Code.";
+  "Allow Screen Recording in System Settings, then restart cod3.";
 const MAC_ACCESSIBILITY_PERMISSION_MESSAGE =
-  "Allow Accessibility in System Settings, then restart T3 Code.";
+  "Allow Accessibility in System Settings, then restart cod3.";
 const MAC_BOTH_PERMISSIONS_MESSAGE =
-  "Allow Accessibility and Screen Recording in System Settings, then restart T3 Code.";
+  "Allow Accessibility and Screen Recording in System Settings, then restart cod3.";
 const MAC_PERMISSION_MESSAGES = new Set([
   MAC_SCREEN_CAPTURE_PERMISSION_MESSAGE,
   MAC_ACCESSIBILITY_PERMISSION_MESSAGE,
@@ -220,7 +220,7 @@ export class DesktopSnapShot extends Context.Service<
     readonly dismissAnimation: (id: string) => Effect.Effect<void>;
     readonly acknowledge: (id: string) => Effect.Effect<void, DesktopSnapShotError>;
   }
->()("@t3tools/desktop/snapShot/DesktopSnapShot") {}
+>()("@cod3/desktop/snapShot/DesktopSnapShot") {}
 
 export class DesktopSnapShotSetupError extends Schema.TaggedError<DesktopSnapShotSetupError>()(
   "DesktopSnapShotSetupError",
@@ -949,7 +949,7 @@ export const make = Effect.gen(function* () {
       const capturedAt = yield* DateTime.now.pipe(Effect.map(DateTime.formatIso));
       if (snapshot.linuxActivationFailure) {
         yield* Effect.logWarning(
-          "The compositor could not activate T3 Code after the snapshot",
+          "The compositor could not activate cod3 after the snapshot",
           snapshot.linuxActivationFailure.cause,
         );
       }
@@ -1067,7 +1067,7 @@ export const make = Effect.gen(function* () {
     if (mode === "portal" && niriSocketPath()) {
       return {
         available: false,
-        message: "Configure the capture shortcut in your Niri config, not in T3 Code.",
+        message: "Configure the capture shortcut in your Niri config, not in cod3.",
       };
     }
     if (mode === "portal" && isHyprlandCaptureSession()) {
@@ -1221,7 +1221,7 @@ export const make = Effect.gen(function* () {
           const { startNiriCaptureShortcut } = await import("./NiriCaptureShortcut.ts");
           return startNiriCaptureShortcut(linuxAppId, onCurrentShortcut, () => {
             void runPromise(
-              setShortcutFailure("The Niri capture endpoint disconnected. Restart T3 Code."),
+              setShortcutFailure("The Niri capture endpoint disconnected. Restart cod3."),
             ).catch(() => undefined);
           });
         },
@@ -1245,7 +1245,7 @@ export const make = Effect.gen(function* () {
         shortcutActionRegistered: registered,
         shortcutMessage: registered
           ? "Set up the shortcut to add it to your Niri config."
-          : "Could not start the Niri capture endpoint. Another T3 Code instance may be using it.",
+          : "Could not start the Niri capture endpoint. Another cod3 instance may be using it.",
         message: null,
       });
       return;
@@ -1395,7 +1395,7 @@ export const make = Effect.gen(function* () {
       yield* Effect.scoped(
         Effect.gen(function* () {
           const directory = yield* fileSystem
-            .makeTempDirectoryScoped({ prefix: "t3-snapshot-test-" })
+            .makeTempDirectoryScoped({ prefix: "cod3-snapshot-test-" })
             .pipe(
               Effect.mapError(
                 (cause) => new DesktopSnapShotSetupError({ action, reason: "setup-failed", cause }),

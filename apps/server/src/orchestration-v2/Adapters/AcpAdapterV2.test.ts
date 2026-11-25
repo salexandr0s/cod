@@ -5,9 +5,9 @@ import {
   normalizeDevinToolCall,
   extractDevinSubagentUpdate,
   makeAcpRegistryAdapterV2,
-} from "@t3tools/provider-acp-registry/testing";
-import { AcpRegistrySettings } from "@t3tools/provider-acp-registry/settings";
-import { AcpRegistryCatalog } from "@t3tools/provider-acp-registry/server/AcpRegistrySupport";
+} from "@cod3/provider-acp-registry/testing";
+import { AcpRegistrySettings } from "@cod3/provider-acp-registry/settings";
+import { AcpRegistryCatalog } from "@cod3/provider-acp-registry/server/AcpRegistrySupport";
 import {
   decodeAcpReplayTranscript,
   makeAcpReplayCompletenessAssertion,
@@ -37,11 +37,11 @@ import {
   type OrchestrationV2UserInputQuestion,
   type ProviderOptionDescriptor,
   type ProviderUserInputAnswers,
-} from "@t3tools/contracts";
-import { GrokSettings } from "@t3tools/provider-grok/settings";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { deriveBlockedOnThreadWait } from "@t3tools/shared/orchestrationV2PendingBackgroundWork";
-import { resolveSelfInvocation } from "@t3tools/shared/nodeRuntime";
+} from "@cod3/contracts";
+import { GrokSettings } from "@cod3/provider-grok/settings";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { deriveBlockedOnThreadWait } from "@cod3/shared/orchestrationV2PendingBackgroundWork";
+import { resolveSelfInvocation } from "@cod3/shared/nodeRuntime";
 import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
 import * as Duration from "effect/Duration";
@@ -66,26 +66,26 @@ import * as EffectAcpErrors from "effect-acp/errors";
 import type * as EffectAcpProtocol from "effect-acp/protocol";
 import type * as EffectAcpSchema from "effect-acp/compat";
 
-import { writeFakeCli } from "@t3tools/provider-testing/fakeCli";
-import * as TestProviderHost from "@t3tools/provider-testing/TestProviderHost";
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as AcpSessionRuntime from "@t3tools/provider-acp/server/AcpSessionRuntime";
+import { writeFakeCli } from "@cod3/provider-testing/fakeCli";
+import * as TestProviderHost from "@cod3/provider-testing/TestProviderHost";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as AcpSessionRuntime from "@cod3/provider-acp/server/AcpSessionRuntime";
 import {
   ACP_EMPTY_OPTION_VALUE,
   ACP_SESSION_MODE_OPTION_ID,
   acpProviderOptionDescriptors,
-} from "@t3tools/provider-acp/server/sessionConfig";
+} from "@cod3/provider-acp/server/sessionConfig";
 import {
   extractXAiAcpSubagentUpdate,
   makeGrokAdapterV2,
   makeXAiPromptCompletionRuntime,
   normalizeXAiAcpToolCallState,
   registerXAiBackgroundTaskTracking,
-} from "@t3tools/provider-grok/testing";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
+} from "@cod3/provider-grok/testing";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
 import { makeTurnInput } from "./AcpAdapterV2.testkit.ts";
-import type * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+import type * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
 import {
   AcpProviderCapabilitiesV2,
   acpPerTurnPromptUsage,
@@ -99,15 +99,15 @@ import {
   type AcpAdapterV2Flavor,
   type AcpAdapterV2RuntimeInput,
   type AcpAdapterV2SubagentUpdate,
-} from "@t3tools/provider-acp/server/adapter";
+} from "@cod3/provider-acp/server/adapter";
 
 import { appendUserInputAttachmentPaths } from "../../provider/userInputAttachments.ts";
 
-import { makeGrokAcpAdapterFlavor } from "@t3tools/provider-grok/testing";
+import { makeGrokAcpAdapterFlavor } from "@cod3/provider-grok/testing";
 import {
   acpRegistryPromptFailure,
   registerMistralVibeAcpExtensions,
-} from "@t3tools/provider-acp-registry/testing";
+} from "@cod3/provider-acp-registry/testing";
 
 const DEFAULT_GROK_SETTINGS = Schema.decodeSync(GrokSettings)({});
 const DROID_SETTINGS = Schema.decodeSync(AcpRegistrySettings)({ agentId: "factory-droid" });
@@ -155,7 +155,7 @@ const bundledReplayAgentPath = Deferred.await(bundledAgents).pipe(
 const bundleAgents = Effect.gen(function* () {
   const fileSystem = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const outDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-acp-agents-" });
+  const outDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "cod3-acp-agents-" });
   const input = {
     mock: yield* path.fromFileUrl(new URL("../../../scripts/acp-mock-agent.ts", import.meta.url)),
     replay: yield* path.fromFileUrl(
@@ -562,7 +562,7 @@ function makeMockRuntime(input: {
             args: [input.mockAgentPath],
             cwd: runtimeInput.cwd,
             env: {
-              T3_ACP_SESSION_LIFECYCLE: "1",
+              COD3_ACP_SESSION_LIFECYCLE: "1",
               NODE_COMPILE_CACHE: (yield* Deferred.await(bundledAgents)).compileCache,
               ...(typeof input.environment === "function"
                 ? input.environment(runtimeOrdinal)
@@ -949,9 +949,9 @@ function assertReinjectedInstructions(
   request: string,
 ) {
   const text = blocks[0]?.text ?? "";
-  assert.include(text, "T3 Code interaction mode: Default");
-  assert.include(text, "## T3 Code browser");
-  assert.include(text, "T3 Code orchestration");
+  assert.include(text, "cod3 interaction mode: Default");
+  assert.include(text, "## cod3 browser");
+  assert.include(text, "cod3 orchestration");
   assert.include(text, `<user_request>\n${request}\n</user_request>`);
   assert.include(blocks[1]?.text ?? "", "<runtime_info>");
 }
@@ -1057,7 +1057,7 @@ const runFormElicitation = (input: {
     const path = yield* Path.Path;
     const mockAgentPath = yield* bundledMockAgentPath;
     const directory = yield* fileSystem.makeTempDirectoryScoped({
-      prefix: "t3-acp-form-elicitation-",
+      prefix: "cod3-acp-form-elicitation-",
     });
     const responseLog = path.join(directory, "responses.jsonl");
     const instanceId = ProviderInstanceId.make(`acp-test-form-${input.name}`);
@@ -1070,9 +1070,9 @@ const runFormElicitation = (input: {
           childProcessSpawner,
           mockAgentPath,
           environment: {
-            T3_ACP_EMIT_ELICITATION: "1",
-            T3_ACP_ELICITATION_SCHEMA: JSON.stringify(input.requestedSchema),
-            T3_ACP_ELICITATION_RESPONSE_LOG_PATH: responseLog,
+            COD3_ACP_EMIT_ELICITATION: "1",
+            COD3_ACP_ELICITATION_SCHEMA: JSON.stringify(input.requestedSchema),
+            COD3_ACP_ELICITATION_RESPONSE_LOG_PATH: responseLog,
           },
         }),
       },
@@ -1475,9 +1475,9 @@ describe("AcpAdapterV2", () => {
       const completed = (yield* runTurn(2)).at(-1);
       assert.equal(completed?.type === "turn.terminal" ? completed.status : null, "completed");
       assert.deepEqual(promptRuntimes, [1, 2], "the next turn runs on a fresh runtime");
-      // The fresh runtime has no record of what reached the agent, so it sends T3's notes again.
+      // The fresh runtime has no record of what reached the agent, so it sends cod3's notes again.
       assert.include(promptTexts[1] ?? "", "<runtime_info>");
-      assert.include(promptTexts[1] ?? "", "T3 Code interaction mode: Default");
+      assert.include(promptTexts[1] ?? "", "cod3 interaction mode: Default");
       assert.equal(watchedSessions.length, 2);
       assert.equal(watchedSessions[0], watchedSessions[1]);
 
@@ -1965,7 +1965,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner: yield* ChildProcessSpawner.ChildProcessSpawner,
               mockAgentPath: yield* bundledMockAgentPath,
-              environment: { T3_ACP_IDLE_ERROR: details },
+              environment: { COD3_ACP_IDLE_ERROR: details },
             }),
           },
         });
@@ -2307,7 +2307,9 @@ describe("AcpAdapterV2", () => {
     return Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-registry-form-" });
+      const directory = yield* fileSystem.makeTempDirectoryScoped({
+        prefix: "cod3-registry-form-",
+      });
       const statusPath = path.join(directory, "status.json");
       const expectedResult = typeof result === "function" ? result(directory) : result;
       let preparedAnswers: ProviderUserInputAnswers | undefined = answers;
@@ -2494,7 +2496,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner: yield* ChildProcessSpawner.ChildProcessSpawner,
               mockAgentPath: yield* bundledMockAgentPath,
-              environment: { T3_ACP_VIBE_RETRY_OUTCOME: outcome },
+              environment: { COD3_ACP_VIBE_RETRY_OUTCOME: outcome },
             }),
           },
         });
@@ -2565,14 +2567,17 @@ describe("AcpAdapterV2", () => {
     { modeIds: "plain", environment: {}, planModeId: "architect", buildModeId: "ask" },
     {
       modeIds: "Copilot URL",
-      environment: { T3_ACP_COPILOT_MODES: "1" },
+      environment: { COD3_ACP_COPILOT_MODES: "1" },
       planModeId: "https://agentclientprotocol.com/protocol/session-modes#plan",
       buildModeId: "https://agentclientprotocol.com/protocol/session-modes#agent",
     },
     {
-      // Without a `mode` category, T3 derives no mode state and only the config option switches.
+      // Without a `mode` category, cod3 derives no mode state and only the config option switches.
       modeIds: "Copilot URL collaboration_mode",
-      environment: { T3_ACP_COPILOT_MODES: "1", T3_ACP_MODE_OPTION_CATEGORY: "collaboration_mode" },
+      environment: {
+        COD3_ACP_COPILOT_MODES: "1",
+        COD3_ACP_MODE_OPTION_CATEGORY: "collaboration_mode",
+      },
       planModeId: "https://agentclientprotocol.com/protocol/session-modes#plan",
       buildModeId: "https://agentclientprotocol.com/protocol/session-modes#agent",
     },
@@ -2679,17 +2684,17 @@ describe("AcpAdapterV2", () => {
 
         const command = yield* runTurn(0, defaultPolicy, "/compact");
         assert.isTrue(command.prompt.startsWith("/compact"));
-        assert.notInclude(command.prompt, "<t3_code_instructions>");
+        assert.notInclude(command.prompt, "<cod3_code_instructions>");
         assert.equal(command.textBlockCount, 1);
         const whitespaceCommand = yield* runTurn(1, defaultPolicy, "  /repro-skill");
         assert.equal(whitespaceCommand.prompt, "  /repro-skill");
         assert.equal(whitespaceCommand.textBlockCount, 1);
-        assert.notInclude(whitespaceCommand.prompt, "<t3_code_instructions>");
+        assert.notInclude(whitespaceCommand.prompt, "<cod3_code_instructions>");
         const firstDefault = yield* runTurn(2, defaultPolicy, "First default request.");
         assert.equal(firstDefault.textBlockCount, 2);
-        assert.include(firstDefault.prompt, "T3 Code interaction mode: Default");
-        assert.include(firstDefault.prompt, "## T3 Code browser");
-        assert.include(firstDefault.prompt, "T3 Code orchestration");
+        assert.include(firstDefault.prompt, "cod3 interaction mode: Default");
+        assert.include(firstDefault.prompt, "## cod3 browser");
+        assert.include(firstDefault.prompt, "cod3 orchestration");
         assert.include(firstDefault.prompt, "<runtime_info>");
         assert.notInclude(
           firstDefault.methods,
@@ -2702,18 +2707,18 @@ describe("AcpAdapterV2", () => {
 
         const planPolicy = policy("plan");
         const firstPlan = yield* runTurn(4, planPolicy, "Plan this change.");
-        assert.include(firstPlan.prompt, "T3 Code interaction mode: Plan");
+        assert.include(firstPlan.prompt, "cod3 interaction mode: Plan");
         assert.deepEqual(firstPlan.modeSets, [planModeId]);
         assert.include(
           (yield* runTurn(5, planPolicy, "Continue planning.")).prompt,
           "Continue planning.",
         );
         const restoredBuild = yield* runTurn(6, defaultPolicy, "Implement the change.");
-        assert.include(restoredBuild.prompt, "T3 Code interaction mode: Default");
+        assert.include(restoredBuild.prompt, "cod3 interaction mode: Default");
         assert.deepEqual(
           restoredBuild.modeSets,
           [buildModeId],
-          "Build should restore the native mode that T3 temporarily replaced for Plan",
+          "Build should restore the native mode that cod3 temporarily replaced for Plan",
         );
         const switchedModel = yield* runTurn(7, defaultPolicy, "Switch models.", {
           instanceId,
@@ -2736,8 +2741,8 @@ describe("AcpAdapterV2", () => {
           reportNextPromptStopped,
         } = yield* makeInstructionCompactionHarness(
           {
-            T3_ACP_COMPACTION_PROMPT_ORDINALS: "2,4",
-            T3_ACP_OPEN_COMPACTION_PROMPT_ORDINALS: "13",
+            COD3_ACP_COMPACTION_PROMPT_ORDINALS: "2,4",
+            COD3_ACP_OPEN_COMPACTION_PROMPT_ORDINALS: "13",
           },
           stopReason === "error",
         );
@@ -2860,7 +2865,7 @@ describe("AcpAdapterV2", () => {
     () =>
       Effect.gen(function* () {
         const { runTurn } = yield* makeInstructionCompactionHarness({
-          T3_ACP_FAIL_PROMPT_ORDINAL: "2",
+          COD3_ACP_FAIL_PROMPT_ORDINAL: "2",
         });
         yield* runTurn("Start work.");
         assert.deepEqual(yield* runTurn("/compact", "failed"), [
@@ -2889,8 +2894,8 @@ describe("AcpAdapterV2", () => {
     (structured) =>
       Effect.gen(function* () {
         const harness = yield* makeAdvertisedCompactionHarness({
-          T3_ACP_AVAILABLE_COMMANDS: "compact,plan",
-          T3_ACP_COMPACTION_PROMPT_ORDINALS: structured ? "1" : "",
+          COD3_ACP_AVAILABLE_COMMANDS: "compact,plan",
+          COD3_ACP_COMPACTION_PROMPT_ORDINALS: structured ? "1" : "",
         });
         const compacted = yield* harness.compact();
         assert.isTrue(Exit.isSuccess(compacted));
@@ -2938,11 +2943,11 @@ describe("AcpAdapterV2", () => {
     ({ active, target, allowed, loadedCommandsDelayMs }) =>
       Effect.gen(function* () {
         const harness = yield* makeAdvertisedCompactionHarness({
-          T3_ACP_AVAILABLE_COMMANDS: active,
-          ...(target === undefined ? {} : { T3_ACP_LOADED_COMMANDS: target }),
+          COD3_ACP_AVAILABLE_COMMANDS: active,
+          ...(target === undefined ? {} : { COD3_ACP_LOADED_COMMANDS: target }),
           ...(loadedCommandsDelayMs === undefined
             ? {}
-            : { T3_ACP_LOADED_COMMANDS_DELAY_MS: String(loadedCommandsDelayMs) }),
+            : { COD3_ACP_LOADED_COMMANDS_DELAY_MS: String(loadedCommandsDelayMs) }),
         });
         const result = yield* harness.compact(true);
         assert.equal(Exit.isSuccess(result), allowed);
@@ -2979,7 +2984,7 @@ describe("AcpAdapterV2", () => {
             childProcessSpawner,
             mockAgentPath,
             protocolEvents,
-            environment: { T3_ACP_FAIL_SET_MODE_CONFIG_OPTION: "1" },
+            environment: { COD3_ACP_FAIL_SET_MODE_CONFIG_OPTION: "1" },
           }),
         },
         selfInvocation: yield* resolveSelfInvocation(),
@@ -3054,7 +3059,9 @@ describe("AcpAdapterV2", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const directory = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-acp-mode-only-" });
+      const directory = yield* fileSystem.makeTempDirectoryScoped({
+        prefix: "cod3-acp-mode-only-",
+      });
       const statusPath = path.join(directory, "status.json");
       const sessionId = "mode-only-session";
       const modeOption = (currentValue: string) => ({
@@ -3222,7 +3229,7 @@ describe("AcpAdapterV2", () => {
     }).pipe(Effect.provide(layerTest), Effect.scoped),
   );
 
-  // regression: #21499 turns blocked only on T3 thread waits must show as waiting
+  // regression: #21499 turns blocked only on cod3 thread waits must show as waiting
   it.effect.each(["agent_message_chunk"] as const)(
     "keeps named ACP %s open while deriving thread wait execution state",
     (sessionUpdate) =>
@@ -3260,8 +3267,8 @@ describe("AcpAdapterV2", () => {
                         title: "Wait for the child",
                         status: "in_progress",
                         rawInput: {
-                          server: "t3-code",
-                          tool: "t3_thread_wait",
+                          server: "cod3",
+                          tool: "cod3_thread_wait",
                           arguments: { threadId: "child" },
                         },
                         _meta: { is_mcp_tool_call: true },
@@ -4313,7 +4320,7 @@ describe("AcpAdapterV2", () => {
           (item) =>
             item.threadId === task?.childThreadId &&
             item.type === "dynamic_tool" &&
-            item.toolName === "t3-code.task_status",
+            item.toolName === "cod3.task_status",
         ),
       );
       const childMcp = items.find(
@@ -4790,7 +4797,7 @@ describe("AcpAdapterV2", () => {
             childProcessSpawner,
             mockAgentPath,
             protocolEvents,
-            environment: { T3_ACP_EMIT_NOTICE: "1" },
+            environment: { COD3_ACP_EMIT_NOTICE: "1" },
           }),
         },
         selfInvocation,
@@ -4869,7 +4876,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_V2_FIDELITY: "1" },
+            environment: { COD3_ACP_EMIT_V2_FIDELITY: "1" },
             wrapRuntime: (runtime) => ({
               ...runtime,
               handleSessionUpdate: (handler) =>
@@ -5046,9 +5053,9 @@ describe("AcpAdapterV2", () => {
         results: undefined,
       });
       assert.deepEqual(webItem("grok-web-search", "completed"), {
-        title: "Web search: t3 code",
-        patterns: ["t3 code"],
-        results: [{ url: "https://t3.codes" }, { url: "https://github.com/pingdotgg/t3code" }],
+        title: "Web search: cod3 code",
+        patterns: ["cod3 code"],
+        results: [{ url: "https://t3.codes" }, { url: "https://github.com/pingdotgg/cod3" }],
       });
       assert.deepEqual(webItem("antigravity-web-search", "completed"), {
         title: "Web search: top story on Hacker News today",
@@ -5070,7 +5077,7 @@ describe("AcpAdapterV2", () => {
         results: [{ url: "https://example.com/streamed_(detail)" }],
       });
       assert.deepEqual(webItem("grok-web-fetch", "completed")?.results, [
-        { url: "https://t3.codes", snippet: "T3 Code page" },
+        { url: "https://t3.codes", snippet: "cod3 page" },
       ]);
       const completedCompaction = items.find(
         (item) =>
@@ -5118,7 +5125,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_TERMINAL_OUTPUT_BYTES: String(1024 * 1024) },
+            environment: { COD3_ACP_EMIT_TERMINAL_OUTPUT_BYTES: String(1024 * 1024) },
           }),
         },
         selfInvocation: yield* resolveSelfInvocation(),
@@ -5272,8 +5279,8 @@ describe("AcpAdapterV2", () => {
             childProcessSpawner,
             mockAgentPath,
             environment: {
-              T3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
-              T3_ACP_LOAD_SESSION_DELAY_MS: "500",
+              COD3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
+              COD3_ACP_LOAD_SESSION_DELAY_MS: "500",
             },
             sessionLoadReplayIdleGap: "100 millis",
             wrapRuntime: (runtime) => {
@@ -5367,8 +5374,8 @@ describe("AcpAdapterV2", () => {
             mockAgentPath,
             protocolEvents,
             environment: {
-              T3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
-              T3_ACP_LOAD_SESSION_DELAY_MS: "500",
+              COD3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
+              COD3_ACP_LOAD_SESSION_DELAY_MS: "500",
             },
             sessionLoadReplayIdleGap: "100 millis",
             wrapRuntime: (runtime) => {
@@ -5464,8 +5471,8 @@ describe("AcpAdapterV2", () => {
               mockAgentPath,
               protocolEvents,
               environment: {
-                T3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
-                T3_ACP_LOAD_SESSION_DELAY_MS: "500",
+                COD3_ACP_DELAY_LOAD_SESSION_AFTER_REPLAY: "1",
+                COD3_ACP_LOAD_SESSION_DELAY_MS: "500",
               },
               sessionLoadReplayIdleGap: "100 millis",
               wrapRuntime: (runtime) => {
@@ -5663,7 +5670,7 @@ describe("AcpAdapterV2", () => {
             mockAgentPath,
             protocolEvents,
             environment: (runtimeOrdinal) =>
-              runtimeOrdinal === 1 ? { T3_ACP_FAIL_LOAD_SESSION: "1" } : {},
+              runtimeOrdinal === 1 ? { COD3_ACP_FAIL_LOAD_SESSION: "1" } : {},
           }),
         },
         selfInvocation,
@@ -5819,7 +5826,7 @@ describe("AcpAdapterV2", () => {
     Effect.gen(function* () {
       const harness = yield* makePromptInactivityHarness({
         environment: (runtimeOrdinal) =>
-          runtimeOrdinal === 1 ? { T3_ACP_HANG_PROMPT_FOREVER: "1" } : {},
+          runtimeOrdinal === 1 ? { COD3_ACP_HANG_PROMPT_FOREVER: "1" } : {},
       });
       const thought = (sessionId: string) => ({
         sessionId,
@@ -5861,7 +5868,7 @@ describe("AcpAdapterV2", () => {
       } as const;
       // The agent logs the upstream error and leaves session/prompt open.
       const harness = yield* makePromptInactivityHarness({
-        environment: () => ({ T3_ACP_HANG_PROMPT_FOREVER: "1" }),
+        environment: () => ({ COD3_ACP_HANG_PROMPT_FOREVER: "1" }),
         watchPromptOutcome: () =>
           Effect.succeed((_result, options) =>
             Effect.succeed(
@@ -5882,7 +5889,7 @@ describe("AcpAdapterV2", () => {
   it.effect("retires a silent prompt whose outcome check dies", () =>
     Effect.gen(function* () {
       const harness = yield* makePromptInactivityHarness({
-        environment: () => ({ T3_ACP_HANG_PROMPT_FOREVER: "1" }),
+        environment: () => ({ COD3_ACP_HANG_PROMPT_FOREVER: "1" }),
         watchPromptOutcome: () => Effect.succeed(() => Effect.die("session log unreadable")),
       });
       yield* harness.startTurn(1);
@@ -5922,7 +5929,7 @@ describe("AcpAdapterV2", () => {
         yield* Effect.gen(function* () {
           const harness = yield* makePromptInactivityHarness({
             environment: (runtimeOrdinal) =>
-              runtimeOrdinal === 1 ? { T3_ACP_HANG_PROMPT_FOREVER: "1" } : {},
+              runtimeOrdinal === 1 ? { COD3_ACP_HANG_PROMPT_FOREVER: "1" } : {},
           });
           yield* harness.startTurn(1);
           yield* TestClock.adjust("5 minutes");
@@ -5958,7 +5965,9 @@ describe("AcpAdapterV2", () => {
       Effect.gen(function* () {
         const harness = yield* makePromptInactivityHarness({
           environment: (runtimeOrdinal) =>
-            runtimeOrdinal === 1 ? { T3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "execute" } : {},
+            runtimeOrdinal === 1
+              ? { COD3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "execute" }
+              : {},
         });
         yield* harness.startTurn(1);
         yield* harness.runtime.events.pipe(
@@ -6077,7 +6086,7 @@ describe("AcpAdapterV2", () => {
   it.effect("holds the inactivity timeout while the agent waits on an approval", () =>
     Effect.gen(function* () {
       const harness = yield* makePromptInactivityHarness({
-        environment: () => ({ T3_ACP_EMIT_TOOL_CALLS: "1" }),
+        environment: () => ({ COD3_ACP_EMIT_TOOL_CALLS: "1" }),
         runtimeMode: "approval-required",
       });
       yield* harness.startTurn(1);
@@ -6120,9 +6129,9 @@ describe("AcpAdapterV2", () => {
       const harness = yield* makePromptInactivityHarness({
         environment: (runtimeOrdinal) =>
           runtimeOrdinal === 1
-            ? { T3_ACP_EMIT_TOOL_CALLS: "1" }
+            ? { COD3_ACP_EMIT_TOOL_CALLS: "1" }
             : runtimeOrdinal === 2
-              ? { T3_ACP_HANG_PROMPT_FOREVER: "1" }
+              ? { COD3_ACP_HANG_PROMPT_FOREVER: "1" }
               : {},
         runtimeMode: "approval-required",
       });
@@ -6166,8 +6175,8 @@ describe("AcpAdapterV2", () => {
           environment: (runtimeOrdinal) =>
             runtimeOrdinal === 1
               ? {
-                  T3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "execute",
-                  ...(agentExits ? {} : { T3_ACP_FAIL_PROMPT: "1" }),
+                  COD3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "execute",
+                  ...(agentExits ? {} : { COD3_ACP_FAIL_PROMPT: "1" }),
                 }
               : {},
         });
@@ -6201,12 +6210,12 @@ describe("AcpAdapterV2", () => {
       }).pipe(Effect.provide(layerTest)),
   );
 
-  it.effect("ends a running T3 MCP tool call when its session closes mid-prompt", () =>
+  it.effect("ends a running cod3 MCP tool call when its session closes mid-prompt", () =>
     Effect.gen(function* () {
       const sessionScope = yield* Scope.make();
       const harness = yield* makePromptInactivityHarness({
         sessionScope,
-        environment: () => ({ T3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "other" }),
+        environment: () => ({ COD3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: "other" }),
       });
       const trackedToolStatus = (event: ProviderAdapter.ProviderAdapterV2Event) =>
         event.type === "turn_item.updated" &&
@@ -6218,7 +6227,7 @@ describe("AcpAdapterV2", () => {
         Stream.filter((event) => trackedToolStatus(event) !== undefined),
         Stream.runHead,
       );
-      // t3_worktree_handoff releases the live session while its own tool call is open.
+      // cod3_worktree_handoff releases the live session while its own tool call is open.
       yield* Scope.close(sessionScope, Exit.void);
       // The event queue outlives the session; only events emitted by the close remain.
       const after = yield* harness.runtime.events.pipe(
@@ -6450,16 +6459,16 @@ describe("AcpAdapterV2", () => {
         mcpServers: [
           {
             type: "stdio",
-            name: "t3-code",
+            name: "cod3",
             command: process.execPath,
             args: [
-              process.argv[1] === undefined ? "t3" : NodePath.resolve(process.argv[1]),
+              process.argv[1] === undefined ? "cod3" : NodePath.resolve(process.argv[1]),
               "acp-mcp-bridge",
             ],
             env: [
               { name: "ELECTRON_RUN_AS_NODE", value: "1" },
-              { name: "T3_ACP_MCP_ENDPOINT", value: "http://127.0.0.1:43123/mcp" },
-              { name: "T3_ACP_MCP_AUTHORIZATION", value: "Bearer target-thread-token" },
+              { name: "COD3_ACP_MCP_ENDPOINT", value: "http://127.0.0.1:43123/mcp" },
+              { name: "COD3_ACP_MCP_AUTHORIZATION", value: "Bearer target-thread-token" },
             ],
           },
         ],
@@ -6480,7 +6489,7 @@ describe("AcpAdapterV2", () => {
         {
           sessionId: "mock-child-session-without-credential-scope",
           command: process.execPath,
-          args: ["-e", "process.stdout.write(process.env.T3_ACP_MCP_AUTHORIZATION ?? '')"],
+          args: ["-e", "process.stdout.write(process.env.COD3_ACP_MCP_AUTHORIZATION ?? '')"],
         },
         { requestId: "test-unknown-terminal-create", method: "terminal/create" },
       );
@@ -6506,7 +6515,7 @@ describe("AcpAdapterV2", () => {
           command: process.execPath,
           args: [
             "-e",
-            "process.stdout.write(`${process.env.T3CODE_THREAD_ID ?? ''}\n${process.env.T3_ACP_MCP_AUTHORIZATION ?? ''}`)",
+            "process.stdout.write(`${process.env.COD3_THREAD_ID ?? ''}\n${process.env.COD3_ACP_MCP_AUTHORIZATION ?? ''}`)",
           ],
         },
         { requestId: "test-terminal-create", method: "terminal/create" },
@@ -6542,7 +6551,7 @@ describe("AcpAdapterV2", () => {
         const selfInvocation = yield* resolveSelfInvocation();
         const mockAgentPath = yield* bundledMockAgentPath;
         const workspace = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-acp-no-client-fs-",
+          prefix: "cod3-acp-no-client-fs-",
         });
         const probePath = path.join(workspace, "planted.txt");
         const probeLogPath = path.join(workspace, "fs-probe.jsonl");
@@ -6558,8 +6567,8 @@ describe("AcpAdapterV2", () => {
               mockAgentPath,
               protocolEvents,
               environment: {
-                T3_ACP_CLIENT_FS_PROBE_PATH: probePath,
-                T3_ACP_CLIENT_FS_PROBE_LOG_PATH: probeLogPath,
+                COD3_ACP_CLIENT_FS_PROBE_PATH: probePath,
+                COD3_ACP_CLIENT_FS_PROBE_LOG_PATH: probeLogPath,
               },
             }),
           },
@@ -6635,7 +6644,7 @@ describe("AcpAdapterV2", () => {
       const makeRuntime = makeMockRuntime({
         childProcessSpawner,
         mockAgentPath,
-        environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+        environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
         wrapRuntime: (runtime) => ({
           ...runtime,
           handleRequestPermission: (handler) =>
@@ -6801,7 +6810,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner: yield* ChildProcessSpawner.ChildProcessSpawner,
             mockAgentPath: yield* bundledMockAgentPath,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             wrapRuntime: (runtime) => ({
               ...runtime,
               handleMcpConnect: (handler) =>
@@ -6850,7 +6859,7 @@ describe("AcpAdapterV2", () => {
         return yield* Effect.die("ACP runtime must register MCP-over-ACP handlers");
       }
       const { connectionId } = yield* mcpConnect(
-        { serverId: "t3-code" },
+        { serverId: "cod3" },
         { requestId: "stop-mcp-connect", method: "mcp/connect" },
       );
       const call = yield* mcpMessage(
@@ -6913,7 +6922,7 @@ describe("AcpAdapterV2", () => {
       const makeRuntime = makeMockRuntime({
         childProcessSpawner,
         mockAgentPath,
-        environment: { T3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: kind },
+        environment: { COD3_ACP_EMIT_TRACKED_TOOL_CALL_KIND_THEN_HANG: kind },
         wrapRuntime: (runtime) => ({
           ...runtime,
           handleRequestPermission: (handler) =>
@@ -7088,7 +7097,7 @@ describe("AcpAdapterV2", () => {
       const makeRuntime = makeMockRuntime({
         childProcessSpawner,
         mockAgentPath,
-        environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+        environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
         wrapRuntime: (runtime) => ({
           ...runtime,
           handleRequestPermission: (handler) =>
@@ -7215,7 +7224,7 @@ describe("AcpAdapterV2", () => {
         childProcessSpawner,
         mockAgentPath,
         protocolEvents,
-        environment: { T3_ACP_PROMPT_DELAY_MS: "100" },
+        environment: { COD3_ACP_PROMPT_DELAY_MS: "100" },
         wrapRuntime: (nativeRuntime) => {
           nativeRuntimes.push(nativeRuntime);
           return nativeRuntime;
@@ -7305,11 +7314,11 @@ describe("AcpAdapterV2", () => {
       });
       assert.isString(rolledBack.providerThread.nativeThreadRef?.nativeId);
       assert.equal(
-        runtimeInputs[1]?.processEnvironment?.T3_ACP_MCP_AUTHORIZATION,
+        runtimeInputs[1]?.processEnvironment?.COD3_ACP_MCP_AUTHORIZATION,
         "Bearer rollback-target-token",
       );
       assert.equal(
-        runtimeInputs[1]?.processEnvironment?.T3CODE_THREAD_ID,
+        runtimeInputs[1]?.processEnvironment?.COD3_THREAD_ID,
         "thread-acp-rollback-session-target",
       );
       const replacementMcpServer = runtimeInputs[1]?.mcpServers[0];
@@ -7320,8 +7329,9 @@ describe("AcpAdapterV2", () => {
           ? replacementMcpServer.env
           : undefined;
       assert.equal(
-        replacementMcpEnvironment?.find((variable) => variable.name === "T3_ACP_MCP_AUTHORIZATION")
-          ?.value,
+        replacementMcpEnvironment?.find(
+          (variable) => variable.name === "COD3_ACP_MCP_AUTHORIZATION",
+        )?.value,
         "Bearer rollback-target-token",
       );
       const snapshotAfterRollback = yield* runtime.readThreadSnapshot({
@@ -7369,132 +7379,134 @@ describe("AcpAdapterV2", () => {
     }).pipe(Effect.provide(layerTest)),
   );
 
-  it.effect("resends T3 notes after rollback when the replaced runtime's prompt settles late", () =>
-    Effect.gen(function* () {
-      const childProcessSpawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-      const path = yield* Path.Path;
-      const selfInvocation = yield* resolveSelfInvocation();
-      const mockAgentPath = yield* path.fromFileUrl(
-        new URL("../../../scripts/acp-mock-agent.ts", import.meta.url),
-      );
-      type RuntimeService = AcpSessionRuntime.AcpSessionRuntime["Service"];
-      let firstSessionUpdate: Parameters<RuntimeService["handleSessionUpdate"]>[0] | undefined;
-      const firstPromptGate = yield* Deferred.make<EffectAcpSchema.PromptResponse>();
-      const firstPromptCallbackDone = yield* Deferred.make<void>();
-      const replacementPromptText = yield* Deferred.make<string>();
-      const instanceId = ProviderInstanceId.make("acp-test-late-prompt-rollback");
-      const adapter = yield* makeAcpAdapterV2({
-        instanceId,
-        testHooks: {
-          afterPromptCallback: () =>
-            Deferred.succeed(firstPromptCallbackDone, undefined).pipe(Effect.asVoid),
-        },
-        flavor: {
-          driver: ACP_TEST_DRIVER,
-          capabilities: AcpProviderCapabilitiesV2,
-          followAgentWorkState: true,
-          makeRuntime: makeMockRuntime({
-            childProcessSpawner,
-            mockAgentPath,
-            wrapRuntime: (runtime, runtimeOrdinal) =>
-              runtimeOrdinal === 1
-                ? {
-                    ...runtime,
-                    handleSessionUpdate: (handler) =>
-                      Effect.sync(() => {
-                        firstSessionUpdate = handler;
-                      }).pipe(Effect.andThen(runtime.handleSessionUpdate(handler))),
-                    prompt: () => Deferred.await(firstPromptGate),
-                  }
-                : {
-                    ...runtime,
-                    prompt: (payload, options) =>
-                      Deferred.succeed(
-                        replacementPromptText,
-                        payload.prompt
-                          .flatMap((block) => (block.type === "text" ? [block.text] : []))
-                          .join("\n"),
-                      ).pipe(Effect.andThen(runtime.prompt(payload, options))),
-                  },
+  it.effect(
+    "resends cod3 notes after rollback when the replaced runtime's prompt settles late",
+    () =>
+      Effect.gen(function* () {
+        const childProcessSpawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+        const path = yield* Path.Path;
+        const selfInvocation = yield* resolveSelfInvocation();
+        const mockAgentPath = yield* path.fromFileUrl(
+          new URL("../../../scripts/acp-mock-agent.ts", import.meta.url),
+        );
+        type RuntimeService = AcpSessionRuntime.AcpSessionRuntime["Service"];
+        let firstSessionUpdate: Parameters<RuntimeService["handleSessionUpdate"]>[0] | undefined;
+        const firstPromptGate = yield* Deferred.make<EffectAcpSchema.PromptResponse>();
+        const firstPromptCallbackDone = yield* Deferred.make<void>();
+        const replacementPromptText = yield* Deferred.make<string>();
+        const instanceId = ProviderInstanceId.make("acp-test-late-prompt-rollback");
+        const adapter = yield* makeAcpAdapterV2({
+          instanceId,
+          testHooks: {
+            afterPromptCallback: () =>
+              Deferred.succeed(firstPromptCallbackDone, undefined).pipe(Effect.asVoid),
+          },
+          flavor: {
+            driver: ACP_TEST_DRIVER,
+            capabilities: AcpProviderCapabilitiesV2,
+            followAgentWorkState: true,
+            makeRuntime: makeMockRuntime({
+              childProcessSpawner,
+              mockAgentPath,
+              wrapRuntime: (runtime, runtimeOrdinal) =>
+                runtimeOrdinal === 1
+                  ? {
+                      ...runtime,
+                      handleSessionUpdate: (handler) =>
+                        Effect.sync(() => {
+                          firstSessionUpdate = handler;
+                        }).pipe(Effect.andThen(runtime.handleSessionUpdate(handler))),
+                      prompt: () => Deferred.await(firstPromptGate),
+                    }
+                  : {
+                      ...runtime,
+                      prompt: (payload, options) =>
+                        Deferred.succeed(
+                          replacementPromptText,
+                          payload.prompt
+                            .flatMap((block) => (block.type === "text" ? [block.text] : []))
+                            .join("\n"),
+                        ).pipe(Effect.andThen(runtime.prompt(payload, options))),
+                    },
+            }),
+          },
+          selfInvocation,
+          continuationRequests: { offer: () => Effect.void },
+        });
+        const threadId = ThreadId.make("thread-acp-late-prompt-rollback");
+        const runtimePolicy = ProviderAdapter.ProviderAdapterV2RuntimePolicy.make({
+          runtimeMode: "full-access",
+          interactionMode: "default",
+          cwd: process.cwd(),
+        });
+        const modelSelection = { instanceId, model: "default" } as const;
+        const runtime = yield* adapter.openSession({
+          threadId,
+          providerSessionId: ProviderSessionId.make("provider-session-acp-late-prompt-rollback"),
+          modelSelection,
+          runtimePolicy,
+        });
+        const events = yield* Queue.unbounded<ProviderAdapter.ProviderAdapterV2Event>();
+        yield* runtime.events.pipe(
+          Stream.runForEach((event) => Queue.offer(events, event)),
+          Effect.forkScoped,
+        );
+        const providerThread = yield* runtime.ensureThread({
+          threadId,
+          modelSelection,
+          runtimePolicy,
+        });
+        yield* runtime.startTurn(
+          makeTurnInput({
+            threadId,
+            providerThread,
+            instanceId,
+            runtimePolicy,
+            now: yield* DateTime.now,
           }),
-        },
-        selfInvocation,
-        continuationRequests: { offer: () => Effect.void },
-      });
-      const threadId = ThreadId.make("thread-acp-late-prompt-rollback");
-      const runtimePolicy = ProviderAdapter.ProviderAdapterV2RuntimePolicy.make({
-        runtimeMode: "full-access",
-        interactionMode: "default",
-        cwd: process.cwd(),
-      });
-      const modelSelection = { instanceId, model: "default" } as const;
-      const runtime = yield* adapter.openSession({
-        threadId,
-        providerSessionId: ProviderSessionId.make("provider-session-acp-late-prompt-rollback"),
-        modelSelection,
-        runtimePolicy,
-      });
-      const events = yield* Queue.unbounded<ProviderAdapter.ProviderAdapterV2Event>();
-      yield* runtime.events.pipe(
-        Stream.runForEach((event) => Queue.offer(events, event)),
-        Effect.forkScoped,
-      );
-      const providerThread = yield* runtime.ensureThread({
-        threadId,
-        modelSelection,
-        runtimePolicy,
-      });
-      yield* runtime.startTurn(
-        makeTurnInput({
-          threadId,
-          providerThread,
-          instanceId,
-          runtimePolicy,
-          now: yield* DateTime.now,
-        }),
-      );
-      if (firstSessionUpdate === undefined) {
-        return yield* Effect.die("the first runtime's session handler must be wired");
-      }
-      // The agent goes idle while its prompt RPC is still open, which ends the turn.
-      yield* firstSessionUpdate({
-        sessionId: "mock-session-1",
-        update: { sessionUpdate: "user_message_chunk", content: { type: "text", text: "echo" } },
-      });
-      yield* firstSessionUpdate({
-        sessionId: "mock-session-1",
-        update: { sessionUpdate: "state_update", state: "idle", stopReason: "end_turn" },
-      });
-      while ((yield* Queue.take(events)).type !== "turn.terminal") {}
+        );
+        if (firstSessionUpdate === undefined) {
+          return yield* Effect.die("the first runtime's session handler must be wired");
+        }
+        // The agent goes idle while its prompt RPC is still open, which ends the turn.
+        yield* firstSessionUpdate({
+          sessionId: "mock-session-1",
+          update: { sessionUpdate: "user_message_chunk", content: { type: "text", text: "echo" } },
+        });
+        yield* firstSessionUpdate({
+          sessionId: "mock-session-1",
+          update: { sessionUpdate: "state_update", state: "idle", stopReason: "end_turn" },
+        });
+        while ((yield* Queue.take(events)).type !== "turn.terminal") {}
 
-      const rolledBack = yield* runtime.rollbackThread({
-        providerThread,
-        providerThreadTurns: [],
-        target: {
-          type: "thread_start",
-          checkpointId: CheckpointId.make("checkpoint-acp-late-prompt-rollback"),
-          appRunOrdinal: 0,
-        },
-      });
-      // The replaced runtime's prompt settles late. A successful result would record delivery
-      // without the generation check; a cancelled one never records it, so it proves nothing.
-      // Its completion callback must finish before the next turn reads delivery state.
-      yield* Deferred.succeed(firstPromptGate, { stopReason: "end_turn" });
-      yield* Deferred.await(firstPromptCallbackDone);
-      yield* runtime.startTurn(
-        makeTurnInput({
-          threadId,
-          providerThread: rolledBack.providerThread,
-          instanceId,
-          runtimePolicy,
-          now: yield* DateTime.now,
-          ordinal: 2,
-        }),
-      );
-      const replacementPrompt = yield* Deferred.await(replacementPromptText);
-      assert.include(replacementPrompt, "T3 Code interaction mode: Default");
-      assert.include(replacementPrompt, "<runtime_info>");
-    }).pipe(Effect.provide(layerTest)),
+        const rolledBack = yield* runtime.rollbackThread({
+          providerThread,
+          providerThreadTurns: [],
+          target: {
+            type: "thread_start",
+            checkpointId: CheckpointId.make("checkpoint-acp-late-prompt-rollback"),
+            appRunOrdinal: 0,
+          },
+        });
+        // The replaced runtime's prompt settles late. A successful result would record delivery
+        // without the generation check; a cancelled one never records it, so it proves nothing.
+        // Its completion callback must finish before the next turn reads delivery state.
+        yield* Deferred.succeed(firstPromptGate, { stopReason: "end_turn" });
+        yield* Deferred.await(firstPromptCallbackDone);
+        yield* runtime.startTurn(
+          makeTurnInput({
+            threadId,
+            providerThread: rolledBack.providerThread,
+            instanceId,
+            runtimePolicy,
+            now: yield* DateTime.now,
+            ordinal: 2,
+          }),
+        );
+        const replacementPrompt = yield* Deferred.await(replacementPromptText);
+        assert.include(replacementPrompt, "cod3 interaction mode: Default");
+        assert.include(replacementPrompt, "<runtime_info>");
+      }).pipe(Effect.provide(layerTest)),
   );
 
   it.effect("quarantines callbacks from a failed rollback replacement before retrying", () =>
@@ -7661,7 +7673,7 @@ describe("AcpAdapterV2", () => {
           makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_IDLE_ERROR: "grok-background" },
+            environment: { COD3_ACP_IDLE_ERROR: "grok-background" },
           })(input).pipe(Effect.flatMap(makeXAiPromptCompletionRuntime)),
       });
       const threadId = ThreadId.make("grok-idle-error-background");
@@ -7719,7 +7731,7 @@ describe("AcpAdapterV2", () => {
         childProcessSpawner,
         mockAgentPath,
         protocolEvents,
-        environment: { T3_ACP_HANG_CLOSE_SESSION: "1" },
+        environment: { COD3_ACP_HANG_CLOSE_SESSION: "1" },
       });
       let runtimeClosed = false;
       const instanceId = ProviderInstanceId.make("acp-test");
@@ -7786,7 +7798,7 @@ describe("AcpAdapterV2", () => {
             makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_GROK_BACKGROUND_TASK_COMPLETION: "poll" },
+              environment: { COD3_ACP_GROK_BACKGROUND_TASK_COMPLETION: "poll" },
             })(input).pipe(Effect.flatMap(makeXAiPromptCompletionRuntime)),
         });
         const threadId = ThreadId.make("grok-background-completion");
@@ -7923,7 +7935,7 @@ describe("AcpAdapterV2", () => {
       );
       const blocks = rawProtocolPromptTextBlocks(Option.getOrThrow(prompt));
       if (native) {
-        // Same shape as a typed native command: one bare text block, no T3 instructions.
+        // Same shape as a typed native command: one bare text block, no cod3 instructions.
         assert.deepEqual(blocks, [{ type: "text", text: sent }]);
       } else {
         assert.isTrue(blocks.some((block) => block.text.includes(sent)));
@@ -7963,7 +7975,7 @@ describe("AcpAdapterV2", () => {
             makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_GROK_KILL_TASK_SHAPE: shape },
+              environment: { COD3_ACP_GROK_KILL_TASK_SHAPE: shape },
             })(input).pipe(Effect.flatMap(makeXAiPromptCompletionRuntime)),
         });
         const threadId = ThreadId.make("grok-kill-completion");
@@ -8044,7 +8056,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_EMPTY_DEFAULT_AGENT_OPTION: "1" },
+            environment: { COD3_ACP_EMIT_EMPTY_DEFAULT_AGENT_OPTION: "1" },
             protocolEvents,
           }),
           onSessionConfigurationUpdate: (configOptions, modeState) =>
@@ -8141,7 +8153,7 @@ describe("AcpAdapterV2", () => {
             childProcessSpawner,
             mockAgentPath,
             environment: (runtimeOrdinal) =>
-              runtimeOrdinal === 1 ? { T3_ACP_EMIT_EMPTY_SUCCESSFUL_BASH_THEN_HANG: "1" } : {},
+              runtimeOrdinal === 1 ? { COD3_ACP_EMIT_EMPTY_SUCCESSFUL_BASH_THEN_HANG: "1" } : {},
             ownDetachedProcessGroup: true,
             processGroupTerminationGrace: 0,
             protocolEvents,
@@ -8298,7 +8310,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath: yield* bundledMockAgentPath,
-            environment: { T3_ACP_COMPLETE_FIRST_PROMPT_ON_CANCEL: "1" },
+            environment: { COD3_ACP_COMPLETE_FIRST_PROMPT_ON_CANCEL: "1" },
             protocolEvents,
             cancelBehavior: "wait-for-prompt",
             wrapRuntime: (runtime) => {
@@ -8444,7 +8456,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_TOOL_CALLS: "1" },
+            environment: { COD3_ACP_EMIT_TOOL_CALLS: "1" },
             wrapCancel: (cancel) => Deferred.await(releaseCancel).pipe(Effect.andThen(cancel)),
           }),
         },
@@ -8536,7 +8548,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_TOOL_CALLS: "1" },
+            environment: { COD3_ACP_EMIT_TOOL_CALLS: "1" },
             wrapOutgoingResponse: (onOutgoingResponse) => (requestId) =>
               Deferred.succeed(responseEnqueued, undefined).pipe(
                 Effect.andThen(Deferred.await(releaseResponseAcknowledgement)),
@@ -8879,7 +8891,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_MCP_TOOL_APPROVAL_ELICITATION: "1" },
+            environment: { COD3_ACP_EMIT_MCP_TOOL_APPROVAL_ELICITATION: "1" },
           }),
         },
         selfInvocation,
@@ -8941,7 +8953,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_TOOL_CALLS: "1" },
+            environment: { COD3_ACP_EMIT_TOOL_CALLS: "1" },
             wrapOutgoingResponse: (onOutgoingResponse) => (requestId) =>
               Deferred.succeed(responseWritten, undefined).pipe(
                 Effect.andThen(Deferred.await(releaseResponseAcknowledgement)),
@@ -9042,7 +9054,7 @@ describe("AcpAdapterV2", () => {
             mockAgentPath,
             ownDetachedProcessGroup: true,
             processGroupTerminationGrace: 0,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             protocolEvents,
           }),
         },
@@ -9156,7 +9168,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
+              environment: { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
             }),
           },
           selfInvocation,
@@ -9321,7 +9333,7 @@ describe("AcpAdapterV2", () => {
               makeRuntime: makeMockRuntime({
                 childProcessSpawner,
                 mockAgentPath,
-                environment: { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
+                environment: { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
                 wrapRuntime: (runtime) => ({
                   ...runtime,
                   handleSessionUpdate: (handler) =>
@@ -9592,7 +9604,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
+            environment: { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
             protocolEvents,
             wrapRuntime: (runtime) => ({
               ...runtime,
@@ -9835,7 +9847,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
+              environment: { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
               wrapRuntime: (runtime) => ({
                 ...runtime,
                 handleSessionUpdate: (handler) =>
@@ -10128,7 +10140,7 @@ describe("AcpAdapterV2", () => {
               mockAgentPath,
               environment: (runtimeOrdinal) => {
                 runtimeOrdinalSeen = Math.max(runtimeOrdinalSeen, runtimeOrdinal);
-                return { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" };
+                return { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" };
               },
               wrapCancel: (cancel) =>
                 Effect.sync(() => {
@@ -10252,7 +10264,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             protocolEvents,
           }),
         },
@@ -10338,7 +10350,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             ownDetachedProcessGroup: true,
             processGroupTerminationGrace: 0,
             protocolEvents,
@@ -10473,7 +10485,7 @@ describe("AcpAdapterV2", () => {
               childProcessSpawner,
               mockAgentPath,
               environment: {
-                T3_ACP_EMIT_IN_TURN_TASKOUTPUT_THEN_LATE_DUPLICATE: "1",
+                COD3_ACP_EMIT_IN_TURN_TASKOUTPUT_THEN_LATE_DUPLICATE: "1",
               },
               protocolEvents,
               wrapRuntime: (runtime) => {
@@ -10827,7 +10839,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+              environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
               protocolEvents,
               wrapRuntime: (runtime) => ({
                 ...runtime,
@@ -11072,7 +11084,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+              environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
               protocolEvents,
               wrapRuntime: (runtime) => ({
                 ...runtime,
@@ -11387,7 +11399,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             wrapRuntime: (runtime) => ({
               ...runtime,
               handleSessionUpdate: (handler) =>
@@ -12102,7 +12114,7 @@ describe("AcpAdapterV2", () => {
           makeRuntime: makeMockRuntime({
             childProcessSpawner,
             mockAgentPath,
-            environment: { T3_ACP_HANG_PROMPT_FOREVER: "1" },
+            environment: { COD3_ACP_HANG_PROMPT_FOREVER: "1" },
             protocolEvents,
           }),
         },
@@ -12194,7 +12206,7 @@ describe("AcpAdapterV2", () => {
               ),
             environment: (runtimeOrdinal) => {
               runtimeOrdinalSeen = runtimeOrdinal;
-              return runtimeOrdinal === 1 ? { T3_ACP_HANG_PROMPT_FOREVER: "1" } : {};
+              return runtimeOrdinal === 1 ? { COD3_ACP_HANG_PROMPT_FOREVER: "1" } : {};
             },
             protocolEvents,
           }),
@@ -12298,7 +12310,7 @@ describe("AcpAdapterV2", () => {
               ),
             environment: (runtimeOrdinal) => {
               runtimeOrdinalSeen = runtimeOrdinal;
-              return runtimeOrdinal === 1 ? { T3_ACP_HANG_PROMPT_FOREVER: "1" } : {};
+              return runtimeOrdinal === 1 ? { COD3_ACP_HANG_PROMPT_FOREVER: "1" } : {};
             },
             protocolEvents,
           }),
@@ -12402,7 +12414,7 @@ describe("AcpAdapterV2", () => {
             makeRuntime: makeMockRuntime({
               childProcessSpawner,
               mockAgentPath,
-              environment: { T3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
+              environment: { COD3_ACP_EMIT_GENERIC_TOOL_PLACEHOLDERS: "1" },
             }),
           },
           selfInvocation,

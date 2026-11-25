@@ -1,4 +1,12 @@
-import { ArrowLeftIcon, ArrowRightIcon, ChartNoAxesColumnIcon, SettingsIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  BookOpenIcon,
+  ChartNoAxesColumnIcon,
+  SettingsIcon,
+} from "lucide-react";
+import type { EnvironmentMachineKind } from "@cod3/contracts";
+import { EnvironmentMachineIcon } from "../EnvironmentMachineIcon";
 import type { ReactNode } from "react";
 import { T, useGT } from "gt-react";
 import { memo } from "react";
@@ -15,7 +23,7 @@ import {
 import { primaryServerKeybindingsAtom } from "../../state/server";
 import { cn } from "../../lib/utils";
 import { useIssuesSupported, usePullRequestsSupported } from "../../state/environments";
-import { T3Wordmark } from "../T3Wordmark";
+import { Cod3Wordmark } from "../Cod3Wordmark";
 import {
   resolveEnvironmentIdentificationPillLabel,
   resolveSidebarStageBackdropVariant,
@@ -45,8 +53,10 @@ import { observeResize } from "~/lib/observeResize";
 
 export const SidebarChromeHeader = memo(function SidebarChromeHeader({
   isElectron,
+  environment,
 }: {
   isElectron: boolean;
+  environment: { label: string; machine: EnvironmentMachineKind } | null;
 }) {
   const stageLabel = useEnvironmentStageLabel();
   const environmentIdentificationMode = useEnvironmentIdentificationMode();
@@ -75,7 +85,12 @@ export const SidebarChromeHeader = memo(function SidebarChromeHeader({
           aria-label={gt("Toggle main sidebar")}
         />
       </div>
-      <div className="relative z-10 flex h-8 min-w-0 flex-1 flex-wrap content-start items-center gap-x-2 overflow-hidden py-0.5">
+      <div
+        className={cn(
+          "relative z-10 flex h-8 min-w-0 flex-1 items-center gap-x-2 overflow-hidden py-0.5",
+          !environment?.label && "flex-wrap content-start",
+        )}
+      >
         <div className="flex shrink-0 items-center gap-1">
           <SidebarBrand onBackdrop={backdropVariant !== null} />
           {isElectron ? (
@@ -92,6 +107,27 @@ export const SidebarChromeHeader = memo(function SidebarChromeHeader({
             </Badge>
           </div>
         ) : null}
+        {environment?.label && (
+          <Tooltip>
+            <TooltipTrigger
+              render={<span />}
+              className={cn(
+                "ms-auto flex h-6 min-w-0 items-center gap-1.5 text-xs [-webkit-app-region:no-drag]",
+                backdropVariant
+                  ? "rounded-md bg-black/45 px-1.5 text-white"
+                  : "text-sidebar-muted-foreground",
+              )}
+            >
+              <EnvironmentMachineIcon
+                kind={environment.machine}
+                aria-hidden
+                className="size-3.5 shrink-0"
+              />
+              <span className="truncate">{environment.label}</span>
+            </TooltipTrigger>
+            <TooltipPopup side="bottom">{environment.label}</TooltipPopup>
+          </Tooltip>
+        )}
       </div>
     </div>
   );
@@ -117,7 +153,7 @@ export function SidebarBrandWidthProbe({
       ref={observeWidth}
     >
       <div className="ml-[var(--workspace-titlebar-content-left)] flex gap-1">
-        <SidebarBrandMark onBackdrop={false} />
+        <Cod3Wordmark aria-hidden className="h-3.5 w-auto shrink-0" />
         {isElectron ? <div className="w-[calc(2*var(--workspace-titlebar-control-size))]" /> : null}
       </div>
     </div>
@@ -169,53 +205,53 @@ function HistoryNavigationButton({
 
 function SidebarBrand({ onBackdrop }: { onBackdrop: boolean }) {
   const gt = useGT();
+  const { isMobile, setOpenMobile } = useSidebar();
   return (
     <Link
-      aria-label={gt("T3 Code home")}
+      aria-label={gt("cod3 home")}
       className={cn(
-        "relative z-10 ml-[var(--workspace-titlebar-content-left)] hidden h-7 w-fit min-w-0 shrink-0 items-center overflow-hidden rounded-md outline-hidden ring-ring focus-visible:ring-2 focus-visible:ring-inset md:flex",
+        "relative z-10 flex h-7 w-fit min-w-0 shrink-0 items-center overflow-hidden rounded-md outline-hidden ring-ring focus-visible:ring-2 focus-visible:ring-inset md:ml-[var(--workspace-titlebar-content-left)]",
         onBackdrop ? "text-white" : "text-foreground",
       )}
+      onClick={() => {
+        if (isMobile) setOpenMobile(false);
+      }}
       to="/"
     >
-      <SidebarBrandMark onBackdrop={onBackdrop} />
+      <Cod3Wordmark aria-label="cod3" className="h-3.5 w-auto shrink-0" />
     </Link>
-  );
-}
-
-function SidebarBrandMark({ onBackdrop }: { onBackdrop: boolean }) {
-  return (
-    <span className="inline-flex min-w-0 items-baseline gap-1 text-sm font-medium tracking-tight">
-      <T3Wordmark aria-label="T3" className="h-[1cap] w-auto shrink-0" />
-      <span
-        className={cn(
-          "truncate [text-box:trim-both_cap_alphabetic] supports-[text-box:trim-both_cap_alphabetic]:py-1",
-          onBackdrop ? "text-white/70" : "text-muted-foreground",
-        )}
-      >
-        {/* oxlint-disable-next-line t3code/no-untranslated-copy -- product wordmark */}
-        {"Code"}
-      </span>
-    </span>
   );
 }
 
 function SidebarUtilityItem({
   icon,
   label,
+  showLabel,
   onClick,
 }: {
   icon: ReactNode;
   label: string;
+  showLabel?: boolean;
   onClick: () => void;
 }) {
   return (
-    <SidebarMenuItem className="shrink-0">
+    <SidebarMenuItem
+      className={
+        showLabel
+          ? "@container/utility min-w-9 flex-1 has-[~[data-sidebar-undo]]:flex-none"
+          : "shrink-0"
+      }
+    >
       <Tooltip>
         <TooltipTrigger
           render={
-            <SidebarMenuButton aria-label={label} onClick={onClick} size="icon">
+            <SidebarMenuButton
+              aria-label={label}
+              onClick={onClick}
+              size={showLabel ? "default" : "icon"}
+            >
               {icon}
+              {showLabel && <span className="hidden @[7rem]/utility:inline">{label}</span>}
             </SidebarMenuButton>
           }
         />
@@ -269,7 +305,7 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
   };
 
   return (
-    <SidebarMenu className="flex-row items-center">
+    <SidebarMenu className="flex-row flex-wrap items-center">
       {isOnUtilityPage ? (
         <SidebarMenuItem className="min-w-0 flex-1">
           <SidebarMenuButton onClick={handleBackClick}>
@@ -284,6 +320,7 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
           <SidebarUtilityItem
             icon={<SettingsIcon />}
             label={gt("Settings")}
+            showLabel
             onClick={handleSettingsClick}
           />
           {pullRequestsSupported ? (
@@ -301,6 +338,14 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
             />
           ) : null}
           <SidebarUtilityItem
+            icon={<BookOpenIcon />}
+            label={gt("AI configuration")}
+            onClick={() => {
+              closeMobileSidebar();
+              void navigate({ to: "/ai-config" });
+            }}
+          />
+          <SidebarUtilityItem
             icon={<ChartNoAxesColumnIcon />}
             label={gt("Usage")}
             onClick={handleUsageClick}
@@ -315,10 +360,12 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
 
 export const SidebarChromeFooter = memo(function SidebarChromeFooter() {
   return (
-    <SidebarFooter>
-      <SidebarProviderUpdatePill />
-      <SidebarUpdateArchitectureWarning />
-      <SidebarUtilityMenu />
-    </SidebarFooter>
+    <div className="border-t border-sidebar-border/70">
+      <SidebarFooter>
+        <SidebarProviderUpdatePill />
+        <SidebarUpdateArchitectureWarning />
+        <SidebarUtilityMenu />
+      </SidebarFooter>
+    </div>
   );
 });

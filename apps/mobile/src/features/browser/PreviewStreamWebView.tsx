@@ -1,8 +1,8 @@
-import { errorDisplayMessage } from "@t3tools/client-runtime/errors";
+import { errorDisplayMessage } from "@cod3/client-runtime/errors";
 import { Button } from "../../components/ui/Button";
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
 import * as Dialog from "../../components/ui/Dialog";
-import previewStreamScript from "@t3tools/mobile-preview-stream";
+import previewStreamScript from "@cod3/mobile-preview-stream";
 import {
   previewStreamControlLabel,
   previewStreamHostSetupMessage,
@@ -10,8 +10,8 @@ import {
   type PreviewStreamDownload,
   type PreviewStreamFileChooser,
   type PreviewStreamInput,
-} from "@t3tools/client-runtime/preview/server-browser-stream";
-import type { EnvironmentId, PreviewStreamHostSetup } from "@t3tools/contracts";
+} from "@cod3/client-runtime/preview/server-browser-stream";
+import type { EnvironmentId, PreviewStreamHostSetup } from "@cod3/contracts";
 import {
   useEffectEvent,
   useImperativeHandle,
@@ -274,7 +274,7 @@ function PreviewStreamDocumentView({
   };
   const command = (input: PreviewStreamInput) =>
     webView.current?.injectJavaScript(
-      `window.T3PreviewStream?.command(${JSON.stringify(input)}); true;`,
+      `window.Cod3PreviewStream?.command(${JSON.stringify(input)}); true;`,
     );
   // Reads here rather than in the screen: a tab switch during the iOS paste prompt unmounts
   // this view and nulls its WebView ref, so the text can never type into another tab.
@@ -294,7 +294,7 @@ function PreviewStreamDocumentView({
     if (!active.current || failed.current) return;
     failed.current = true;
     clearBootstrapTimer();
-    webView.current?.injectJavaScript("window.T3PreviewStream?.stop(); true;");
+    webView.current?.injectJavaScript("window.Cod3PreviewStream?.stop(); true;");
     onStreamingChange?.(false);
     setControl(null);
     setFileChooser(null);
@@ -310,7 +310,7 @@ function PreviewStreamDocumentView({
     onControl?.(null);
   });
   // The stream lives exactly as long as this view.
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- starts the bootstrap timeout and stops the WebView stream when this view unmounts
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- starts the bootstrap timeout and stops the WebView stream when this view unmounts
   useLayoutEffect(() => {
     active.current = true;
     const view = webView.current;
@@ -319,7 +319,7 @@ function PreviewStreamDocumentView({
       if (bootstrapTimer.current !== null) clearTimeout(bootstrapTimer.current);
       bootstrapTimer.current = null;
       active.current = false;
-      view?.injectJavaScript("window.T3PreviewStream?.stop(); true;");
+      view?.injectJavaScript("window.Cod3PreviewStream?.stop(); true;");
       streamEnded();
     };
   }, []);
@@ -335,7 +335,7 @@ function PreviewStreamDocumentView({
     command,
     paste,
     togglePictureInPicture: () =>
-      webView.current?.injectJavaScript("window.T3PreviewStream?.pictureInPicture(); true;"),
+      webView.current?.injectJavaScript("window.Cod3PreviewStream?.pictureInPicture(); true;"),
   }));
   const processTerminated = () => {
     if (!active.current || failed.current) return;

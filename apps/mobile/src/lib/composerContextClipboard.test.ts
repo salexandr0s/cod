@@ -4,12 +4,12 @@ import {
   ComposerContextId,
   EnvironmentId,
   ThreadId,
-} from "@t3tools/contracts";
-import { encodeComposerContextFragment } from "@t3tools/shared/composerContextClipboard";
+} from "@cod3/contracts";
+import { encodeComposerContextFragment } from "@cod3/shared/composerContextClipboard";
 import {
   collectComposerContextReferences,
   formatComposerContextReference,
-} from "@t3tools/shared/composerContextReferences";
+} from "@cod3/shared/composerContextReferences";
 
 const mocks = vi.hoisted(() => ({
   execute: vi.fn(),
@@ -49,7 +49,7 @@ vi.mock("../state/use-composer-drafts", () => ({
   waitForComposerDraftsLoaded: async () => {},
   findLocalComposerClipboardAttachment: mocks.local,
 }));
-vi.mock("@t3tools/client-runtime/state/runtime", () => ({
+vi.mock("@cod3/client-runtime/state/runtime", () => ({
   executeAtomQuery: mocks.execute,
   squashAtomCommandFailure: () => new Error("offline"),
 }));
@@ -93,7 +93,7 @@ const terminal = {
   text: "Build failed",
 };
 const clipboard = {
-  text: "![Checkout](t3-context://v1/image/image-source) [Build](t3-context://v1/terminal/terminal-source)",
+  text: "![Checkout](cod3-context://v1/image/image-source) [Build](cod3-context://v1/terminal/terminal-source)",
   fragment: encodeComposerContextFragment({
     version: 1,
     source: { environmentId: EnvironmentId.make("source") },
@@ -193,7 +193,7 @@ describe("mobile context clipboard imports", () => {
     const controller = new AbortController();
     mocks.dispose.mockImplementationOnce(() => controller.abort());
     const imageOnly = {
-      text: "![Checkout](t3-context://v1/image/image-source)",
+      text: "![Checkout](cod3-context://v1/image/image-source)",
       fragment: encodeComposerContextFragment({
         version: 1,
         source: { environmentId: EnvironmentId.make("source") },
@@ -354,7 +354,7 @@ describe("mobile context clipboard imports", () => {
   it("pastes a thread link as a chip only where the destination's agent reads its machine", async () => {
     const text = [
       "https://app.t3.codes/threads/destination/local-thread",
-      "<t3-thread://v2/source/foreign-thread>",
+      "<cod3-thread://v2/source/foreign-thread>",
     ].join(" ");
     const result = await importComposerContextClipboard(
       { text, fragment: "", html: "" },
@@ -370,7 +370,7 @@ describe("mobile context clipboard imports", () => {
       threadId: "local-thread",
     });
     expect(result!.text).toBe(
-      `[Thread](t3-context://v1/thread/${record!.contextId}) <t3-thread://v2/source/foreign-thread>`,
+      `[Thread](cod3-context://v1/thread/${record!.contextId}) <cod3-thread://v2/source/foreign-thread>`,
     );
     expect(
       await importComposerContextClipboard(

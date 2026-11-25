@@ -1,7 +1,7 @@
 # Workflow authoring
 
 Checks that a model can write a working workflow definitions file from the
-[`t3-workflows` skill](../../skills/t3-workflows/SKILL.md) alone. Run it when the skill, the author
+[`cod3-workflows` skill](../../skills/cod3-workflows/SKILL.md) alone. Run it when the skill, the author
 API, or the way the server loads a definitions file changes.
 
 The model gets the skill's body and one task, and replies with a file. The grader loads that file

@@ -1,4 +1,4 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import {
@@ -7,9 +7,9 @@ import {
   type DesktopSnapShotShortcutAvailability,
   type DesktopSnapShotSetupAction,
   type SnapShotShortcut,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { PlayIcon } from "lucide-react";
-import { settlePromise } from "@t3tools/client-runtime/state/runtime";
+import { settlePromise } from "@cod3/client-runtime/state/runtime";
 import * as Cause from "effect/Cause";
 import { useContext, useRef, useState } from "react";
 import { T, useGT, useMessages } from "gt-react";
@@ -268,7 +268,7 @@ export function SnapShotSettings() {
   const shortcutStatus = recording
     ? gt("Press your shortcut. Esc cancels.")
     : candidateConflict
-      ? gt('T3 Code already uses this for "{command}".', {
+      ? gt('cod3 already uses this for "{command}".', {
           command: commandLabel(candidateConflict, messages),
         })
       : shortcutCheck.status === "checking"

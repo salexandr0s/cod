@@ -1,24 +1,21 @@
 import * as DateTime from "effect/DateTime";
 import { msg } from "gt-react";
-import { worktreeSetupAgentStarted } from "@t3tools/client-runtime/worktree-setup";
-import { resolveUserMessagePresentation } from "@t3tools/client-runtime/user-message";
+import { worktreeSetupAgentStarted } from "@cod3/client-runtime/worktree-setup";
+import { resolveUserMessagePresentation } from "@cod3/client-runtime/user-message";
 import {
   isLiveSubagentTurnItem,
   waitingOnSubagentsLabel,
-} from "@t3tools/client-runtime/state/subagentRuntime";
+} from "@cod3/client-runtime/state/subagentRuntime";
 import * as Equal from "effect/Equal";
 import { shallow } from "zustand/vanilla/shallow";
-import { claudeResumeCompactionAge } from "@t3tools/shared/claudeCompaction";
-import {
-  IDLE_COMPACTING_LABELS,
-  IDLE_COMPACTION_TITLES,
-} from "@t3tools/client-runtime/user-message";
-import type { HandoffTimelineRun } from "@t3tools/client-runtime/handoff";
+import { claudeResumeCompactionAge } from "@cod3/shared/claudeCompaction";
+import { IDLE_COMPACTING_LABELS, IDLE_COMPACTION_TITLES } from "@cod3/client-runtime/user-message";
+import type { HandoffTimelineRun } from "@cod3/client-runtime/handoff";
 import { renderCodexDirectivesForCopy } from "~/markdown/markdownText";
 import {
   commandDisplayText,
   commandProgramName,
-} from "@t3tools/client-runtime/work-log/command-label";
+} from "@cod3/client-runtime/work-log/command-label";
 import {
   commandlessCommandLabel,
   genericCommandStatusLabel,
@@ -33,7 +30,7 @@ import {
   type ToolGroupSummaryKind,
   liveThoughtLine,
   workEntryHiddenByToolCallVisibility,
-} from "@t3tools/client-runtime/work-log/presentation";
+} from "@cod3/client-runtime/work-log/presentation";
 import {
   deriveRevertTurnCountByUserMessageId,
   isStreamingMessageTextUpdate,
@@ -65,23 +62,23 @@ import {
   RunId,
   type ThreadId,
   type TurnItemId,
-} from "@t3tools/contracts";
-import type { ThreadRunSummary } from "@t3tools/client-runtime/state/shell";
-import type { ToolCallVisibility } from "@t3tools/contracts/settings";
-import { resolveT3McpToolDefinition } from "@t3tools/shared/t3McpToolPresentation";
-import { compactDynamicToolOutput } from "@t3tools/shared/toolOutput";
-import { htmlRenderReferencesEqual, type HtmlRenderReference } from "@t3tools/shared/htmlRender";
-import { mcpAppReferencesEqual, type McpAppReference } from "@t3tools/shared/mcpApp";
-import { formatDuration } from "@t3tools/shared/orchestrationTimingCopy";
+} from "@cod3/contracts";
+import type { ThreadRunSummary } from "@cod3/client-runtime/state/shell";
+import type { ToolCallVisibility } from "@cod3/contracts/settings";
+import { resolveCod3McpToolDefinition } from "@cod3/shared/cod3McpToolPresentation";
+import { compactDynamicToolOutput } from "@cod3/shared/toolOutput";
+import { htmlRenderReferencesEqual, type HtmlRenderReference } from "@cod3/shared/htmlRender";
+import { mcpAppReferencesEqual, type McpAppReference } from "@cod3/shared/mcpApp";
+import { formatDuration } from "@cod3/shared/orchestrationTimingCopy";
 import { formatWorkspaceRelativePath } from "../../filePathDisplay";
 import { m, type MessageResolver } from "../../i18n/messages";
-import { collectToolFilePaths } from "@t3tools/shared/toolActivity";
+import { collectToolFilePaths } from "@cod3/shared/toolActivity";
 import {
   dynamicToolTitle,
   formatReadToolLabel,
   formatSearchToolLabel,
-} from "@t3tools/shared/toolActivityCopy";
-import { isHostPath } from "@t3tools/shared/path";
+} from "@cod3/shared/toolActivityCopy";
+import { isHostPath } from "@cod3/shared/path";
 
 export function timelineEntryRunId(entry: TimelineEntry): RunId | null {
   if (entry.kind === "message") {
@@ -213,7 +210,7 @@ export function workEntryDisplayLabel(
 export function threadReadTargetId(entry: Pick<WorkLogEntry, "structuredPayload">) {
   const item = entry.structuredPayload;
   if (item?.type !== "dynamic_tool") return null;
-  if (resolveT3McpToolDefinition(item.toolName)?.summaryAction !== "thread-read") return null;
+  if (resolveCod3McpToolDefinition(item.toolName)?.summaryAction !== "thread-read") return null;
   const input = item.input;
   const threadId =
     input !== null && typeof input === "object" && "threadId" in input ? input.threadId : null;
@@ -621,7 +618,7 @@ type MessagesTimelineRowContent =
       label: string;
       tokenCounts: ReturnType<typeof contextCompactionTokenCounts>;
       active: boolean;
-      /** Replaces "Context compacted" when T3 Code compacted without being asked. */
+      /** Replaces "Context compacted" when cod3 compacted without being asked. */
       title?: string;
       /** The compaction finished, so `title` names it. */
       compacted?: true;
@@ -1423,7 +1420,7 @@ function withoutSubagentDelegationRows(entries: ReadonlyArray<TimelineEntry>) {
       item?.type !== "dynamic_tool" ||
       item.runId === null ||
       (item.status !== "running" && item.status !== "completed") ||
-      resolveT3McpToolDefinition(item.toolName)?.summaryAction !== "delegate"
+      resolveCod3McpToolDefinition(item.toolName)?.summaryAction !== "delegate"
     )
       return true;
     const output = compactDynamicToolOutput(item.output);

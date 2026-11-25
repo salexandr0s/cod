@@ -7,9 +7,9 @@ import {
   CONFIGURED_LOCAL_SERVER_URLS_MAX_ITEMS,
   PREVIEW_URL_MAX_LENGTH,
   type DiscoveredLocalServer,
-} from "@t3tools/contracts";
-import * as ProcessGroup from "@t3tools/provider-core/server/processGroup";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+} from "@cod3/contracts";
+import * as ProcessGroup from "@cod3/provider-core/server/processGroup";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -26,7 +26,7 @@ import * as BackgroundPolicy from "../background/BackgroundPolicy.ts";
 import * as ProcessRunner from "../processRunner.ts";
 import * as PortScanner from "./PortScanner.ts";
 
-vi.mock("@t3tools/provider-core/server/processGroup", { spy: true });
+vi.mock("@cod3/provider-core/server/processGroup", { spy: true });
 
 const processProbeFailure: ProcessRunner.ProcessRunner["Service"]["run"] = (input) =>
   Effect.fail(
@@ -781,7 +781,7 @@ effectIt.effect("rechecks the socket owner before stopping a Linux server withou
 });
 
 effectIt.effect.each(["linux", "darwin", "win32"] as const)(
-  "reads no listeners on %s while T3CODE_PORT_DISCOVERY=0, and still probes configured URLs",
+  "reads no listeners on %s while COD3_PORT_DISCOVERY=0, and still probes configured URLs",
   (platform) => {
     const configuredUrl = `http://localhost:${LSOF_TEST_PORT}/docs`;
     const commands: string[] = [];
@@ -808,7 +808,7 @@ effectIt.effect.each(["linux", "darwin", "win32"] as const)(
             },
           }),
           Layer.succeed(HostProcess.Platform, platform),
-          Layer.succeed(HostProcess.Environment, { T3CODE_PORT_DISCOVERY: "0" }),
+          Layer.succeed(HostProcess.Environment, { COD3_PORT_DISCOVERY: "0" }),
           FetchHttpClient.layer.pipe(
             Layer.provide(
               Layer.succeed(FetchHttpClient.Fetch, (input) => {
@@ -1064,7 +1064,7 @@ server.listen(0, "127.0.0.1", () => {
 });
 `;
 
-const AGENT_COMMAND_ENV = "T3CODE_TEST_AGENT_COMMAND";
+const AGENT_COMMAND_ENV = "COD3_TEST_AGENT_COMMAND";
 
 /**
  * A real HTML server with an agent's environment, started the way an agent's tool shell starts a

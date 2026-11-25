@@ -2,9 +2,9 @@ import type {
   ComposerContextClipboardFragment,
   ScopedThreadRef,
   ThreadPullRequestLink,
-} from "@t3tools/contracts";
-import { threadContextRecord } from "@t3tools/shared/composerContextReferences";
-import { hostedThreadLink } from "@t3tools/shared/threadLinks";
+} from "@cod3/contracts";
+import { threadContextRecord } from "@cod3/shared/composerContextReferences";
+import { hostedThreadLink } from "@cod3/shared/threadLinks";
 
 import { resolveThreadCurrentPullRequestLink } from "./threadPullRequests.ts";
 import { mFallback, msg } from "gt-i18n";
@@ -16,7 +16,7 @@ export interface ThreadReferenceCopyTarget {
   readonly value: string;
   /** What a toast or palette row shows for the copy. */
   readonly description: string;
-  /** T3's clipboard format, which pastes a thread back into a composer as a chip. */
+  /** cod3's clipboard format, which pastes a thread back into a composer as a chip. */
   readonly fragment?: ComposerContextClipboardFragment;
   readonly clipboardTarget: string;
   readonly successTitle: string;

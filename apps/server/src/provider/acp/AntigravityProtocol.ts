@@ -2,9 +2,9 @@ import type {
   ProviderApprovalOption,
   ProviderUserInputAnswers,
   UserInputQuestion,
-} from "@t3tools/contracts";
-import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
-import { resolveT3McpToolId } from "@t3tools/shared/t3McpToolPresentation";
+} from "@cod3/contracts";
+import { isWorkspaceImagePreviewPath } from "@cod3/shared/filePreview";
+import { resolveCod3McpToolId } from "@cod3/shared/cod3McpToolPresentation";
 import * as Option from "effect/Option";
 import * as Predicate from "effect/Predicate";
 import * as Schema from "effect/Schema";
@@ -14,7 +14,7 @@ import * as AcpWireSchema from "effect-acp/schema-v1";
 import {
   extractMcpToolCallIdentity,
   type AcpToolCallState,
-} from "@t3tools/provider-acp/server/runtimeModel";
+} from "@cod3/provider-acp/server/runtimeModel";
 
 import {
   ANTIGRAVITY_EDIT_DIFF_OMITTED,
@@ -318,7 +318,7 @@ function antigravityClientReadPath(update: {
 
 /**
  * The agent never completes a subagent's `client_view_file` call, then fails every open call
- * with the next unrelated step error. Report reads T3 served as completed instead.
+ * with the next unrelated step error. Report reads cod3 served as completed instead.
  */
 export function makeAntigravityReadRepair() {
   type Outcome = "served" | "refused";
@@ -336,7 +336,7 @@ export function makeAntigravityReadRepair() {
     },
     /**
      * Each `fs/read_text_file` request answers the oldest open read of its path, in order.
-     * Returns the call a served read completes, so T3 can report it without waiting.
+     * Returns the call a served read completes, so cod3 can report it without waiting.
      */
     attempted: (path: string, served: boolean) => {
       const outcome = served ? "served" : "refused";
@@ -396,11 +396,11 @@ function stripAntigravityToolSummary(value: unknown): unknown {
 }
 
 /**
- * agy adds its own `toolSummary` to MCP call arguments. T3 records its MCP results under the
+ * agy adds its own `toolSummary` to MCP call arguments. cod3 records its MCP results under the
  * arguments it received, so the summary is dropped before the shared adapter matches them.
- * Untitled updates cannot be identified and are stripped too; titled non-T3 calls keep it.
+ * Untitled updates cannot be identified and are stripped too; titled non-cod3 calls keep it.
  */
-function withoutT3McpToolSummary(
+function withoutCod3McpToolSummary(
   update: Extract<
     EffectAcpSchema.SessionNotification["update"],
     { readonly sessionUpdate: "tool_call" | "tool_call_update" }
@@ -420,7 +420,7 @@ function withoutT3McpToolSummary(
     });
     if (
       identity === undefined ||
-      resolveT3McpToolId(`${identity.server}.${identity.tool}`) === null
+      resolveCod3McpToolId(`${identity.server}.${identity.tool}`) === null
     ) {
       return rawInput;
     }
@@ -449,7 +449,7 @@ export function normalizeAntigravitySessionUpdate(
       ...update,
       ...(typeof update.title === "string" ? { title: boundText(update.title) } : {}),
       ...(update.rawInput !== undefined
-        ? { rawInput: sanitizeAntigravityToolPayload(withoutT3McpToolSummary(update)) }
+        ? { rawInput: sanitizeAntigravityToolPayload(withoutCod3McpToolSummary(update)) }
         : {}),
       ...(update.rawOutput !== undefined
         ? { rawOutput: sanitizeAntigravityToolPayload(update.rawOutput) }

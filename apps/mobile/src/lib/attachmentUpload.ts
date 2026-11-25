@@ -1,10 +1,10 @@
-import { resolveAssetUrl } from "@t3tools/client-runtime/state/assets";
+import { resolveAssetUrl } from "@cod3/client-runtime/state/assets";
 import {
   isAssetAttachmentNotFoundFailure,
   runAttachmentUploadCycle,
   verifyPersistedAttachmentUpload,
-} from "@t3tools/client-runtime/state/attachments";
-import { runAtomCommand, squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/attachments";
+import { runAtomCommand, squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import { msg } from "gt-react-native";
 import { m } from "../i18n/messages";
 import type {
@@ -12,11 +12,11 @@ import type {
   ChatImageAttachment,
   EnvironmentId,
   UploadChatImageAttachment,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   AuthOrchestrationOperateScope,
   PROVIDER_SEND_TURN_SUPPORTED_IMAGE_MIME_TYPES,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 
@@ -32,12 +32,12 @@ import {
   type DraftComposerAttachment,
   type DraftComposerImageAttachment,
 } from "./composerImages";
-import { imageMimeType } from "@t3tools/shared/image";
+import { imageMimeType } from "@cod3/shared/image";
 import { uuidv4 } from "./uuid";
 import {
   attachmentUploadError,
   type AttachmentUploadError,
-} from "@t3tools/client-runtime/state/attachment-uploads";
+} from "@cod3/client-runtime/state/attachment-uploads";
 
 export type UploadedMobileAttachment =
   | UploadChatImageAttachment
@@ -225,7 +225,7 @@ async function uploadFileBytes(
   }
   const file =
     fileUri === undefined
-      ? new File(Paths.cache, `t3-upload-${uuidv4()}`)
+      ? new File(Paths.cache, `cod3-upload-${uuidv4()}`)
       : new File(resolveOwnedComposerAttachmentFileUri(fileUri, Paths.document.uri) ?? fileUri);
   try {
     if (fileUri === undefined && inlineDataUrl !== undefined) {

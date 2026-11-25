@@ -1,7 +1,7 @@
 /* oxlint-disable react/no-array-index-key -- Captured table cells have stable positions and may contain identical values. */
 import { useGT } from "gt-react-native";
 import { ScrollView, View } from "react-native";
-import type { parseDelimitedPreview } from "@t3tools/shared/delimitedPreview";
+import type { parseDelimitedPreview } from "@cod3/shared/delimitedPreview";
 import { AppText as Text } from "../../components/ui/AppText";
 import { FilePreviewNotice } from "./FilePreviewFeedback";
 
@@ -26,7 +26,7 @@ export function DelimitedFilePreview(props: {
                     selectable
                     className={
                       rowIndex === 0
-                        ? "text-sm font-t3-semibold text-foreground"
+                        ? "text-sm font-cod3-semibold text-foreground"
                         : "text-sm text-foreground"
                     }
                   >

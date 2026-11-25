@@ -1,4 +1,4 @@
-import type { SnapShotSource } from "@t3tools/contracts";
+import type { SnapShotSource } from "@cod3/contracts";
 
 import type { ComposerFileAttachment } from "../../composerDraftStore";
 import { type ChatFileAttachment, type ChatImageAttachment, isVideoAttachment } from "../../types";
@@ -7,16 +7,16 @@ import type {
   AssetResource,
   EnvironmentId,
   ScopedThreadRef,
-} from "@t3tools/contracts";
-import { videoMimeType } from "@t3tools/shared/video";
+} from "@cod3/contracts";
+import { videoMimeType } from "@cod3/shared/video";
 import { msg } from "gt-react";
 import { m } from "~/i18n/messages";
-import { resolveMediaSource } from "@t3tools/client-runtime/media-source";
-import { resolveAssetUrl } from "@t3tools/client-runtime/state/assets";
+import { resolveMediaSource } from "@cod3/client-runtime/media-source";
+import { resolveAssetUrl } from "@cod3/client-runtime/state/assets";
 import {
   squashAtomCommandFailure,
   type AtomCommandResult,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import { resolveExternalWebLinkHost } from "./externalLinkContextMenu";
 import type { MediaActionSource } from "../media/MediaActions";
 import { resolveProtocolRelativeMediaUrl } from "../media/mediaContent";

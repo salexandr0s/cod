@@ -1,11 +1,11 @@
 import { useAtomValue } from "@effect/atom-react";
 import { StackActions, useNavigation, type StaticScreenProps } from "@react-navigation/native";
-import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+import { scopeThreadRef } from "@cod3/client-runtime/environment";
 import {
   presentPendingBackgroundWork,
   type PendingBackgroundWorkItem,
-} from "@t3tools/client-runtime/state/thread-execution";
-import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
+} from "@cod3/client-runtime/state/thread-execution";
+import type { EnvironmentId, ThreadId } from "@cod3/contracts";
 import * as Haptics from "expo-haptics";
 import { msg, T, useGT, useMessages } from "gt-react-native";
 import { Pressable, ScrollView, View } from "react-native";
@@ -89,7 +89,7 @@ function BackgroundWorkRow(props: {
         type="monochrome"
       />
       <View className="min-w-0 flex-1">
-        <Text className="font-t3-medium text-sm text-foreground">{item.label}</Text>
+        <Text className="font-cod3-medium text-sm text-foreground">{item.label}</Text>
         <Text className="text-xs text-foreground-muted">{m(KIND_LABELS[item.kind])}</Text>
       </View>
       {childThreadId === undefined ? null : (

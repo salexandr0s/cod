@@ -72,7 +72,7 @@ on:
 jobs:
   production:
     name: EAS ${{ inputs.profile || 'production' }} ${{ github.event_name == 'push' && 'auto' || inputs.mode }}
-    if: github.repository == 'pingdotgg/t3code'
+    if: github.repository == vars.COD3_RELEASE_REPOSITORY
     runs-on: blacksmith-8vcpu-ubuntu-2404
     # Serialize runs so OTAs publish in merge order. GitHub keeps at most one
     # queued job per group, so a burst of merges collapses into one run of the
@@ -147,7 +147,7 @@ jobs:
           cache: true
           run-install: |
             args:
-              - --filter=@t3tools/mobile...
+              - --filter=@cod3/mobile...
 
       - name: Expose pnpm
         if: steps.expo-token.outputs.present == 'true'
@@ -181,11 +181,11 @@ jobs:
           import { appendFileSync, readFileSync } from "node:fs";
           import { parseEnv } from "node:util";
           const env = parseEnv(readFileSync(".env.local", "utf8"));
-          const googleServicesFile = env.T3CODE_ANDROID_GOOGLE_SERVICES_FILE;
+          const googleServicesFile = env.COD3_ANDROID_GOOGLE_SERVICES_FILE;
           if (!googleServicesFile) {
-            throw new Error("T3CODE_ANDROID_GOOGLE_SERVICES_FILE is missing from the production environment");
+            throw new Error("COD3_ANDROID_GOOGLE_SERVICES_FILE is missing from the production environment");
           }
-          appendFileSync(process.env.GITHUB_ENV, `T3CODE_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
+          appendFileSync(process.env.GITHUB_ENV, `COD3_ANDROID_GOOGLE_SERVICES_FILE=${googleServicesFile}\n`);
           NODE
 
       - name: Apply manual version override
@@ -209,10 +209,10 @@ jobs:
             const path = "apps/mobile/app.config.ts";
             const source = fs.readFileSync(path, "utf8");
             const next = source.replace(
-              /^(  version: repoEnv\.T3CODE_MOBILE_VERSION \?\? ")[^"]+(".*)$/m,
+              /^(  version: repoEnv\.COD3_MOBILE_VERSION \?\? ")[^"]+(".*)$/m,
               `$1${process.env.RELEASE_VERSION}$2`,
             );
-            if (next === source && !source.includes(`  version: repoEnv.T3CODE_MOBILE_VERSION ?? "${process.env.RELEASE_VERSION}"`)) {
+            if (next === source && !source.includes(`  version: repoEnv.COD3_MOBILE_VERSION ?? "${process.env.RELEASE_VERSION}"`)) {
               throw new Error("Could not update app version");
             }
             fs.writeFileSync(path, next);
@@ -238,8 +238,8 @@ jobs:
           MOBILE_BUILD_PROFILE: ${{ inputs.profile || 'production' }}
         run: |
           if [ "$MOBILE_BUILD_PROFILE" = "testflight" ]; then
-            T3CODE_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.T3CODE_MOBILE_VERSION')"
-            export T3CODE_MOBILE_VERSION
+            COD3_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.COD3_MOBILE_VERSION')"
+            export COD3_MOBILE_VERSION
           fi
           version="$(npx expo config --json --type public | jq -r '.version')"
           {
@@ -260,8 +260,8 @@ jobs:
           MOBILE_BUILD_PROFILE: ${{ inputs.profile || 'production' }}
         run: |
           if [ "$MOBILE_BUILD_PROFILE" = "testflight" ]; then
-            T3CODE_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.T3CODE_MOBILE_VERSION')"
-            export T3CODE_MOBILE_VERSION
+            COD3_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.COD3_MOBILE_VERSION')"
+            export COD3_MOBILE_VERSION
           fi
           version="$(npx expo config --json --type public | jq -r '.version')"
           hash="$(eas fingerprint:generate --platform ios --environment production --json --non-interactive | sed -n '/^{/,$p' | jq -er '.hash | select(type == "string" and length > 0)')"
@@ -321,8 +321,8 @@ jobs:
           OTA_MESSAGE: ${{ inputs.message || format('Production OTA ({0})', github.sha) }}
         run: |
           if [ "$MOBILE_BUILD_PROFILE" = "testflight" ]; then
-            T3CODE_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.T3CODE_MOBILE_VERSION')"
-            export T3CODE_MOBILE_VERSION
+            COD3_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.COD3_MOBILE_VERSION')"
+            export COD3_MOBILE_VERSION
           fi
           eas update \
             --channel production \
@@ -347,10 +347,10 @@ jobs:
           for target in ios:production ios:testflight android:production; do
             platform="${target%%:*}"
             profile="${target#*:}"
-            unset T3CODE_MOBILE_VERSION
+            unset COD3_MOBILE_VERSION
             if [ "$profile" = "testflight" ]; then
-              T3CODE_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.T3CODE_MOBILE_VERSION')"
-              export T3CODE_MOBILE_VERSION
+              COD3_MOBILE_VERSION="$(node -p 'require("./eas.json").build.testflight.env.COD3_MOBILE_VERSION')"
+              export COD3_MOBILE_VERSION
             fi
             version="$(npx expo config --json --type public | jq -r '.version')"
             # eas-cli prints an environment-loaded notice to stdout before the
@@ -503,13 +503,13 @@ jobs:
           profile: production
           environment: production
           expo-token: ${{ secrets.EXPO_PRODUCTION_TOKEN }}
-          output: ${{ runner.temp }}/t3code.aab
+          output: ${{ runner.temp }}/cod3.aab
           sourcemaps-r2: ${{ secrets.MOBILE_SOURCEMAPS_R2 }}
 
       - name: Check ABIs
         if: steps.record.outputs.built != 'true'
         run: |
-          abis="$(unzip -Z1 "$RUNNER_TEMP/t3code.aab" | sed -n 's|^base/lib/\([^/]*\)/.*|\1|p' | sort -u | paste -sd, -)"
+          abis="$(unzip -Z1 "$RUNNER_TEMP/cod3.aab" | sed -n 's|^base/lib/\([^/]*\)/.*|\1|p' | sort -u | paste -sd, -)"
           echo "### Android $BUILD_TAG: \`$abis\`" >> "$GITHUB_STEP_SUMMARY"
           if [ "$abis" != "arm64-v8a,armeabi-v7a" ]; then
             echo "::error::Expected only ARM native libraries in the AAB, found $abis"
@@ -522,14 +522,14 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-store-aab-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/t3code.aab
+          path: ${{ runner.temp }}/cod3.aab
           retention-days: 14
           if-no-files-found: error
 
       - name: Submit to Google Play
         if: steps.record.outputs.built != 'true'
         working-directory: apps/mobile
-        run: eas submit --platform android --profile production --path "$RUNNER_TEMP/t3code.aab" --non-interactive
+        run: eas submit --platform android --profile production --path "$RUNNER_TEMP/cod3.aab" --non-interactive
 
       # The tag means "delivered", so it follows the submit. If it can't be
       # pushed, the next merge rebuilds with a new build number; nothing is lost.
@@ -594,13 +594,13 @@ jobs:
           profile: ${{ env.PROFILE }}
           environment: production
           expo-token: ${{ secrets.EXPO_PRODUCTION_TOKEN }}
-          output: ${{ runner.temp }}/t3code.ipa
+          output: ${{ runner.temp }}/cod3.ipa
           sourcemaps-r2: ${{ secrets.MOBILE_SOURCEMAPS_R2 }}
 
       - name: Submit to App Store Connect
         if: steps.record.outputs.built != 'true'
         working-directory: apps/mobile
-        run: eas submit --platform ios --profile "$PROFILE" --path "$RUNNER_TEMP/t3code.ipa" --non-interactive
+        run: eas submit --platform ios --profile "$PROFILE" --path "$RUNNER_TEMP/cod3.ipa" --non-interactive
 
       # The tag means "delivered", so it follows the submit. If it can't be
       # pushed, the next merge rebuilds with a new build number; nothing is lost.

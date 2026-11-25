@@ -5,14 +5,14 @@ import {
   issueTrackerBindings,
   issueTrackerScopeOptions,
   issueTrackerSummary,
-} from "@t3tools/client-runtime/state/issue-trackers";
-import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/issue-trackers";
+import { squashAtomCommandFailure } from "@cod3/client-runtime/state/runtime";
 import type {
   EnvironmentId,
   IssueTrackerConnection,
   IssueTrackerConnectionList,
   ProjectId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { AsyncResult } from "effect/reactivity";
 import { useNavigation } from "@react-navigation/native";
 import { useGT, useMessages } from "gt-react-native";

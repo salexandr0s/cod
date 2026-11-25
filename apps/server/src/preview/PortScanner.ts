@@ -5,10 +5,10 @@ import {
   ThreadId,
   type DiscoveredLocalServer,
   type PreviewStopLocalServerInput,
-} from "@t3tools/contracts";
-import { signalProcessGroup } from "@t3tools/provider-core/server/processGroup";
-import * as HostProcess from "@t3tools/shared/HostProcess";
-import { isLoopbackHost, LSOF_LOCAL_HOST_TOKENS } from "@t3tools/shared/preview";
+} from "@cod3/contracts";
+import { signalProcessGroup } from "@cod3/provider-core/server/processGroup";
+import * as HostProcess from "@cod3/shared/HostProcess";
+import { isLoopbackHost, LSOF_LOCAL_HOST_TOKENS } from "@cod3/shared/preview";
 import * as Cause from "effect/Cause";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
@@ -69,13 +69,13 @@ export class PortDiscovery extends Context.Service<
       input: PreviewStopLocalServerInput,
     ) => Effect.Effect<void, PreviewStopLocalServerError>;
   }
->()("t3/preview/PortScanner/PortDiscovery") {}
+>()("cod3/preview/PortScanner/PortDiscovery") {}
 
 /**
  * Agents launch with this set to their thread, and every job they start inherits it, so a
  * server stays attributed after its launching shell exits or the agent settles.
  */
-export const AGENT_THREAD_ENV = "T3CODE_THREAD_ID";
+export const AGENT_THREAD_ENV = "COD3_THREAD_ID";
 
 export interface AgentCommandStopWatcher {
   /** The variable the CLI sets on each command it starts, naming that command. */
@@ -86,7 +86,7 @@ export interface AgentCommandStopWatcher {
 }
 
 /** `0` turns off listener discovery; configured preview URLs are still probed. */
-const PORT_DISCOVERY_ENV = "T3CODE_PORT_DISCOVERY";
+const PORT_DISCOVERY_ENV = "COD3_PORT_DISCOVERY";
 
 const POLL_INTERVAL = Duration.seconds(3);
 const LSOF_TIMEOUT_MS = 5_000;

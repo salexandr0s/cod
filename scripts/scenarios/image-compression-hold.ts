@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-/** Installs the hold before the app loads; call before `t3.open`. */
+/** Installs the hold before the app loads; call before `cod3.open`. */
 export const holdImageCompression = (browser: Browser) =>
   browser.addInitScript(() => {
     const hold: CompressionHold = {

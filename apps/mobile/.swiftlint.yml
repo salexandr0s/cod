@@ -1,15 +1,15 @@
 included:
-  - ios/T3Code
-  - modules/t3-composer-editor/ios
-  - modules/t3-native-controls/ios
-  - modules/t3-terminal/ios
-  - modules/t3-review-diff/ios
-  - modules/t3-voice-transcription/ios
+  - ios/Cod3
+  - modules/cod3-composer-editor/ios
+  - modules/cod3-native-controls/ios
+  - modules/cod3-terminal/ios
+  - modules/cod3-review-diff/ios
+  - modules/cod3-voice-transcription/ios
 
 excluded:
   - ios/Pods
   - ios/build
-  - modules/t3-terminal/Vendor
+  - modules/cod3-terminal/Vendor
 
 reporter: xcode
 

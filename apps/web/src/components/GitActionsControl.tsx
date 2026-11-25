@@ -1,5 +1,5 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
-import { sourceControlInstallHintText } from "@t3tools/client-runtime/contract-labels";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
+import { sourceControlInstallHintText } from "@cod3/client-runtime/contract-labels";
 import { msg, T, useGT, useMessages, Var } from "gt-react";
 import { m, type MessageResolver } from "../i18n/messages";
 import { changeRequestTermKind } from "./pullRequest/changeRequestTerm";
@@ -12,11 +12,11 @@ import {
   type ProjectId,
   type ScopedThreadRef,
   type ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@cod3/client-runtime/state/runtime";
 import type {
   GitStackedAction,
   SourceControlCloneProtocol,
@@ -24,7 +24,7 @@ import type {
   SourceControlPublishRepositoryResult,
   SourceControlRepositoryVisibility,
   VcsStatusResult,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { useNavigate } from "@tanstack/react-router";
 import * as Option from "effect/Option";
 import { memo, useEffect, useEffectEvent, useId, useRef, useState } from "react";
@@ -117,7 +117,7 @@ import { threadEnvironment } from "~/state/threads";
 import { useAtomCommand } from "~/state/use-atom-command";
 import { vcsActionManager, vcsEnvironment, vcsStatusRevalidation } from "~/state/vcs";
 import { randomUUID } from "~/lib/utils";
-import { resolvePathLinkTarget } from "@t3tools/shared/fileLinks";
+import { resolvePathLinkTarget } from "@cod3/shared/fileLinks";
 import { type DraftId, useComposerDraftStore } from "~/composerDraftStore";
 import {
   THREAD_DETAILS_PANEL_CHEVRON_CLASS,
@@ -130,10 +130,10 @@ import { getSourceControlPresentation, sourceControlIcon } from "~/sourceControl
 import {
   isSourceControlProviderOffered,
   type OfferedSourceControlProviders,
-} from "@t3tools/client-runtime/operations/projects";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
-import { scopeProjectRef } from "@t3tools/client-runtime/environment";
-import { formatDiffCount } from "@t3tools/client-runtime/diff-count";
+} from "@cod3/client-runtime/operations/projects";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
+import { scopeProjectRef } from "@cod3/client-runtime/environment";
+import { formatDiffCount } from "@cod3/client-runtime/diff-count";
 import { ChangeBreakdownGrid } from "./pullRequest/ChangeBreakdownGrid";
 import { useOpenLink } from "~/browser/useOpenLink";
 
@@ -2148,7 +2148,7 @@ export default function ThreadGitActionsControl({
   );
   const isProjectCloning = activeProjectClone !== null && activeProjectClone.phase !== "done";
 
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- persists the draft thread branch when the live git status subscription reports a different branch
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- persists the draft thread branch when the live git status subscription reports a different branch
   useEffect(() => {
     if (isGitActionRunning || isSelectingWorktreeBase || activeServerThread || isProjectCloning) {
       return;

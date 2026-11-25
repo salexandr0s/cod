@@ -1,10 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off - cleanup uses Node's retrying rm, which the FileSystem service does not expose.
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { ClaudeSettings, type ServerProvider } from "@t3tools/contracts";
+import { ClaudeSettings, type ServerProvider } from "@cod3/contracts";
 import { vi } from "vite-plus/test";
 import * as ClaudeSdk from "@anthropic-ai/claude-agent-sdk";
 import { assert, it } from "@effect/vitest";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
@@ -52,7 +52,7 @@ it.live.skipIf(HostProcess.Platform.defaultValue() !== "linux")(
         command: "claude",
         args: ["--probe"],
         cwd: workspace,
-        env: { PATH: `.:${hostPath}`, "BASH_FUNC_t3_launch%%": '() { echo "$PWD $@"; }' },
+        env: { PATH: `.:${hostPath}`, "BASH_FUNC_cod3_launch%%": '() { echo "$PWD $@"; }' },
         // @effect-diagnostics-next-line abortControllerInEffect:off - The launcher exits on its own.
         signal: new AbortController().signal,
       });
@@ -67,8 +67,8 @@ it.effect("reports a deleted worktree's scan as finished, not pending", () =>
     const snapshot = yield* probeClaudeWorkspaceSnapshot(
       yield* decodeClaudeSettings({}),
       { skills: [], slashCommands: [] } as unknown as ServerProvider,
-      "/nonexistent/t3-deleted-worktree",
-      { HOME: "/nonexistent/t3-home" },
+      "/nonexistent/cod3-deleted-worktree",
+      { HOME: "/nonexistent/cod3-home" },
     );
     assert.strictEqual(snapshot.slashCommandsPending, false);
   }).pipe(Effect.provide(NodeServices.layer)),

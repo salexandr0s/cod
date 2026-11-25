@@ -1,6 +1,6 @@
-import { safeErrorLogAttributes } from "@t3tools/client-runtime/errors";
-import { Persistence } from "@t3tools/client-runtime/platform";
-import type { EnvironmentId } from "@t3tools/contracts";
+import { safeErrorLogAttributes } from "@cod3/client-runtime/errors";
+import { Persistence } from "@cod3/client-runtime/platform";
+import type { EnvironmentId } from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";

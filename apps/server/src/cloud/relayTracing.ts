@@ -1,8 +1,5 @@
-import {
-  nodeProcessRuntimeAttributes,
-  processServiceInstanceId,
-} from "@t3tools/shared/observability";
-import * as RelayTracing from "@t3tools/shared/relayTracing";
+import { nodeProcessRuntimeAttributes, processServiceInstanceId } from "@cod3/shared/observability";
+import * as RelayTracing from "@cod3/shared/relayTracing";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -12,7 +9,7 @@ import { resolveRelayClientTracingConfig } from "./publicConfig.ts";
 
 const relayClientTracingConfig = resolveRelayClientTracingConfig();
 
-/** Relay traces leave the machine for T3 Connect, so a policy with `telemetry: false` stops them. */
+/** Relay traces leave the machine for cod3 Connect, so a policy with `telemetry: false` stops them. */
 export const relayLayer = (
   resource: Omit<RelayTracing.RelayClientTracingResource, "serviceInstanceId">,
   tracingConfig = relayClientTracingConfig,
@@ -32,14 +29,14 @@ export const relayLayer = (
   );
 
 export const layerHeadlessRelayClient = relayLayer({
-  serviceName: "t3code-server",
+  serviceName: "cod3-server",
   runtime: "node",
   attributes: nodeProcessRuntimeAttributes(),
   client: "headless-cli",
 });
 
 export const layerServerRelayBroker = relayLayer({
-  serviceName: "t3code-server",
+  serviceName: "cod3-server",
   runtime: "node",
   attributes: nodeProcessRuntimeAttributes(),
   client: "environment-server",

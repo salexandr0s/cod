@@ -6,13 +6,13 @@ import {
   ProviderDriverKind,
   settingsSecretLiteral,
   TextGenerationError,
-} from "@t3tools/contracts";
-import { brokenVersionDetail } from "@t3tools/provider-core/server/compatibility";
+} from "@cod3/contracts";
+import { brokenVersionDetail } from "@cod3/provider-core/server/compatibility";
 import type { OpenCodeSettings } from "../settings.ts";
-import { getModelSelectionStringOptionValue } from "@t3tools/shared/model";
+import { getModelSelectionStringOptionValue } from "@cod3/shared/model";
 
-import * as ProviderHost from "@t3tools/provider-core/server/ProviderHost";
-import * as TextGenerationOperations from "@t3tools/provider-core/server/textGenerationOperations";
+import * as ProviderHost from "@cod3/provider-core/server/ProviderHost";
+import * as TextGenerationOperations from "@cod3/provider-core/server/textGenerationOperations";
 import * as OpenCodeRuntime from "./OpenCodeRuntime.ts";
 import * as OpenCodeServerOwner from "./OpenCodeServerOwner.ts";
 
@@ -227,7 +227,7 @@ export const makeOpenCodeTextGeneration = Effect.fn("makeOpenCodeTextGeneration"
           try: (signal) =>
             client.session.create(
               {
-                title: `T3 Code ${input.operation}`,
+                title: `cod3 ${input.operation}`,
                 // OpenCode Zen refuses free-model requests that carry no tools, so keep read.
                 permission: [
                   { permission: "*", pattern: "*", action: "deny" },

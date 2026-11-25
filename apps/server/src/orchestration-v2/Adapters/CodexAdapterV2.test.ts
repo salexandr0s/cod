@@ -1,5 +1,5 @@
-import { historyResponseItems } from "@t3tools/provider-core/server/handoffBudget";
-import { makeProviderFailure } from "@t3tools/provider-core/server/failure";
+import { historyResponseItems } from "@cod3/provider-core/server/handoffBudget";
+import { makeProviderFailure } from "@cod3/provider-core/server/failure";
 import {
   makeProviderTextDeltaCoalescer,
   type ProviderTextDeltaUpdate,
@@ -32,7 +32,7 @@ import {
   ThreadId,
   TurnItemId,
   type ServerProviderModel,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import { assert, describe, it } from "@effect/vitest";
 import * as CodexClient from "effect-codex-app-server/client";
 import * as CodexReplay from "effect-codex-app-server/replay";
@@ -44,8 +44,8 @@ import * as Digest from "effect/crypto/Digest";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
 import * as FileSystem from "effect/FileSystem";
-import { MCP_APP_OUTPUT_KEY, readMcpAppReference } from "@t3tools/shared/mcpApp";
-import { toolOutputImages } from "@t3tools/shared/toolOutput";
+import { MCP_APP_OUTPUT_KEY, readMcpAppReference } from "@cod3/shared/mcpApp";
+import { toolOutputImages } from "@cod3/shared/toolOutput";
 import { resolveAttachmentPathById } from "../../attachmentStore.ts";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
@@ -63,17 +63,17 @@ import * as PlatformError from "effect/PlatformError";
 import { TestClock } from "effect/testing";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
 import * as Scope from "effect/Scope";
-import * as HostProcess from "@t3tools/shared/HostProcess";
+import * as HostProcess from "@cod3/shared/HostProcess";
 
 import packageJson from "../../../package.json" with { type: "json" };
-import * as McpProviderSessions from "@t3tools/provider-core/server/McpProviderSessions";
-import * as ProviderEventLoggers from "@t3tools/provider-core/server/ProviderEventLoggers";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
+import * as McpProviderSessions from "@cod3/provider-core/server/McpProviderSessions";
+import * as ProviderEventLoggers from "@cod3/provider-core/server/ProviderEventLoggers";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
 import * as EffectWorker from "../EffectWorker.ts";
 import * as Orchestrator from "../Orchestrator.ts";
 import * as ProviderReplayHarness from "../testkit/ProviderReplayHarness.ts";
-import * as ProviderAdapter from "@t3tools/provider-core/server/ProviderAdapter";
-import type * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+import * as ProviderAdapter from "@cod3/provider-core/server/ProviderAdapter";
+import type * as ProviderContinuationRequests from "@cod3/provider-core/server/ProviderContinuationRequests";
 import * as ModelManifest from "../../provider/ModelManifest.ts";
 import * as PortScanner from "../../preview/PortScanner.ts";
 import { resolveProviderCompatibility } from "../../provider/providerCompatibility.ts";
@@ -157,8 +157,8 @@ describe("CodexAdapterV2 assistant message streaming", () => {
 
 describe("CodexAdapterV2 runtime policy", () => {
   it.effect.each([undefined, false, true])(
-    "selects native collaboration modes without prompt overrides with hasT3Mcp=%s",
-    (hasT3Mcp) =>
+    "selects native collaboration modes without prompt overrides with hasCod3Mcp=%s",
+    (hasCod3Mcp) =>
       Effect.gen(function* () {
         for (const interactionMode of ["plan", "default"] as const) {
           for (const reasoningEffort of [undefined, "high"] as const) {
@@ -173,7 +173,7 @@ describe("CodexAdapterV2 runtime policy", () => {
                   ? {}
                   : { options: [{ id: "reasoningEffort", value: reasoningEffort }] }),
               },
-              ...(hasT3Mcp === undefined ? {} : { hasT3Mcp }),
+              ...(hasCod3Mcp === undefined ? {} : { hasCod3Mcp }),
             });
 
             assert.deepEqual(params.collaborationMode, {
@@ -186,13 +186,13 @@ describe("CodexAdapterV2 runtime policy", () => {
             assert.equal(params.effort, reasoningEffort);
             // Some Responses providers reject `detailed`; `auto` is the most detailed a model supports.
             assert.equal(params.summary, "auto");
-            assert.equal(params.additionalContext !== undefined, hasT3Mcp === true);
+            assert.equal(params.additionalContext !== undefined, hasCod3Mcp === true);
           }
         }
       }),
   );
 
-  it.effect("derives concrete Codex turn policies from every T3 runtime mode", () =>
+  it.effect("derives concrete Codex turn policies from every cod3 runtime mode", () =>
     Effect.gen(function* () {
       const build = (
         runtimeMode: "approval-required" | "auto-accept-edits" | "auto" | "full-access",
@@ -251,7 +251,7 @@ describe("CodexAdapterV2 runtime policy", () => {
           codexInput: [{ type: "text", text: "test" }],
           runtimePolicy: { runtimeMode, interactionMode: "default", cwd: "/work/app", workspace },
           modelSelection: { instanceId: ProviderInstanceId.make("codex"), model: "gpt-5.4" },
-          hasT3Mcp: false,
+          hasCod3Mcp: false,
         });
 
       const autoAcceptEdits = yield* build("auto-accept-edits");
@@ -261,10 +261,12 @@ describe("CodexAdapterV2 runtime policy", () => {
       });
       assert.deepEqual((yield* build("approval-required")).sandboxPolicy, { type: "readOnly" });
       assert.deepEqual((yield* build("full-access")).sandboxPolicy, { type: "dangerFullAccess" });
-      // The folder list reaches the model without T3 Code's MCP tools.
-      assert.deepEqual(Object.keys(autoAcceptEdits.additionalContext ?? {}), ["t3_code_workspace"]);
+      // The folder list reaches the model without cod3's MCP tools.
+      assert.deepEqual(Object.keys(autoAcceptEdits.additionalContext ?? {}), [
+        "cod3_code_workspace",
+      ]);
       assert.include(
-        autoAcceptEdits.additionalContext?.["t3_code_workspace"]?.value,
+        autoAcceptEdits.additionalContext?.["cod3_code_workspace"]?.value,
         "- api (Git repository): /work/api",
       );
     }),
@@ -313,19 +315,19 @@ describe("CodexAdapterV2 runtime policy", () => {
       assert.deepEqual(alone.additionalContext, {
         "mcp_app_todos_list_todos_item-1": { kind: "untrusted", value: "Filtered to overdue" },
       });
-      const withT3 = yield* CodexAdapterV2.buildCodexTurnStartParams({
+      const withCod3 = yield* CodexAdapterV2.buildCodexTurnStartParams({
         nativeThreadId: "native-app-context",
         codexInput: [{ type: "text", text: "what's on my list?" }],
         runtimePolicy: policy,
         modelSelection,
-        hasT3Mcp: true,
+        hasCod3Mcp: true,
         appContext,
       });
-      assert.deepEqual(withT3.additionalContext?.["mcp_app_todos_list_todos_item-1"], {
+      assert.deepEqual(withCod3.additionalContext?.["mcp_app_todos_list_todos_item-1"], {
         kind: "untrusted",
         value: "Filtered to overdue",
       });
-      assert.isDefined(withT3.additionalContext?.["t3_code_runtime"]);
+      assert.isDefined(withCod3.additionalContext?.["cod3_code_runtime"]);
     }),
   );
 });
@@ -365,7 +367,7 @@ describe("CodexAdapterV2 native protocol logging", () => {
             payload: {
               id: requestId,
               method: "thread/start",
-              params: { config: { "shell_environment_policy.set.T3CODE_THREAD_ID": appThreadId } },
+              params: { config: { "shell_environment_policy.set.COD3_THREAD_ID": appThreadId } },
             },
           });
           yield* protocolLogger({
@@ -604,10 +606,11 @@ const CODEX_TEST_RUNTIME_POLICY = ProviderAdapter.ProviderAdapterV2RuntimePolicy
   interactionMode: "default",
   cwd: "/workspace",
 });
-const T3_THREAD_ENV_KEY = "shell_environment_policy.set.T3CODE_THREAD_ID";
+const COD3_THREAD_ENV_KEY = "shell_environment_policy.set.COD3_THREAD_ID";
 const threadEnvOf = (params: unknown) =>
-  Predicate.hasProperty(params, "config") && Predicate.hasProperty(params.config, T3_THREAD_ENV_KEY)
-    ? params.config[T3_THREAD_ENV_KEY]
+  Predicate.hasProperty(params, "config") &&
+  Predicate.hasProperty(params.config, COD3_THREAD_ENV_KEY)
+    ? params.config[COD3_THREAD_ENV_KEY]
     : undefined;
 
 const CODEX_TEST_THREAD_TITLE = "Codex continuation test";
@@ -711,7 +714,7 @@ function codexReplayPreamble(input: {
         id: 1,
         method: "initialize",
         params: {
-          clientInfo: { name: "T3 Code", title: "T3 Code", version: packageJson.version },
+          clientInfo: { name: "cod3", title: "cod3", version: packageJson.version },
           capabilities: {
             experimentalApi: true,
             optOutNotificationMethods: ["turn/diff/updated"],
@@ -728,7 +731,7 @@ function codexReplayPreamble(input: {
       frame: {
         id: 1,
         result: {
-          userAgent: "T3 Code/0.156.1",
+          userAgent: "cod3/0.156.1",
           codexHome: "/tmp/codex-home",
           platformFamily: "unix",
           platformOs: "macos",
@@ -1360,7 +1363,7 @@ describe("CodexAdapterV2 session initialize", () => {
               frame: {
                 id: 1,
                 result: {
-                  userAgent: "T3 Code/0.144.3 (Mac OS 15.5.0; x86_64) unknown (T3 Code; 0.1.5)",
+                  userAgent: "cod3/0.144.3 (Mac OS 15.5.0; x86_64) unknown (cod3; 0.1.5)",
                   codexHome: "/tmp/codex-home",
                   platformFamily: "unix",
                   platformOs: "macos",
@@ -1384,7 +1387,7 @@ describe("CodexAdapterV2 session initialize", () => {
       assert.instanceOf(failure.cause, ProviderSetupError);
       assert.equal(
         failure.cause.message,
-        "Codex 0.144.3 does not work with this T3 Code release. Update Codex to >=0.159.0, then retry.",
+        "Codex 0.144.3 does not work with this cod3 release. Update Codex to >=0.159.0, then retry.",
       );
     }).pipe(
       Effect.scoped,
@@ -1538,7 +1541,7 @@ describe("CodexAdapterV2 session initialize", () => {
   const requestWritten: CodexReplay.CodexAppServerReplayEntry = {
     type: "emit_inbound",
     label: "request-written",
-    frame: { method: "t3/test/requestWritten", params: {} },
+    frame: { method: "cod3/test/requestWritten", params: {} },
   };
   const awaitRequestWritten =
     (written: Deferred.Deferred<void>) =>
@@ -2783,19 +2786,19 @@ describe("CodexAdapterV2 post-settle continuation", () => {
             "tools.update_plan.enabled": true,
             mcp_optional_startup_grace_ms: 10_000,
             "features.concurrent_reasoning_summaries": true,
-            "shell_environment_policy.set.T3CODE_THREAD_ID": `thread-${scenario}`,
-            "mcp_servers.envprobe.env.T3CODE_THREAD_ID": `thread-${scenario}`,
-            "mcp_servers.t3-code": {
+            "shell_environment_policy.set.COD3_THREAD_ID": `thread-${scenario}`,
+            "mcp_servers.envprobe.env.COD3_THREAD_ID": `thread-${scenario}`,
+            "mcp_servers.cod3": {
               url: "http://127.0.0.1:43123/mcp",
               tool_timeout_sec: 3_900,
               http_headers: { Authorization: "Bearer secret-codex-token" },
-              disabled_tools: ["t3_thread_wait", "delegate_task"],
+              disabled_tools: ["cod3_thread_wait", "delegate_task"],
             },
-            "mcp_servers.t3-code-direct": {
+            "mcp_servers.cod3-direct": {
               url: "http://127.0.0.1:43123/mcp",
               tool_timeout_sec: 3_900,
               http_headers: { Authorization: "Bearer secret-codex-token" },
-              enabled_tools: ["t3_thread_wait", "delegate_task"],
+              enabled_tools: ["cod3_thread_wait", "delegate_task"],
               omit_tools_from: ["code_mode", "deferred"],
             },
           },
@@ -2876,7 +2879,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
     ),
   );
 
-  // regression: #15839 launch-arg MCP servers survive the thread's t3-code server
+  // regression: #15839 launch-arg MCP servers survive the thread's cod3 server
   it.effect("replays historical and dotted MCP config while enforcing other thread config", () =>
     Effect.gen(function* () {
       const recordedServer = {
@@ -2885,15 +2888,15 @@ describe("CodexAdapterV2 post-settle continuation", () => {
       };
       const currentConfig = {
         "tools.update_plan.enabled": true,
-        "mcp_servers.t3-code": {
+        "mcp_servers.cod3": {
           url: "http://127.0.0.1:42000/mcp",
           http_headers: { Authorization: "Bearer current-token" },
         },
         "mcp_servers.extra.command": "cat",
       };
       for (const recordedMcp of [
-        { mcp_servers: { "t3-code": recordedServer } },
-        { "mcp_servers.t3-code": recordedServer, "mcp_servers.extra.command": "echo" },
+        { mcp_servers: { cod3: recordedServer } },
+        { "mcp_servers.cod3": recordedServer, "mcp_servers.extra.command": "echo" },
       ]) {
         const entries = codexReplayPreamble({
           nativeThreadId: "replayed-mcp-thread",
@@ -3758,7 +3761,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
     ),
   );
 
-  it.effect("names the native thread after the T3 title and retries a failed rename", () =>
+  it.effect("names the native thread after the cod3 title and retries a failed rename", () =>
     Effect.gen(function* () {
       const nativeThreadId = "thread-name-thread";
       const nameSet = (
@@ -4286,7 +4289,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
     ),
   );
 
-  it.effect("preserves T3 context on the wire and restores it after compaction", () =>
+  it.effect("preserves cod3 context on the wire and restores it after compaction", () =>
     Effect.gen(function* () {
       const nativeThreadId = "context-thread";
       const nativeTurnId = "context-turn";
@@ -4300,11 +4303,11 @@ describe("CodexAdapterV2 post-settle continuation", () => {
         codexInput: [{ type: "text", text: "work" }],
         runtimePolicy: CODEX_TEST_RUNTIME_POLICY,
         modelSelection,
-        hasT3Mcp: true,
+        hasCod3Mcp: true,
         cyberAccess: { defaultProgram: "daybreakBlue" },
       });
       assert.include(
-        params.additionalContext?.t3_code_orchestration_01?.value ?? "",
+        params.additionalContext?.cod3_code_orchestration_01?.value ?? "",
         "delegate_task",
       );
       const entries = codexReplayPreamble({ nativeThreadId, nativeTurnId, prompt: "work" });
@@ -4427,7 +4430,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
       assert.deepEqual(
         wireOrder,
         ["item/completed", "turn/completed", "thread/inject_items"],
-        "restored T3 context while the compacting native turn was still running",
+        "restored cod3 context while the compacting native turn was still running",
       );
     }).pipe(
       Effect.provide(
@@ -4564,7 +4567,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
                   item: {
                     type: itemType,
                     id,
-                    ...(itemType === "webSearch" ? { query: "T3 Code", action: null } : {}),
+                    ...(itemType === "webSearch" ? { query: "cod3", action: null } : {}),
                   },
                   ...timestamps,
                 },
@@ -4651,7 +4654,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
         assert.equal(unfinished[0]?.id, unfinished[1]?.id);
         assert.deepEqual(unfinished[1]?.startedAt, DateTime.makeUnsafe(1782622443000));
         if (unfinished[1]?.type === "web_search") {
-          assert.deepEqual(unfinished[1].patterns, ["T3 Code"]);
+          assert.deepEqual(unfinished[1].patterns, ["cod3"]);
           assert.deepEqual(
             harness.events.flatMap((event) =>
               event.type === "node.updated" &&
@@ -5551,7 +5554,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
 
       if (outcome === "recover") {
         const fs = yield* FileSystem.FileSystem;
-        const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "t3-capacity-retry-" });
+        const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-capacity-retry-" });
         const localTranscript = yield* decodeReplayTranscriptJson(
           (yield* encodeReplayTranscriptJson(
             makeCodexReplayTranscript({ scenario, entries }),
@@ -6547,7 +6550,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
                     id: `image-${index}`,
                     status: "completed",
                     result,
-                    revisedPrompt: "A tree shaped like T3",
+                    revisedPrompt: "A tree shaped like cod3",
                     transparentBackground: true,
                     ...image,
                   },
@@ -6594,7 +6597,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
         assert.strictEqual(item.title, "Generate image");
         if (item.type !== "dynamic_tool") continue;
         assert.deepEqual(item.input, {
-          prompt: "A tree shaped like T3",
+          prompt: "A tree shaped like cod3",
           transparent_background: true,
         });
         const image = images[index]!;
@@ -7380,7 +7383,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
     const transcript = makeBackgroundStopTranscript(true);
     return Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
-      const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "t3-bg-stop-workspace-" });
+      const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-bg-stop-workspace-" });
       const localTranscript = yield* decodeReplayTranscriptJson(
         (yield* encodeReplayTranscriptJson(transcript)).replaceAll(
           yield* encodeStringJson("/workspace"),
@@ -7507,7 +7510,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
   it.effect("ends a background command when its Codex process is gone", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
-      const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "t3-bg-stale-workspace-" });
+      const cwd = yield* fs.makeTempDirectoryScoped({ prefix: "cod3-bg-stale-workspace-" });
       const staleTranscript = makeCodexReplayTranscript({
         scenario: "codex-bg-stop-untracked",
         entries: [
@@ -9688,8 +9691,8 @@ describe("CodexAdapterV2 post-settle continuation", () => {
             item: {
               type: "mcpToolCall",
               id: COMPLETED_WAIT_ITEM,
-              server: "t3-code",
-              tool: "t3_thread_wait",
+              server: "cod3",
+              tool: "cod3_thread_wait",
               status: "inProgress",
               arguments: { threadId: "thread:completed-wait", timeoutMs: 30000 },
             },
@@ -9708,8 +9711,8 @@ describe("CodexAdapterV2 post-settle continuation", () => {
             item: {
               type: "mcpToolCall",
               id: COMPLETED_WAIT_ITEM,
-              server: "t3-code",
-              tool: "t3_thread_wait",
+              server: "cod3",
+              tool: "cod3_thread_wait",
               status: "completed",
               arguments: { threadId: "thread:completed-wait", timeoutMs: 30000 },
               result: { content: [{ type: "text", text: "idle" }] },
@@ -9729,8 +9732,8 @@ describe("CodexAdapterV2 post-settle continuation", () => {
             item: {
               type: "mcpToolCall",
               id: ORPHAN_WAIT_ITEM,
-              server: "t3-code",
-              tool: "t3_thread_wait",
+              server: "cod3",
+              tool: "cod3_thread_wait",
               status: "inProgress",
               arguments: {
                 threadId:
@@ -12309,7 +12312,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
               codexInput: [{ type: "text", text }],
               runtimePolicy: CODEX_TEST_RUNTIME_POLICY,
               modelSelection: CODEX_TEST_MODEL_SELECTION,
-              hasT3Mcp: true,
+              hasCod3Mcp: true,
             }),
             (params): CodexReplay.CodexAppServerReplayEntry => ({
               type: "expect_outbound",
@@ -13275,7 +13278,7 @@ describe("CodexAdapterV2 app-server process", () => {
         // Scope.close cannot be interrupted, so a regression is ended by this rescue instead of
         // hanging the test; the deadline under test must make it unnecessary.
         let rescued = false;
-        // oxlint-disable-next-line t3code/no-real-time-wait-in-tests -- a watchdog for a hung child, not a wait for a milestone; it must never fire.
+        // oxlint-disable-next-line cod3/no-real-time-wait-in-tests -- a watchdog for a hung child, not a wait for a milestone; it must never fire.
         const rescue = yield* Effect.sleep("10 seconds").pipe(
           Effect.andThen(
             Effect.sync(() => {

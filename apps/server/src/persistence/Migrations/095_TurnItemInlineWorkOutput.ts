@@ -14,7 +14,7 @@ export default Effect.gen(function* () {
     UPDATE orchestration_v2_projection_turn_items
     SET inline_work_output = 1
     WHERE type = 'dynamic_tool' AND (
-      payload_json LIKE '%htmlRender%' OR payload_json LIKE '%t3McpApp%'
+      payload_json LIKE '%htmlRender%' OR payload_json LIKE '%cod3McpApp%'
       OR payload_json LIKE '%"viewedImagePath"%'
       OR payload_json LIKE '%"toolName":"%delegate_task"%'
       OR payload_json LIKE '%"toolName":"%send_to_user"%'

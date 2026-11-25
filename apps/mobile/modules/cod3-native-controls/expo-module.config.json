@@ -1,0 +1,20 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["Cod3NativeControlsModule", "Cod3KeyboardCommandsModule"],
+    "appDelegateSubscribers": [
+      "Cod3WorkspaceOrientationSubscriber",
+      "Cod3MenuDismissTouchGateSubscriber",
+      "Cod3BackgroundGraceSubscriber"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.cod3nativecontrols.Cod3NativeControlsModule",
+      "expo.modules.cod3nativecontrols.Cod3WorkspaceNavigationModule",
+      "expo.modules.cod3nativecontrols.Cod3KeyboardCommandsModule",
+      "expo.modules.cod3nativecontrols.Cod3FoldPostureModule",
+      "expo.modules.cod3nativecontrols.Cod3SecretInputModule"
+    ]
+  }
+}

@@ -12,7 +12,7 @@ import {
   type ProviderReplayEntry,
   type RuntimeMode,
   ThreadId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -20,13 +20,13 @@ import {
   OPENCODE2_HTTP_PROTOCOL,
   OpenCode2OrchestratorReplayHarness,
 } from "./Adapters/OpenCode2AdapterV2.testkit.ts";
-import { OPENCODE_PROVIDER } from "@t3tools/provider-opencode/testing";
+import { OPENCODE_PROVIDER } from "@cod3/provider-opencode/testing";
 import { provideDeterministicTestRuntime } from "./testkit/DeterministicRuntime.ts";
 import type { OrchestratorV2ScenarioStep } from "./testkit/OrchestratorScenario.ts";
 import { runOrchestratorV2ProviderReplayScenario } from "./testkit/ProviderReplayHarness.ts";
-import { checkpointWorkspace } from "@t3tools/provider-testing/replayWorkspace";
-import { readProviderReplayTranscript } from "@t3tools/provider-testing/replayTranscript";
-import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
+import { checkpointWorkspace } from "@cod3/provider-testing/replayWorkspace";
+import { readProviderReplayTranscript } from "@cod3/provider-testing/replayTranscript";
+import * as IdAllocator from "@cod3/provider-core/server/IdAllocator";
 
 const SESSION = "ses_f148ca2deffeJcwCnRQtb0YFNX";
 
@@ -60,14 +60,14 @@ const event = (type: string, data: Record<string, unknown>): ProviderReplayEntry
 });
 const labelled = (entry: ProviderReplayEntry, label: string): ProviderReplayEntry =>
   entry.type === "runtime_exit" ? entry : { ...entry, label };
-/** MCP rules are last-match-wins; allow this thread after denying all T3 servers. */
+/** MCP rules are last-match-wins; allow this thread after denying all cod3 servers. */
 const mcpRules = (name: string) => [
-  { action: "t3-code-*", resource: "*", effect: "deny" },
-  { action: `t3-code-thread_${name}_*`, resource: "*", effect: "allow" },
+  { action: "cod3-*", resource: "*", effect: "deny" },
+  { action: `cod3-thread_${name}_*`, resource: "*", effect: "allow" },
 ];
 const FULL_ACCESS = [{ action: "*", resource: "*", effect: "allow" }];
 
-const t3Rules = (name: string) => [...FULL_ACCESS, ...mcpRules(name)];
+const cod3Rules = (name: string) => [...FULL_ACCESS, ...mcpRules(name)];
 
 const BUILD_PATHS = [
   {
@@ -139,7 +139,7 @@ const sessionInfo = (directory: string, permissions: ReadonlyArray<unknown>, tit
 });
 
 const instructionsWritten: ReadonlyArray<ProviderReplayEntry> = [
-  out("session.instructions.entry.put", { sessionID: SESSION, key: "t3-code", value: "<any>" }),
+  out("session.instructions.entry.put", { sessionID: SESSION, key: "cod3", value: "<any>" }),
   reply("session.instructions.entry.put", null),
 ];
 
@@ -185,7 +185,7 @@ const catalogModel = (id: string, name: string) => ({
 const createdSession = (
   directory: string,
   name: string,
-  permissions: ReadonlyArray<unknown> = t3Rules(name),
+  permissions: ReadonlyArray<unknown> = cod3Rules(name),
 
   narrows = false,
 ): ReadonlyArray<ProviderReplayEntry> => [
@@ -311,7 +311,7 @@ describe("OpenCode 2 through the orchestrator", () => {
             ...answeredPrompt("FIRST"),
 
             out("session.get", { sessionID: SESSION }),
-            reply("session.get", sessionInfo(cwd, t3Rules(name), name)),
+            reply("session.get", sessionInfo(cwd, cod3Rules(name), name)),
             out("session.switchModel", {
               sessionID: SESSION,
               model: { providerID: "opencode", id: "mimo-v2.6-flash-free" },
@@ -370,7 +370,7 @@ describe("OpenCode 2 through the orchestrator", () => {
           ...answeredPrompt("FIRST"),
 
           out("session.get", { sessionID: SESSION }),
-          reply("session.get", sessionInfo(cwd, t3Rules(name), name)),
+          reply("session.get", sessionInfo(cwd, cod3Rules(name), name)),
           out("agent.list", "<any>"),
           reply("agent.list", agentList(cwd)),
           out("session.update", { sessionID: SESSION, permissions: autoEditRules(name) }),
@@ -379,7 +379,7 @@ describe("OpenCode 2 through the orchestrator", () => {
 
           out("session.get", { sessionID: SESSION }),
           reply("session.get", sessionInfo(cwd, autoEditRules(name), name)),
-          out("session.update", { sessionID: SESSION, permissions: t3Rules(name) }),
+          out("session.update", { sessionID: SESSION, permissions: cod3Rules(name) }),
           reply("session.update", null),
           ...answeredPrompt("THIRD"),
         ],
@@ -417,7 +417,7 @@ describe("OpenCode 2 through the orchestrator", () => {
           ...answeredPrompt("PLANNED"),
           out("session.get", { sessionID: SESSION }),
           reply("session.get", sessionInfo(cwd, planRules(name), name)),
-          out("session.update", { sessionID: SESSION, permissions: t3Rules(name) }),
+          out("session.update", { sessionID: SESSION, permissions: cod3Rules(name) }),
           reply("session.update", null),
           out("session.switchAgent", { sessionID: SESSION, agent: "build" }),
           reply("session.switchAgent", null),

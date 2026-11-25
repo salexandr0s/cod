@@ -155,7 +155,7 @@ export type RelayAgentActivityAggregateState = typeof RelayAgentActivityAggregat
 export const RelayManagedEndpointProviderKind = Schema.Literals([
   "manual",
   "cloudflare_tunnel",
-  "t3_relay",
+  "cod3_relay",
 ]);
 export type RelayManagedEndpointProviderKind = typeof RelayManagedEndpointProviderKind.Type;
 
@@ -330,7 +330,7 @@ export const RelayEnvironmentLinkRequest = Schema.Struct({
   notificationsEnabled: Schema.Boolean,
   liveActivitiesEnabled: Schema.Boolean,
   managedTunnelsEnabled: Schema.Boolean,
-}).annotate({ description: "Links an authenticated cloud user to a T3 environment." });
+}).annotate({ description: "Links an authenticated cloud user to a cod3 environment." });
 export type RelayEnvironmentLinkRequest = typeof RelayEnvironmentLinkRequest.Type;
 
 export const RelayEnvironmentLinkResponse = Schema.Struct({
@@ -382,7 +382,7 @@ export type RelayEnvironmentEndpointUnavailableReason =
 /**
  * Which part of the path from the relay to the environment failed. `tunnel_down`
  * means Cloudflare has no live connector for the tunnel; `origin_unreachable`
- * means the tunnel answered but T3 Code behind it did not. Optional on the wire
+ * means the tunnel answered but cod3 behind it did not. Optional on the wire
  * so old relays and old clients keep working.
  */
 export const RelayEnvironmentEndpointFailure = Schema.Literals([
@@ -658,7 +658,7 @@ export class RelayClientPrincipal extends Context.Service<
     readonly proofKeyThumbprint?: string;
     readonly dpopScopes?: ReadonlyArray<RelayDpopAccessTokenScope>;
   }
->()("@t3tools/contracts/relay/RelayClientPrincipal") {}
+>()("@cod3/contracts/relay/RelayClientPrincipal") {}
 
 export class RelayEnvironmentPrincipal extends Context.Service<
   RelayEnvironmentPrincipal,
@@ -666,12 +666,12 @@ export class RelayEnvironmentPrincipal extends Context.Service<
     readonly environmentId: string;
     readonly environmentPublicKey: string;
   }
->()("@t3tools/contracts/relay/RelayEnvironmentPrincipal") {}
+>()("@cod3/contracts/relay/RelayEnvironmentPrincipal") {}
 
 const RelayClientBearerAuthorization = HttpApiSecurity.http({ scheme: "bearer" }).pipe(
   HttpApiSecurity.annotate(
     OpenApi.Description,
-    "Clerk session or OAuth bearer token for the signed-in T3 Connect user.",
+    "Clerk session or OAuth bearer token for the signed-in cod3 Connect user.",
   ),
 );
 
@@ -759,10 +759,10 @@ export const RelayDpopTokenExchangeGrantType =
   "urn:ietf:params:oauth:grant-type:token-exchange" as const;
 export const RelayJwtSubjectTokenType = "urn:ietf:params:oauth:token-type:jwt" as const;
 export const RelayAccessTokenType = "urn:ietf:params:oauth:token-type:access_token" as const;
-export const RelayPublicClientId = Schema.Literals(["t3-mobile", "t3-web"]);
+export const RelayPublicClientId = Schema.Literals(["cod3-mobile", "cod3-web"]);
 export type RelayPublicClientId = typeof RelayPublicClientId.Type;
-export const RelayMobileClientId = "t3-mobile" as const;
-export const RelayWebClientId = "t3-web" as const;
+export const RelayMobileClientId = "cod3-mobile" as const;
+export const RelayWebClientId = "cod3-web" as const;
 
 export const RelayDpopAccessTokenRequest = Schema.Struct({
   grant_type: Schema.Literal(RelayDpopTokenExchangeGrantType),
@@ -885,7 +885,7 @@ export const RelayCloudEnvironmentHealthProofPayload = Schema.Struct({
 export type RelayCloudEnvironmentHealthProofPayload =
   typeof RelayCloudEnvironmentHealthProofPayload.Type;
 
-/** Verify x-t3-relay-delivery with the relay mint key before trusting delivery id, time, or trace context. */
+/** Verify x-cod3-relay-delivery with the relay mint key before trusting delivery id, time, or trace context. */
 export const RelayHookDeliveryProofPayload = Schema.Struct({
   ...RelaySignedJwtRegisteredClaims,
   environmentId: EnvironmentId,
@@ -964,33 +964,33 @@ export const RelayOkResponse = Schema.Struct({
 });
 export type RelayOkResponse = typeof RelayOkResponse.Type;
 
-export const RelayT3ChatPlan = Schema.Literals(["free", "pro", "premier"]);
-export type RelayT3ChatPlan = typeof RelayT3ChatPlan.Type;
+export const RelayCod3ChatPlan = Schema.Literals(["free", "pro", "premier"]);
+export type RelayCod3ChatPlan = typeof RelayCod3ChatPlan.Type;
 
 export const DEFAULT_MANAGED_TUNNEL_LIMIT = 3;
 
 // A linked paid T3 Chat plan raises the default managed tunnel cap.
-export const T3CHAT_PLAN_TUNNEL_LIMITS = { pro: 10, premier: 100 } as const;
+export const COD3CHAT_PLAN_TUNNEL_LIMITS = { pro: 10, premier: 100 } as const;
 
-export const RelayT3ChatLink = Schema.Struct({
+export const RelayCod3ChatLink = Schema.Struct({
   email: Schema.String,
-  plan: RelayT3ChatPlan,
+  plan: RelayCod3ChatPlan,
 });
-export type RelayT3ChatLink = typeof RelayT3ChatLink.Type;
+export type RelayCod3ChatLink = typeof RelayCod3ChatLink.Type;
 
-export const RelayT3ChatLinkResponse = Schema.Struct({
+export const RelayCod3ChatLinkResponse = Schema.Struct({
   // False when this relay has no T3 Chat secret, so clients hide the feature.
   available: Schema.Boolean,
-  link: Schema.NullOr(RelayT3ChatLink),
+  link: Schema.NullOr(RelayCod3ChatLink),
   // A manual cap that replaces the plan's; T3 Chat upgrades do not raise it.
   maxTunnelsOverride: Schema.optionalKey(Schema.Number),
 });
-export type RelayT3ChatLinkResponse = typeof RelayT3ChatLinkResponse.Type;
+export type RelayCod3ChatLinkResponse = typeof RelayCod3ChatLinkResponse.Type;
 
-export const RelayT3ChatLinkRequestResponse = Schema.Struct({
+export const RelayCod3ChatLinkRequestResponse = Schema.Struct({
   url: TrimmedNonEmptyString,
 });
-export type RelayT3ChatLinkRequestResponse = typeof RelayT3ChatLinkRequestResponse.Type;
+export type RelayCod3ChatLinkRequestResponse = typeof RelayCod3ChatLinkRequestResponse.Type;
 
 export const RelayPublishResponse = Schema.Struct({
   ok: Schema.Boolean,
@@ -1136,17 +1136,17 @@ const RelayClientGroup = HttpApiGroup.make("client")
         OpenApi.Description,
         "Deletes the provisioned Cloudflare tunnel while keeping the environment link and its hostname reservation, so a later link re-provisions the tunnel under the same URL. Environments call this when they shut down; Cloudflare bills per provisioned tunnel, so idle tunnels should not outlive their environment.",
       ),
-    HttpApiEndpoint.get("getT3ChatLink", "/v1/client/t3chat-link", {
+    HttpApiEndpoint.get("getCod3ChatLink", "/v1/client/cod3chat-link", {
       headers: RelayBearerRequestHeaders,
-      success: RelayT3ChatLinkResponse,
+      success: RelayCod3ChatLinkResponse,
       error: RelayAuthAndInternalErrors,
     }).annotate(OpenApi.Summary, "Get the linked T3 Chat account"),
-    HttpApiEndpoint.post("createT3ChatLinkRequest", "/v1/client/t3chat-link-requests", {
+    HttpApiEndpoint.post("createCod3ChatLinkRequest", "/v1/client/cod3chat-link-requests", {
       headers: RelayBearerRequestHeaders,
-      success: RelayT3ChatLinkRequestResponse,
+      success: RelayCod3ChatLinkRequestResponse,
       error: RelayAuthAndInternalErrors,
     }).annotate(OpenApi.Summary, "Start linking a T3 Chat account"),
-    HttpApiEndpoint.delete("unlinkT3Chat", "/v1/client/t3chat-link", {
+    HttpApiEndpoint.delete("unlinkCod3Chat", "/v1/client/cod3chat-link", {
       headers: RelayBearerRequestHeaders,
       success: RelayOkResponse,
       error: RelayAuthAndInternalErrors,
@@ -1334,10 +1334,10 @@ export const RelayApi = HttpApi.make("RelayApi")
     RelayHooksGroup,
     RelayMobileTelemetryGroup,
   )
-  .annotate(OpenApi.Title, "T3 Code Relay API")
+  .annotate(OpenApi.Title, "cod3 Relay API")
   .annotate(OpenApi.Version, "1.0.0")
   .annotate(
     OpenApi.Description,
-    "Control-plane API for linking T3 environments, connecting authorized clients, and publishing agent activity.",
+    "Control-plane API for linking cod3 environments, connecting authorized clients, and publishing agent activity.",
   );
 export type RelayApi = typeof RelayApi;

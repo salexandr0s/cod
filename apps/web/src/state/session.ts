@@ -1,12 +1,12 @@
 import { useAtomValue } from "@effect/atom-react";
-import { createEnvironmentSessionAtoms } from "@t3tools/client-runtime/state/session";
+import { createEnvironmentSessionAtoms } from "@cod3/client-runtime/state/session";
 import {
   type AuthEnvironmentScope,
   type AuthSessionState,
   AuthRelayConfigureScope,
   type EnvironmentId,
   sessionGrantsScope,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Option from "effect/Option";
 import { AsyncResult, Atom } from "effect/reactivity";
 

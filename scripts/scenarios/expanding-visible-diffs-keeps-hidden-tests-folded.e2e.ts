@@ -2,13 +2,13 @@ import { expect } from "e2e";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 
-import { runPromise, test, WEB } from "./t3.ts";
+import { runPromise, test, WEB } from "./cod3.ts";
 
 test(
   "Expanding visible diffs keeps a hidden test file folded",
   WEB,
-  async ({ t3, app, screen }) => {
-    const project = await t3.project("demo", {
+  async ({ cod3, app, screen }) => {
+    const project = await cod3.project("demo", {
       "notes.txt": "Old implementation notes\n",
       "notes.test.ts": "const expected = 1;\n",
     });
@@ -19,9 +19,9 @@ test(
         yield* fs.writeFileString(`${project}/notes.test.ts`, "const expected = 2;\n");
       }),
     );
-    const thread = await t3.thread({ project, title: "Diff folds", messages: ["first"] });
+    const thread = await cod3.thread({ project, title: "Diff folds", messages: ["first"] });
 
-    await t3.open(thread);
+    await cod3.open(thread);
     await screen.getByText("first fixture turn complete", { exact: false }).waitFor();
     await screen.getByRole("button", "Toggle right panel").tap();
     await screen.getByText("Diff").tap();

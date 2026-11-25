@@ -1,6 +1,6 @@
-import { resolveDefaultBranchActionDialogCopy } from "@t3tools/client-runtime/state/vcs";
-import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
-import { resolveAutoFeatureBranchName } from "@t3tools/shared/git";
+import { resolveDefaultBranchActionDialogCopy } from "@cod3/client-runtime/state/vcs";
+import { sourceControlClients } from "@cod3/client-runtime/source-control-clients";
+import { resolveAutoFeatureBranchName } from "@cod3/shared/git";
 import * as Arr from "effect/Array";
 import * as Result from "effect/Result";
 import { useNavigation, type StaticScreenProps } from "@react-navigation/native";

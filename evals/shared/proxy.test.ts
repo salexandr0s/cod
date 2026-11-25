@@ -17,7 +17,7 @@ describe("proxyConfig", () => {
     ["no auth.json", undefined],
     ["a ChatGPT-login auth.json", { OPENAI_API_KEY: null, tokens: { access_token: "t" } }],
   ])("fails when the provider requires OpenAI auth and %s has no key", (_, auth) => {
-    const home = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-evals-proxy-"));
+    const home = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "cod3-evals-proxy-"));
     using _home = {
       [Symbol.dispose]: () => {
         vi.unstubAllEnvs();

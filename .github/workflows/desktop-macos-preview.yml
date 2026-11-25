@@ -57,7 +57,7 @@ jobs:
           run-install: false
 
       - name: Install bundle dependencies
-        run: vp install --filter=t3... --filter=@t3tools/web... --filter=@t3tools/desktop... --filter=@t3tools/scripts...
+        run: vp install --filter=cod3... --filter=@cod3/web... --filter=@cod3/desktop... --filter=@cod3/scripts...
 
       # The publish workflow derives the same version from this run's number,
       # so the version baked into the bundle matches the packaged app.
@@ -70,7 +70,7 @@ jobs:
 
           base_version="$(node -p "require('./apps/desktop/package.json').version")"
           node scripts/update-release-package-versions.ts "${base_version}-pr.${PR_NUMBER}.${GITHUB_RUN_NUMBER}"
-          # Public T3 Connect identifiers (Clerk publishable key, relay URL).
+          # Public cod3 Connect identifiers (Clerk publishable key, relay URL).
           cp .env.example .env
 
       # PR heads from before build:desktop:bundle use the full build, which
@@ -92,7 +92,7 @@ jobs:
       # channel. The Linux browser secret helper is not part of a macOS app.
       - name: Build JS bundle
         env:
-          T3CODE_TELEMETRY_CHANNEL: ${{ github.repository == 'pingdotgg/t3code' && 'preview' || 'dev' }}
+          COD3_TELEMETRY_CHANNEL: ${{ github.repository == vars.COD3_RELEASE_REPOSITORY && 'preview' || 'dev' }}
         run: vp run ${{ steps.bundle_build.outputs.script }}
 
       # Same layout as release.yml's js-bundle so release-desktop.yml can

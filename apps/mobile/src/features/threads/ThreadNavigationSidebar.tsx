@@ -2,16 +2,13 @@ import { useGT, useMessages } from "gt-react-native";
 import { useActiveNewTask } from "../../state/active-new-task";
 import { ThreadUndoNotice } from "../home/ThreadUndoNotice";
 import { useAndroidControlSizing } from "../../components/ui/useAndroidControlSizing";
-import { pickableProjectGroups } from "@t3tools/client-runtime/state/project-grouping";
+import { pickableProjectGroups } from "@cod3/client-runtime/state/project-grouping";
 import {
   useAppearancePreferences,
   useAndroidFloatingTabs,
 } from "../settings/appearance/AppearancePreferencesProvider";
-import type {
-  EnvironmentProject,
-  EnvironmentThreadShell,
-} from "@t3tools/client-runtime/state/shell";
-import { threadSearchMatchKey } from "@t3tools/client-runtime/state/thread-search";
+import type { EnvironmentProject, EnvironmentThreadShell } from "@cod3/client-runtime/state/shell";
+import { threadSearchMatchKey } from "@cod3/client-runtime/state/thread-search";
 import { AnimatedLegendList } from "@legendapp/list/reanimated";
 import { THREAD_LIST_ROW_LAYOUT } from "./threadListAnimations";
 import { useAtomValue } from "@effect/atom-react";
@@ -536,7 +533,7 @@ function ThreadNavigationSidebarPane(props: ThreadNavigationSidebarProps) {
   };
   const header = (
     <WorkspaceListHeader
-      accessibilityLabel={gt("{appName}, Threads", { appName: "T3 Code" })}
+      accessibilityLabel={gt("{appName}, Threads", { appName: "cod3" })}
       onOpenEnvironments={props.onOpenEnvironmentSettings}
       onOpenSettings={props.onOpenSettings}
       search={{
@@ -671,7 +668,7 @@ function ThreadNavigationSidebarPane(props: ThreadNavigationSidebarProps) {
         ) : (
           <SwipeableScrollGateProvider enabled={swipeEnabled}>
             <GestureDetector gesture={sidebarScrollGesture}>
-              {/* oxlint-disable-next-line t3code/require-registered-list-scroll -- The Android sidebar has no native header to register with. */}
+              {/* oxlint-disable-next-line cod3/require-registered-list-scroll -- The Android sidebar has no native header to register with. */}
               <AnimatedLegendList
                 itemLayoutAnimation={THREAD_LIST_ROW_LAYOUT}
                 data={listItems}

@@ -4,7 +4,7 @@ import {
   PROVIDER_DISPLAY_NAMES,
   type ProviderDriverKind,
   type ProviderInstanceId,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 import * as Option from "effect/Option";
 import { Atom } from "effect/reactivity";
 

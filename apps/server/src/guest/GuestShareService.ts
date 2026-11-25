@@ -19,9 +19,9 @@ import {
   type OrchestrationV2TurnItem,
   ThreadId,
   TurnItemId,
-} from "@t3tools/contracts";
-import { chatMarkdownImageSources } from "@t3tools/shared/markdownPipeline";
-import { htmlRenderFromToolItem } from "@t3tools/shared/toolOutput";
+} from "@cod3/contracts";
+import { chatMarkdownImageSources } from "@cod3/shared/markdownPipeline";
+import { htmlRenderFromToolItem } from "@cod3/shared/toolOutput";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as DateTime from "effect/DateTime";
@@ -197,7 +197,7 @@ export class GuestShareService extends Context.Service<
       path: string,
     ) => Effect.Effect<{ readonly path: string; readonly mimeType: string }, GuestShareAccessError>;
   }
->()("t3/guest/GuestShareService") {}
+>()("cod3/guest/GuestShareService") {}
 
 /** A reply a guest's stream sent, with its image sources once a media request parsed them. */
 interface SentReply {
@@ -598,7 +598,7 @@ const make = Effect.gen(function* () {
         }),
       ),
       Stream.takeUntil((event) => event.type === "ended"),
-      // Unlinking T3 Connect closes it quietly, so a tunnel that comes back on the same host
+      // Unlinking cod3 Connect closes it quietly, so a tunnel that comes back on the same host
       // keeps the guest in. Turning the beta off closes it the same way. Closing and expiry end
       // it above, with `ended`.
       Stream.interruptWhen(

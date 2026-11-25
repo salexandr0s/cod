@@ -1,7 +1,7 @@
 // Written the way an agent with only the skill would write it.
 // @effect-diagnostics globalDateInEffect:off globalJsonInEffect:off
 // The mistake the replay case exists for: the time is read by the body, so a replay reads it again.
-const { workflow, wait, stop } = T3;
+const { workflow, wait, stop } = cod3;
 
 export default [
   workflow(

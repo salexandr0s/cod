@@ -1,6 +1,6 @@
 import { useAtomValue } from "@effect/atom-react";
-import { sortProjectsByGroupOrder } from "@t3tools/client-runtime/state/project-grouping";
-import type { ScopedProjectRef, SidebarProjectGroupingMode } from "@t3tools/contracts";
+import { sortProjectsByGroupOrder } from "@cod3/client-runtime/state/project-grouping";
+import type { ScopedProjectRef, SidebarProjectGroupingMode } from "@cod3/contracts";
 import { Atom } from "effect/reactivity";
 import { msg, useGT, useMessages } from "gt-react-native";
 import type { ReactNode } from "react";

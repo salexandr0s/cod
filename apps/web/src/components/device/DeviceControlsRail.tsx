@@ -1,4 +1,4 @@
-import type { DeviceHostSummary, DevicePlatform } from "@t3tools/contracts";
+import type { DeviceHostSummary, DevicePlatform } from "@cod3/contracts";
 import {
   Camera,
   ChevronLeft,
@@ -64,14 +64,16 @@ export function DeviceControlsRail(props: {
       className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-14 flex-col items-center gap-2 overflow-y-auto [justify-content:safe_center] py-3 pr-2 [scrollbar-width:none]"
     >
       <div className="pointer-events-auto flex shrink-0 flex-col items-center gap-1 overflow-y-auto rounded-full border border-border/50 bg-background/80 p-2 shadow-sm [scrollbar-width:none]">
-        <RailButton
-          tooltipSide={popupSide}
-          label={gt("Home", { $context: "device home button" })}
-          disabled={inputDisabled}
-          onClick={() => handle?.pressButton("home")}
-        >
-          <Home />
-        </RailButton>
+        {props.platform !== "macos" && (
+          <RailButton
+            tooltipSide={popupSide}
+            label={gt("Home", { $context: "device home button" })}
+            disabled={inputDisabled}
+            onClick={() => handle?.pressButton("home")}
+          >
+            <Home />
+          </RailButton>
+        )}
         {props.platform === "android" ? (
           <>
             <RailButton
@@ -121,7 +123,7 @@ export function DeviceControlsRail(props: {
               </Menu>
             ) : null}
           </>
-        ) : props.hostKind === "simlock" ? null : (
+        ) : props.hostKind === "simlock" || props.platform === "macos" ? null : (
           <RailButton
             tooltipSide={popupSide}
             label={gt("Rotate device")}
@@ -201,7 +203,7 @@ export function DeviceControlsRail(props: {
             </RailButton>
           </>
         ) : null}
-        {props.hostKind === "simlock" ? null : (
+        {props.hostKind === "simlock" || props.platform === "macos" ? null : (
           <RailButton
             tooltipSide={popupSide}
             label={props.screenshotPending ? gt("Capturing screenshot") : gt("Save screenshot")}
@@ -242,26 +244,30 @@ export function DeviceControlsRail(props: {
             </MenuItem>
           </MenuPopup>
         </Menu>
-        <RailDivider />
-        <RailButton
-          tooltipSide={popupSide}
-          label={gt("3D view")}
-          pressed={view.phone}
-          disabled={!view.streaming || !!view.phoneUnavailableReason}
-          description={view.phoneUnavailableReason ?? undefined}
-          onClick={view.showPhone}
-        >
-          <Box />
-        </RailButton>
-        <RailButton
-          tooltipSide={popupSide}
-          label={gt("Flat view")}
-          pressed={!view.phone}
-          disabled={!view.streaming}
-          onClick={view.showFlat}
-        >
-          <Smartphone />
-        </RailButton>
+        {props.platform !== "macos" && (
+          <>
+            <RailDivider />
+            <RailButton
+              tooltipSide={popupSide}
+              label={gt("3D view")}
+              pressed={view.phone}
+              disabled={!view.streaming || !!view.phoneUnavailableReason}
+              description={view.phoneUnavailableReason ?? undefined}
+              onClick={view.showPhone}
+            >
+              <Box />
+            </RailButton>
+            <RailButton
+              tooltipSide={popupSide}
+              label={gt("Flat view")}
+              pressed={!view.phone}
+              disabled={!view.streaming}
+              onClick={view.showFlat}
+            >
+              <Smartphone />
+            </RailButton>
+          </>
+        )}
         {view.keyboard ? (
           <RailButton
             tooltipSide={popupSide}

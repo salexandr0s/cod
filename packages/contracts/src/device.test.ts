@@ -82,6 +82,45 @@ describe("device state for clients from before Expo hosts", () => {
     expect(decodeOlderState(wire).hosts.map((host) => host.id)).toEqual(["local"]);
     expect(decodeState(wire).hosts).toEqual(state.hosts);
   });
+  it("round trips the Mac host, device, opener and boot without exposing macOS to legacy lists", () => {
+    const host = { ...summary, id: "tart:local", kind: "tart" as const };
+    const device = {
+      hostId: host.id,
+      id: "t3-mac",
+      platform: "macos" as const,
+      name: "Mac",
+      version: "macOS",
+      booted: true,
+      physical: false,
+    };
+    const mac = decodeState({
+      ...encodeState(state),
+      mac: {
+        hosts: [host],
+        devices: [device],
+        sessions: [
+          {
+            hostId: host.id,
+            deviceId: device.id,
+            platform: "macos",
+            threadId: "test",
+            openedAt: "now",
+            macBootId: "boot",
+          },
+        ],
+        bootingDevices: [{ ...device, threadId: "test" }],
+      },
+    });
+    const wire = encodeState(mac);
+    expect(wire.hosts.map((entry) => entry.id)).toEqual(["local"]);
+    expect(wire.devices).toEqual([]);
+    expect(wire.sessions).toEqual([]);
+    expect(wire.bootingDevices).toEqual([]);
+    expect(mac.devices).toEqual([device]);
+    expect(mac.sessions[0]?.macBootId).toBe("boot");
+    expect(mac.bootingDevices?.[0]?.id).toBe(device.id);
+    expect(decodeState(wire)).toEqual(mac);
+  });
 });
 
 describe("device boot errors", () => {

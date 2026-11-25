@@ -4,7 +4,7 @@ import {
   type EditorId,
   type EnvironmentId,
   type ContextMenuSource,
-} from "@t3tools/contracts";
+} from "@cod3/contracts";
 
 import { contextMenuSourceOf } from "./contextMenuSource";
 import { resolveDiffPathForWorkspace } from "./diffFileActions";
@@ -16,7 +16,7 @@ import { readLocalApi } from "./localApi";
 import { serverEnvironment } from "./state/server";
 import { shellEnvironment } from "./state/shell";
 import { useAtomCommand } from "./state/use-atom-command";
-import { resolvePathLinkTarget } from "@t3tools/shared/fileLinks";
+import { resolvePathLinkTarget } from "@cod3/shared/fileLinks";
 import { toastManager } from "./components/ui/toast";
 import { useAtomValue } from "@effect/atom-react";
 import { msg, useMessages } from "gt-react";

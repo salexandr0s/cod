@@ -1,11 +1,11 @@
-import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { thrownErrorMessage } from "@cod3/client-runtime/errors";
 import { m } from "~/i18n/messages";
 import {
   isModifierPairShortcut,
   type SnapShotModifier,
   type SnapShotShortcut,
-} from "@t3tools/contracts";
-import { parseKeybindingShortcut } from "@t3tools/shared/keybindings";
+} from "@cod3/contracts";
+import { parseKeybindingShortcut } from "@cod3/shared/keybindings";
 import { useGT } from "gt-react";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { getDesktopSnapShotBridge } from "../../lib/desktopSnapShot";
@@ -81,7 +81,7 @@ export function useSnapShotShortcutRecorder({
       );
     }
   };
-  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- releases the desktop bridge's SnapShot shortcut suppression on unmount
+  // oxlint-disable-next-line cod3/no-unreasoned-state-sync -- releases the desktop bridge's SnapShot shortcut suppression on unmount
   useEffect(
     () => () => {
       requests.clear();
