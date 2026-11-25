@@ -128,7 +128,7 @@ async function guestInput(
   const [out, err, [code]] = await Promise.all([
     NodeStreamConsumers.buffer(child.stdout),
     NodeStreamConsumers.buffer(child.stderr),
-    NodeEvents.once(child, "close"),
+    NodeEvents.EventEmitter.once(child, "close"),
     NodeStreamPromises.pipeline(input, child.stdin),
   ]);
   if (code !== 0) throw new Error("Mac guest command failed. " + err.toString().slice(-800));
@@ -175,7 +175,7 @@ async function installNativeHelper(
     ],
     { stdio: ["ignore", "pipe", "ignore"], signal },
   );
-  const done = NodeEvents.once(archive, "close");
+  const done = NodeEvents.EventEmitter.once(archive, "close");
   try {
     const install = [
       'mkdir -p "$dir"',
@@ -281,7 +281,7 @@ export async function bootGuest(tart: string, onDisconnect: () => void, cancel?:
     env: { ...process.env, NSUnbufferedIO: "YES" },
     stdio: ["ignore", "pipe", "pipe"],
   });
-  const exit = NodeEvents.once(child, "close").then(
+  const exit = NodeEvents.EventEmitter.once(child, "close").then(
     () => undefined,
     () => undefined,
   );

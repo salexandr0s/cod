@@ -42,7 +42,7 @@ it.skipIf(HostProcess.Platform.defaultValue() !== "darwin")(
       });
     });
     server.listen(0, "127.0.0.1");
-    await NodeEvents.once(server, "listening");
+    await NodeEvents.EventEmitter.once(server, "listening");
     const address = server.address();
     if (!address || typeof address === "string") throw new Error("Missing test port");
     const executable = NodePath.join(dir, "tart");
